@@ -30,3 +30,7 @@ The direct-upload project must be a direct-upload type; GitHub-imported projects
 
 - EdgeOne Makers is not the same as CloudBase/COS. CloudBase/COS default domains force HTML downloads.
 - Do not set the root directory to `dist`; `dist` is the build output.
+
+## Current deployment note
+
+This project is imported from GitHub and builds `main`. Production deployments are created from the repository commit; the default Makers domain is token-protected until a public/custom domain or public access setting is applied.
