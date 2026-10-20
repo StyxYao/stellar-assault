@@ -53,7 +53,16 @@ tools/optimize_delivery.py delivery-size optimizer
 
 ## Deployment
 
-Planned target: Cloudflare Pages for the web build, then Tencent CloudBase/COS for China and WeChat Mini Game assets. See `docs/ROADMAP.md`.
+Cloudflare Pages build settings:
+
+- Production branch: `main`
+- Build command: `bash tools/build_pages.sh`
+- Output directory: `dist`
+- Environment: `PYTHON_VERSION=3.12`
+
+The script installs Pillow, rebuilds the single-file game, then writes the optimized page to `dist/index.html`.
+
+Planned next: Tencent CloudBase/COS for China delivery and WeChat Mini Game assets. See `docs/ROADMAP.md`.
 
 ## Licensing
 
