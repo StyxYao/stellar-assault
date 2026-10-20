@@ -236,7 +236,7 @@ var STAGES=[
    {t:55.8,type:3,n:3,form:'v',spd:64},
    {t:59.2,type:5,n:6,form:'dive',spd:160}
  ]},
- {name:'COMET FIELD',bg:BG3,bgm:'b',waves:[
+ {name:'SURFACE',bg:BG3,bgm:'b',waves:[
    {t:0.6,type:5,n:5,form:'v',spd:120},
    {t:3.2,type:2,n:6,form:'snake',spd:100},
    {t:6.2,type:4,n:3,form:'turret',spd:64},
@@ -1232,7 +1232,7 @@ function step(dt){
   }
 }
 
-function drawLoopLayer(img,scroll,alpha,fitWidth){
+function drawLoopLayer(img,scroll,alpha,fitWidth,mirror){
   if(!img||!img.complete||!img.naturalWidth) return false;
   var sc=fitWidth?W/img.width:Math.max(W/img.width,H/img.height);
   var bw=img.width*sc,bh=img.height*sc,x=(W-bw)/2,baseY=(H-bh)/2;
@@ -1242,14 +1242,14 @@ function drawLoopLayer(img,scroll,alpha,fitWidth){
     var top=baseY+off+n*bh;
     if(top>H||top+bh<0) continue;
     var even=((n%2)+2)%2===0;
-    if(even) ctx.drawImage(img,x,top,bw,bh);
+    if(!mirror||even) ctx.drawImage(img,x,top,bw,bh);
     else{ctx.save();ctx.translate(x,top+bh);ctx.scale(1,-1);ctx.drawImage(img,0,0,bw,bh);ctx.restore();}
   }
   ctx.globalAlpha=1; return true;
 }
 function paintStageBg(main,edge,offsetY){
-  drawLoopLayer(main,bgScroll+(offsetY||0),1,false);
-  if(edge) drawLoopLayer(edge,bgEdgeScroll+(offsetY||0)*1.35,[0.88,0.86,0.55][stage]||0.8,true);
+  drawLoopLayer(main,bgScroll+(offsetY||0),1,false,false);
+  if(edge) drawLoopLayer(edge,bgEdgeScroll+(offsetY||0)*1.35,[0.88,0.86,0.75][stage]||0.8,true,true);
 }
 function drawBgDust(){
   ctx.save();
