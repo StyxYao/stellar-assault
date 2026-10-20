@@ -290,7 +290,7 @@ STAGES.forEach(function(st){
 var BOSSES=[
  {key:'b1_',name:'VOID SOVEREIGN',hp:1500,w:235,h:200,style:'octopus',move:'sine',patterns:[0,1],aim:3,ring:0,aimRate:1.8,ringRate:5.0,laserRate:7.5,laserN:1,ultRate:12.0,glow:['255,70,90','255,85,170','255,190,100']},
  {key:'b2_',name:'ABYSS DEVOURER',hp:1900,w:245,h:210,style:'dread',move:'wide',patterns:[1,0],aim:5,ring:16,aimRate:1.7,ringRate:5.4,laserRate:6.5,laserN:2,ultRate:11.0,glow:['150,105,255','190,90,255','255,120,235']},
- {key:'b3_',name:'HIVE',hp:2300,w:220,h:120,style:'hive',move:'dash',patterns:[0,1],aim:7,ring:20,aimRate:1.9,ringRate:4.6,laserRate:5.5,laserN:3,ultRate:10.0,glow:['255,160,70','255,120,60','255,215,120']}
+ {key:'b3_',name:'STAR BEHEMOTH',hp:2300,w:245,h:210,style:'hive',move:'dash',patterns:[0,1],aim:7,ring:20,aimRate:1.9,ringRate:4.6,laserRate:5.5,laserN:3,ultRate:10.0,glow:['255,160,70','255,120,60','255,215,120']}
 ];
 var BOSS_PALETTES=[
  {main:'#ff3d63',light:'#ff9ab0',core:'#fff4f7',dark:'#3a0712',edge:'#8fe8ff',glow:'rgba(255,50,95,0.55)',beam:'#ff5f7a'},
@@ -1232,12 +1232,13 @@ function step(dt){
   }
 }
 
-function drawLoopLayer(img,scroll,alpha,fitWidth,mirror){
+function drawLoopLayer(img,scroll,alpha,fitWidth,mirror,blend){
   if(!img||!img.complete||!img.naturalWidth) return false;
   var sc=fitWidth?W/img.width:Math.max(W/img.width,H/img.height);
   var bw=img.width*sc,bh=img.height*sc,x=(W-bw)/2,baseY=(H-bh)/2;
   var loopH=bh*2,off=((scroll%loopH)+loopH)%loopH;
   ctx.globalAlpha=alpha;
+  ctx.globalCompositeOperation=blend||'source-over';
   for(var n=-2;n<=2;n++){
     var top=baseY+off+n*bh;
     if(top>H||top+bh<0) continue;
@@ -1245,11 +1246,11 @@ function drawLoopLayer(img,scroll,alpha,fitWidth,mirror){
     if(!mirror||even) ctx.drawImage(img,x,top,bw,bh);
     else{ctx.save();ctx.translate(x,top+bh);ctx.scale(1,-1);ctx.drawImage(img,0,0,bw,bh);ctx.restore();}
   }
-  ctx.globalAlpha=1; return true;
+  ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over'; return true;
 }
 function paintStageBg(main,edge,offsetY){
   drawLoopLayer(main,bgScroll+(offsetY||0),1,false,false);
-  if(edge) drawLoopLayer(edge,bgEdgeScroll+(offsetY||0)*1.35,[0.88,0.86,0.75][stage]||0.8,true,true);
+  if(edge) drawLoopLayer(edge,bgEdgeScroll+(offsetY||0)*1.35,[0.90,0.82,0.72][stage]||0.8,true,true,['screen','soft-light','overlay'][stage]||'source-over');
 }
 function drawBgDust(){
   ctx.save();

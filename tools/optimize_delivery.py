@@ -7,7 +7,7 @@ os.makedirs(os.path.dirname(dst) or '.', exist_ok=True)
 h = open(src, encoding='utf-8').read()
 
 # Drop unused legacy image assignments: boss phase 2/3, enemy _b frames, old explosion frames.
-unused = re.compile(r"GIMG\.((?:b3_[23]|n[1-6]b|e[1-8]))=new Image\(\);GIMG\.\1\.src='data:image/[a-z]+;base64,[A-Za-z0-9+/=]+';")
+unused = re.compile(r"GIMG\.((?:n[1-6]b|e[1-8]))=new Image\(\);GIMG\.\1\.src='data:image/[a-z]+;base64,[A-Za-z0-9+/=]+';")
 h, n = unused.subn('', h)
 
 def repl(m):
