@@ -17,6 +17,6 @@ Final stage of the four-stage campaign.
 ## BGM
 
 - File: `assets/audio/bgm-stage4.mp3`
-- Source: 聚变引擎 / Fusion Engine
+- Source: 聚变引擎 / Fusion Engine (trimmed to start at 0:10)
 - Normalized to -16 LUFS, 192 kbps MP3
 - Loops via the existing BGM audio element
