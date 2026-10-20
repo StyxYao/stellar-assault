@@ -35,3 +35,31 @@ Design board: `art-tests/enemies-design-board.jpg` (working review image)
 - Elite / ace waves use `_2`.
 - Do not bulk-rotate enemy sprites; all source art already points down.
 - Keep the transparent 1024×1024 canvas and center the body for consistent hitbox/visual alignment.
+
+## New Enemy Types (texture replacements for vector placeholders)
+
+### 6 / Aegis Warden
+- Role: shield drone / area denial
+- Attack: twin charged beams plus a ring of eight orbiting orbs
+- Normal: white / ice blue / cyan core
+- Elite: black / gold shell / violet-white core
+- Sprite: `gpt-assets/enemies/07_aegis_warden_1.png` / `_2.png`
+
+### 7 / Rail Lancer
+- Role: long-range sniper
+- Attack: 1.05s charge telegraph, then a fast red rail beam aimed at the player
+- Normal: black / crimson coils
+- Elite: black / violet-white energy
+- Sprite: `gpt-assets/enemies/08_rail_lancer_1.png` / `_2.png`
+
+### 8 / Mine Seeder
+- Role: area control / trap layer
+- Attack: drops five slow mines; each mine fuses for 1.35s then bursts into an eight-bullet ring
+- Normal: olive green / amber pods
+- Elite: black / amber / gold
+- Sprite: `gpt-assets/enemies/09_mine_seeder_1.png` / `_2.png`
+
+Wave introduction:
+- Stage 1: Aegis Warden at 34.5s, plus the late multi-stage Aegis wave
+- Stage 2: Rail Lancer at 34.5s, Mine Seeder at 69s
+- Stage 3: Mine Seeder at 33s, Rail Lancer at 69s

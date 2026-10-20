@@ -5,10 +5,10 @@ assets={
  'p2':'player-v2/p2_center.png','p3':'player-v2/p3_right.png','p4':'player-v2/p4_left.png',
  'u1':'assets/bullets/u1n.png','u2':'assets/bullets/u2n.png','u4':'assets/bullets/u4n.png','u5':'assets/bullets/u5n.png'
 }
-enames=['small_fighter','medium_fighter','scout','bomber','mech','interceptor']
+enames=['small_fighter','medium_fighter','scout','bomber','mech','interceptor','aegis_warden','rail_lancer','mine_seeder']
 for bi in range(1,4):
     for ph in range(1,4): assets['b%d_%d'%(bi,ph)]='gpt-assets/bosses/boss_%d_phase%d.png'%(bi,ph)
-for ei in range(1,7):
+for ei in range(1,10):
     assets['n%d'%ei]='gpt-assets/enemies/%02d_%s_1.png'%(ei,enames[ei-1])
     p2='gpt-assets/enemies/%02d_%s_2.png'%(ei,enames[ei-1])
     if os.path.exists(p2): assets['n%db'%ei]=p2
