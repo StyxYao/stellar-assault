@@ -53,14 +53,30 @@ tools/optimize_delivery.py delivery-size optimizer
 
 ## Deployment
 
-Cloudflare Pages build settings:
+### Cloudflare Pages (recommended)
+
+Create a **Pages** project, not a Worker. Settings:
 
 - Production branch: `main`
+- Root directory: leave empty (repository root)
 - Build command: `bash tools/build_pages.sh`
-- Output directory: `dist`
-- Environment: `PYTHON_VERSION=3.12`
+- Build output directory: `dist`
+- Environment: `PYTHON_VERSION=3.11`
 
-The script installs Pillow, rebuilds the single-file game, then writes the optimized page to `dist/index.html`.
+Do not set the root directory to `dist`; that directory does not exist until the build has run.
+
+### Cloudflare Workers Builds
+
+If the dashboard shows a **Deploy command** field, you created a Worker. Settings:
+
+- Root directory: leave empty
+- Build command: `bash tools/build_pages.sh`
+- Deploy command: `npx wrangler deploy`
+- Environment: `PYTHON_VERSION=3.11`
+
+`wrangler.jsonc` points Workers static assets at `./dist`.
+
+The script creates a local virtualenv, installs Pillow, rebuilds the game, then writes `dist/index.html`.
 
 Planned next: Tencent CloudBase/COS for China delivery and WeChat Mini Game assets. See `docs/ROADMAP.md`.
 
