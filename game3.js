@@ -10,7 +10,13 @@ var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpee
 var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
 var BG4=new Image();BG4.src='assets/bg/stage4-main.webp';
 var bgmName='';
-if(typeof BGMSRC!=='undefined'){ BGMSRC.s4='assets/audio/bgm-stage4.mp3'; if(typeof BGMURL!=='undefined') BGMURL.s4=BGMSRC.s4; }
+if(typeof BGMSRC!=='undefined'){
+  BGMSRC.s4='assets/audio/bgm-stage4.mp3';
+  BGMSRC.s2boss='assets/audio/bgm-boss2.mp3';
+  BGMSRC.s3boss='assets/audio/bgm-boss3.mp3';
+  BGMSRC.s4boss='assets/audio/bgm-boss4.mp3';
+  if(typeof BGMURL!=='undefined'){ BGMURL.s4=BGMSRC.s4; BGMURL.s2boss=BGMSRC.s2boss; BGMURL.s3boss=BGMSRC.s3boss; BGMURL.s4boss=BGMSRC.s4boss; }
+}
 var sampleSfx=sfx,sfxLast={},laserOsc=null,laserGain=null,audioBoosted=false,sfxExtraLoaded=false;
 function loadSfxExtras(){
   if(sfxExtraLoaded||!AC||typeof SFX_EXTRA==='undefined') return;
@@ -435,7 +441,7 @@ function spawnBoss(){
   var def=BOSSES[stage];
   boss={def:def,x:W/2,y:-130,hp:def.hp,max:def.hp,phase:0,invuln:1.2,entering:true,t:0,flash:0,patternIdx:0,patternT:0,aimT:0,ringT:0,laserT:0,hitFlash:0,hitX:W/2,hitY:180,ultT:def.ultRate-2.2,ultCharge:0,spiralT:0,spiralAng:0,broadT:0,blinkT:0};
   if(stage===2) repairAudio();
-  state='boss'; playBgm('c'); setBossPattern(0);
+  state='boss'; playBgm(['c','s2boss','s3boss','s4boss'][stage]||'c'); setBossPattern(0);
 }
 function setBossPattern(idx){
   if(!boss||!specs) return;

@@ -10,6 +10,9 @@ Status: scene assets preserved, stage integration pending.
 
 ## BGM
 
+Stage 5 is on hold. No stage 5 track is wired yet. `bgm-boss5-final.mp3` (智能矩阵 / Sentient Matrix) is reserved until the stage 5 boss is designed.
+
+
 - Stage 5 field: `assets/audio/bgm-stage5.mp3` — 磁星 / Magnetar, 168.0s
 - Boss 5 phase 1: `assets/audio/bgm-boss5.mp3` — 泰坦级 / Taitan Class, 204.5s
 - Stage 5 pursuit / escape: `assets/audio/bgm-stage5-pursuit.mp3` — 危险追逐 / Perilous Pursuit, 297.5s

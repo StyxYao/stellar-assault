@@ -20,3 +20,5 @@ Final stage of the four-stage campaign.
 - Source: 聚变引擎 / Fusion Engine (trimmed to start at 0:10)
 - Normalized to -16 LUFS, 192 kbps MP3
 - Loops via the existing BGM audio element
+
+Boss BGM: `assets/audio/bgm-boss4.mp3` — 泰坦级 / Taitan Class
