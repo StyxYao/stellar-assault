@@ -18,8 +18,8 @@ A unified enemy fleet for the four-stage campaign:
 | 1 | Small Fighter | white / red | black / gold / crimson | fast, small hitbox, rush waves |
 | 2 | Medium Fighter | green / silver | black / dark green / gold | mid-tier escort, aimed shots |
 | 3 | Scout | purple / gold | black / gold / violet-white | circular drone, rings and sweeps |
-| 4 | Bomber | deep blue / cyan | black / blue / orange | heavy, slow, wide bullet walls |
-| 5 | Mech | brass / gunmetal | black / brass / red | armored gunship, dense fire |
+| 4 | Bomber | deep blue / cyan | matte black / crimson / orange | heavy, slow, wide bullet walls |
+| 5 | Mech | brass / gunmetal | white-black command armor / red core | armored gunship, dense fire |
 | 6 | Interceptor | blue / violet | matte black / violet / magenta | fast flanker, converging shots |
 
 ## Files
