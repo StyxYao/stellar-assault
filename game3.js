@@ -287,9 +287,9 @@ STAGES.forEach(function(st){
   st.waves.sort(function(a,b){return a.t-b.t;});
 });
 var BOSSES=[
- {key:'b1_',name:'OCTOPUS',hp:1500,w:210,h:112,style:'octopus',move:'sine',patterns:[0,1],aim:3,ring:0,aimRate:1.8,ringRate:5.0,laserRate:7.5,laserN:1,ultRate:12.0},
- {key:'b2_',name:'DREADNOUGHT',hp:1900,w:230,h:100,style:'dread',move:'wide',patterns:[1,0],aim:5,ring:16,aimRate:1.7,ringRate:5.4,laserRate:6.5,laserN:2,ultRate:11.0},
- {key:'b3_',name:'HIVE',hp:2300,w:220,h:120,style:'hive',move:'dash',patterns:[0,1],aim:7,ring:20,aimRate:1.9,ringRate:4.6,laserRate:5.5,laserN:3,ultRate:10.0}
+ {key:'b1_',name:'VOID SOVEREIGN',hp:1500,w:235,h:200,style:'octopus',move:'sine',patterns:[0,1],aim:3,ring:0,aimRate:1.8,ringRate:5.0,laserRate:7.5,laserN:1,ultRate:12.0,glow:['255,70,90','255,85,170','255,190,100']},
+ {key:'b2_',name:'DREADNOUGHT',hp:1900,w:230,h:100,style:'dread',move:'wide',patterns:[1,0],aim:5,ring:16,aimRate:1.7,ringRate:5.4,laserRate:6.5,laserN:2,ultRate:11.0,glow:['150,105,255','190,90,255','255,120,235']},
+ {key:'b3_',name:'HIVE',hp:2300,w:220,h:120,style:'hive',move:'dash',patterns:[0,1],aim:7,ring:20,aimRate:1.9,ringRate:4.6,laserRate:5.5,laserN:3,ultRate:10.0,glow:['255,160,70','255,120,60','255,215,120']}
 ];
 var ET=[
  {hp:12,r:14,w:34,score:60,fire:2.2,kind:1,n:1},
@@ -1108,7 +1108,7 @@ function step(dt){
     if(boss.hitFlash>0) boss.hitFlash-=dt;
     if(boss.flash>0) boss.flash-=dt;
     if(boss.invuln>0) boss.invuln=Math.max(0,boss.invuln-dt);
-    var ty=(def.move==='dash')?205:185;
+    var ty=(def.move==='dash')?215:205;
     if(boss.entering){
       boss.y+=140*dt;
       if(boss.y>=ty){boss.y=ty;boss.entering=false;boss.invuln=1.0;boss.t=0;}
@@ -1241,11 +1241,12 @@ function drawEnemy(e){
 }
 function drawBoss(){
   if(!boss) return;
-  var img=GIMG[boss.def.key+'1'];
+  var phase=boss.phase;
+  var img=GIMG[boss.def.key+(phase+1)]||GIMG[boss.def.key+'1'];
   if(!img||!img.complete) return;
-  var phase=boss.phase,sc=1+phase*0.035;
-  var w=boss.def.w*sc,h=w*img.height/img.width;
-  var cols=['90,200,255','255,120,220','255,170,80'],col=cols[phase]||cols[0];
+  var phaseScale=[1,1.06,1.12][phase]||1;
+  var w=boss.def.w*phaseScale,h=w*img.height/img.width;
+  var cols=boss.def.glow||['90,200,255','255,120,220','255,170,80'],col=cols[phase]||cols[0];
   ctx.save();ctx.globalCompositeOperation='lighter';
   var ar=h*0.72+Math.sin(time*4)*8;
   var g=ctx.createRadialGradient(boss.x,boss.y,h*0.15,boss.x,boss.y,ar);
@@ -1268,7 +1269,7 @@ function drawBoss(){
   }
   if(boss.invuln>0){
     ctx.globalAlpha=0.32;ctx.strokeStyle=['#7fe7ff','#ff9ad5','#ffc36b'][stage];ctx.lineWidth=3;
-    ctx.beginPath();ctx.arc(boss.x,boss.y,h*0.55+Math.sin(time*8)*4,0,TAU);ctx.stroke();ctx.globalAlpha=1;
+    ctx.beginPath();ctx.arc(boss.x,boss.y,Math.min(h*0.55,w*0.36)+Math.sin(time*8)*4,0,TAU);ctx.stroke();ctx.globalAlpha=1;
   }
   ctx.restore();
 }
