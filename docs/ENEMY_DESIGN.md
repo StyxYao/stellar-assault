@@ -63,3 +63,11 @@ Wave introduction:
 - Stage 1: Aegis Warden at 34.5s, plus the late multi-stage Aegis wave
 - Stage 2: Rail Lancer at 34.5s, Mine Seeder at 69s
 - Stage 3: Mine Seeder at 33s, Rail Lancer at 69s
+
+## Final Roster
+
+All 9 types have a normal (`_1`) and a distinct elite (`_2`) sprite:
+
+`01 small_fighter` · `02 medium_fighter` · `03 scout` · `04 bomber` · `05 mech` · `06 interceptor` · `07 aegis_warden` · `08 rail_lancer` · `09 mine_seeder`
+
+Roster board: `docs/enemies/roster-9x2.jpg`
