@@ -1,0 +1,769 @@
+[
+  {
+    "category": "background",
+    "name": "bg_01_nebula (星云宇宙)",
+    "file": "backgrounds/bg_01_nebula.png",
+    "w": 120,
+    "h": 330,
+    "source": [
+      28.0,
+      50,
+      148.4,
+      380
+    ]
+  },
+  {
+    "category": "background",
+    "name": "bg_01_nebula_1080",
+    "file": "backgrounds/bg_01_nebula_1080.jpg",
+    "w": 1080,
+    "h": 1920,
+    "source": [
+      28.0,
+      50,
+      148.4,
+      380
+    ]
+  },
+  {
+    "category": "background",
+    "name": "bg_02_station (空间站)",
+    "file": "backgrounds/bg_02_station.png",
+    "w": 120,
+    "h": 330,
+    "source": [
+      168.4,
+      50,
+      288.8,
+      380
+    ]
+  },
+  {
+    "category": "background",
+    "name": "bg_02_station_1080",
+    "file": "backgrounds/bg_02_station_1080.jpg",
+    "w": 1080,
+    "h": 1920,
+    "source": [
+      168.4,
+      50,
+      288.8,
+      380
+    ]
+  },
+  {
+    "category": "background",
+    "name": "bg_03_planet (行星表面)",
+    "file": "backgrounds/bg_03_planet.png",
+    "w": 121,
+    "h": 330,
+    "source": [
+      308.8,
+      50,
+      429.20000000000005,
+      380
+    ]
+  },
+  {
+    "category": "background",
+    "name": "bg_03_planet_1080",
+    "file": "backgrounds/bg_03_planet_1080.jpg",
+    "w": 1080,
+    "h": 1920,
+    "source": [
+      308.8,
+      50,
+      429.20000000000005,
+      380
+    ]
+  },
+  {
+    "category": "background",
+    "name": "bg_04_red_nebula (红色星云)",
+    "file": "backgrounds/bg_04_red_nebula.png",
+    "w": 120,
+    "h": 330,
+    "source": [
+      449.20000000000005,
+      50,
+      569.6,
+      380
+    ]
+  },
+  {
+    "category": "background",
+    "name": "bg_04_red_nebula_1080",
+    "file": "backgrounds/bg_04_red_nebula_1080.jpg",
+    "w": 1080,
+    "h": 1920,
+    "source": [
+      449.20000000000005,
+      50,
+      569.6,
+      380
+    ]
+  },
+  {
+    "category": "background",
+    "name": "bg_05_ice (冰封星球)",
+    "file": "backgrounds/bg_05_ice.png",
+    "w": 121,
+    "h": 330,
+    "source": [
+      589.6,
+      50,
+      710.0,
+      380
+    ]
+  },
+  {
+    "category": "background",
+    "name": "bg_05_ice_1080",
+    "file": "backgrounds/bg_05_ice_1080.jpg",
+    "w": 1080,
+    "h": 1920,
+    "source": [
+      589.6,
+      50,
+      710.0,
+      380
+    ]
+  },
+  {
+    "category": "player",
+    "name": "player_01",
+    "file": "player/player_01.png",
+    "w": 55,
+    "h": 80,
+    "source": [
+      745.0,
+      52,
+      817.6,
+      150
+    ]
+  },
+  {
+    "category": "player",
+    "name": "player_02",
+    "file": "player/player_02.png",
+    "w": 50,
+    "h": 81,
+    "source": [
+      837.6,
+      52,
+      910.2,
+      150
+    ]
+  },
+  {
+    "category": "player",
+    "name": "player_03",
+    "file": "player/player_03.png",
+    "w": 48,
+    "h": 81,
+    "source": [
+      930.2,
+      52,
+      1002.8,
+      150
+    ]
+  },
+  {
+    "category": "player",
+    "name": "player_04",
+    "file": "player/player_04.png",
+    "w": 44,
+    "h": 79,
+    "source": [
+      1022.8,
+      52,
+      1095.4,
+      150
+    ]
+  },
+  {
+    "category": "player",
+    "name": "player_05",
+    "file": "player/player_05.png",
+    "w": 53,
+    "h": 81,
+    "source": [
+      1115.4,
+      52,
+      1188.0,
+      150
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "01_small_fighter_1",
+    "file": "enemies/01_small_fighter_1.png",
+    "w": 38,
+    "h": 59,
+    "source": [
+      735,
+      248,
+      812.3333333333334,
+      322
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "01_small_fighter_2",
+    "file": "enemies/01_small_fighter_2.png",
+    "w": 39,
+    "h": 58,
+    "source": [
+      773.0,
+      248,
+      863.0,
+      322
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "01_small_fighter_3",
+    "file": "enemies/01_small_fighter_3.png",
+    "w": 37,
+    "h": 58,
+    "source": [
+      823.6666666666666,
+      248,
+      913.6666666666666,
+      322
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "02_medium_fighter_1",
+    "file": "enemies/02_medium_fighter_1.png",
+    "w": 34,
+    "h": 60,
+    "source": [
+      875.5,
+      248,
+      965.5,
+      322
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "02_medium_fighter_2",
+    "file": "enemies/02_medium_fighter_2.png",
+    "w": 34,
+    "h": 55,
+    "source": [
+      928.5,
+      248,
+      1018.5,
+      322
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "02_medium_fighter_3",
+    "file": "enemies/02_medium_fighter_3.png",
+    "w": 40,
+    "h": 59,
+    "source": [
+      981.5,
+      248,
+      1071.5,
+      322
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "03_scout_1",
+    "file": "enemies/03_scout_1.png",
+    "w": 28,
+    "h": 52,
+    "source": [
+      1033.0,
+      248,
+      1123.0,
+      322
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "03_scout_2",
+    "file": "enemies/03_scout_2.png",
+    "w": 42,
+    "h": 54,
+    "source": [
+      1083.0,
+      248,
+      1173.0,
+      322
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "03_scout_3",
+    "file": "enemies/03_scout_3.png",
+    "w": 33,
+    "h": 54,
+    "source": [
+      1133.0,
+      248,
+      1203,
+      322
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "04_bomber_1",
+    "file": "enemies/04_bomber_1.png",
+    "w": 44,
+    "h": 57,
+    "source": [
+      735,
+      382,
+      812.3333333333334,
+      452
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "04_bomber_2",
+    "file": "enemies/04_bomber_2.png",
+    "w": 54,
+    "h": 59,
+    "source": [
+      773.0,
+      382,
+      863.0,
+      452
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "04_bomber_3",
+    "file": "enemies/04_bomber_3.png",
+    "w": 53,
+    "h": 57,
+    "source": [
+      823.6666666666666,
+      382,
+      913.6666666666666,
+      452
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "05_mech_1",
+    "file": "enemies/05_mech_1.png",
+    "w": 27,
+    "h": 60,
+    "source": [
+      875.5,
+      382,
+      965.5,
+      452
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "05_mech_2",
+    "file": "enemies/05_mech_2.png",
+    "w": 52,
+    "h": 60,
+    "source": [
+      928.5,
+      382,
+      1018.5,
+      452
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "05_mech_3",
+    "file": "enemies/05_mech_3.png",
+    "w": 36,
+    "h": 59,
+    "source": [
+      981.5,
+      382,
+      1071.5,
+      452
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "06_interceptor_1",
+    "file": "enemies/06_interceptor_1.png",
+    "w": 32,
+    "h": 50,
+    "source": [
+      1033.0,
+      382,
+      1123.0,
+      452
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "06_interceptor_2",
+    "file": "enemies/06_interceptor_2.png",
+    "w": 37,
+    "h": 56,
+    "source": [
+      1083.0,
+      382,
+      1173.0,
+      452
+    ]
+  },
+  {
+    "category": "enemy",
+    "name": "06_interceptor_3",
+    "file": "enemies/06_interceptor_3.png",
+    "w": 34,
+    "h": 50,
+    "source": [
+      1133.0,
+      382,
+      1203,
+      452
+    ]
+  },
+  {
+    "category": "boss",
+    "name": "boss_1_phase1",
+    "file": "bosses/boss_1_phase1.png",
+    "w": 175,
+    "h": 87,
+    "source": [
+      24,
+      498,
+      226,
+      608
+    ]
+  },
+  {
+    "category": "boss",
+    "name": "boss_2_phase1",
+    "file": "bosses/boss_2_phase1.png",
+    "w": 160,
+    "h": 100,
+    "source": [
+      254,
+      498,
+      456,
+      608
+    ]
+  },
+  {
+    "category": "boss",
+    "name": "boss_3_phase1",
+    "file": "bosses/boss_3_phase1.png",
+    "w": 136,
+    "h": 95,
+    "source": [
+      484,
+      498,
+      696,
+      608
+    ]
+  },
+  {
+    "category": "boss",
+    "name": "boss_1_phase2",
+    "file": "bosses/boss_1_phase2.png",
+    "w": 167,
+    "h": 82,
+    "source": [
+      24,
+      608,
+      226,
+      718
+    ]
+  },
+  {
+    "category": "boss",
+    "name": "boss_2_phase2",
+    "file": "bosses/boss_2_phase2.png",
+    "w": 163,
+    "h": 89,
+    "source": [
+      254,
+      608,
+      456,
+      718
+    ]
+  },
+  {
+    "category": "boss",
+    "name": "boss_3_phase2",
+    "file": "bosses/boss_3_phase2.png",
+    "w": 154,
+    "h": 92,
+    "source": [
+      484,
+      608,
+      696,
+      718
+    ]
+  },
+  {
+    "category": "boss",
+    "name": "boss_1_phase3",
+    "file": "bosses/boss_1_phase3.png",
+    "w": 177,
+    "h": 86,
+    "source": [
+      24,
+      713,
+      226,
+      836
+    ]
+  },
+  {
+    "category": "boss",
+    "name": "boss_2_phase3",
+    "file": "bosses/boss_2_phase3.png",
+    "w": 174,
+    "h": 96,
+    "source": [
+      254,
+      713,
+      456,
+      836
+    ]
+  },
+  {
+    "category": "boss",
+    "name": "boss_3_phase3",
+    "file": "bosses/boss_3_phase3.png",
+    "w": 165,
+    "h": 91,
+    "source": [
+      484,
+      713,
+      696,
+      836
+    ]
+  },
+  {
+    "category": "bullet",
+    "name": "bullet_01",
+    "file": "bullets/bullet_01.png",
+    "w": 39,
+    "h": 47,
+    "source": [
+      745,
+      548,
+      818,
+      608
+    ]
+  },
+  {
+    "category": "bullet",
+    "name": "bullet_02",
+    "file": "bullets/bullet_02.png",
+    "w": 49,
+    "h": 48,
+    "source": [
+      824,
+      548,
+      897,
+      608
+    ]
+  },
+  {
+    "category": "bullet",
+    "name": "bullet_03",
+    "file": "bullets/bullet_03.png",
+    "w": 46,
+    "h": 40,
+    "source": [
+      903,
+      548,
+      975,
+      608
+    ]
+  },
+  {
+    "category": "bullet",
+    "name": "bullet_04",
+    "file": "bullets/bullet_04.png",
+    "w": 40,
+    "h": 46,
+    "source": [
+      981,
+      548,
+      1052,
+      608
+    ]
+  },
+  {
+    "category": "bullet",
+    "name": "bullet_05",
+    "file": "bullets/bullet_05.png",
+    "w": 25,
+    "h": 48,
+    "source": [
+      1058,
+      548,
+      1129,
+      608
+    ]
+  },
+  {
+    "category": "bullet",
+    "name": "bullet_06",
+    "file": "bullets/bullet_06.png",
+    "w": 40,
+    "h": 44,
+    "source": [
+      1135,
+      548,
+      1199,
+      608
+    ]
+  },
+  {
+    "category": "explosion",
+    "name": "explosion_01",
+    "file": "explosions/explosion_01.png",
+    "w": 48,
+    "h": 27,
+    "source": [
+      744,
+      722,
+      848,
+      794
+    ]
+  },
+  {
+    "category": "explosion",
+    "name": "explosion_02",
+    "file": "explosions/explosion_02.png",
+    "w": 48,
+    "h": 40,
+    "source": [
+      852,
+      722,
+      958,
+      794
+    ]
+  },
+  {
+    "category": "explosion",
+    "name": "explosion_03",
+    "file": "explosions/explosion_03.png",
+    "w": 57,
+    "h": 44,
+    "source": [
+      962,
+      722,
+      1068,
+      794
+    ]
+  },
+  {
+    "category": "explosion",
+    "name": "explosion_04",
+    "file": "explosions/explosion_04.png",
+    "w": 74,
+    "h": 44,
+    "source": [
+      1072,
+      722,
+      1198,
+      794
+    ]
+  },
+  {
+    "category": "explosion",
+    "name": "explosion_05",
+    "file": "explosions/explosion_05.png",
+    "w": 49,
+    "h": 28,
+    "source": [
+      744,
+      819,
+      848,
+      891
+    ]
+  },
+  {
+    "category": "explosion",
+    "name": "explosion_06",
+    "file": "explosions/explosion_06.png",
+    "w": 61,
+    "h": 27,
+    "source": [
+      852,
+      819,
+      958,
+      891
+    ]
+  },
+  {
+    "category": "explosion",
+    "name": "explosion_07",
+    "file": "explosions/explosion_07.png",
+    "w": 61,
+    "h": 29,
+    "source": [
+      962,
+      819,
+      1068,
+      891
+    ]
+  },
+  {
+    "category": "explosion",
+    "name": "explosion_08",
+    "file": "explosions/explosion_08.png",
+    "w": 82,
+    "h": 38,
+    "source": [
+      1072,
+      819,
+      1198,
+      891
+    ]
+  },
+  {
+    "category": "ui",
+    "name": "hud",
+    "file": "ui/hud.png",
+    "w": 295,
+    "h": 290,
+    "source": [
+      635,
+      952,
+      930,
+      1242
+    ]
+  },
+  {
+    "category": "ui",
+    "name": "title",
+    "file": "ui/title.png",
+    "w": 248,
+    "h": 290,
+    "source": [
+      950,
+      952,
+      1198,
+      1242
+    ]
+  },
+  {
+    "category": "ui",
+    "name": "icons",
+    "file": "ui/icons.png",
+    "w": 604,
+    "h": 290,
+    "source": [
+      18,
+      952,
+      622,
+      1242
+    ]
+  }
+]

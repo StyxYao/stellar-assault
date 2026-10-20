@@ -1,0 +1,34 @@
+# Third-Party Notices
+
+## rRootage / BulletML
+
+Boss BulletML patterns are based on rRootage by Kenta Cho and the BulletML project.
+
+- rRootage: https://www.asahi-net.or.jp/~cs8k-cyu/windows/rr_e.html
+- BulletML: https://www.asahi-net.or.jp/~cs8k-cyu/bulletml/index_e.html
+- License: BSD 3-Clause
+
+The BSD 3-Clause license and copyright notice must be retained with redistributed source or substantial portions.
+
+## Kenney Sci-Fi Sounds
+
+- https://kenney.nl/assets/sci-fi-sounds
+- License: CC0 1.0
+
+## Freesound samples
+
+- PPSH firearm sample: https://github.com/PanderMusubi/sound-effects-library-weapons (Free Firearm Sound Library, CC0)
+- Air-raid siren: https://freesound.org/people/Kinoton/sounds/420661/ (CC0)
+- Jet flyby: https://freesound.org/people/unfa/sounds/168079/ (CC0)
+- Bomb explosion: https://freesound.org/people/Deganoth/sounds/165910/ (CC0)
+- AK-47 reload: https://freesound.org/people/ser%C3%B8ut%C5%8Dnin--depriv%C9%99d/sounds/674742/ (CC0)
+
+CC0 assets do not require attribution, but sources are listed for provenance.
+
+## BGM
+
+The stage and boss BGM tracks were supplied by the project owner. Their redistribution rights are not established by this repository. Do not reuse them outside this project without permission.
+
+## Artwork
+
+Boss/enemy/player art was supplied or generated for this project. No separate license is granted by this repository.
