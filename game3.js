@@ -8,6 +8,7 @@ var boss=null,runner=null;
 var stageT=0,waveIndex=0,nextTransport=0,banner='',bannerSub='',bannerT=0;
 var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpeed=0,glowWarp=0,bombT=0,bombX=0,bombY=0;
 var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
+var BG4=new Image();BG4.src='assets/bg/stage4-main.webp';
 var bgmName='';
 var sampleSfx=sfx,sfxLast={},laserOsc=null,laserGain=null,audioBoosted=false,sfxExtraLoaded=false;
 function loadSfxExtras(){
@@ -256,6 +257,27 @@ var STAGES=[
    {t:52.4,type:3,n:3,form:'turret',spd:70},
    {t:55.8,type:1,n:5,form:'line',spd:86},
    {t:59.2,type:2,n:6,form:'pincer',spd:94}
+ ]},
+ {name:'SANCTUM',bg:BG4,bgm:'c',waves:[
+   {t:0.6,type:6,n:2,form:'turret',spd:56},
+   {t:3.4,type:7,n:2,form:'turret',spd:52},
+   {t:6.4,type:8,n:2,form:'line',spd:56},
+   {t:9.6,type:5,n:6,form:'dive',spd:165},
+   {t:12.8,type:2,n:6,form:'ring',spd:95},
+   {t:16.0,type:4,n:3,form:'turret',spd:64},
+   {t:19.4,type:1,n:6,form:'pincer',spd:98},
+   {t:22.6,type:8,n:3,form:'line',spd:58},
+   {t:25.8,type:0,n:6,form:'snake',spd:110},
+   {t:28.6,type:6,n:1,form:'mid',spd:55},
+   {t:32.0,type:7,n:3,form:'turret',spd:54},
+   {t:35.4,type:5,n:8,form:'dive',spd:170},
+   {t:38.8,type:8,n:3,form:'line',spd:58},
+   {t:42.2,type:1,n:8,form:'pincer',spd:100},
+   {t:45.6,type:6,n:2,form:'turret',spd:56},
+   {t:49.0,type:7,n:3,form:'turret',spd:55},
+   {t:52.4,type:0,n:8,form:'ring',spd:110},
+   {t:55.8,type:4,n:4,form:'turret',spd:68},
+   {t:59.2,type:8,n:4,form:'line',spd:60}
  ]}
 ];
 var WARMUP=[
@@ -293,7 +315,8 @@ STAGES.forEach(function(st){
 var BOSSES=[
  {key:'b1_',name:'VOID SOVEREIGN',hp:1500,w:235,h:200,style:'octopus',move:'sine',patterns:[0,1],aim:3,ring:0,aimRate:1.8,ringRate:5.0,laserRate:7.5,laserN:1,ultRate:12.0,glow:['255,70,90','255,85,170','255,190,100']},
  {key:'b2_',name:'ABYSS DEVOURER',hp:1900,w:245,h:210,style:'dread',move:'wide',patterns:[1,0],aim:5,ring:16,aimRate:1.7,ringRate:5.4,laserRate:6.5,laserN:2,ultRate:11.0,glow:['150,105,255','190,90,255','255,120,235']},
- {key:'b3_',name:'STAR BEHEMOTH',hp:2300,w:245,h:210,style:'hive',move:'dash',patterns:[0,1],aim:7,ring:20,aimRate:1.9,ringRate:4.6,laserRate:5.5,laserN:3,ultRate:10.0,glow:['255,160,70','255,120,60','255,215,120']}
+ {key:'b3_',name:'STAR BEHEMOTH',hp:2300,w:245,h:210,style:'hive',move:'dash',patterns:[0,1],aim:7,ring:20,aimRate:1.9,ringRate:4.6,laserRate:5.5,laserN:3,ultRate:10.0,glow:['255,160,70','255,120,60','255,215,120']},
+ {key:'b4_',name:'SERAPHIC WINGS',hp:3200,w:300,h:250,style:'seraph',move:'wide',patterns:[1,0],aim:7,ring:18,aimRate:1.6,ringRate:4.7,laserRate:6.8,laserN:3,ultRate:9.8,glow:['255,235,170','255,248,225','255,215,120']}
 ];
 var BOSS_PALETTES=[
  {main:'#ff3d63',light:'#ff9ab0',core:'#fff4f7',dark:'#3a0712',edge:'#8fe8ff',glow:'rgba(255,50,95,0.55)',beam:'#ff5f7a'},
@@ -348,7 +371,7 @@ var ET=[
 ];
 
 for(var i=0;i<64;i++) stars.push({x:Math.random()*W,y:Math.random()*H,z:0.3+Math.random()*0.9});
-for(var bi=1;bi<=3;bi++){
+for(var bi=1;bi<=4;bi++){
   var mi=new Image(); mi.src='assets/bg/stage'+bi+'-main.webp'; BG_MAIN[bi-1]=mi;
   var ei=new Image(); ei.src='assets/bg/stage'+bi+'-edge.webp'; BG_EDGE[bi-1]=ei;
 }
@@ -480,6 +503,20 @@ function bossBroadside(){
   spawnBeam(boss.x-78,boss.y+24,Math.PI/2,1600,20,1.2,0.42,1,bossBeamColor(),true,boss);
   spawnBeam(boss.x+78,boss.y+24,Math.PI/2,1600,20,1.2,0.42,1,bossBeamColor(),true,boss);
   shake=Math.max(shake,5);
+}
+function bossSeraphFan(){
+  if(!boss||boss.invuln>0) return;
+  var n=16,sp=120+stage*6,a0=Math.PI/2;
+  for(var i=0;i<n;i++){
+    var a=a0+(i-(n-1)/2)*0.078;
+    ebullets.push({x:boss.x,y:boss.y+24,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,rad:5,type:1});
+  }
+  for(var j=0;j<6;j++){
+    var side=j<3?-1:1, off=(j%3)*0.12;
+    var ba=a0+side*(0.42+off);
+    ebullets.push({x:boss.x+side*80,y:boss.y+8,vx:Math.cos(ba)*(90+stage*5),vy:Math.sin(ba)*(90+stage*5),rad:6,type:2});
+  }
+  sfx('e_shot',0.22);
 }
 function bossSwarm(){
   if(!boss||boss.invuln>0) return;
@@ -1209,6 +1246,11 @@ function step(dt){
             if(boss.aimT>2.6){boss.aimT=0;bossWall();}
             if(boss.ringT>5.8){boss.ringT=0;bossRing(16);}
             if(boss.laserT>7.0){boss.laserT=0;bossAimed(5);}
+          }else if(def.style==='seraph'){
+            if(boss.spiralT>0.55){boss.spiralT=0;bossSeraphFan();}
+            if(boss.aimT>1.8){boss.aimT=0;bossAimed(7);}
+            if(boss.ringT>5.2){boss.ringT=0;bossRing(18);}
+            if(boss.laserT>7.0){boss.laserT=0;bossLaser();}
           }else{
             if(boss.blinkT>5.0){boss.blinkT=0;bossBlink();}
             if(boss.spiralT>0.52){boss.spiralT=0;bossSwarm();}
@@ -1273,7 +1315,7 @@ function drawLoopLayer(img,scroll,alpha,fitWidth,mirror,blend){
 }
 function paintStageBg(main,edge,offsetY){
   drawLoopLayer(main,bgScroll+(offsetY||0),1,false,false);
-  if(edge) drawLoopLayer(edge,bgEdgeScroll+(offsetY||0)*1.35,[0.90,0.82,0.72][stage]||0.8,true,true,['screen','soft-light','overlay'][stage]||'source-over');
+  if(edge) drawLoopLayer(edge,bgEdgeScroll+(offsetY||0)*1.35,[0.90,0.82,0.72,0.30][stage]||0.8,true,true,['screen','soft-light','overlay','soft-light'][stage]||'source-over');
 }
 function drawBgDust(){
   ctx.save();
@@ -1367,12 +1409,12 @@ function drawBoss(){
     ctx.beginPath();ctx.arc(boss.hitX,boss.hitY,hr,0,TAU);ctx.stroke();
   }
   if(boss.invuln>0){
-    ctx.globalAlpha=0.32;ctx.strokeStyle=['#7fe7ff','#ff9ad5','#ffc36b'][stage];ctx.lineWidth=3;
+    ctx.globalAlpha=0.32;ctx.strokeStyle=['#7fe7ff','#ff9ad5','#ffc36b','#ffe7a0'][stage]||'#ffe7a0';ctx.lineWidth=3;
     ctx.beginPath();ctx.arc(boss.x,boss.y,Math.min(h*0.55,w*0.36)+Math.sin(time*8)*4,0,TAU);ctx.stroke();ctx.globalAlpha=1;
   }
   ctx.restore();
 }
-function bulletImg(){ return GIMG['u'+(stage===0?'1':(stage===1?'2':'4'))]; }
+function bulletImg(){ return GIMG['u'+(stage===0?'1':(stage===1?'2':'5'))]; }
 function drawBullet(b){
   var img=bulletImg(),a=Math.atan2(b.r.direction||0,1)+Math.PI/2;
   ctx.save();ctx.translate(b.x,b.y);ctx.rotate(a);
@@ -1638,7 +1680,7 @@ function drawHUD(){
   if(state==='menu') return;
   ctx.fillStyle='rgba(3,6,14,0.55)';ctx.fillRect(0,0,W,64);
   ctx.textAlign='left';
-  ctx.fillStyle='#9fb6cf';ctx.font='10px monospace';ctx.fillText('STAGE '+(stage+1)+'/3 · '+STAGES[stage].name,16,16);
+  ctx.fillStyle='#9fb6cf';ctx.font='10px monospace';ctx.fillText('STAGE '+(stage+1)+'/4 · '+STAGES[stage].name,16,16);
   ctx.fillStyle='#f2f7ff';ctx.font='24px monospace';ctx.fillText(String(score).padStart(7,'0'),16,42);
   ctx.textAlign='right';ctx.fillStyle='#9fb6cf';ctx.font='11px monospace';
   var tag=state==='boss'&&boss?boss.def.name:(state==='clear'?'CLEAR':(state==='win'?'COMPLETE':(state==='over'?'GAME OVER':(state==='bossWarn'?'WARNING':'INCOMING'))));
@@ -1676,7 +1718,7 @@ function drawMenu(){
   ctx.fillStyle=tg;ctx.fillRect(0,H*0.30,W,H*0.42);
   ctx.textAlign='center';
   ctx.fillStyle='#f2f7ff';ctx.font='30px monospace';ctx.fillText('STELLAR ASSAULT',W/2,H*0.42);
-  ctx.fillStyle='#9fd8ff';ctx.font='12px monospace';ctx.fillText('3 STAGES · 3 BOSSES',W/2,H*0.42+28);
+  ctx.fillStyle='#9fd8ff';ctx.font='12px monospace';ctx.fillText('4 STAGES · 4 BOSSES',W/2,H*0.42+28);
   ctx.fillStyle='#ffd27a';ctx.font='14px monospace';ctx.fillText(audioReady?'TAP TO START':'TAP TO ENABLE AUDIO',W/2,H*0.52);
   ctx.fillStyle='#b8c9da';ctx.font='11px monospace';
   ctx.fillText('drag · ship follows above finger · auto-fire',W/2,H*0.57);
@@ -1722,7 +1764,7 @@ function drawScene(){
   var mainBg=BG_MAIN[stage],edgeBg=BG_EDGE[stage];
   if(!mainBg||!mainBg.complete||!mainBg.naturalWidth) mainBg=bgCurrent;
   paintStageBg(mainBg,edgeBg,bgOff);
-  ctx.fillStyle='rgba(3,6,14,'+(stage===2?0.10:(stage===0?0.08:0.06))+')';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(4,6,18,'+(stage===3?0.36:(stage===2?0.10:(stage===0?0.08:0.06)))+')';ctx.fillRect(0,0,W,H);
   for(var i=0;i<stars.length;i++){var st=stars[i];ctx.globalAlpha=0.25+st.z*0.5;ctx.fillStyle='#cfe6ff';ctx.fillRect(st.x,st.y,st.z*1.4,st.z*1.4);}
   ctx.globalAlpha=1;drawBgDust();
   if(state==='warpIn'||state==='warpOut'){

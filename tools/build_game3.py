@@ -6,7 +6,7 @@ assets={
  'u1':'assets/bullets/u1n.png','u2':'assets/bullets/u2n.png','u4':'assets/bullets/u4n.png','u5':'assets/bullets/u5n.png'
 }
 enames=['small_fighter','medium_fighter','scout','bomber','mech','interceptor','aegis_warden','rail_lancer','mine_seeder']
-for bi in range(1,4):
+for bi in range(1,5):
     for ph in range(1,4): assets['b%d_%d'%(bi,ph)]='gpt-assets/bosses/boss_%d_phase%d.png'%(bi,ph)
 for ei in range(1,10):
     assets['n%d'%ei]='gpt-assets/enemies/%02d_%s_1.png'%(ei,enames[ei-1])
@@ -18,7 +18,7 @@ for k,p in assets.items():
     js+="GIMG.%s=new Image();GIMG.%s.src='data:image/png;base64,%s';\n"%(k,k,base64.b64encode(open(p,'rb').read()).decode())
 a=prefix.index('var GIMG={};'); b=prefix.index('var BG1=')
 prefix=prefix[:a]+js+prefix[b:]
-prefix=prefix.replace('<title>BOSS RUSH · rRootage Tribute</title>','<title>STELLAR ASSAULT · 3 Stages</title>')
+prefix=prefix.replace('<title>BOSS RUSH · rRootage Tribute</title>','<title>STELLAR ASSAULT · 4 Stages</title>')
 specs="var specs=null;\ntry{ specs=XMLS.map(function(x){ return bulletml.buildXML(x); }); }catch(e){ console.error(e); }\n"
 game=open('sfx_extra.js',encoding='utf-8').read()+"\n"+open('game3.js',encoding='utf-8').read()
 html=prefix+specs+game+"\n})();\n</script>\n</body>\n</html>"

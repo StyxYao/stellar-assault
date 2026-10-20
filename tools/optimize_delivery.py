@@ -7,8 +7,8 @@ os.makedirs(os.path.dirname(dst) or '.', exist_ok=True)
 h = open(src, encoding='utf-8').read()
 
 # Drop unused legacy image assignments: boss phase 2/3, enemy _b frames, old explosion frames.
-unused = re.compile(r"GIMG\.((?:n[1-6]b|e[1-8]))=new Image\(\);GIMG\.\1\.src='data:image/[a-z]+;base64,[A-Za-z0-9+/=]+';")
-h, n = unused.subn('', h)
+# Keep every GIMG assignment: elite variants and 4-boss phase art are now required.
+n = 0
 
 def repl(m):
     raw = base64.b64decode(m.group(2))
