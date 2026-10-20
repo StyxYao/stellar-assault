@@ -78,7 +78,7 @@ If the dashboard shows a **Deploy command** field, you created a Worker. Setting
 
 The script creates a local virtualenv, installs Pillow, rebuilds the game, then writes `dist/index.html`.
 
-Next: Tencent CloudBase/COS for China delivery and WeChat Mini Game assets. See `docs/TENCENT.md` and `docs/ROADMAP.md`.
+Next: EdgeOne Makers for China web delivery, then COS for WeChat Mini Game assets. See `docs/EDGEONE.md`, `docs/TENCENT.md`, and `docs/ROADMAP.md`.
 
 ## Licensing
 

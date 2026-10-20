@@ -1,0 +1,6 @@
+{
+  "name": "stellar-assault",
+  "buildCommand": "bash tools/build_pages.sh",
+  "outputDirectory": "./dist",
+  "nodeVersion": "22.11.0"
+}
