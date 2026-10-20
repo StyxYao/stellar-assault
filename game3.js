@@ -258,7 +258,7 @@ var STAGES=[
    {t:55.8,type:1,n:5,form:'line',spd:86},
    {t:59.2,type:2,n:6,form:'pincer',spd:94}
  ]},
- {name:'HYPERSPACE',bg:BG4,bgm:'c',waves:[
+ {name:'SANCTUM',bg:BG4,bgm:'c',waves:[
    {t:0.6,type:6,n:2,form:'turret',spd:56},
    {t:3.4,type:7,n:2,form:'turret',spd:52},
    {t:6.4,type:8,n:2,form:'line',spd:56},
@@ -1315,7 +1315,7 @@ function drawLoopLayer(img,scroll,alpha,fitWidth,mirror,blend){
 }
 function paintStageBg(main,edge,offsetY){
   drawLoopLayer(main,bgScroll+(offsetY||0),1,false,false);
-  if(edge) drawLoopLayer(edge,bgEdgeScroll+(offsetY||0)*1.35,(stage===3?0:([0.90,0.82,0.72][stage]||0.8)),true,true,['screen','soft-light','overlay','screen'][stage]||'source-over');
+  if(edge) drawLoopLayer(edge,bgEdgeScroll+(offsetY||0)*1.35,([0.90,0.82,0.72,0.50][stage]||0.8),true,true,['screen','soft-light','overlay','soft-light'][stage]||'source-over');
 }
 function drawBgDust(){
   ctx.save();
@@ -1764,7 +1764,7 @@ function drawScene(){
   var mainBg=BG_MAIN[stage],edgeBg=BG_EDGE[stage];
   if(!mainBg||!mainBg.complete||!mainBg.naturalWidth) mainBg=bgCurrent;
   paintStageBg(mainBg,edgeBg,bgOff);
-  ctx.fillStyle='rgba(4,6,18,'+(stage===3?0.36:(stage===2?0.10:(stage===0?0.08:0.06)))+')';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(4,6,18,'+(stage===3?0.28:(stage===2?0.10:(stage===0?0.08:0.06)))+')';ctx.fillRect(0,0,W,H);
   for(var i=0;i<stars.length;i++){var st=stars[i];ctx.globalAlpha=0.25+st.z*0.5;ctx.fillStyle='#cfe6ff';ctx.fillRect(st.x,st.y,st.z*1.4,st.z*1.4);}
   ctx.globalAlpha=1;drawBgDust();
   if(state==='warpIn'||state==='warpOut'){
