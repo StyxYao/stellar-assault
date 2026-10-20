@@ -11,6 +11,7 @@ Status: scene assets preserved, stage integration pending.
 ## BGM
 
 - Stage 5 field: `assets/audio/bgm-stage5.mp3` — 磁星 / Magnetar, 168.0s
-- Boss 5: `assets/audio/bgm-boss5.mp3` — 泰坦级 / Taitan Class, 204.5s
+- Boss 5 phase 1: `assets/audio/bgm-boss5.mp3` — 泰坦级 / Taitan Class, 204.5s
+- Boss 5 final phase: `assets/audio/bgm-boss5-final.mp3` — 智能矩阵 / Sentient Matrix, 140.0s
 - Both normalized to -16 LUFS, 192 kbps MP3
 - Not wired yet; stage 5 integration is pending the new Boss 5 design
