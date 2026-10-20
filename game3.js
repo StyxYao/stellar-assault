@@ -10,6 +10,7 @@ var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpee
 var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
 var BG4=new Image();BG4.src='assets/bg/stage4-main.webp';
 var bgmName='';
+if(typeof BGMSRC!=='undefined'){ BGMSRC.s4='assets/audio/bgm-stage4.mp3'; if(typeof BGMURL!=='undefined') BGMURL.s4=BGMSRC.s4; }
 var sampleSfx=sfx,sfxLast={},laserOsc=null,laserGain=null,audioBoosted=false,sfxExtraLoaded=false;
 function loadSfxExtras(){
   if(sfxExtraLoaded||!AC||typeof SFX_EXTRA==='undefined') return;
@@ -258,7 +259,7 @@ var STAGES=[
    {t:55.8,type:1,n:5,form:'line',spd:86},
    {t:59.2,type:2,n:6,form:'pincer',spd:94}
  ]},
- {name:'SANCTUM',bg:BG4,bgm:'c',waves:[
+ {name:'SANCTUM',bg:BG4,bgm:'s4',waves:[
    {t:0.6,type:6,n:2,form:'turret',spd:56},
    {t:3.4,type:7,n:2,form:'turret',spd:52},
    {t:6.4,type:8,n:2,form:'line',spd:56},

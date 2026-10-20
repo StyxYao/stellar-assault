@@ -13,3 +13,10 @@ Final stage of the four-stage campaign.
   - seraph fan, aimed volley, ring burst and charged beams
 - New enemies appear in the stage 4 wave list: Aegis Warden, Rail Lancer, Mine Seeder
 - HUD and menu now use 4 stages / 4 bosses
+
+## BGM
+
+- File: `assets/audio/bgm-stage4.mp3`
+- Source: 聚变引擎 / Fusion Engine
+- Normalized to -16 LUFS, 192 kbps MP3
+- Loops via the existing BGM audio element
