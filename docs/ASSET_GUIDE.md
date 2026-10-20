@@ -27,3 +27,13 @@ This prevents accidental double-flips when art is regenerated.
 | Boss 4 Seraphic Wings | white-gold | ivory | warm gold |
 
 Bullets are pre-rendered per palette; collision radii and trajectories are unchanged.
+
+## Stage background layers
+
+Each stage uses three layers:
+
+1. `assets/bg/stageN-main.webp` — opaque main background, scroll speed 82 px/s
+2. `assets/bg/stageN-edge.webp` — transparent side nebula/station/asteroid layer, scroll speed 165 px/s
+3. Procedural dust — fastest layer, 220–410 px/s
+
+The image layers are mirrored vertically at runtime so the loop seam is exact. The center of the edge layer is masked transparent for bullet readability.

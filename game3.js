@@ -7,6 +7,7 @@ var audioReady=false;
 var boss=null,runner=null;
 var stageT=0,waveIndex=0,nextTransport=0,banner='',bannerSub='',bannerT=0;
 var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpeed=0,glowWarp=0,bombT=0,bombX=0,bombY=0;
+var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
 var bgmName='';
 var sampleSfx=sfx,sfxLast={},laserOsc=null,laserGain=null,audioBoosted=false,sfxExtraLoaded=false;
 function loadSfxExtras(){
@@ -235,7 +236,7 @@ var STAGES=[
    {t:55.8,type:3,n:3,form:'v',spd:64},
    {t:59.2,type:5,n:6,form:'dive',spd:160}
  ]},
- {name:'SURFACE',bg:BG3,bgm:'b',waves:[
+ {name:'COMET FIELD',bg:BG3,bgm:'b',waves:[
    {t:0.6,type:5,n:5,form:'v',spd:120},
    {t:3.2,type:2,n:6,form:'snake',spd:100},
    {t:6.2,type:4,n:3,form:'turret',spd:64},
@@ -342,6 +343,11 @@ var ET=[
 ];
 
 for(var i=0;i<64;i++) stars.push({x:Math.random()*W,y:Math.random()*H,z:0.3+Math.random()*0.9});
+for(var bi=1;bi<=3;bi++){
+  var mi=new Image(); mi.src='assets/bg/stage'+bi+'-main.webp'; BG_MAIN[bi-1]=mi;
+  var ei=new Image(); ei.src='assets/bg/stage'+bi+'-edge.webp'; BG_EDGE[bi-1]=ei;
+}
+for(var di=0;di<90;di++) bgDust.push({x:Math.random()*W,y:Math.random()*H,sp:220+Math.random()*190,len:1.5+Math.random()*4,a:0.18+Math.random()*0.45,c:Math.random()<0.55?'#cfefff':'#e7d8ff'});
 
 function setStageBg(img){
   if(!img) return;
@@ -383,7 +389,7 @@ function startStage(i){
   stage=i; stageT=0; waveIndex=0; nextTransport=24+Math.random()*10;
   enemies.length=0; bullets.length=0; ebullets.length=0; shots.length=0; fx.length=0; items.length=0; missiles.length=0; wingBeams.length=0; beams.length=0; orbBullets.length=0; player.trail=[];
   boss=null; runner=null;
-  setStageBg(STAGES[i].bg);
+  setStageBg(STAGES[i].bg);bgScroll=0;bgEdgeScroll=0;
   state='warpIn'; warpT=0.95; glowWarp=1.5; bombT=0; pickupT=0; pickupMsg='';
   player.x=target.x=W/2; player.y=H+90; target.y=H-130; player.invuln=2.0; player.bank=0;
   playBgm(STAGES[i].bgm);
@@ -971,6 +977,10 @@ function step(dt){
   for(var i=0;i<fx.length;i++) fx[i].t+=dt;
   for(var i=fx.length-1;i>=0;i--) if(fx[i].t>0.6) fx.splice(i,1);
   for(var i=0;i<stars.length;i++){stars[i].y+=(18+stars[i].z*40)*dt;if(stars[i].y>H+4){stars[i].y=-4;stars[i].x=Math.random()*W;}}
+  if(state!=='menu'){
+    bgScroll+=82*dt; bgEdgeScroll+=165*dt;
+    for(var di=0;di<bgDust.length;di++){var dp=bgDust[di];dp.y+=dp.sp*dt;if(dp.y>H+6){dp.y=-6;dp.x=Math.random()*W;}}
+  }
   if(shake>0) shake=Math.max(0,shake-dt*40);
   if(bgFade>0) bgFade=Math.max(0,bgFade-dt/1.4);
   if(bombT>0) bombT=Math.max(0,bombT-dt);
@@ -1222,6 +1232,32 @@ function step(dt){
   }
 }
 
+function drawLoopLayer(img,scroll,alpha,fitWidth){
+  if(!img||!img.complete||!img.naturalWidth) return false;
+  var sc=fitWidth?W/img.width:Math.max(W/img.width,H/img.height);
+  var bw=img.width*sc,bh=img.height*sc,x=(W-bw)/2,baseY=(H-bh)/2;
+  var loopH=bh*2,off=((scroll%loopH)+loopH)%loopH;
+  ctx.globalAlpha=alpha;
+  for(var n=-2;n<=2;n++){
+    var top=baseY+off+n*bh;
+    if(top>H||top+bh<0) continue;
+    var even=((n%2)+2)%2===0;
+    if(even) ctx.drawImage(img,x,top,bw,bh);
+    else{ctx.save();ctx.translate(x,top+bh);ctx.scale(1,-1);ctx.drawImage(img,0,0,bw,bh);ctx.restore();}
+  }
+  ctx.globalAlpha=1; return true;
+}
+function paintStageBg(main,edge,offsetY){
+  drawLoopLayer(main,bgScroll+(offsetY||0),1,false);
+  if(edge) drawLoopLayer(edge,bgEdgeScroll+(offsetY||0)*1.35,0.92,true);
+}
+function drawBgDust(){
+  ctx.save();
+  for(var i=0;i<bgDust.length;i++){
+    var p=bgDust[i];ctx.globalAlpha=p.a;ctx.fillStyle=p.c;ctx.fillRect(p.x,p.y,1,p.len);
+  }
+  ctx.restore();
+}
 function paintBg(img,alpha,offsetY){
   if(!img||!img.complete||!img.naturalWidth) return false;
   var sc=Math.max(W/img.width,H/img.height),bw=img.width*sc,bh=img.height*sc;
@@ -1660,10 +1696,12 @@ function drawScene(){
   var bgOff=0;
   if(state==='warpIn'){var wpg=Math.min(1,1-warpT/0.95);bgOff=H*(1-wpg);}
   if(bgOff>0){ctx.fillStyle='#03060e';ctx.fillRect(0,0,W,H);}
-  paintBg(bgCurrent,1,bgOff);
-  ctx.fillStyle='rgba(3,6,14,0.38)';ctx.fillRect(0,0,W,H);
+  var mainBg=BG_MAIN[stage],edgeBg=BG_EDGE[stage];
+  if(!mainBg||!mainBg.complete||!mainBg.naturalWidth) mainBg=bgCurrent;
+  paintStageBg(mainBg,edgeBg,bgOff);
+  ctx.fillStyle='rgba(3,6,14,'+(stage===2?0.32:0.20)+')';ctx.fillRect(0,0,W,H);
   for(var i=0;i<stars.length;i++){var st=stars[i];ctx.globalAlpha=0.25+st.z*0.5;ctx.fillStyle='#cfe6ff';ctx.fillRect(st.x,st.y,st.z*1.4,st.z*1.4);}
-  ctx.globalAlpha=1;
+  ctx.globalAlpha=1;drawBgDust();
   if(state==='warpIn'||state==='warpOut'){
     ctx.save();ctx.globalCompositeOperation='lighter';
     var wi2=state==='warpOut'?1.0:Math.min(1,1-warpT/0.95);
