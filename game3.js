@@ -9,6 +9,7 @@ var stageT=0,waveIndex=0,nextTransport=0,banner='',bannerSub='',bannerT=0;
 var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpeed=0,glowWarp=0,bombT=0,bombX=0,bombY=0;
 var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
 var BG4=new Image();BG4.src='assets/bg/stage4-main.webp';
+var BG1_BH=new Image();BG1_BH.src='assets/bg/stage1-bh.webp';
 var bgmName='';
 if(typeof BGMSRC!=='undefined'){
   BGMSRC.s4='assets/audio/bgm-stage4.mp3';
@@ -1322,6 +1323,7 @@ function drawLoopLayer(img,scroll,alpha,fitWidth,mirror,blend){
 }
 function paintStageBg(main,edge,offsetY){
   drawLoopLayer(main,bgScroll+(offsetY||0),1,false,false);
+  if(stage===0&&BG1_BH&&BG1_BH.complete&&BG1_BH.naturalWidth) drawLoopLayer(BG1_BH,bgScroll+(offsetY||0),1,false,false);
   if(edge) drawLoopLayer(edge,bgEdgeScroll+(offsetY||0)*1.35,([0.90,0.82,0.72,0.50][stage]||0.8),true,true,['screen','soft-light','overlay','soft-light'][stage]||'source-over');
 }
 function drawBgDust(){
