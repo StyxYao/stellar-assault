@@ -559,6 +559,21 @@ function bomb(){
 }
 function hitPlayer(){
   if(player.invuln>0||state!=='play'&&state!=='boss') return;
+  if(player.options>0){
+    var wi=0,bestY=1e9;
+    for(var oi=0;oi<player.options;oi++){
+      var op=optionPos(oi);
+      if(op.y<bestY){bestY=op.y;wi=oi;}
+    }
+    var wp=optionPos(wi);
+    player.options--; player.wingEntry.splice(wi,1);
+    player.invuln=1.0; shake=8; sfx('hurt',0.35);
+    part(wp.x,wp.y,'#7fe7ff',14,170); boom(wp.x,wp.y,0.45);
+    pickupT=0.9; pickupMsg='WINGMAN SHIELD';
+    for(var i=bullets.length-1;i>=0;i--){var dx=bullets[i].x-player.x,dy=bullets[i].y-player.y;if(dx*dx+dy*dy<110*110) bullets.splice(i,1);}
+    for(var i=ebullets.length-1;i>=0;i--){var dx=ebullets[i].x-player.x,dy=ebullets[i].y-player.y;if(dx*dx+dy*dy<110*110) ebullets.splice(i,1);}
+    return;
+  }
   player.hp--;
   player.invuln=1.0; shake=10; sfx('hurt',0.5);
   for(var i=bullets.length-1;i>=0;i--){
@@ -590,17 +605,17 @@ function maybeDrop(e){
     items.push({x:e.x,y:e.y,vy:45,type:'A',t:0});
     items.push({x:e.x+24,y:e.y,vy:45,type:'W',t:0});
     items.push({x:e.x,y:e.y+16,vy:45,type:'B',t:0});
-    if(Math.random()<0.28) items.push({x:e.x+12,y:e.y+24,vy:40,type:'1UP',t:0});
+    if(Math.random()<0.21) items.push({x:e.x+12,y:e.y+24,vy:40,type:'1UP',t:0});
     return;
   }
   if(e.transport) return;
   if(e.elite){
     items.push({x:e.x-20,y:e.y,vy:50,type:'W',t:0});
     items.push({x:e.x+20,y:e.y,vy:50,type:'A',t:0});
-    if(Math.random()<0.22) items.push({x:e.x,y:e.y+20,vy:45,type:'1UP',t:0});
+    if(Math.random()<0.165) items.push({x:e.x,y:e.y+20,vy:45,type:'1UP',t:0});
     return;
   }
-  var chance=[0.10,0.14,0.16,0.35,0.28,0.14][e.type]||0.10;
+  var chance=([0.10,0.14,0.16,0.35,0.28,0.14][e.type]||0.10)*0.75;
   if(!e.first && Math.random()>=chance) return;
   var r=Math.random(),type;
   if(r<0.38) type='P';
@@ -671,7 +686,7 @@ function fireWingLaser(p,wp,max){
     var e=enemies[i];
     if(Math.abs(e.x-p.x)<w/2+enemyW(e)*0.3&&e.y<p.y&&e.y>tY){target=e;tIdx=i;tY=e.y;}
   }
-  if(boss&&state==='boss'&&boss.invuln<=0&&Math.abs(boss.x-p.x)<w/2+boss.def.w*0.22&&boss.y<p.y&&boss.y>tY){target=boss;isBoss=true;tY=boss.y;}
+  if(boss&&state==='boss'&&boss.invuln<=0&&Math.abs(boss.x-p.x)<w/2+boss.def.w*0.22*1.15&&boss.y<p.y&&boss.y>tY){target=boss;isBoss=true;tY=boss.y;}
   if(target){
     if(isBoss){boss.hp-=dmg*0.5;boss.hitFlash=0.1;boss.hitX=p.x;boss.hitY=boss.y+16;}
     else{target.hp-=dmg;target.flash=0.1;if(target.hp<=0){score+=ET[target.type].score;boom(target.x,target.y,0.6);maybeDrop(target);removeEnemy(tIdx);}}
@@ -718,7 +733,7 @@ function laserDamage(dt){
     if(Math.abs(e.x-player.x)<w/2+enemyW(e)*0.32&&e.y<player.y&&e.y>tY){target=e;tIdx=i;tY=e.y;}
   }
   var isBoss=false;
-  if(boss&&state==='boss'&&boss.invuln<=0&&Math.abs(boss.x-player.x)<w/2+boss.def.w*0.24&&boss.y<player.y&&boss.y>tY){target=boss;isBoss=true;tY=boss.y;}
+  if(boss&&state==='boss'&&boss.invuln<=0&&Math.abs(boss.x-player.x)<w/2+boss.def.w*0.24*1.15&&boss.y<player.y&&boss.y>tY){target=boss;isBoss=true;tY=boss.y;}
   laserHitY=target?tY:0;laserHitT=target?0.12:0;
   if(!target) return;
   if(isBoss){
@@ -730,8 +745,9 @@ function laserDamage(dt){
   }
 }
 function optionBasePos(i){
-  var idx=20+i*22,p=player.trail[Math.min(idx,player.trail.length-1)];
-  if(!p||Math.hypot(p.x-player.x,p.y-player.y)<16) p={x:player.x+(i===0?-30:30),y:player.y-8};
+  var offs=[-48,-16,16,48];
+  var idx=20+i*18,p=player.trail[Math.min(idx,player.trail.length-1)];
+  if(!p||Math.hypot(p.x-player.x,p.y-player.y)<16) p={x:player.x+(offs[i]||0),y:player.y-8};
   return p;
 }
 function optionPos(i){
@@ -740,7 +756,7 @@ function optionPos(i){
   return optionBasePos(i);
 }
 function addWingman(){
-  if(player.options<2){
+  if(player.options<4){
     var i=player.options,side=i%2===0?-1:1;
     player.wingEntry[i]={x:side<0?-50:W+50,y:rand(180,H*0.65),t:0,dur:0.8};
     player.options++;
@@ -754,14 +770,7 @@ function updateWingEntries(dt){
   }
 }
 function wingmanBlock(x,y,rad){
-  if(player.options<=0) return false;
-  for(var i=0;i<player.options;i++){
-    var p=optionPos(i);
-    if(Math.hypot(x-p.x,y-p.y)<18+(rad||5)){
-      player.options--;player.wingEntry.splice(i,1);part(p.x,p.y,'#7fe7ff',14,170);boom(p.x,p.y,0.45);sfx('e_hit',0.3);
-      pickupT=0.9;pickupMsg='WINGMAN LOST';return true;
-    }
-  }
+  // Wingmen are immune to bullets; they only absorb a hit on the main ship.
   return false;
 }
 function updateOptions(dt){
@@ -823,7 +832,7 @@ function updateMissiles(dt){
         break;
       }
     }
-    if(!hit&&boss&&state==='boss'&&boss.invuln<=0&&Math.abs(m.x-boss.x)<boss.def.w*0.32&&Math.abs(m.y-boss.y)<boss.def.h*0.36){
+    if(!hit&&boss&&state==='boss'&&boss.invuln<=0&&Math.abs(m.x-boss.x)<boss.def.w*0.32*1.15&&Math.abs(m.y-boss.y)<boss.def.h*0.36*1.15){
       boss.hp-=m.dmg;boss.hitFlash=0.14;boss.hitX=m.x;boss.hitY=m.y;hit=true;score+=5;sfx('b_hit',0.30);boom(m.x,m.y,0.6);
       part(m.x,m.y,'#ffd28a',3,80);
     }
@@ -898,7 +907,8 @@ function spawnWave(w){
     if(e.type===6){for(var ok=0;ok<8;ok++) orbBullets.push({owner:e,ang:ok/8*TAU,r:50,spin:1.15,rad:4,type:2});}
   }
 }
-function enemyW(e){ return ET[e.type].w*(MIRROR_TYPES[e.type]?1.5:1)*(e.transport?1.45:(e.elite?1.58:1)); }
+function enemyScale(e){ return e.transport?1.45:(e.elite?1.6:1.5); }
+function enemyW(e){ return ET[e.type].w*enemyScale(e); }
 function fireEnemy(e){
   if(e.transport) return;
   if(e.visT!==undefined&&e.visT<0.22) return;
@@ -1116,7 +1126,7 @@ function step(dt){
       }
     }
     if(!hit&&boss&&state==='boss'&&boss.invuln<=0){
-      if(Math.abs(s.x-boss.x)<boss.def.w*0.30&&Math.abs(s.y-boss.y)<boss.def.h*0.34){
+      if(Math.abs(s.x-boss.x)<boss.def.w*0.30*1.15&&Math.abs(s.y-boss.y)<boss.def.h*0.34*1.15){
         boss.hp-=s.dmg; boss.flash=0.1; boss.hitFlash=0.14; boss.hitX=s.x; boss.hitY=s.y; score+=5; hit=true; sfx('b_hit',0.30);
         part(s.x,s.y,'#ffd28a',2,70);
         if(time-lastHitSfx>0.06){lastHitSfx=time;sfx('b_hit',0.22);}
@@ -1192,7 +1202,7 @@ function step(dt){
       if(e.fireT<=0){ fireEnemy(e); e.fireT=ET[e.type].fire/e.aggr+rand(-0.2,0.2); }
     }
     var edx=e.x-player.x,edy=e.y-player.y;
-    var er=e.elite?ET[e.type].r*1.45:ET[e.type].r;
+    var er=ET[e.type].r*(e.transport?1.45:(e.elite?1.6:1.5));
     if(edx*edx+edy*edy<(er+player.r)*(er+player.r)) hitPlayer();
     if(e.y>H+70||e.x<-90||e.x>W+90) removeEnemy(i);
   }
@@ -1286,7 +1296,7 @@ function step(dt){
       state='clear'; setBanner('STAGE CLEAR',STAGES[stage].name,3.0);
     }
     var bdx2=boss?boss.x-player.x:0,bdy2=boss?boss.y-player.y:0;
-    if(boss&&bdx2*bdx2+bdy2*bdy2<(boss.def.w*0.28)*(boss.def.w*0.28)) hitPlayer();
+    if(boss&&bdx2*bdx2+bdy2*bdy2<(boss.def.w*0.28*1.15)*(boss.def.w*0.28*1.15)) hitPlayer();
   }
 
   for(var i=ebullets.length-1;i>=0;i--){
@@ -1341,7 +1351,7 @@ function paintBg(img,alpha,offsetY){
   ctx.globalAlpha=1;
   return true;
 }
-var MIRROR_TYPES={1:1,4:1},MIRROR_CACHE={};
+var MIRROR_TYPES={},MIRROR_CACHE={};
 function enemyMirrorImg(type,img){
   var c=MIRROR_CACHE[type];
   if(c&&c.src===img) return c.canvas;
@@ -1373,8 +1383,7 @@ function drawSentry(e){
 function drawEnemy(e){
   var et=ET[e.type],key='n'+(e.type+1)+(e.elite?'b':''),img=GIMG[key]||GIMG['n'+(e.type+1)];
   if(!img||!img.complete) return;
-  var mir=!!MIRROR_TYPES[e.type];if(mir) img=enemyMirrorImg(e.type,img);
-  var w=et.w*(mir?1.5:1)*(e.transport?1.45:(e.elite?1.58:1)),h=w*img.height/img.width;
+  var w=enemyW(e),h=w*img.height/img.width;
   ctx.drawImage(img,e.x-w/2,e.y-h/2,w,h);
   if(e.flash>0){
     ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=0.65;
@@ -1395,7 +1404,7 @@ function drawBoss(){
   var img=GIMG[boss.def.key+(phase+1)]||GIMG[boss.def.key+'1'];
   if(!img||!img.complete) return;
   var phaseScale=[1,1.06,1.12][phase]||1;
-  var w=boss.def.w*phaseScale,h=w*img.height/img.width;
+  var w=boss.def.w*phaseScale*1.15,h=w*img.height/img.width;
   var cols=boss.def.glow||['90,200,255','255,120,220','255,170,80'],col=cols[phase]||cols[0];
   ctx.save();ctx.globalCompositeOperation='lighter';
   var ar=h*0.72+Math.sin(time*4)*8;
