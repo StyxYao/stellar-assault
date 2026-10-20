@@ -74,7 +74,7 @@ If the dashboard shows a **Deploy command** field, you created a Worker. Setting
 - Deploy command: `npx wrangler deploy`
 - Environment: `PYTHON_VERSION=3.11`
 
-`wrangler.jsonc` points Workers static assets at `./dist`.
+`wrangler.jsonc` points Workers static assets at `./dist` and uses `src/worker.js` as the asset-serving entry point.
 
 The script creates a local virtualenv, installs Pillow, rebuilds the game, then writes `dist/index.html`.
 
