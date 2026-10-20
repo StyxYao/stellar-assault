@@ -1,8 +1,8 @@
-# Stage 4 — SANCTUM
+# Stage 4 — HYPERSPACE
 
 Final stage of the four-stage campaign.
 
-- Theme: celestial citadel / white-gold sanctum above a dark blue-violet flight corridor
+- Theme: surreal superluminal wormhole tunnel: concentric spacetime rings, a blinding central singularity, and iridescent blue-violet energy walls
 - Main background: `assets/bg/stage4-main.webp`
 - Edge layer: `assets/bg/stage4-edge.webp` (soft-light, narrow gold architecture)
 - Stage overlay: 36% dark blue for bullet readability

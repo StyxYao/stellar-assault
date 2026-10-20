@@ -258,7 +258,7 @@ var STAGES=[
    {t:55.8,type:1,n:5,form:'line',spd:86},
    {t:59.2,type:2,n:6,form:'pincer',spd:94}
  ]},
- {name:'SANCTUM',bg:BG4,bgm:'c',waves:[
+ {name:'HYPERSPACE',bg:BG4,bgm:'c',waves:[
    {t:0.6,type:6,n:2,form:'turret',spd:56},
    {t:3.4,type:7,n:2,form:'turret',spd:52},
    {t:6.4,type:8,n:2,form:'line',spd:56},
@@ -1315,7 +1315,7 @@ function drawLoopLayer(img,scroll,alpha,fitWidth,mirror,blend){
 }
 function paintStageBg(main,edge,offsetY){
   drawLoopLayer(main,bgScroll+(offsetY||0),1,false,false);
-  if(edge) drawLoopLayer(edge,bgEdgeScroll+(offsetY||0)*1.35,[0.90,0.82,0.72,0.30][stage]||0.8,true,true,['screen','soft-light','overlay','soft-light'][stage]||'source-over');
+  if(edge) drawLoopLayer(edge,bgEdgeScroll+(offsetY||0)*1.35,(stage===3?0:([0.90,0.82,0.72][stage]||0.8)),true,true,['screen','soft-light','overlay','screen'][stage]||'source-over');
 }
 function drawBgDust(){
   ctx.save();
