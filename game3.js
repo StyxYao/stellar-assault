@@ -1699,7 +1699,7 @@ function drawScene(){
   var mainBg=BG_MAIN[stage],edgeBg=BG_EDGE[stage];
   if(!mainBg||!mainBg.complete||!mainBg.naturalWidth) mainBg=bgCurrent;
   paintStageBg(mainBg,edgeBg,bgOff);
-  ctx.fillStyle='rgba(3,6,14,'+(stage===2?0.28:(stage===0?0.16:0.20))+')';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(3,6,14,'+(stage===2?0.10:(stage===0?0.08:0.06))+')';ctx.fillRect(0,0,W,H);
   for(var i=0;i<stars.length;i++){var st=stars[i];ctx.globalAlpha=0.25+st.z*0.5;ctx.fillStyle='#cfe6ff';ctx.fillRect(st.x,st.y,st.z*1.4,st.z*1.4);}
   ctx.globalAlpha=1;drawBgDust();
   if(state==='warpIn'||state==='warpOut'){
