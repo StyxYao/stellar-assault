@@ -8,9 +8,13 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import io
 import re
+import shutil
 import sys
 from pathlib import Path
+
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist"
@@ -103,6 +107,15 @@ def extract_data_uris(html: str) -> tuple[str, int]:
             return m.group(0)
         raw = base64.b64decode(b64)
         digest = hashlib.sha1(raw).hexdigest()[:16]
+        # WebP keeps alpha and is much smaller than the source PNGs.
+        try:
+            img = Image.open(io.BytesIO(raw)).convert("RGBA")
+            buf = io.BytesIO()
+            img.save(buf, "WEBP", quality=86, method=6)
+            raw = buf.getvalue()
+            ext = "webp"
+        except Exception:
+            pass
         name = f"{digest}.{ext}"
         path = img_dir / name
         if name not in seen:
@@ -196,6 +209,11 @@ def main() -> None:
     src, dst = Path(sys.argv[1]), Path(sys.argv[2])
     html = src.read_text(encoding="utf-8")
     ASSETS.mkdir(parents=True, exist_ok=True)
+    # Rebuild cleanly so stale hashes from previous runs do not accumulate.
+    for sub in ("img", "audio"):
+        d = ASSETS / sub
+        if d.exists():
+            shutil.rmtree(d, ignore_errors=True)
 
     html, image_count = extract_data_uris(html)
 
