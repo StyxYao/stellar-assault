@@ -1323,7 +1323,7 @@ function drawLoopLayer(img,scroll,alpha,fitWidth,mirror,blend){
 }
 function paintStageBg(main,edge,offsetY){
   drawLoopLayer(main,bgScroll+(offsetY||0),1,false,false);
-  if(stage===0&&BG1_BH&&BG1_BH.complete&&BG1_BH.naturalWidth) drawLoopLayer(BG1_BH,bgScroll+(offsetY||0),1,false,false);
+  if(stage===0&&BG1_BH&&BG1_BH.complete&&BG1_BH.naturalWidth) drawLoopLayer(BG1_BH,0,1,false,false);
   if(edge) drawLoopLayer(edge,bgEdgeScroll+(offsetY||0)*1.35,([0.90,0.82,0.72,0.50][stage]||0.8),true,true,['screen','soft-light','overlay','soft-light'][stage]||'source-over');
 }
 function drawBgDust(){
