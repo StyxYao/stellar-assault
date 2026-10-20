@@ -291,6 +291,46 @@ var BOSSES=[
  {key:'b2_',name:'ABYSS DEVOURER',hp:1900,w:245,h:210,style:'dread',move:'wide',patterns:[1,0],aim:5,ring:16,aimRate:1.7,ringRate:5.4,laserRate:6.5,laserN:2,ultRate:11.0,glow:['150,105,255','190,90,255','255,120,235']},
  {key:'b3_',name:'HIVE',hp:2300,w:220,h:120,style:'hive',move:'dash',patterns:[0,1],aim:7,ring:20,aimRate:1.9,ringRate:4.6,laserRate:5.5,laserN:3,ultRate:10.0,glow:['255,160,70','255,120,60','255,215,120']}
 ];
+var BOSS_PALETTES=[
+ {main:'#ff3d63',light:'#ff9ab0',core:'#fff4f7',dark:'#3a0712',edge:'#8fe8ff',glow:'rgba(255,50,95,0.55)',beam:'#ff5f7a'},
+ {main:'#a85cff',light:'#e0b4ff',core:'#fff4ff',dark:'#1e0838',edge:'#ff9ae6',glow:'rgba(168,80,255,0.55)',beam:'#c06aff'},
+ {main:'#ff9a2e',light:'#ffd27a',core:'#fff8e0',dark:'#3a1604',edge:'#7fe7ff',glow:'rgba(255,150,40,0.50)',beam:'#7fe7ff'},
+ {main:'#ffe6a0',light:'#fffdf0',core:'#ffffff',dark:'#5a3d12',edge:'#fffdf0',glow:'rgba(255,220,120,0.50)',beam:'#ffe7a0'}
+];
+function bossPalette(){
+ var i=Math.max(0,Math.min(3,stage|0));
+ return BOSS_PALETTES[i]||BOSS_PALETTES[0];
+}
+function bossBeamColor(){ return bossPalette().beam; }
+var EB_CACHE={};
+function ebSprite(pi,type){
+ var key=pi+'_'+type;
+ if(EB_CACHE[key]) return EB_CACHE[key];
+ var p=BOSS_PALETTES[pi]||BOSS_PALETTES[0];
+ var cv=document.createElement('canvas'),x=cv.getContext('2d');
+ if(type===2){
+  cv.width=cv.height=64; x.translate(32,32);
+  x.shadowColor=p.glow; x.shadowBlur=16;
+  x.fillStyle=p.main; x.beginPath(); x.arc(0,0,16,0,TAU); x.fill();
+  x.shadowBlur=0;
+  x.strokeStyle=p.dark; x.lineWidth=3; x.beginPath(); x.arc(0,0,16,0,TAU); x.stroke();
+  x.strokeStyle=p.edge; x.lineWidth=2; x.beginPath(); x.arc(0,0,11,0,TAU); x.stroke();
+  x.fillStyle=p.core; x.beginPath(); x.arc(0,0,6,0,TAU); x.fill();
+  x.fillStyle='rgba(255,255,255,0.95)'; x.beginPath(); x.arc(-3,-4,2.4,0,TAU); x.fill();
+ }else{
+  cv.width=48; cv.height=96; x.translate(24,48);
+  x.shadowColor=p.glow; x.shadowBlur=14;
+  x.fillStyle=p.dark; x.beginPath(); x.moveTo(0,-40);x.lineTo(10,-2);x.lineTo(0,40);x.lineTo(-10,-2);x.closePath();x.fill();
+  x.shadowBlur=8;
+  x.fillStyle=p.main; x.beginPath(); x.moveTo(0,-34);x.lineTo(7,-4);x.lineTo(0,32);x.lineTo(-7,-4);x.closePath();x.fill();
+  x.shadowBlur=0;
+  x.fillStyle=p.light; x.beginPath(); x.moveTo(0,-28);x.lineTo(3,-5);x.lineTo(0,22);x.lineTo(-3,-5);x.closePath();x.fill();
+  x.fillStyle=p.core; x.beginPath(); x.moveTo(0,-22);x.lineTo(1.5,-4);x.lineTo(0,14);x.lineTo(-1.5,-4);x.closePath();x.fill();
+  x.fillStyle=p.edge; x.beginPath(); x.moveTo(-10,-2);x.lineTo(-18,4);x.lineTo(-8,8);x.closePath();x.fill();
+  x.beginPath(); x.moveTo(10,-2);x.lineTo(18,4);x.lineTo(8,8);x.closePath();x.fill();
+ }
+ EB_CACHE[key]=cv; return cv;
+}
 var ET=[
  {hp:12,r:14,w:34,score:60,fire:2.2,kind:1,n:1},
  {hp:26,r:16,w:42,score:120,fire:2.0,kind:3,n:3},
@@ -426,8 +466,8 @@ function bossWall(){
 }
 function bossBroadside(){
   if(!boss||boss.invuln>0) return;
-  spawnBeam(boss.x-78,boss.y+24,Math.PI/2,1600,20,1.2,0.42,1,'#ff9a5a',true,boss);
-  spawnBeam(boss.x+78,boss.y+24,Math.PI/2,1600,20,1.2,0.42,1,'#ff9a5a',true,boss);
+  spawnBeam(boss.x-78,boss.y+24,Math.PI/2,1600,20,1.2,0.42,1,bossBeamColor(),true,boss);
+  spawnBeam(boss.x+78,boss.y+24,Math.PI/2,1600,20,1.2,0.42,1,bossBeamColor(),true,boss);
   shake=Math.max(shake,5);
 }
 function bossSwarm(){
@@ -604,13 +644,13 @@ function spawnBeam(x,y,ang,len,w,charge,fire,dmg,color,big,owner,ult){
   if(beams.length>8) return;
   if(owner&&owner!==boss&&(owner.hp<=0||enemies.indexOf(owner)<0)) return;
   if(owner===boss&&(!boss||boss.hp<=0)) return;
-  beams.push({x:x,y:y,ang:ang,len:len,w:w,t:0,charge:charge,fire:fire,dmg:dmg,color:color||'#ff5a6a',fired:false,fade:0.15,owner:owner||null,ult:!!ult,offX:owner?(x-owner.x):0,offY:owner?(y-owner.y):0});
+  beams.push({x:x,y:y,ang:ang,len:len,w:w,t:0,charge:charge,fire:fire,dmg:dmg,color:color||bossBeamColor(),fired:false,fade:0.15,owner:owner||null,ult:!!ult,offX:owner?(x-owner.x):0,offY:owner?(y-owner.y):0});
   sfx(big?'b_charge':'e_charge',big?0.38:0.22);
 }
 function bossLaser(){
   if(!boss||boss.invuln>0) return;
   var n=boss.def.laserN||1,a=Math.atan2(player.y-boss.y,player.x-boss.x);
-  for(var i=0;i<n;i++) spawnBeam(boss.x,boss.y+10,a+(i-(n-1)/2)*0.18,1500,22,1.3,0.45,1,'#ff6a5a',true,boss);
+  for(var i=0;i<n;i++) spawnBeam(boss.x,boss.y+10,a+(i-(n-1)/2)*0.18,1500,22,1.3,0.45,1,bossBeamColor(),true,boss);
   sfx('laser',0.06);
 }
 function laserDamage(dt){
@@ -810,8 +850,8 @@ function fireEnemy(e){
   var ra=Math.atan2(player.y-e.y,player.x-e.x);
   if(e.type===6){
     if(beams.length<4){
-      spawnBeam(e.x-15,e.y+4,ra,1500,9,0.75,0.35,1,'#ff9a5a',false,e);
-      spawnBeam(e.x+15,e.y+4,ra,1500,9,0.75,0.35,1,'#ff9a5a',false,e);
+      spawnBeam(e.x-15,e.y+4,ra,1500,9,0.75,0.35,1,bossBeamColor(),false,e);
+      spawnBeam(e.x+15,e.y+4,ra,1500,9,0.75,0.35,1,bossBeamColor(),false,e);
     }
     sfx('e_charge',0.22);return;
   }
@@ -825,14 +865,14 @@ function fireEnemy(e){
   }
   var et=ET[e.type],a=Math.atan2(player.y-e.y,player.x-e.x),sp=(140+stage*10)*(e.aggr||1);
   if(e.elite){
-    if(beams.length<4&&Math.random()<0.28) spawnBeam(e.x,e.y,a,1500,18,1.0,0.4,1,'#ff6a5a',false,e);
+    if(beams.length<4&&Math.random()<0.28) spawnBeam(e.x,e.y,a,1500,18,1.0,0.4,1,bossBeamColor(),false,e);
     for(var i=0;i<10;i++){var ang=i/10*TAU+time*0.2;ebullets.push({x:e.x,y:e.y,vx:Math.cos(ang)*95,vy:Math.sin(ang)*95,rad:5.5,type:2});}
     for(var i=0;i<3;i++){var ang=a+(i-1)*0.18;ebullets.push({x:e.x,y:e.y,vx:Math.cos(ang)*180,vy:Math.sin(ang)*180,rad:6,type:1});}
     sfx('e_shot',0.16);
     return;
   }
   if((e.type===3||e.type===4)&&beams.length<5&&Math.random()<0.38){
-    spawnBeam(e.x,e.y,a,1500,15,1.0,0.38,1,'#ff6a5a',false,e);
+    spawnBeam(e.x,e.y,a,1500,15,1.0,0.38,1,bossBeamColor(),false,e);
     return;
   }
   if(et.kind===2){
@@ -855,8 +895,8 @@ function fireEnemy(e){
 function primeDreadUltimate(){
   if(!boss) return;
   var bx1=Math.max(70,boss.x-88),bx2=Math.min(W-70,boss.x+88);
-  spawnBeam(bx1,boss.y+20,Math.PI/2,1700,24,1.3,0.55,1,'#ff8a5a',true,boss,true);
-  spawnBeam(bx2,boss.y+20,Math.PI/2,1700,24,1.3,0.55,1,'#ff8a5a',true,boss,true);
+  spawnBeam(bx1,boss.y+20,Math.PI/2,1700,24,1.3,0.55,1,bossBeamColor(),true,boss,true);
+  spawnBeam(bx2,boss.y+20,Math.PI/2,1700,24,1.3,0.55,1,bossBeamColor(),true,boss,true);
 }
 function beginBossUltimate(){
   if(!boss) return;
@@ -1282,10 +1322,16 @@ function drawBullet(b){
   ctx.restore();
 }
 function drawEB(e){
-  var img=GIMG[e.type===2?'u4':'u2'],a=Math.atan2(e.vy,e.vx)+Math.PI/2;
+  var pi=Math.max(0,Math.min(3,stage|0)),p=BOSS_PALETTES[pi],spr=ebSprite(pi,e.type);
+  var a=Math.atan2(e.vy,e.vx)+Math.PI/2;
   ctx.save();ctx.translate(e.x,e.y);ctx.rotate(a);
-  if(img&&img.complete)ctx.drawImage(img,-6,-13,12,26);
-  else{ctx.fillStyle='#ffb36b';ctx.beginPath();ctx.arc(0,0,5,0,TAU);ctx.fill();}
+  if(spr){
+    if(e.type===2){var w=e.rad*2.8;ctx.drawImage(spr,-w/2,-w/2,w,w);}
+    else{var w=e.rad*2.2,h=e.rad*4.6;ctx.drawImage(spr,-w/2,-h/2,w,h);}
+  }else{
+    ctx.fillStyle=p.main;ctx.beginPath();ctx.arc(0,0,e.rad,0,TAU);ctx.fill();
+    ctx.fillStyle=p.core;ctx.beginPath();ctx.arc(0,0,e.rad*0.42,0,TAU);ctx.fill();
+  }
   ctx.restore();
 }
 function drawBombBtn(){
@@ -1710,7 +1756,7 @@ window.__enemy=function(t){spawnWave({t:0,type:t==null?4:t,n:1,form:'line',spd:0
 window.__warn=function(){startBossWarn();};
 window.__beamTest=function(){
   var e={type:4,x:W/2,y:260,baseX:W/2,tx:W/2,ty:260,mode:'turret',entering:false,t:0,phase:0,spd:0,hp:40,max:40,fireT:99,flash:0,elite:false,role:'',first:false};
-  enemies.push(e);spawnBeam(e.x,e.y,Math.PI/2,1500,20,1.0,0.4,1,'#ff6a5a',false,e);
+  enemies.push(e);spawnBeam(e.x,e.y,Math.PI/2,1500,20,1.0,0.4,1,bossBeamColor(),false,e);
   e.hp=0;removeEnemy(enemies.indexOf(e));return beams.length;
 };
 window.__beams=function(){return beams.map(function(b){return {t:Math.round(b.t*100)/100,owner:b.owner?b.owner.hp:null};});};
@@ -1720,6 +1766,7 @@ window.__drop=function(t){items.push({x:player.x,y:player.y-80,vy:20,type:t||'P'
 window.__boom=function(){boom(W/2,H*0.45,1.4);};
 window.__beam=function(){spawnBeam(W/2,180,Math.PI/2,1500,16,0.8,0.45,1,'#ff6a5a');};
 window.__bossLaser=function(){if(boss)bossLaser();};
+window.__ebTest=function(){if(boss){bossAimed(12);bossRing(18);bossSpiral(4,1,120);}};
 window.__hit=function(){player.invuln=0;hitPlayer();};
 window.__ult=function(){beginBossUltimate();};
 window.__bomb=function(){bomb();};

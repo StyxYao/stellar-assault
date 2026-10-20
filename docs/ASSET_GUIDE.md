@@ -16,3 +16,14 @@
 5. Do **not** apply a runtime vertical flip unless the asset is documented as an exception.
 
 This prevents accidental double-flips when art is regenerated.
+
+## Boss bullet palettes
+
+| Boss | Main | Accent | Beam |
+|---|---|---|---|
+| Boss 1 Void Sovereign | crimson | ice blue | crimson |
+| Boss 2 Abyss Devourer | violet | magenta | violet |
+| Boss 3 Star Behemoth | amber | cyan | cyan |
+| Boss 4 Seraphic Wings | white-gold | ivory | warm gold |
+
+Bullets are pre-rendered per palette; collision radii and trajectories are unchanged.
