@@ -1298,7 +1298,7 @@ function drawSentry(e){
 }
 function drawEnemy(e){
   if(e.type===6){drawSentry(e);return;}
-  var et=ET[e.type],key='n'+(e.type+1),img=GIMG[key];
+  var et=ET[e.type],key='n'+(e.type+1)+(e.elite?'b':''),img=GIMG[key]||GIMG['n'+(e.type+1)];
   if(!img||!img.complete) return;
   var mir=!!MIRROR_TYPES[e.type];if(mir) img=enemyMirrorImg(e.type,img);
   var w=et.w*(mir?1.5:1)*(e.transport?1.45:(e.elite?1.58:1)),h=w*img.height/img.width;
