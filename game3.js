@@ -58,7 +58,7 @@ function playSample(n,v){
   if(!AC||!master||!SFXBUF[n]||sfxActive>56) return;
   sfxActive++;
   var s=AC.createBufferSource();s.buffer=SFXBUF[n];
-  var rate={p_normal:1.0,p_spread:1.08,pickup_real:1.06,jetfly:2.0,bomb_big:1.0,p_laser:1.0,p_missile:1.08,e_shot:0.9,e_hit:1.22,b_hit:0.86,boom:0.82,laser_fire:0.95,pickup:1.1,hurt:0.8,e_charge:1.0,b_charge:1.0}[n]||1;
+  var rate={p_normal:1.0,p_spread:1.08,pickup_real:1.06,jetfly:2.0,bomb_big:1.0,p_laser:1.0,p_missile:1.90,e_shot:0.9,e_hit:1.22,b_hit:0.86,boom:0.82,laser_fire:0.95,pickup:1.1,hurt:0.8,e_charge:1.0,b_charge:1.0}[n]||1;
   s.playbackRate.value=rate;
   var g=AC.createGain();g.gain.value=v;
   var soft=(n==='e_charge'||n==='b_charge'||n==='pickup'||n==='pickup_real'||n==='siren'||n==='jetfly'||n==='bomb_big');
@@ -72,7 +72,7 @@ function playSample(n,v){
   s.start();
   if(n==='p_normal'){noiseBurst(0.018,v*0.95,8500);tone(170,78,0.03,v*0.50,'square');tone(1250,650,0.018,v*0.24,'triangle');}
   if(n==='p_spread'){noiseBurst(0.022,v*0.85,7600);tone(155,65,0.032,v*0.45,'square');}
-  if(n==='e_hit'){noiseBurst(0.02,v*0.65,4200);tone(2400,1500,0.028,v*0.45,'triangle');}
+  if(n==='e_hit'){noiseBurst(0.014,v*0.5,9500);tone(2300,1900,0.07,v*0.18,'triangle');tone(3700,3100,0.05,v*0.10,'sine',0.004);tone(1200,800,0.10,v*0.07,'square');}
   if(n==='b_hit') tone(110,55,0.09,v*0.7,'sine');
   if(n==='boom'){tone(85,40,0.32,v*0.55,'sine');noiseBurst(0.05,v*0.35,2600);}
   if(n==='hurt'){tone(260,90,0.18,v*0.9,'sawtooth');noiseBurst(0.055,v*0.2,1800);}
@@ -110,11 +110,9 @@ function playAirRaid(vol){
 }
 function playMissileLaunch(){
   if(!AC||muted) return;
-  // short high-velocity "whoosh", never a long wind loop
-  noiseBurst(0.070,0.20,7200);
-  noiseBurst(0.040,0.10,9800,0.018);
-  tone(1700,620,0.10,0.18,'triangle');
-  tone(3200,1200,0.055,0.07,'sine',0.012);
+  // original sample, pitched up so it becomes a short high "whoosh"
+  if(SFXBUF['p_missile']) sfx('p_missile',0.32);
+  else { noiseBurst(0.07,0.16,8000); tone(1700,650,0.09,0.16,'triangle'); }
 }
 function synthSfx(n,v){
   if(!AC||!master||muted) return;
@@ -123,7 +121,7 @@ function synthSfx(n,v){
   else if(n==='p_spread'){tone(900,1200,0.04,v*0.8,'triangle');tone(700,1000,0.05,v*0.7,'triangle',0.02);tone(500,800,0.06,v*0.6,'triangle',0.04);}
   else if(n==='p_missile'){noiseBurst(0.085,v*0.45,7000);tone(1800,520,0.095,v*0.40,'triangle');}
   else if(n==='e_shot') tone(240,160,0.08,v,'square');
-  else if(n==='e_hit'){tone(2200,1300,0.028,v*0.7,'triangle');noiseBurst(0.02,v*0.5,4200);}
+  else if(n==='e_hit'){tone(2300,1800,0.06,v*0.55,'triangle');tone(3700,3000,0.045,v*0.22,'sine');noiseBurst(0.014,v*0.4,9000);}
   else if(n==='b_hit'){tone(320,160,0.07,v,'square');noiseBurst(0.05,v*0.5,2000);}
   else if(n==='e_charge') tone(250,900,0.9,v,'sawtooth');
   else if(n==='b_charge'){tone(140,800,1.2,v,'sawtooth');tone(70,120,1.2,v*0.5,'sine');}
@@ -490,7 +488,9 @@ function startBossWarn(){
 }
 function spawnBoss(){
   var def=BOSSES[stage];
-  boss={def:def,x:W/2,y:-130,hp:Math.round(def.hp*1.4),max:Math.round(def.hp*1.4),phase:0,invuln:1.2,entering:true,t:0,flash:0,patternIdx:0,patternT:0,aimT:0,ringT:0,laserT:0,hitFlash:0,hitX:W/2,hitY:180,ultT:def.ultRate-2.2,ultCharge:0,spiralT:0,spiralAng:0,broadT:0,blinkT:0};
+  var hpMul=stage===1?1.10:(stage===2?0.90:1.0);
+  var bhp=Math.round(def.hp*1.4*hpMul);
+  boss={def:def,x:W/2,y:-130,hp:bhp,max:bhp,phase:0,invuln:1.2,entering:true,t:0,flash:0,patternIdx:0,patternT:0,aimT:0,ringT:0,laserT:0,hitFlash:0,hitX:W/2,hitY:180,ultT:def.ultRate-2.2,ultCharge:0,spiralT:0,spiralAng:0,broadT:0,blinkT:0};
   if(stage===2) repairAudio();
   state='boss'; playBgm(['c','s2boss','s3boss','s4boss'][stage]||'c'); setBossPattern(0);
 }
@@ -532,11 +532,11 @@ function bossRing(n){
   if(!boss||boss.invuln>0||n<=0) return;
   sfx('e_shot',0.17);
   if(bullets.length+ebullets.length>280) return;
-  var sp=100+stage*8,gap=Math.random()*TAU;
+  n=Math.min(n,14);var sp=92+stage*7,gap=Math.atan2(player.y-boss.y,player.x-boss.x);
   for(var i=0;i<n;i++){
     var a=i/n*TAU+time*0.25;
     var da=Math.atan2(Math.sin(a-gap),Math.cos(a-gap));
-    if(Math.abs(da)<0.42) continue;
+    if(Math.abs(da)<0.68) continue;
     ebullets.push({x:boss.x,y:boss.y+8,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,rad:5.5,type:2});
   }
 }
@@ -551,7 +551,7 @@ function bossSpiral(arms,dir,speed){
 }
 function bossWall(){
   if(!boss||boss.invuln>0) return;
-  var n=16,gap=2+Math.floor(Math.random()*(n-4));
+  var n=12,gap=2+Math.floor(Math.random()*(n-4));
   for(var i=0;i<n;i++){
     if(Math.abs(i-gap)<1) continue;
     ebullets.push({x:W*0.08+i*(W*0.84/(n-1)),y:boss.y+30,vx:0,vy:95+stage*6,rad:5.5,type:1});
@@ -566,7 +566,7 @@ function bossBroadside(){
 }
 function bossSeraphFan(){
   if(!boss||boss.invuln>0) return;
-  var n=16,sp=120+stage*6,a0=Math.PI/2;
+  var n=12,sp=112+stage*5,a0=Math.PI/2;
   for(var i=0;i<n;i++){
     if(Math.abs(i-(n-1)/2)<1.01) continue;
     var a=a0+(i-(n-1)/2)*0.078;
@@ -582,12 +582,12 @@ function bossSeraphFan(){
 function bossVortex(){
   if(!boss||boss.invuln>0) return;
   if(bullets.length+ebullets.length>270) return;
-  var arms=3,per=14,sp=92+stage*8,gap=Math.random()*TAU;
+  var arms=2,per=10,sp=88+stage*7,gap=Math.atan2(player.y-boss.y,player.x-boss.x);
   for(var arm=0;arm<arms;arm++){
     for(var i=0;i<per;i++){
       var a=arm/arms*TAU+i/per*TAU+time*0.45;
       var da=Math.atan2(Math.sin(a-gap),Math.cos(a-gap));
-      if(Math.abs(da)<0.50) continue;
+      if(Math.abs(da)<0.78) continue;
       ebullets.push({x:boss.x,y:boss.y+8,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,rad:5,type:2});
     }
   }
@@ -601,8 +601,8 @@ function bossCrossfire(){
     spawnBeam(boss.x+82,boss.y+18,a,1400,13,0.8,0.32,1,bossBeamColor(),false,boss);
   }
   for(var side=-1;side<=1;side+=2){
-    for(var i=0;i<4;i++){
-      var ba=a+side*(0.28+i*0.09);
+    for(var i=0;i<3;i++){
+      var ba=a+side*(0.30+i*0.10);
       ebullets.push({x:boss.x+side*78,y:boss.y+18,vx:Math.cos(ba)*(125+stage*6),vy:Math.sin(ba)*(125+stage*6),rad:5,type:1});
     }
   }
@@ -611,12 +611,12 @@ function bossCrossfire(){
 function bossHiveBurst(){
   if(!boss||boss.invuln>0) return;
   if(bullets.length+ebullets.length>270) return;
-  var gap=Math.random()*TAU;
-  for(var r=0;r<3;r++){
-    for(var i=0;i<12;i++){
+  var gap=Math.atan2(player.y-boss.y,player.x-boss.x);
+  for(var r=0;r<2;r++){
+    for(var i=0;i<10;i++){
       var a=i/12*TAU+r*0.26+time*0.18;
       var da=Math.atan2(Math.sin(a-gap),Math.cos(a-gap));
-      if(Math.abs(da)<0.38) continue;
+      if(Math.abs(da)<0.64) continue;
       ebullets.push({x:boss.x,y:boss.y+10,vx:Math.cos(a)*(75+r*28),vy:Math.sin(a)*(75+r*28),rad:4.5,type:2});
     }
   }
@@ -625,12 +625,12 @@ function bossHiveBurst(){
 function bossHalo(){
   if(!boss||boss.invuln>0) return;
   if(bullets.length+ebullets.length>280) return;
-  var n=24,sp=105+stage*7,a0=time*0.38;
+  var n=18,sp=98+stage*6,a0=time*0.38;
   var gap=Math.atan2(player.y-boss.y,player.x-boss.x);
   for(var i=0;i<n;i++){
     var a=a0+i/n*TAU;
     var da=Math.atan2(Math.sin(a-gap),Math.cos(a-gap));
-    if(Math.abs(da)<0.46) continue;
+    if(Math.abs(da)<0.70) continue;
     ebullets.push({x:boss.x,y:boss.y+6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,rad:5,type:1});
   }
   for(var s=-1;s<=1;s+=2){
@@ -660,23 +660,36 @@ function bossBombBarrage(){
 }
 function bossRotatingLaser(){
   if(!boss||boss.invuln>0) return;
-  if(beams.length>7) return;
+  if(beams.length>5) return;
   var base=boss.spiralAng*0.55+time*0.18;
-  for(var k=0;k<3;k++) spawnBeam(boss.x,boss.y,base+k*TAU/3,1000,9,0.65,0.30,1,bossBeamColor(),false,boss);
+  for(var k=0;k<3;k++){
+    var b=spawnBeam(boss.x,boss.y,base+k*TAU/3,1250,10,0.75,2.4,1,bossBeamColor(),false,boss);
+    if(b) b.sweepSpeed=0.62;
+  }
   boss.spiralAng+=0.35;
   sfx('e_charge',0.18);
 }
 function bossCrossLaser(){
   if(!boss||boss.invuln>0) return;
-  if(beams.length>6) return;
-  for(var k=0;k<4;k++) spawnBeam(boss.x,boss.y,Math.PI/4+k*Math.PI/2,1250,10,0.95,0.32,1,bossBeamColor(),false,boss);
+  if(beams.length>4) return;
+  var cx=W/2,cy=H*0.48;
+  var a=Math.atan2(cy-boss.y,cx-boss.x),len=Math.hypot(cx-boss.x,cy-boss.y)+40;
+  spawnBeam(boss.x,boss.y+10,a,len,12,0.75,0.34,1,bossBeamColor(),true,boss);
+  boss.crossArmT=1.05;
   sfx('e_charge',0.24);
+}
+function bossCrossArms(){
+  var cx=W/2,cy=H*0.48,len=Math.max(W,H)*0.9;
+  for(var k=0;k<4;k++){
+    spawnBeam(cx,cy,k*Math.PI/2,len,12,0.28,0.82,1,bossBeamColor(),false,null);
+  }
+  sfx('laser_fire',0.45);
 }
 function bossSwarm(){
   if(!boss||boss.invuln>0) return;
-  for(var s=-1;s<=1;s++){
-    var base=Math.atan2(player.y-boss.y,player.x-boss.x)+s*0.22;
-    for(var k=0;k<3;k++){
+  for(var s=-1;s<=1;s+=2){
+    var base=Math.atan2(player.y-boss.y,player.x-boss.x)+s*0.24;
+    for(var k=0;k<2;k++){
       var a=base+(k-1.5)*0.10;
       ebullets.push({x:boss.x+s*62,y:boss.y+22,vx:Math.cos(a)*(150+stage*6),vy:Math.sin(a)*(150+stage*6),rad:5,type:1});
     }
@@ -880,8 +893,10 @@ function spawnBeam(x,y,ang,len,w,charge,fire,dmg,color,big,owner,ult){
   if(beams.length>8) return;
   if(owner&&owner!==boss&&(owner.hp<=0||enemies.indexOf(owner)<0)) return;
   if(owner===boss&&(!boss||boss.hp<=0)) return;
-  beams.push({x:x,y:y,ang:ang,len:len,w:w,t:0,charge:charge,fire:fire,dmg:dmg,color:color||bossBeamColor(),fired:false,fade:0.15,owner:owner||null,ult:!!ult,offX:owner?(x-owner.x):0,offY:owner?(y-owner.y):0});
+  var b={x:x,y:y,ang:ang,len:len,w:w,t:0,charge:charge,fire:fire,dmg:dmg,color:color||bossBeamColor(),fired:false,fade:0.15,owner:owner||null,ult:!!ult,offX:owner?(x-owner.x):0,offY:owner?(y-owner.y):0};
+  beams.push(b);
   sfx(big?'b_charge':'e_charge',big?0.38:0.22);
+  return b;
 }
 function bossLaser(){
   if(!boss||boss.invuln>0) return;
@@ -1009,6 +1024,7 @@ function updateBeams(dt){
     if(b.owner){var alive=(b.owner===boss)?!!(boss&&boss.hp>0):(enemies.indexOf(b.owner)>=0&&b.owner.hp>0);if(!alive){beams.splice(i,1);continue;}
       if(b.t<b.charge+b.fire){var oo=b.owner;b.x=oo.x+b.offX;b.y=oo.y+b.offY;}
     }
+    if(b.sweepSpeed){b.ang+=b.sweepSpeed*dt;}
     if(!b.fired&&b.t>=b.charge){b.fired=true;sfx('laser_fire',b.w>16?0.50:0.38);}
     if(b.t>b.charge&&b.t<=b.charge+b.fire){
       var dx=player.x-b.x,dy=player.y-b.y;
@@ -1419,6 +1435,7 @@ function step(dt){
     if(boss.hitFlash>0) boss.hitFlash-=dt;
     if(boss.flash>0) boss.flash-=dt;
     if(boss.invuln>0) boss.invuln=Math.max(0,boss.invuln-dt);
+    if(boss.crossArmT>0){boss.crossArmT-=dt;if(boss.crossArmT<=0){boss.crossArmT=0;bossCrossArms();}}
     var ty=(def.move==='dash')?215:205;
     if(boss.entering){
       boss.y+=140*dt;
