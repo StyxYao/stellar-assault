@@ -1818,20 +1818,27 @@ function drawBanner(){
 }
 function drawMenu(){
   paintBg(BGMENU,1)||paintBg(BG1,1);
-  ctx.fillStyle='rgba(3,6,14,0.035)';ctx.fillRect(0,0,W,H);
-  // The new poster already contains the STELLAR ASSAULT logo.
-  var tg=ctx.createLinearGradient(0,H*0.55,0,H*0.78);
-  tg.addColorStop(0,'rgba(0,0,0,0)');tg.addColorStop(0.55,'rgba(2,4,12,0.55)');tg.addColorStop(1,'rgba(2,4,12,0.78)');
-  ctx.fillStyle=tg;ctx.fillRect(0,H*0.55,W,H*0.25);
+  ctx.fillStyle='rgba(2,4,12,0.05)';ctx.fillRect(0,0,W,H);
+  // The poster already contains the STELLAR ASSAULT logo.
+  var tg=ctx.createLinearGradient(0,H*0.56,0,H*0.79);
+  tg.addColorStop(0,'rgba(0,0,0,0)');tg.addColorStop(0.45,'rgba(2,4,12,0.72)');tg.addColorStop(1,'rgba(2,4,12,0.88)');
+  ctx.fillStyle=tg;ctx.fillRect(0,H*0.56,W,H*0.25);
   ctx.textAlign='center';
-  ctx.fillStyle='#cfeaff';ctx.font='13px monospace';ctx.fillText('4 STAGES · 4 BOSSES',W/2,H*0.635);
-  ctx.fillStyle='#ffd27a';ctx.font='15px monospace';ctx.fillText(audioReady?'TAP TO START':'TAP TO ENABLE AUDIO',W/2,H*0.695);
-  ctx.fillStyle='#b8c9da';ctx.font='11px monospace';
-  ctx.fillText('drag · ship follows above finger · auto-fire',W/2,H*0.755);
-  ctx.fillStyle='#7f93a8';ctx.font='10px monospace';
-  ctx.fillText('patterns © Kenta Cho · BSD-3',W/2,H*0.815);
-  ctx.fillText('art & backgrounds: user',W/2,H*0.845);
-  ctx.fillText('SFX: Kenney Sci-Fi Sounds (CC0)',W/2,H*0.875);
+  var gf='900 15px "Arial Black", "Helvetica Neue", Arial, sans-serif';
+  var bf='900 21px "Arial Black", "Helvetica Neue", Arial, sans-serif';
+  // key info: bold, technical, glowing
+  ctx.font=gf;ctx.fillStyle='#dff4ff';ctx.shadowColor='rgba(70,190,255,0.95)';ctx.shadowBlur=10;
+  ctx.fillText('4 STAGES  ·  4 BOSSES',W/2,H*0.70);
+  ctx.font=bf;ctx.fillStyle='#ffd27a';ctx.shadowColor='rgba(255,170,50,0.9)';ctx.shadowBlur=14;
+  ctx.fillText(audioReady?'TAP TO START':'TAP TO ENABLE AUDIO',W/2,H*0.76);
+  ctx.shadowBlur=0;
+  ctx.font='900 12px "Arial Black", "Helvetica Neue", Arial, sans-serif';ctx.fillStyle='#b8e8ff';ctx.shadowColor='rgba(60,160,230,0.7)';ctx.shadowBlur=6;
+  ctx.fillText('DRAG · SHIP FOLLOWS ABOVE FINGER · AUTO-FIRE',W/2,H*0.82);
+  ctx.shadowBlur=0;
+  // credits: intentionally smaller and quieter
+  ctx.fillStyle='#7f93a8';ctx.font='9px monospace';
+  ctx.fillText('PATTERNS © KENTA CHO · BSD-3   |   ART: USER',W/2,H*0.86);
+  ctx.fillText('SFX: KENNEY SCI-FI SOUNDS (CC0)',W/2,H*0.89);
   ctx.textAlign='left';
 }
 function drawEnd(){
