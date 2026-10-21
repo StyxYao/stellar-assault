@@ -109,10 +109,19 @@ function playAirRaid(vol){
   osc.start(t0);lfo.start(t0);osc.stop(t0+dur);lfo.stop(t0+dur);
 }
 function playMissileLaunch(){
-  if(!AC||muted) return;
-  // original sample, pitched up so it becomes a short high "whoosh"
-  if(SFXBUF['p_missile']) sfx('p_missile',0.32);
-  else { noiseBurst(0.07,0.16,8000); tone(1700,650,0.09,0.16,'triangle'); }
+  if(!AC||!master||muted) return;
+  var buf=SFXBUF['jetfly'];
+  if(!buf){noiseBurst(0.06,0.12,8000);tone(1600,600,0.07,0.10,'triangle');return;}
+  var t=AC.currentTime,s=AC.createBufferSource();
+  s.buffer=buf;s.playbackRate.value=2.75;
+  var hp=AC.createBiquadFilter();hp.type='highpass';hp.frequency.value=650;
+  var g=AC.createGain();
+  g.gain.setValueAtTime(0.24,t);
+  g.gain.exponentialRampToValueAtTime(0.055,t+0.045);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+0.135);
+  s.connect(hp);hp.connect(g);g.connect(master);
+  s.onended=function(){try{s.disconnect();hp.disconnect();g.disconnect();}catch(e){}};
+  s.start(t);s.stop(t+0.15);
 }
 function synthSfx(n,v){
   if(!AC||!master||muted) return;
@@ -520,6 +529,7 @@ function bossPhase(p){
 function bossAimed(n){
   if(!boss||boss.invuln>0) return;
   if(bullets.length+ebullets.length>260) return;
+  if(stage===2) n=Math.max(2,Math.round(n*0.7));
   var a=Math.atan2(player.y-boss.y,player.x-boss.x),sp=185+stage*8,spread=0.22;
   for(var i=0;i<n;i++){
     if(n>=5&&Math.abs(i-(n-1)/2)<1.01) continue;
@@ -611,9 +621,9 @@ function bossCrossfire(){
 function bossHiveBurst(){
   if(!boss||boss.invuln>0) return;
   if(bullets.length+ebullets.length>270) return;
-  var gap=Math.atan2(player.y-boss.y,player.x-boss.x);
+  var gap=Math.atan2(player.y-boss.y,player.x-boss.x),per=stage===2?7:10;
   for(var r=0;r<2;r++){
-    for(var i=0;i<10;i++){
+    for(var i=0;i<per;i++){
       var a=i/12*TAU+r*0.26+time*0.18;
       var da=Math.atan2(Math.sin(a-gap),Math.cos(a-gap));
       if(Math.abs(da)<0.64) continue;
@@ -690,6 +700,7 @@ function bossSwarm(){
   for(var s=-1;s<=1;s+=2){
     var base=Math.atan2(player.y-boss.y,player.x-boss.x)+s*0.24;
     for(var k=0;k<2;k++){
+      if(stage===2&&s>0&&k===1) continue;
       var a=base+(k-1.5)*0.10;
       ebullets.push({x:boss.x+s*62,y:boss.y+22,vx:Math.cos(a)*(150+stage*6),vy:Math.sin(a)*(150+stage*6),rad:5,type:1});
     }
@@ -824,8 +835,8 @@ function collectItem(it){
   else pickupMsg='BOMB +1';
 }
 function weaponName(){ return ({normal:'NORMAL',none:'NONE',spread:'SPREAD',laser:'LASER',missile:'MISSILE'})[player.weapon]||'NORMAL'; }
-function powerDamageFactor(){ return [1,0.96,0.94,0.60][Math.max(0,Math.min(3,player.specialPower-1))]||1; }
-function addShot(x,y,vx,vy,dmg,wing,laser,special,max){ var f=powerDamageFactor(); shots.push({x:x,y:y,vx:vx,vy:vy,dmg:dmg*f*(wing?0.63:1),wing:!!wing,laser:!!laser,special:!!special,max:!!max}); }
+function powerDamageFactor(){ return ([1,0.96,0.94,0.60][Math.max(0,Math.min(3,player.specialPower-1))]||1)*1.10; }
+function addShot(x,y,vx,vy,dmg,wing,laser,special,max){ var f=powerDamageFactor(); shots.push({x:x,y:y,vx:vx,vy:vy,dmg:dmg*f*(wing?0.6615:1),wing:!!wing,laser:!!laser,special:!!special,max:!!max}); }
 function fireNormal(){
   var lv=player.specialPower;
   if(lv<=1){ addShot(player.x-10,player.y-22,0,-900,3); addShot(player.x+10,player.y-22,0,-900,3); }
@@ -846,7 +857,7 @@ function fireSpread(){
 }
 function spawnMissile(x,y,wing,dmg,max){
   dmg=(dmg||6)*powerDamageFactor();
-  if(wing) dmg*=0.63;
+  if(wing) dmg*=0.6615;
   missiles.push({x:x,y:y,vx:wing?0:0,vy:52,t:0,ignite:0.2,life:2.8,dmg:dmg||6,wing:!!wing,max:!!max,ignited:false});
 }
 function launchMissiles(){
@@ -858,7 +869,7 @@ function launchMissiles(){
   playMissileLaunch();
 }
 function fireWingLaser(p,wp,max){
-  var w=4+wp*1.5,dmg=(1.0+wp*0.4)*(max?1.5:1)*0.63*powerDamageFactor();
+  var w=4+wp*1.5,dmg=(1.0+wp*0.4)*(max?1.5:1)*0.6615*powerDamageFactor();
   var target=null,tIdx=-1,tY=0,isBoss=false;
   for(var i=0;i<enemies.length;i++){
     var e=enemies[i];
@@ -1043,12 +1054,12 @@ function spawnTransport(){
 }
 function spawnWave(w){
   if(w.form==='mid'){
-    var mhp=320+stage*80;
+    var mhp=Math.round((320+stage*80)*0.85);
     enemies.push({type:w.type,x:W/2,y:-60,baseX:W/2,tx:W/2,ty:250,mode:'turret',entering:true,t:0,phase:0,spd:80,hp:mhp,max:mhp,fireT:1.0,flash:0,elite:true,visT:0,first:true});
     return;
   }
   if(w.form==='escort'){
-    var lead={type:w.type||4,x:W/2,y:-70,baseX:W/2,tx:W/2,ty:230,mode:'escortLead',entering:false,t:0,phase:0,spd:w.spd||65,hp:Math.round(ET[w.type||4].hp*2.2),max:Math.round(ET[w.type||4].hp*2.2),fireT:1.2,flash:0,noFire:false,aggr:1,role:'',visT:0,elite:true,first:true};
+    var lead={type:w.type||4,x:W/2,y:-70,baseX:W/2,tx:W/2,ty:230,mode:'escortLead',entering:false,t:0,phase:0,spd:w.spd||65,hp:Math.round(ET[w.type||4].hp*2.2*0.85),max:Math.round(ET[w.type||4].hp*2.2*0.85),fireT:1.2,flash:0,noFire:false,aggr:1,role:'',visT:0,elite:true,first:true};
     enemies.push(lead);
     for(var k=0;k<4;k++){
       var oa0=k/4*TAU,chx=lead.x+Math.cos(oa0)*58,chy=lead.y+Math.sin(oa0)*34;var ch={type:k%2?5:0,x:chx,y:chy,baseX:lead.x,tx:lead.x,ty:lead.y,mode:'escortOrbit',leader:lead,entering:false,t:0,phase:oa0,spd:90,hp:Math.round(ET[k%2?5:0].hp*(1+stage*0.18)),max:Math.round(ET[k%2?5:0].hp*(1+stage*0.18)),fireT:1.0+k*0.2,flash:0,noFire:false,aggr:0.8,role:'',visT:0,first:false};
@@ -1074,7 +1085,7 @@ function spawnWave(w){
     else if(w.form==='orbit'){ var oa=i/n*TAU,ox=W/2+Math.cos(oa)*150,oy=280+Math.sin(oa)*80,sd=Math.cos(oa)<0?-1:1; x=sd<0?-45:W+45; y=oy; tx=ox; ty=oy; baseX=W/2; mode='orbitEnter'; }
     else if(w.form==='ring'){ var ra=i/n*TAU; x=W/2+(i-(n-1)/2)*26; y=-55-i*14; tx=W/2+Math.cos(ra)*110; ty=H*0.33+Math.sin(ra)*85; baseX=W/2; mode='ringEnter'; }
     else { x=W/2+(i-(n-1)/2)*40; y=-50; baseX=x; mode='dive'; }
-    var ehp=Math.round(ET[w.type].hp*(1+stage*0.18));
+    var ehp=Math.round(ET[w.type].hp*(1+stage*0.18)*((w.elite&&(n<=2||i===0))?0.85:1));
     var e={type:w.type,x:x,y:y,baseX:baseX,tx:tx,ty:ty,mode:mode,entering:(mode==='pincer'||mode==='turret'||mode==='orbitEnter'||mode==='ringEnter'||mode==='arc'),t:0,phase:i*0.7,spd:w.spd,hp:ehp,max:ehp,fireT:0.8+Math.random()*0.8,flash:0,noFire:!!w.noFire,aggr:w.aggr||1,role:w.role||'',visT:0,elite:!!w.elite&&(n<=2||i===0),first:(i===0&&waveIndex%2===0)};
     if(mode==='dive'){
       var a=Math.atan2(player.y-y,player.x-x);
@@ -1502,12 +1513,12 @@ function step(dt){
               if(boss.ringT>3.4){boss.ringT=0;bossHalo();}
               if(boss.spiralT>0.48){boss.spiralT=0;bossSeraphFan();}
               if(boss.aimT>1.7){boss.aimT=0;bossAimed(7);}
-              if(boss.laserT>7.2){boss.laserT=0;bossCrossLaser();}
+              if(boss.laserT>3.6){boss.laserT=0;bossCrossLaser();}
             }else{
               if(boss.ringT>2.6){boss.ringT=0;bossHalo();}
               if(boss.spiralT>0.32){boss.spiralT=0;bossSeraphFan();}
               if(boss.aimT>1.35){boss.aimT=0;bossAimed(9);}
-              if(boss.laserT>5.8){boss.laserT=0;bossCrossLaser();}
+              if(boss.laserT>2.9){boss.laserT=0;bossCrossLaser();}
             }
           }else{
             if(boss.phase===0){
