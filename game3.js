@@ -2180,16 +2180,16 @@ function bossGlowLayer(key,img,rgb){
 }
 function drawSpectralAura(w,h){
   if(!boss) return;
+  var cols=['#66d8ff','#ff78c8','#ffd36b','#9d8cff'];
   ctx.save();ctx.globalCompositeOperation='lighter';
-  var g=ctx.createRadialGradient(boss.x,boss.y,w*.18,boss.x,boss.y,w*.70);
-  g.addColorStop(0,'rgba(255,220,150,0.10)');
-  g.addColorStop(.35,'rgba(255,90,200,0.08)');
-  g.addColorStop(.62,'rgba(80,210,255,0.09)');
-  g.addColorStop(.84,'rgba(130,100,255,0.06)');
-  g.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=g;ctx.beginPath();ctx.arc(boss.x,boss.y,w*.72,0,TAU);ctx.fill();
+  for(var k=0;k<6;k++){
+    var a0=time*(.14+k*.02)+k*1.05;
+    ctx.globalAlpha=.30-k*.03;ctx.strokeStyle=cols[k%4];ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.arc(boss.x,boss.y,w*(.46+k*.028),a0,a0+1.15);ctx.stroke();
+  }
   ctx.restore();ctx.globalAlpha=1;
 }
+
 function drawPhase2BossHalo(w,h){
   if(!boss) return;
   var imgs=[GIMG.b1_1,GIMG.b2_1,GIMG.b3_1,GIMG.b4_1];
@@ -2199,9 +2199,9 @@ function drawPhase2BossHalo(w,h){
     var im=imgs[k%4];if(!im||!im.complete) continue;
     var a=k*TAU/24+time*.055;
     var rr=w*.46;
-    var px=boss.x+Math.cos(a)*rr,py=boss.y+Math.sin(a)*rr*.72;
+    var px=boss.x+Math.cos(a)*rr,py=boss.y+Math.sin(a)*rr;
     var ss=w*.11;
-    ctx.save();ctx.globalAlpha=.28;
+    ctx.save();ctx.globalAlpha=1;
     ctx.translate(px,py);ctx.rotate(a+Math.PI/2+time*.06);if(k%2)ctx.scale(-1,1);
     ctx.drawImage(im,-ss/2,-ss/2,ss,ss);ctx.restore();
   }
@@ -2218,7 +2218,7 @@ function drawChronosEntityHalo(w,h){
       var a=j/n*TAU+rot;
       var px=boss.x+Math.cos(a)*rr,py=boss.y+Math.sin(a)*rr*.74;
       ctx.globalAlpha=.18+.14*Math.sin(time*2.2+j*.7+ring);
-      ctx.fillStyle=(ring%3===0)?'#fff6d8':'#c9e9ff';
+      ctx.fillStyle=(ring%4===0)?'#fff6d8':(ring%4===1?'#7fe6ff':(ring%4===2?'#ff86cf':'#b6a2ff'));
       ctx.beginPath();ctx.arc(px,py,1.1+(ring%2)*.5,0,TAU);ctx.fill();
     }
   }
@@ -2251,6 +2251,7 @@ function drawBoss(){
   if(stage===4&&phase===0){img=GIMG.np1||img;}
   if(!img||!img.complete) return;
   var phaseScale=[1,1.06,1.12][phase]||1;
+  if(stage===4&&phase===1) phaseScale*=0.70;
   var w=boss.def.w*phaseScale*1.15,h=w*img.height/img.width;
   var cols=boss.def.glow||['90,200,255','255,120,220','255,170,80'],col=cols[phase]||cols[0];
   ctx.save();ctx.globalCompositeOperation='lighter';
@@ -2330,12 +2331,13 @@ function drawBoss(){
     ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
     ctx.drawImage(img,-w/2,-h/2,w,h);
     if(phase===0){
+      var pcols=['#7fe6ff','#ff86cf','#ffd36b','#b6a2ff'];
       for(var sg=0;sg<3;sg++){
-        ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.085;
-        if('filter' in ctx) ctx.filter='hue-rotate('+(45+sg*105)+'deg) saturate(1.8)';
-        ctx.rotate(time*(.10+sg*.045));ctx.scale(1.035+sg*.018,1.035+sg*.018);
-        ctx.drawImage(img,-w/2,-h/2,w,h);
-        ctx.filter='none';ctx.restore();
+        ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.42;
+        ctx.strokeStyle=pcols[sg];ctx.lineWidth=2.0;
+        var aa=time*(.18+sg*.07)+sg*2.0;
+        ctx.beginPath();ctx.arc(0,0,w*(.40+sg*.035),aa,aa+1.05);ctx.stroke();
+        ctx.restore();
       }
       ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
     }
@@ -2901,7 +2903,7 @@ function drawFusionScene(tArg){
     if(p<-.05) continue;
     var dir=i%2?1:-1;
     var qe=q*q*(3-2*q);
-    var startAng=i*1.62+0.45, spin=2.2*TAU*dir;
+    var startAng=(i%2?0:Math.PI)+(i>>1)*.22, spin=2.2*TAU*dir;
     function spiralPos(qq){
       var aa=startAng+qq*spin, rr=Math.max(W,H)*.82*(1-qq)+18;
       return {x:cx+Math.cos(aa)*rr,y:cy+Math.sin(aa)*rr*.72};
@@ -2913,19 +2915,17 @@ function drawFusionScene(tArg){
       ctx.save();ctx.globalAlpha=fade*.95;ctx.translate(x,y);ctx.rotate(-dir*(.1+qe*.35));ctx.drawImage(im,-sz/2,-sz/2,sz,sz);ctx.restore();ctx.globalAlpha=1;
       if(q<.7){ctx.save();ctx.globalAlpha=fade*.6;ctx.textAlign='center';ctx.fillStyle=cols[i];ctx.font='8px monospace';ctx.fillText(names[i],W/2,H*.255);ctx.restore();ctx.globalAlpha=1;}
     }
-    // exactly 24 whole-sprite copies per boss: trail along the spiral, then fold into a 24-way ring
-    var ringBlend=cl((q-.38)/.45);
-    var baseR=160-i*12;
-    for(var k2=0;k2<24;k2++){
-      var qk=cl(qe-(k2/23)*.22);
-      var tp=spiralPos(qk);
-      var ra=k2*TAU/24+i*.35+time*.05*dir;
-      var rx=cx+Math.cos(ra)*baseR, ry=cy+Math.sin(ra)*baseR*.72;
-      var px=tp.x+(rx-tp.x)*ringBlend, py=tp.y+(ry-tp.y)*ringBlend;
-      var ss=98;
-      ctx.save();ctx.globalAlpha=.44*(1-ringBlend*.12);
-      ctx.translate(px,py);ctx.rotate(ra+Math.PI/2+time*.10*dir);if((k2+i)%2)ctx.scale(-1,1);
-      ctx.drawImage(im,-ss/2,-ss/2,ss,ss);ctx.restore();
+    // exactly 24 opaque copies per boss, locked to a perfect circular ring
+    if(q>.48){
+      var baseR=150-i*10;
+      for(var k2=0;k2<24;k2++){
+        var a=k2*TAU/24+i*.35+time*.035*dir;
+        var px=cx+Math.cos(a)*baseR, py=cy+Math.sin(a)*baseR;
+        var ss=100;
+        ctx.save();ctx.globalAlpha=1;
+        ctx.translate(px,py);ctx.rotate(a+Math.PI/2+time*.08*dir);if((k2+i)%2)ctx.scale(-1,1);
+        ctx.drawImage(im,-ss/2,-ss/2,ss,ss);ctx.restore();
+      }
     }
   }
   // AI distortion entity growing at the eye, then absorbing the four rings

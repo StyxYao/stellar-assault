@@ -24,16 +24,19 @@ Status: implemented as the final stage.
 
 - The entity arrives from far away: `RESONANCE` zoom-in over 3.6s, using the AI frames `np1`/`np3` and a procedural resonance halo.
 - The four old bosses are **not** part of the entrance; they appear only after phase 1 is defeated.
-- Phase 1 uses the AI Hedron-like entity (`np1`–`np3`) with spectral tinting, hue-rotated ghost frames, a warm core and a rotating resonance halo; no old-boss armor.
+- Phase 1 uses the AI Hedron-like entity (`np1`–`np3`) with a high-contrast white-gold crystalline body, sharp cyan/magenta/violet rim arcs and a rotating dot halo; no soft full-body rainbow wash and no old-boss armor.
 - After appearing at the center, the phase-1 entity rises to the upper screen (about 26% height) over roughly one second.
 - Phase 1 has 36% of the total Boss 5 HP (3629). When it reaches 0, the game enters a 9.4s fusion cinematic.
-- Each boss starts fully off-screen and approaches along a **vortex spiral**, leaving copies on the curved path.
-- Each boss contributes exactly **24 whole-sprite copies**: the copies start as the spiral trail and fold into a 24-way ring.
+- Each boss enters from an off-screen **side edge** (left/right alternating), then follows a vortex spiral inward.
+- Each boss contributes exactly **24 whole-sprite copies**.
+- The copies are fully opaque and snapped to a perfect circular 24-way ring; no translucent afterimage trail.
 - Source-over overlap, no depth sorting: copies visibly overlap and occlude each other.
-- The phase-2 Boss keeps a matching 24-copy halo around its body.
+- Ring is a true circle, not an ellipse.
+- The phase-2 Boss keeps a matching 24-copy opaque halo around its body.
+- Phase-2 body is scaled to 70% of the previous composite size.
 - Finished rings remain in place around the eye for the next boss.
 - After all four rings are formed, the AI distortion frames absorb them and the composite phase-2 body materializes.
-- Phase 2 uses the original Boss 5 phase-1 composite art as its body, starts with the remaining 64% HP (6451), and rises to the upper screen after fusion.
+- Phase 2 uses the original Boss 5 phase-1 composite art as its body, scaled to 70%, starts with the remaining 64% HP (6451), and rises to the upper screen after fusion.
 - Phase 3 keeps the existing phase-3 collapse art.
 - The phase-2 composite then fights with the old bosses' attack patterns. Phase 3 begins at 30% of the phase-2 bar and returns to the black-hole collapse form.
 - AI frames: `b5_entity`, `b5_fusion_mid1`, `b5_fusion_mid2`.
