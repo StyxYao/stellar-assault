@@ -1912,14 +1912,14 @@ function drawLoopLayer(img,scroll,alpha,fitWidth,mirror,blend){
 function paintFractalBg(main,edge,offsetY){
   ctx.fillStyle='#04020c';ctx.fillRect(0,0,W,H);
   if(main&&main.complete&&main.naturalWidth){
-    var sc=Math.max(W/main.width,H/main.height)*1.14;
+    var sc=Math.max(W/main.width,H/main.height)*1.34;
     var bw=main.width*sc,bh=main.height*sc;
-    ctx.save();ctx.translate(W/2,H/2);ctx.rotate(Math.sin(time*.07)*.035);ctx.scale(1+Math.sin(time*.13)*.012,1+Math.sin(time*.11)*.012);
+    ctx.save();ctx.translate(W/2,H/2);ctx.rotate(time*.10);ctx.scale(1+Math.sin(time*.35)*.07,1+Math.sin(time*.31)*.07);
     ctx.globalAlpha=0.95;ctx.drawImage(main,-bw/2,-bh/2,bw,bh);ctx.restore();
   }
   if(edge&&edge.complete&&edge.naturalWidth){
     var es=Math.max(W/edge.width,H/edge.height)*1.10,ew=edge.width*es,eh=edge.height*es;
-    var ecx=W/2,ecy=H*.44,baseRot=time*.045,breath=1+Math.sin(time*.8)*.035;
+    var ecx=W/2,ecy=H*.44,baseRot=time*.10,breath=1+Math.sin(time*.55)*.065;
     // true looping kaleidoscope: eight mirrored wedges rotating at different relative angles
     for(var wi=0;wi<8;wi++){
       ctx.save();ctx.globalCompositeOperation='screen';
@@ -2020,15 +2020,15 @@ function drawEnemy(e){
   if(e.transport){ctx.fillStyle='#ffd27a';ctx.font='8px monospace';ctx.textAlign='center';ctx.fillText('SUPPLY',e.x,e.y-h/2-11);ctx.textAlign='left';}
 }
 function drawChronosFractal(w,h,phase){
-  var n=6+phase*4,rr=Math.min(w,h)*(0.42+0.05*Math.sin(time*1.2));
+  var n=10+phase*6,rr=Math.min(w,h)*(0.42+0.05*Math.sin(time*1.2));
   var cols=['#ff5f7a','#c06aff','#ff9a3a','#ffe7a0'];
   ctx.save();ctx.globalCompositeOperation='lighter';
   for(var i=0;i<n;i++){
-    var a=time*(0.32+phase*0.10)+i/n*TAU;
+    var a=time*(0.42+phase*0.14)+i/n*TAU;
     var r=rr+Math.sin(time*2.1+i*0.8)*10;
     var x=Math.cos(a)*r,y=Math.sin(a)*r*0.62;
     ctx.save();ctx.translate(x,y);ctx.rotate(a+time*0.4);
-    ctx.globalAlpha=0.12+0.05*Math.sin(time*3+i);
+    ctx.globalAlpha=0.16+0.07*Math.sin(time*3+i);
     ctx.strokeStyle=cols[i%4];ctx.lineWidth=1.2;
     ctx.beginPath();
     for(var k=0;k<3;k++){var ta=k*TAU/3,tr=13+4*Math.sin(time*2+i);var tx=Math.cos(ta)*tr,ty=Math.sin(ta)*tr;if(k===0)ctx.moveTo(tx,ty);else ctx.lineTo(tx,ty);}
@@ -2140,12 +2140,17 @@ function drawBoss(){
   if(stage===4) drawChronosFractal(w,h,phase);
   ctx.save();
   if(stage===4){
-    var bsc=1+Math.sin(time*1.4+phase)*.012;
-    ctx.translate(boss.x,boss.y);ctx.rotate(Math.sin(time*.48+phase)*.022);ctx.scale(bsc,bsc);
+    var bsc=1+Math.sin(time*1.35+phase)*.035;
+    ctx.translate(boss.x,boss.y);ctx.rotate(time*(0.10+phase*0.025)+Math.sin(time*.45+phase)*.04);ctx.scale(bsc,bsc);
+    // kaleidoscopic ghost copies of the composite body
+    ctx.globalCompositeOperation='lighter';
+    for(var kg=0;kg<4;kg++){
+      ctx.save();ctx.rotate(kg*Math.PI/2+time*.07);ctx.globalAlpha=.045+.02*Math.sin(time*2+kg);ctx.drawImage(img,-w/2,-h/2,w,h);ctx.restore();
+    }
     // prismatic time-split echo
-    ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.10;
-    ctx.drawImage(img,-w/2-3,-h/2,w,h);
-    ctx.drawImage(img,-w/2+3,-h/2,w,h);
+    ctx.globalAlpha=.14;
+    ctx.drawImage(img,-w/2-5,-h/2,w,h);
+    ctx.drawImage(img,-w/2+5,-h/2,w,h);
     ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
     ctx.drawImage(img,-w/2,-h/2,w,h);
   }else ctx.drawImage(img,boss.x-w/2,boss.y-h/2,w,h);
