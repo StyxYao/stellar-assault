@@ -19,8 +19,9 @@ if(typeof BGMSRC!=='undefined'){
   BGMSRC.s4boss='assets/audio/bgm-boss4.mp3';
   BGMSRC.s5='assets/audio/bgm-stage5.mp3';
   BGMSRC.s5boss='assets/audio/bgm-boss5.mp3';
+  BGMSRC.s5boss2='assets/audio/bgm-boss5-phase2.mp3';
   BGMSRC.s5final='assets/audio/bgm-boss5-final.mp3';
-  if(typeof BGMURL!=='undefined'){ BGMURL.s4=BGMSRC.s4; BGMURL.s2boss=BGMSRC.s2boss; BGMURL.s3boss=BGMSRC.s3boss; BGMURL.s4boss=BGMSRC.s4boss;BGMURL.s5=BGMSRC.s5;BGMURL.s5boss=BGMSRC.s5boss;BGMURL.s5final=BGMSRC.s5final; }
+  if(typeof BGMURL!=='undefined'){ BGMURL.s4=BGMSRC.s4; BGMURL.s2boss=BGMSRC.s2boss; BGMURL.s3boss=BGMSRC.s3boss; BGMURL.s4boss=BGMSRC.s4boss;BGMURL.s5=BGMSRC.s5;BGMURL.s5boss=BGMSRC.s5boss;BGMURL.s5boss2=BGMSRC.s5boss2;BGMURL.s5final=BGMSRC.s5final; }
 }
 var sampleSfx=sfx,sfxLast={},laserOsc=null,laserGain=null,audioBoosted=false,sfxExtraLoaded=false;
 function loadSfxExtras(){
@@ -559,6 +560,7 @@ function bossPhase(p){
   boom(boss.x,boss.y,1.5); shake=Math.max(shake,14);
   phaseFx.push({x:boss.x,y:boss.y,t:0,life:1.35,kind:'phase',phase:p});
   setBanner('PHASE '+(p+1),boss.def.name,1.6);
+  if(stage===4&&p===1) playBgm('s5boss2');
   if(stage===4&&p===2) playBgm('s5final');
   setBossPattern(0);
 }
