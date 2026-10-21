@@ -672,13 +672,14 @@ function bossBombBarrage(){
 function bossRotatingLaser(){
   if(!boss||boss.invuln>0) return;
   if(beams.length>4) return;
-  var ex=boss.x,ey=boss.y+12;
-  var base=boss.spiralAng*0.55+time*0.18;
-  // two eye beams: fan open/close around a rotating gap direction
+  var ey=boss.y+18;
+  var base=Math.atan2(player.y-ey,player.x-boss.x);
+  // two side cannons converge toward the target, then reverse into a widening fan.
+  var sides=[boss.x-78,boss.x+78];
   for(var k=0;k<2;k++){
-    var b=spawnBeam(ex,ey,base,1250,10,0.90,2.6,1,'#ff9a3a',false,boss);
+    var b=spawnBeam(sides[k],ey,base+(k===0?-1:1)*0.06,1300,11,0.90,2.7,1,'#ff9a3a',false,boss);
     if(b){
-      b.fan={base:base,side:k===0?-1:1,min:0.13,max:0.60,turn:0.34,rate:1.6,phase:k*Math.PI};
+      b.fan={base:base,side:k===0?1:-1,min:0.055,max:0.52,turn:0.08,rate:1.35,phase:0};
       b.ang=base+b.fan.side*b.fan.min;
     }
   }
@@ -835,8 +836,7 @@ function collectItem(it){
     }else{pickupMsg=gainOD(25)?'OVERDRIVE!':'OD +25%';}
     score+=50;
   }else if(t==='A'){
-    var wo=['normal','spread','laser','missile'],wi=wo.indexOf(player.weapon);
-    applySpecial(wo[(wi+1)%wo.length]); score+=70; pickupMsg='WEAPON · '+weaponName()+' LV'+player.specialPower+(player.specialPower>=4?' MAX':'');
+    var at=ammoType(it);applySpecial(at);score+=70;pickupMsg='WEAPON · '+weaponName()+' LV'+player.specialPower+(player.specialPower>=4?' MAX':'');
   }else if(t==='S'||t==='L'||t==='M'){ applySpecial(t); score+=80; pickupMsg=weaponName()+' LV'+player.specialPower+(player.specialPower>=4?' MAX':''); }
   else if(t==='W'){
     if(player.options<4||player.wingPower<3){addWingman();pickupMsg='WING '+player.options+' P'+player.wingPower;}
@@ -899,15 +899,25 @@ function fireSpread(){
     addShot(player.x,player.y-20,Math.sin(a)*sp,-Math.cos(a)*sp,player.specialPower>=4?2.6:1.8,false,false,true,player.specialPower>=4);
   }
 }
-function spawnMissile(x,y,wing,dmg,max){
+function spawnMissile(x,y,wing,dmg,max,vx0,vy0){
   dmg=(dmg||6)*powerDamageFactor();
   if(wing) dmg*=0.6615;
-  missiles.push({x:x,y:y,vx:wing?0:0,vy:52,t:0,ignite:0.2,life:2.8,dmg:dmg||6,wing:!!wing,max:!!max,ignited:false});
+  missiles.push({x:x,y:y,vx:vx0||0,vy:vy0!==undefined?vy0:52,t:0,ignite:0.2,life:2.8,dmg:dmg||6,wing:!!wing,max:!!max,ignited:false});
 }
 function launchMissiles(){
-  var n=player.odT>0?8:player.specialPower;
+  if(player.odT>0){
+    var dirs=[[0,-300],[-300,0],[300,0],[0,300]];
+    for(var g=0;g<4;g++){
+      for(var j=-1;j<=1;j++){
+        var d=dirs[g],ox=d[0]!==0?j*18:j*10,oy=d[1]!==0?j*10:j*18;
+        spawnMissile(player.x+ox,player.y+oy,false,5,true,d[0],d[1]);
+      }
+    }
+    playMissileLaunch();return;
+  }
+  var n=player.specialPower;
   for(var i=0;i<n;i++){
-    var x=player.x+(i-(n-1)/2)*9;
+    var x=player.x+(i-(n-1)/2)*14;
     spawnMissile(x,player.y-16,false,player.specialPower>=4?8:6,player.specialPower>=4);
   }
   playMissileLaunch();
@@ -2252,7 +2262,7 @@ function drawPhaseFx(){
 function drawItem(it){
   var cols={N:'#ffe6a0',P:'#7fe7ff',S:'#8dff9e',L:'#ff7ad5',M:'#ffb36b',W:'#c9a0ff',B:'#ffd36b'};
   if(it.type==='A'){
-    var at=nextAmmoLetter(),ac=cols[at]||'#7fe7ff';
+    var at=ammoType(it),ac=cols[at]||'#7fe7ff';
     ctx.save();ctx.translate(it.x,it.y);
     ctx.globalAlpha=0.25;ctx.fillStyle=ac;ctx.beginPath();ctx.arc(0,0,18,0,TAU);ctx.fill();
     ctx.globalAlpha=1;ctx.rotate(it.t*1.4);
@@ -2301,12 +2311,12 @@ function drawODAura(drawY){
   var frame=Math.floor(time*12)%4,img=imgs[frame];
   if(!img||!img.complete||!img.naturalWidth) return;
   var breath=0.5+0.5*Math.sin(time*7);
-  var size=166+breath*10;
+  var size=105+breath*6;
   ctx.save();ctx.globalCompositeOperation='lighter';
   // one soft outer pass and one crisp animated aura pass
-  ctx.globalAlpha=0.26+0.10*breath;
-  ctx.drawImage(img,player.x-size*0.64,drawY-size*0.64,size*1.28,size*1.28);
-  ctx.globalAlpha=0.82;
+  ctx.globalAlpha=0.30+0.10*breath;
+  ctx.drawImage(img,player.x-size*0.60,drawY-size*0.60,size*1.20,size*1.20);
+  ctx.globalAlpha=0.86;
   ctx.drawImage(img,player.x-size*0.5,drawY-size*0.5,size,size);
   ctx.restore();ctx.globalAlpha=1;
 }
