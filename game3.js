@@ -1968,6 +1968,24 @@ function paintFractalBg(main,edge,offsetY){
     fractalZone(1,main, time*.135,1+Math.sin(time*.37)*.045,r1,r2,74,.97);
     fractalZone(2,main,-time*.285,1+Math.sin(time*.43)*.060,0,r1,74,.98);
   }
+  // golden-angle crystal shards sampled from the background: visible fractal parts, not rings
+  if(main&&main.complete&&main.naturalWidth){
+    var golden=2.399963229728653;
+    for(var si=0;si<16;si++){
+      var sa=si*golden+time*.075;
+      var sr=70+Math.sqrt(si+1)*34;
+      var sx=cx+Math.cos(sa)*sr,sy=cy+Math.sin(sa)*sr*.72;
+      var ssz=18+10*(si%3)+Math.sin(time*.9+si)*3;
+      var sw=main.width*.20,sh=main.height*.14;
+      var sxs=Math.max(0,Math.min(main.width-sw,main.width*.5+Math.cos(sa*1.3)*main.width*.25));
+      var sys=Math.max(0,Math.min(main.height-sh,main.height*.5+Math.sin(sa*1.1)*main.height*.28));
+      ctx.save();ctx.translate(sx,sy);ctx.rotate(sa+time*.25);ctx.globalAlpha=.10+.045*Math.sin(time*1.4+si);ctx.globalCompositeOperation='screen';
+      ctx.beginPath();ctx.moveTo(0,-ssz);ctx.lineTo(ssz*.85,ssz*.55);ctx.lineTo(-ssz*.7,ssz*.6);ctx.closePath();ctx.clip();
+      ctx.drawImage(main,sxs,sys,sw,sh,-ssz,-ssz,ssz*2,ssz*2);ctx.restore();
+    }
+    ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+  }
+
   if(edge&&edge.complete&&edge.naturalWidth){
     var es=Math.max(W/edge.width,H/edge.height)*1.12,ew=edge.width*es,eh=edge.height*es;
     for(var wi=0;wi<8;wi++){
@@ -2704,30 +2722,41 @@ function drawFusionScene(){
   ctx.save();
   // old bosses enter in pairs, then shatter into radial fractal copies as they near the core
   function echoFracture(im,x,y,sz,q,color,bi,show){
-    var mx=cx+(x-cx)*(1-q*.82),my=cy+(y-cy)*(1-q*.82);
-    ctx.save();ctx.globalCompositeOperation='lighter';
-    if(q<.97){ctx.globalAlpha=show*(1-q)*.92;ctx.translate(mx,my);ctx.rotate(Math.sin(time*.6+bi)*.04);ctx.drawImage(im,-sz/2,-sz/2,sz,sz);}
-    if(q>.02){
-      var n=12+Math.floor(q*22);
-      for(var j=0;j<n;j++){
-        var a=j/n*TAU+time*(.22+q*.35)+bi*1.7;
-        var rad=22+q*(88+26*Math.sin(time*1.5+j*.7));
-        var px=cx+Math.cos(a)*rad,py=cy+Math.sin(a)*rad*.72;
-        var psz=sz*(.12+.13*(1-q));
-        ctx.save();ctx.translate(px,py);ctx.rotate(a+time*.45);
-        ctx.globalAlpha=show*q*.42*(.45+.55*Math.sin(time*2+j));
-        ctx.drawImage(im,-psz/2,-psz/2,psz,psz);ctx.restore();
-      }
-      // long radial slivers: the boss texture is being pulled into the kaleidoscope
-      for(var j2=0;j2<10;j2++){
-        var a2=j2/10*TAU+time*.18+bi;
-        ctx.save();ctx.translate(cx,cy);ctx.rotate(a2);
-        ctx.globalAlpha=show*q*.20;
-        ctx.drawImage(im, im.width*(j2/10),0,im.width/10,im.height, 26+q*70,-sz*.12,sz*.07,sz*.24);
-        ctx.restore();
+    // Golden-angle / self-similar tiling: the boss texture is literally cut into tiles,
+    // then each tile migrates onto a phyllotaxis spiral around the singularity.
+    var cols=6,rows=6,tw=im.width/cols,th=im.height/rows;
+    var gq=Math.max(0,Math.min(1,q));
+    // keep a ghost of the intact boss at the start
+    if(gq<.72){
+      ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=show*(1-gq)*.92;
+      ctx.translate(x+(cx-x)*gq*.25,y+(cy-y)*gq*.25);ctx.rotate(Math.sin(time*.6+bi)*.035);ctx.drawImage(im,-sz/2,-sz/2,sz,sz);ctx.restore();ctx.globalAlpha=1;
+    }
+    var golden=2.399963229728653; // 137.5 degrees
+    for(var r=0;r<rows;r++){
+      for(var c=0;c<cols;c++){
+        var idx=r*cols+c;
+        var ox=x-sz/2+(c+.5)*sz/cols, oy=y-sz/2+(r+.5)*sz/rows;
+        var ang=idx*golden+time*(.35+(idx%4)*.06)+bi*1.3;
+        var rad=16+Math.sqrt(idx+1)*(22+18*Math.sin(time*.8+idx*.3));
+        var fx=cx+Math.cos(ang)*rad, fy=cy+Math.sin(ang)*rad*.72;
+        var tx=ox+(fx-ox)*gq, ty=oy+(fy-oy)*gq;
+        var rot=gq*(ang+time*.35)+ (1-gq)*0;
+        var selfScale=(0.72+0.28*Math.pow(.82,idx%4))*(1-gq*.28);
+        var dw=sz/cols*selfScale*1.03, dh=sz/rows*selfScale*1.03;
+        ctx.save();ctx.globalCompositeOperation='lighter';
+        ctx.globalAlpha=show*(gq<.03?0.92:Math.min(1,0.22+gq*.85));
+        ctx.translate(tx,ty);ctx.rotate(rot);ctx.drawImage(im,c*tw,r*th,tw,th,-dw/2,-dh/2,dw,dh);ctx.restore();
       }
     }
-    ctx.restore();ctx.globalAlpha=1;
+    // a few long slivers along radial axes, keeping the kaleidoscope direction readable
+    if(gq>.18){
+      for(var j=0;j<8;j++){
+        var a=j/8*TAU+time*.2+bi;
+        ctx.save();ctx.translate(cx,cy);ctx.rotate(a);ctx.globalCompositeOperation='lighter';ctx.globalAlpha=show*gq*.18;
+        ctx.drawImage(im,im.width*(j/8),0,im.width/8,im.height,18+gq*65,-sz*.13,sz*.07,sz*.26);ctx.restore();
+      }
+    }
+    ctx.globalAlpha=1;
   }
   var pairs=[[0,1],[2,3]],sizes=[168,178,178,214];
   for(var pi=0;pi<2;pi++){
