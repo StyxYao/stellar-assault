@@ -1,4 +1,4 @@
-var player={x:W/2,y:H-130,r:7,lives:3,hp:3,maxHp:3,bombs:2,invuln:0,bank:0,noBlink:false,power:1,weapon:'normal',specialPower:1,options:0,wingPower:1,trail:[],wingEntry:[]};
+var player={x:W/2,y:H-130,r:6,lives:3,hp:3,maxHp:3,bombs:2,invuln:0,bank:0,noBlink:false,power:1,weapon:'normal',specialPower:1,options:0,wingPower:1,trail:[],wingEntry:[]};
 var target={x:W/2,y:H-130};
 var stage=0,state='menu',score=0,time=0,lastShot=0,lastHitSfx=0,shake=0;
 var enemies=[],bullets=[],shots=[],parts=[],stars=[],fx=[],ebullets=[],items=[],missiles=[],wingBeams=[],beams=[],orbBullets=[],phaseFx=[];
@@ -674,7 +674,7 @@ function collectItem(it){
   else pickupMsg='BOMB +1';
 }
 function weaponName(){ return ({normal:'NORMAL',none:'NONE',spread:'SPREAD',laser:'LASER',missile:'MISSILE'})[player.weapon]||'NORMAL'; }
-function addShot(x,y,vx,vy,dmg,wing,laser,special,max){ shots.push({x:x,y:y,vx:vx,vy:vy,dmg:dmg,wing:!!wing,laser:!!laser,special:!!special,max:!!max}); }
+function addShot(x,y,vx,vy,dmg,wing,laser,special,max){ shots.push({x:x,y:y,vx:vx,vy:vy,dmg:wing?dmg*0.70:dmg,wing:!!wing,laser:!!laser,special:!!special,max:!!max}); }
 function fireNormal(){
   var lv=player.specialPower;
   if(lv<=1){ addShot(player.x-10,player.y-22,0,-900,3); addShot(player.x+10,player.y-22,0,-900,3); }
@@ -694,6 +694,7 @@ function fireSpread(){
   }
 }
 function spawnMissile(x,y,wing,dmg,max){
+  if(wing) dmg=(dmg||6)*0.70;
   missiles.push({x:x,y:y,vx:wing?0:0,vy:52,t:0,ignite:0.2,life:2.8,dmg:dmg||6,wing:!!wing,max:!!max,ignited:false});
 }
 function launchMissiles(){
@@ -705,7 +706,7 @@ function launchMissiles(){
   playMissileLaunch();
 }
 function fireWingLaser(p,wp,max){
-  var w=4+wp*1.5,dmg=(1.0+wp*0.4)*(max?1.5:1);
+  var w=4+wp*1.5,dmg=(1.0+wp*0.4)*(max?1.5:1)*0.70;
   var target=null,tIdx=-1,tY=0,isBoss=false;
   for(var i=0;i<enemies.length;i++){
     var e=enemies[i];
@@ -1483,8 +1484,8 @@ function drawBullet(b){
   if(img&&img.complete)ctx.drawImage(img,-6,-12,12,24);
   else{ctx.fillStyle='#8fe8ff';ctx.beginPath();ctx.arc(0,0,4,0,TAU);ctx.fill();}
   ctx.globalCompositeOperation='lighter';
-  ctx.fillStyle='rgba(255,255,255,0.98)';ctx.beginPath();ctx.arc(0,0,2.5,0,TAU);ctx.fill();
-  ctx.fillStyle='rgba(255,255,255,0.9)';ctx.fillRect(-1.15,-8,2.3,16);
+  ctx.fillStyle='rgba(255,255,255,0.95)';ctx.beginPath();ctx.arc(0,0,1.35,0,TAU);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.75)';ctx.fillRect(-0.7,-4,1.4,8);
   ctx.restore();ctx.globalCompositeOperation='source-over';
 }
 function drawEB(e){
@@ -1501,11 +1502,10 @@ function drawEB(e){
   // white-hot core; colored edge is kept from the sprite
   ctx.globalCompositeOperation='lighter';
   if(e.type===2){
-    ctx.fillStyle='rgba(255,255,255,0.98)';ctx.beginPath();ctx.arc(0,0,e.rad*0.44,0,TAU);ctx.fill();
-    ctx.fillStyle='rgba(255,255,255,0.7)';ctx.beginPath();ctx.arc(0,0,e.rad*0.70,0,TAU);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.9)';ctx.beginPath();ctx.arc(0,0,e.rad*0.20,0,TAU);ctx.fill();
   }else{
-    ctx.fillStyle='rgba(255,255,255,0.96)';ctx.beginPath();ctx.arc(0,0,2.8,0,TAU);ctx.fill();
-    ctx.fillRect(-1.3,-e.rad*2.2,2.6,e.rad*4.4);
+    ctx.fillStyle='rgba(255,255,255,0.9)';ctx.beginPath();ctx.arc(0,0,1.6,0,TAU);ctx.fill();
+    ctx.fillRect(-0.8,-e.rad*0.75,1.6,e.rad*1.5);
   }
   ctx.restore();ctx.globalCompositeOperation='source-over';
 }
@@ -1818,21 +1818,20 @@ function drawBanner(){
 }
 function drawMenu(){
   paintBg(BGMENU,1)||paintBg(BG1,1);
-  ctx.fillStyle='rgba(3,6,14,0.06)';ctx.fillRect(0,0,W,H);
-  var tg=ctx.createLinearGradient(0,H*0.30,0,H*0.72);
-  tg.addColorStop(0,'rgba(0,0,0,0)');tg.addColorStop(0.12,'rgba(0,0,0,0.55)');
-  tg.addColorStop(0.78,'rgba(0,0,0,0.55)');tg.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=tg;ctx.fillRect(0,H*0.30,W,H*0.42);
+  ctx.fillStyle='rgba(3,6,14,0.035)';ctx.fillRect(0,0,W,H);
+  // The new poster already contains the STELLAR ASSAULT logo.
+  var tg=ctx.createLinearGradient(0,H*0.55,0,H*0.78);
+  tg.addColorStop(0,'rgba(0,0,0,0)');tg.addColorStop(0.55,'rgba(2,4,12,0.55)');tg.addColorStop(1,'rgba(2,4,12,0.78)');
+  ctx.fillStyle=tg;ctx.fillRect(0,H*0.55,W,H*0.25);
   ctx.textAlign='center';
-  ctx.fillStyle='#f2f7ff';ctx.font='30px monospace';ctx.fillText('STELLAR ASSAULT',W/2,H*0.42);
-  ctx.fillStyle='#9fd8ff';ctx.font='12px monospace';ctx.fillText('4 STAGES · 4 BOSSES',W/2,H*0.42+28);
-  ctx.fillStyle='#ffd27a';ctx.font='14px monospace';ctx.fillText(audioReady?'TAP TO START':'TAP TO ENABLE AUDIO',W/2,H*0.52);
+  ctx.fillStyle='#cfeaff';ctx.font='13px monospace';ctx.fillText('4 STAGES · 4 BOSSES',W/2,H*0.635);
+  ctx.fillStyle='#ffd27a';ctx.font='15px monospace';ctx.fillText(audioReady?'TAP TO START':'TAP TO ENABLE AUDIO',W/2,H*0.695);
   ctx.fillStyle='#b8c9da';ctx.font='11px monospace';
-  ctx.fillText('drag · ship follows above finger · auto-fire',W/2,H*0.57);
+  ctx.fillText('drag · ship follows above finger · auto-fire',W/2,H*0.755);
   ctx.fillStyle='#7f93a8';ctx.font='10px monospace';
-  ctx.fillText('patterns © Kenta Cho · BSD-3',W/2,H*0.63);
-  ctx.fillText('art & backgrounds: user',W/2,H*0.66);
-  ctx.fillText('SFX: Kenney Sci-Fi Sounds (CC0)',W/2,H*0.69);
+  ctx.fillText('patterns © Kenta Cho · BSD-3',W/2,H*0.815);
+  ctx.fillText('art & backgrounds: user',W/2,H*0.845);
+  ctx.fillText('SFX: Kenney Sci-Fi Sounds (CC0)',W/2,H*0.875);
   ctx.textAlign='left';
 }
 function drawEnd(){
@@ -1919,7 +1918,7 @@ function drawScene(){
     if(state==='warpOut') psc=Math.max(0.18,1-(1-warpT/1.1)*0.82);
     if(state==='warpIn') psc=0.42+0.58*Math.min(1,1-warpT/0.95);
     if(player.specialPower>=4){ctx.save();ctx.globalCompositeOperation='lighter';var ag=ctx.createRadialGradient(player.x,player.y,0,player.x,player.y,52);ag.addColorStop(0,'rgba(255,215,100,0.28)');ag.addColorStop(1,'rgba(255,180,40,0)');ctx.fillStyle=ag;ctx.beginPath();ctx.arc(player.x,player.y,52,0,TAU);ctx.fill();ctx.restore();}
-    ctx.drawImage(gi,player.x-47*psc,player.y-47*psc,94*psc,94*psc);ctx.globalAlpha=1;
+    ctx.drawImage(gi,player.x-40*psc,player.y-40*psc,80*psc,80*psc);ctx.globalAlpha=1;
   }
   drawPickupMsg();
   drawHUD();
