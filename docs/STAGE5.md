@@ -22,17 +22,18 @@ Status: implemented as the final stage.
 
 ## Boss 5 entrance
 
-- The four old bosses enter **one at a time**, not as a group.
-- Phase 1 uses only the new AI Hedron-like entity (`boss_5_phase1.png`); no old-boss armor.
-- Each boss moves from off-screen toward the black hole / distortion core.
-- While moving it leaves a chain of whole-texture afterimages.
-- At the core its whole sprite is stamped into a two-layer 8-way rosette:
+- The entity arrives from far away: `RESONANCE` zoom-in over 3.6s, using the AI frames `np1`/`np3` and a procedural resonance halo.
+- The four old bosses are **not** part of the entrance; they appear only after phase 1 is defeated.
+- Phase 1 uses only the AI Hedron-like entity (`boss_5_phase1.png` / `np1`–`np3`), animated by cycling AI frames + rotating resonance halo; no old-boss armor.
+- Phase 1 has 36% of the total Boss 5 HP (3629). When it reaches 0, the game enters a 9.4s fusion cinematic.
+- Each boss approaches along a **vortex spiral**, leaving a chain of whole-sprite afterimages on the curved path, then stamps into a two-layer 8-way rosette:
   - Outer ring: 8 copies.
   - Inner ring: 4 copies, 0.62 scale, offset angle.
   - Source-over overlap, no depth sorting: copies visibly overlap and occlude each other.
 - Finished rings remain in place around the eye for the next boss.
-- After all four rings are formed, the AI distortion frames absorb them and the phase-1 entity materializes.
-- When HP crosses 60%, the entity is encased by the four boss copy-rosettes in a 2.6s phase-2 transition; phase-2 art is the composite form.
+- After all four rings are formed, the AI distortion frames absorb them and the composite phase-2 body materializes.
+- Phase 2 starts with the remaining 64% HP (6451), displayed as a refilled bar.
+- The phase-2 composite then fights with the old bosses' attack patterns. Phase 3 begins at 30% of the phase-2 bar and returns to the black-hole collapse form.
 - AI frames: `b5_entity`, `b5_fusion_mid1`, `b5_fusion_mid2`.
 - Boss 5 HP is ×1.5 on top of the global multiplier: **10080**.
 - Cinematic labels: `FOUR ECHOES` → `CONVERGENCE` → `SINGULARITY` → `CHRONOS ECHO`.
