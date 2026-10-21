@@ -1,4 +1,4 @@
-var player={x:W/2,y:H-130,r:6,lives:3,hp:3,maxHp:3,bombs:2,respawnT:0,respawnGift:false,invuln:0,bank:0,noBlink:false,power:1,weapon:'normal',specialPower:1,options:0,wingPower:1,trail:[],wingEntry:[]};
+var player={x:W/2,y:H-130,r:6,lives:3,hp:3,maxHp:3,bombs:2,od:0,odT:0,powerXp:0,respawnT:0,respawnGift:false,invuln:0,bank:0,noBlink:false,power:1,weapon:'normal',specialPower:1,options:0,wingPower:1,trail:[],wingEntry:[]};
 var target={x:W/2,y:H-130};
 var stage=0,state='menu',score=0,time=0,lastShot=0,lastHitSfx=0,shake=0;
 var enemies=[],bullets=[],shots=[],parts=[],stars=[],fx=[],ebullets=[],items=[],missiles=[],wingBeams=[],beams=[],orbBullets=[],phaseFx=[];
@@ -475,7 +475,7 @@ function part(x,y,col,n,sp){
 function setBanner(txt,sub,t){ banner=txt; bannerSub=sub||''; bannerT=t; }
 
 function startGame(){
-  score=0; player.lives=3; player.hp=3; player.bombs=2; player.respawnT=0; player.respawnGift=false; player.noBlink=false; player.power=1; player.weapon='normal'; player.specialPower=1; player.options=0; player.wingPower=1; player.trail=[]; player.wingEntry=[]; items.length=0; missiles.length=0; wingBeams.length=0; beams.length=0; orbBullets.length=0;
+  score=0; player.lives=3; player.hp=3; player.bombs=2; player.od=0; player.odT=0; player.powerXp=0; player.respawnT=0; player.respawnGift=false; player.noBlink=false; player.power=1; player.weapon='normal'; player.specialPower=1; player.options=0; player.wingPower=1; player.trail=[]; player.wingEntry=[]; items.length=0; missiles.length=0; wingBeams.length=0; beams.length=0; orbBullets.length=0;
   stage=0; startStage(0);
 }
 function startStage(i){
@@ -759,7 +759,7 @@ function hitPlayer(){
     var atMin=player.specialPower<=1;
     var dX=player.x,dY=player.y;
     player.lives--; player.hp=3; player.invuln=2.2; shake=18;
-    player.specialPower=Math.max(1,player.specialPower-1); player.power=player.specialPower; player.bombs=2; player.options=0; player.wingEntry=[];
+    player.specialPower=Math.max(1,player.specialPower-1); player.power=player.specialPower; player.powerXp=0; player.od=0; player.odT=0; player.bombs=2; player.options=0; player.wingEntry=[];
     rebuildSfxBus();
     player.respawnT=1.3; player.respawnGift=atMin;
     player.x=W/2; player.y=H-130; target.x=player.x; target.y=player.y;
@@ -776,7 +776,7 @@ function removeEnemy(idx){
 function maybeDrop(e){
   if(e.transport){
     items.push({x:e.x-24,y:e.y,vy:45,type:'P',t:0});
-    items.push({x:e.x,y:e.y,vy:45,type:'A',t:0});
+    items.push({x:e.x,y:e.y,vy:45,type:'P',t:0});
     items.push({x:e.x+24,y:e.y,vy:45,type:'W',t:0});
     items.push({x:e.x,y:e.y+16,vy:45,type:'B',t:0});
     if(Math.random()<0.21) items.push({x:e.x+12,y:e.y+24,vy:40,type:'1UP',t:0});
@@ -785,19 +785,19 @@ function maybeDrop(e){
   if(e.transport) return;
   if(e.elite){
     items.push({x:e.x-20,y:e.y,vy:50,type:'W',t:0});
-    items.push({x:e.x+20,y:e.y,vy:50,type:'A',t:0});
+    items.push({x:e.x+20,y:e.y,vy:50,type:'P',t:0});
     if(Math.random()<0.165) items.push({x:e.x,y:e.y+20,vy:45,type:'1UP',t:0});
     return;
   }
   var chance=([0.10,0.14,0.16,0.35,0.28,0.14][e.type]||0.10)*0.75;
   if(!e.first && Math.random()>=chance) return;
   var r=Math.random(),type;
-  if(r<0.38) type='P';
-  else if(r<0.72) type='A';
-  else if(r<0.86) type='W';
-  else if(r<0.97) type='B';
+  if(r<0.52) type='P';
+  else if(r<0.70) type='W';
+  else if(r<0.88) type='B';
+  else if(r<0.96) type='A';
   else type='1UP';
-  if(e.first && type==='B') type='A';
+  if(e.first && type==='B') type='P';
   items.push({x:e.x,y:e.y,vy:55,type:type,t:0});
 }
 function playOneUp(){
@@ -816,26 +816,50 @@ function ammoType(it){ return ['N','S','L','M'][Math.floor(it.t/1.2)%4]; }
 function applySpecial(t){
   player.weapon=t==='N'?'normal':(t==='S'?'spread':(t==='L'?'laser':(t==='M'?'missile':t)));
 }
+function gainOD(n){
+  if(player.odT>0){player.odT=Math.min(8,player.odT+n*0.035);return false;}
+  player.od=Math.min(100,player.od+n);
+  if(player.od>=100){player.od=0;player.odT=6.0;sfx('b_charge',0.34);return true;}
+  return false;
+}
 function collectItem(it){
   var t=it.type;
-  if(t==='P'){ player.specialPower=Math.min(4,player.specialPower+1); player.power=player.specialPower; score+=50; }
-  else if(t==='A'){ applySpecial(ammoType(it)); score+=70; }
-  else if(t==='S'||t==='L'||t==='M'){ applySpecial(t); score+=80; }
-  else if(t==='W'){ addWingman(); score+=40; }
-  else if(t==='1UP'){ player.lives=Math.min(5,player.lives+1); score+=250; }
-  else { player.bombs=Math.min(5,player.bombs+1); score+=30; }
+  if(t==='P'){
+    if(player.specialPower<4){
+      player.powerXp++;
+      if(player.powerXp>=2){player.specialPower++;player.powerXp=0;player.power=player.specialPower;pickupMsg='POWER LV'+player.specialPower+(player.specialPower>=4?' MAX':'');}
+      else pickupMsg='POWER CHARGE '+player.powerXp+'/2';
+    }else{pickupMsg=gainOD(25)?'OVERDRIVE!':'OD +25%';}
+    score+=50;
+  }else if(t==='A'){
+    pickupMsg=gainOD(20)?'OVERDRIVE!':'WEAPON CORE +20 OD';score+=70;
+  }else if(t==='S'||t==='L'||t==='M'){ applySpecial(t); score+=80; pickupMsg=weaponName()+' LV'+player.specialPower+(player.specialPower>=4?' MAX':''); }
+  else if(t==='W'){
+    if(player.options<4||player.wingPower<3){addWingman();pickupMsg='WING '+player.options+' P'+player.wingPower;}
+    else{pickupMsg=gainOD(15)?'OVERDRIVE!':'WING MAX +15 OD';}
+    score+=40;
+  }else if(t==='1UP'){
+    if(player.lives<7){player.lives++;pickupMsg='1UP  LIFE +1';}
+    else{pickupMsg=gainOD(25)?'OVERDRIVE!':'LIFE MAX +25 OD';}
+    score+=250;
+  }else{
+    if(player.bombs<5){player.bombs++;pickupMsg='BOMB +1';}
+    else{pickupMsg=gainOD(15)?'OVERDRIVE!':'BOMB MAX +15 OD';}
+    score+=30;
+  }
   part(it.x,it.y,'#9fe8ff',10,120);
   sfx('pickup_real',0.48); if(t==='1UP') playOneUp();
-  pickupT=1.3;
-  if(t==='P') pickupMsg='POWER LV'+player.specialPower+(player.specialPower>=4?' MAX':'');
-  else if(t==='A') pickupMsg=weaponName()+' LV'+player.specialPower+(player.specialPower>=4?' MAX':'');
-  else if(t==='S'||t==='L'||t==='M') pickupMsg=weaponName()+' LV'+player.specialPower+(player.specialPower>=4?' MAX':'');
-  else if(t==='W') pickupMsg='WING '+player.options+' P'+player.wingPower;
-  else if(t==='1UP') pickupMsg='1UP  LIFE +1';
-  else pickupMsg='BOMB +1';
+  pickupT=1.4;
 }
 function weaponName(){ return ({normal:'NORMAL',none:'NONE',spread:'SPREAD',laser:'LASER',missile:'MISSILE'})[player.weapon]||'NORMAL'; }
-function powerDamageFactor(){ return ([1,0.96,0.94,0.60][Math.max(0,Math.min(3,player.specialPower-1))]||1)*1.10; }
+function cycleWeapon(){
+  var order=['normal','spread','laser','missile'];
+  var idx=order.indexOf(player.weapon);
+  player.weapon=order[(idx+1)%order.length];
+  pickupT=1.1;pickupMsg='WEAPON · '+weaponName();
+  sfx('pickup_real',0.28);
+}
+function powerDamageFactor(){ return (([1,0.96,0.94,0.60][Math.max(0,Math.min(3,player.specialPower-1))]||1)*1.10)*(player.odT>0?1.20:1); }
 function addShot(x,y,vx,vy,dmg,wing,laser,special,max){ var f=powerDamageFactor(); shots.push({x:x,y:y,vx:vx,vy:vy,dmg:dmg*f*(wing?0.6615:1),wing:!!wing,laser:!!laser,special:!!special,max:!!max}); }
 function fireNormal(){
   var lv=player.specialPower;
@@ -916,7 +940,7 @@ function bossLaser(){
   sfx('laser',0.06);
 }
 function laserDamage(dt){
-  laserTick-=dt; if(laserTick>0) return; laserTick=0.08;
+  laserTick-=dt; if(laserTick>0) return; laserTick=player.odT>0?0.055:0.08;
   var w=8+Math.min(player.specialPower,3)*5,dmg=(2+player.specialPower*2)*powerDamageFactor();
   var target=null,tIdx=-1,tY=0;
   for(var i=0;i<enemies.length;i++){
@@ -968,7 +992,7 @@ function updateOptions(dt){
   if(state!=='play'&&state!=='boss') return;
   optionT-=dt;
   if(optionT<=0){
-    optionT=player.weapon==='laser'?0.22:0.24;
+    optionT=(player.weapon==='laser'?0.22:0.24)/(player.odT>0?1.25:1);
     for(var i=0;i<player.options;i++){
       var we=player.wingEntry[i];if(we&&we.t<we.dur) continue;
       var p=optionPos(i),wp=player.wingPower,max=player.specialPower>=4;
@@ -1278,6 +1302,7 @@ function step(dt){
   player.x=Math.max(16,Math.min(W-16,player.x)); player.y=Math.max(110,Math.min(H-56,player.y));
   player.bank+=((dx*0.004)-player.bank)*Math.min(1,dt*8);
   if(player.invuln>0) player.invuln-=dt;
+  if(player.odT>0) player.odT=Math.max(0,player.odT-dt);
   if(player.respawnT>0){
     player.respawnT-=dt;
     if(player.respawnT<=0){
@@ -1294,13 +1319,13 @@ function step(dt){
 
   if((state==='play'||state==='boss')&&player.respawnT<=0){
     if(player.weapon==='spread'){
-      if(time-lastSpecial>0.16){ lastSpecial=time; fireSpread(); sfx('p_spread',0.36); }
+      if(time-lastSpecial>(player.odT>0?0.115:0.16)){ lastSpecial=time; fireSpread(); sfx('p_spread',0.36); }
     }else if(player.weapon==='laser'){
       laserDamage(dt);
     }else if(player.weapon==='missile'){
-      if(time-lastMissile>0.46){ lastMissile=time; launchMissiles(); }
+      if(time-lastMissile>(player.odT>0?0.32:0.46)){ lastMissile=time; launchMissiles(); }
     }else{
-      if(time-lastShot>0.10){ lastShot=time; fireNormal(); if(Math.random()<0.7) sfx('p_normal',0.34); }
+      if(time-lastShot>(player.odT>0?0.075:0.10)){ lastShot=time; fireNormal(); if(Math.random()<0.7) sfx('p_normal',0.34); }
     }
   }
   if(bannerT>0) bannerT-=dt;
@@ -1982,13 +2007,14 @@ function drawPhaseFx(){
 function drawItem(it){
   var cols={N:'#ffe6a0',P:'#7fe7ff',S:'#8dff9e',L:'#ff7ad5',M:'#ffb36b',W:'#c9a0ff',B:'#ffd36b'};
   if(it.type==='A'){
-    var at=ammoType(it),ac=cols[at]||'#7fe7ff';
+    var ac='#ffd36b';
     ctx.save();ctx.translate(it.x,it.y);
-    ctx.globalAlpha=0.2;ctx.fillStyle=ac;ctx.beginPath();ctx.arc(0,0,18,0,TAU);ctx.fill();
+    ctx.globalAlpha=0.25;ctx.fillStyle=ac;ctx.beginPath();ctx.arc(0,0,18,0,TAU);ctx.fill();
     ctx.globalAlpha=1;ctx.rotate(it.t*1.4);
     ctx.beginPath();ctx.moveTo(0,-13);ctx.lineTo(11,0);ctx.lineTo(0,13);ctx.lineTo(-11,0);ctx.closePath();
-    ctx.fillStyle='rgba(8,16,28,0.92)';ctx.fill();ctx.strokeStyle=ac;ctx.lineWidth=2.2;ctx.stroke();
-    ctx.rotate(-it.t*1.4);ctx.fillStyle=ac;ctx.font='11px monospace';ctx.textAlign='center';ctx.fillText(at,0,4);
+    ctx.fillStyle='rgba(8,16,28,0.94)';ctx.fill();ctx.strokeStyle=ac;ctx.lineWidth=2.2;ctx.stroke();
+    ctx.rotate(-it.t*1.4);
+    ctx.fillStyle=ac;ctx.font='bold 10px "Arial Black", Arial, sans-serif';ctx.textAlign='center';ctx.fillText('OD',0,4);
     ctx.textAlign='left';ctx.restore();return;
   }
   if(it.type==='1UP'){
@@ -2079,7 +2105,11 @@ function drawHUD(){
     ctx.fillStyle='#9fb6cf';ctx.font='9px monospace';ctx.fillText('BOSS',16,59);
   }
   ctx.fillStyle='#cfe0f0';ctx.font='11px monospace';
-  var maxLv=player.specialPower>=4;ctx.fillStyle=maxLv?'#ffd76a':'#cfe0f0';ctx.fillText(weaponName()+'  LV'+player.specialPower+(maxLv?' MAX':''),16,H-96);ctx.fillStyle='#cfe0f0';
+  var maxLv=player.specialPower>=4;ctx.fillStyle=maxLv?'#ffd76a':'#cfe0f0';ctx.fillText('‹ '+weaponName()+'  LV'+player.specialPower+(maxLv?' MAX':' '+player.powerXp+'/2')+' ›',16,H-96);ctx.fillStyle='#cfe0f0';
+  ctx.fillStyle='#1a2638';ctx.fillRect(16,H-112,112,6);
+  if(player.odT>0){ctx.fillStyle='#ffd76a';ctx.fillRect(16,H-112,112,6);ctx.fillStyle='#ffe9a8';ctx.font='9px monospace';ctx.fillText('OVERDRIVE '+player.odT.toFixed(1),134,H-107);}
+  else{ctx.fillStyle='#62e8ff';ctx.fillRect(16,H-112,112*player.od/100,6);ctx.fillStyle='#8fb8ca';ctx.font='8px monospace';ctx.fillText('OD '+Math.floor(player.od)+'%',134,H-107);}
+  ctx.fillStyle='#cfe0f0';ctx.font='11px monospace';
   var hpx='HP ';for(var hi=0;hi<player.maxHp;hi++)hpx+=(hi<player.hp?'●':'○');
   ctx.fillStyle='#8dff9e';ctx.fillText(hpx,16,H-78);ctx.fillStyle='#cfe0f0';
   ctx.fillText('WING '+player.options+'·P'+player.wingPower,16,H-60);
@@ -2206,6 +2236,15 @@ function drawScene(){
     if(state==='warpOut') psc=Math.max(0.18,1-(1-warpT/1.1)*0.82);
     if(state==='warpIn') psc=0.42+0.58*Math.min(1,1-warpT/0.95);
     if(player.specialPower>=4){ctx.save();ctx.globalCompositeOperation='lighter';var ag=ctx.createRadialGradient(player.x,drawY,0,player.x,drawY,52);ag.addColorStop(0,'rgba(255,215,100,0.28)');ag.addColorStop(1,'rgba(255,180,40,0)');ctx.fillStyle=ag;ctx.beginPath();ctx.arc(player.x,drawY,52,0,TAU);ctx.fill();ctx.restore();}
+    if(player.odT>0){
+      ctx.save();ctx.globalCompositeOperation='lighter';
+      var og=ctx.createRadialGradient(player.x,drawY,0,player.x,drawY,48);
+      og.addColorStop(0,'rgba(255,220,100,0.24)');og.addColorStop(0.55,'rgba(80,220,255,0.16)');og.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=og;ctx.beginPath();ctx.arc(player.x,drawY,48,0,TAU);ctx.fill();
+      ctx.globalAlpha=0.65;ctx.strokeStyle='#ffe08a';ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(player.x,drawY,34+Math.sin(time*8)*3,0,TAU);ctx.stroke();
+      ctx.restore();
+    }
     ctx.drawImage(gi,player.x-40*psc,drawY-40*psc,80*psc,80*psc);ctx.globalAlpha=1;
   }
   drawPickupMsg();
@@ -2228,6 +2267,7 @@ function onDown(e){
     startGame(); return;
   }
   if(state==='win'||state==='over'){ startGame(); return; }
+  if((state==='play'||state==='boss')&&p.x<180&&p.y>H-118&&p.y<H-82){ cycleWeapon(); return; }
   var bx=W-64,by=H-78;
   if((p.x-bx)*(p.x-bx)+(p.y-by)*(p.y-by)<54*54){ bomb(); return; }
   var now=performance.now();
