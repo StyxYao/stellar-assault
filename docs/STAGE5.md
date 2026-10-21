@@ -11,20 +11,28 @@ Status: implemented as the final stage.
 
 ## Background
 
-- `assets/bg/stage5-main.webp` — AI-generated kaleidoscopic fractal space.
-- `assets/bg/stage5-edge.webp` — transparent recursive shard overlay.
-- The scene runs three concentric, same-center kaleidoscope rings with feathered overlap: inner CCW, middle CW, outer CCW, each at a different speed.
-- Ring boundaries use 74px feathered alpha blending; no ring strokes or gear-like outlines.
-- Sixteen extra background shards are sampled from the crystal image and placed on a golden-angle phyllotaxis spiral.
-- A 6-fold mirrored polar fold (kaleidoscope) drives a live Julia set: z = z² + c, with c orbiting slowly.
-- A recursive Sierpinski triangle IFS layer is drawn as three rotated, breathing wireframes.
-- IFS formula: p_{n+1} = (p_n + v_i) / 2, with three triangle vertices v_i.
-- The four old bosses enter two at a time at near-original scale.
-- Each boss texture is cut into a 6×6 tile grid; the tiles migrate onto a Sierpinski IFS attractor around the core, with golden-angle rotation and self-similar scale reduction.
-- Boss 5 HP is increased by ×1.5 on top of the global boss multiplier (10080 total).
-- The old boss textures dissolve into the AI-generated distortion entity frames before the final composite forms.
-- Concentric eye-rings and 10 radial filaments are drawn procedurally over it.
-- No wormhole/tunnel scroll is used.
+- `assets/bg/stage5-main.webp` — AI-generated kaleidoscopic crystal space.
+- **Two** counter-rotating regions share one center:
+  - Inner region: counter-clockwise.
+  - Outer region: clockwise.
+- They overlap through a 58px feathered alpha transition; no drawn rings, no gear outlines.
+- The exact center is a small, static black hole with a thin photon ring and a soft violet halo.
+- No accretion disk, no rotating eye, no tunnel scroll.
+- The black hole is the typhoon eye: the two crystal regions move around it while the center stays still.
+
+## Boss 5 entrance
+
+- The four old bosses enter **one at a time**, not as a group.
+- Each boss moves from off-screen toward the black hole / distortion core.
+- While moving it leaves a chain of whole-texture afterimages.
+- At the core its texture is repeatedly stamped into a two-layer, self-similar fractal ring:
+  - Outer ring: 11 copies.
+  - Inner ring: 7 copies, 0.60 scale, offset angle.
+- Finished rings remain in place around the eye for the next boss.
+- After all four rings are formed, the AI distortion frames absorb them and CHRONOS ECHO materializes.
+- AI frames: `b5_entity`, `b5_fusion_mid1`, `b5_fusion_mid2`.
+- Boss 5 HP is ×1.5 on top of the global multiplier: **10080**.
+- Cinematic labels: `FOUR ECHOES` → `CONVERGENCE` → `SINGULARITY` → `CHRONOS ECHO`.
 
 ## New enemies
 

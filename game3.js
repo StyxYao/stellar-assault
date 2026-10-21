@@ -1510,7 +1510,7 @@ function step(dt){
   if(laserHitT>0) laserHitT=Math.max(0,laserHitT-dt);
   if(stageFlash>0) stageFlash=Math.max(0,stageFlash-dt/0.6);
   if(stageWarp>0) stageWarp=Math.max(0,stageWarp-dt/1.5);
-  if(state==='fusion'){fusionT+=dt;if(fusionT>=5.4)spawnBossNow();return;}
+  if(state==='fusion'){fusionT+=dt;if(fusionT>=10.8)spawnBossNow();return;}
   if(state==='cast'){castT+=dt;castScroll+=38*dt;return;}
   if(state==='menu'||state==='win'||state==='over') return;
 
@@ -2010,55 +2010,36 @@ function fractalZone(idx,img,rot,scale,r0,r1,feather,alpha){
   g.globalCompositeOperation='destination-in';g.fillStyle=grd;g.fillRect(0,0,W,H);g.globalCompositeOperation='source-over';
   ctx.save();ctx.globalAlpha=alpha;ctx.drawImage(c,0,0,W,H);ctx.restore();
 }
+function drawBlackHole(){
+  var cx=W/2,cy=H*.44,hr=Math.max(24,Math.min(W,H)*.078);
+  // soft outer light, no accretion disk
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  var g=ctx.createRadialGradient(cx,cy,hr*.8,cx,cy,hr*3.0);
+  g.addColorStop(0,'rgba(190,150,255,0.18)');
+  g.addColorStop(.45,'rgba(120,90,210,0.08)');
+  g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,hr*3.0,0,TAU);ctx.fill();
+  // the hole itself
+  ctx.globalCompositeOperation='source-over';
+  ctx.fillStyle='#000';ctx.beginPath();ctx.arc(cx,cy,hr,0,TAU);ctx.fill();
+  // thin photon ring
+  ctx.globalCompositeOperation='lighter';
+  ctx.globalAlpha=.9;ctx.strokeStyle='rgba(255,238,190,0.95)';ctx.lineWidth=1.6;
+  ctx.beginPath();ctx.arc(cx,cy,hr+1.2,0,TAU);ctx.stroke();
+  ctx.globalAlpha=.35;ctx.strokeStyle='rgba(170,130,255,0.9)';ctx.lineWidth=4;
+  ctx.beginPath();ctx.arc(cx,cy,hr+4,0,TAU);ctx.stroke();
+  ctx.restore();ctx.globalAlpha=1;
+}
 function paintFractalBg(main,edge,offsetY){
   ctx.fillStyle='#04020c';ctx.fillRect(0,0,W,H);
   var cx=W/2,cy=H*.44;
   if(main&&main.complete&&main.naturalWidth){
-    var r1=Math.min(W,H)*.24,r2=Math.min(W,H)*.42;
-    // three concentric rings: inner CCW, middle CW, outer CCW; same center, feathered overlap
-    fractalZone(0,main,-time*.070,1+Math.sin(time*.30)*.055,r2,Math.max(W,H)*.92,74,.96);
-    fractalZone(1,main, time*.135,1+Math.sin(time*.37)*.045,r1,r2,74,.97);
-    fractalZone(2,main,-time*.285,1+Math.sin(time*.43)*.060,0,r1,74,.98);
+    var r1=Math.min(W,H)*.34;
+    // exactly two counter-rotating regions; the eye stays still
+    fractalZone(0,main, time*.085,1+Math.sin(time*.31)*.05,r1,Math.max(W,H)*.92,58,.97);
+    fractalZone(1,main,-time*.205,1+Math.sin(time*.43)*.055,0,r1,58,.98);
   }
-  paintJuliaKaleido(cx,cy);
-
-  drawSierpinskiField(cx,cy);
-
-  // golden-angle crystal shards sampled from the background: visible fractal parts, not rings
-  if(main&&main.complete&&main.naturalWidth){
-    var golden=2.399963229728653;
-    for(var si=0;si<16;si++){
-      var sa=si*golden+time*.075;
-      var sr=70+Math.sqrt(si+1)*34;
-      var sx=cx+Math.cos(sa)*sr,sy=cy+Math.sin(sa)*sr*.72;
-      var ssz=18+10*(si%3)+Math.sin(time*.9+si)*3;
-      var sw=main.width*.20,sh=main.height*.14;
-      var sxs=Math.max(0,Math.min(main.width-sw,main.width*.5+Math.cos(sa*1.3)*main.width*.25));
-      var sys=Math.max(0,Math.min(main.height-sh,main.height*.5+Math.sin(sa*1.1)*main.height*.28));
-      ctx.save();ctx.translate(sx,sy);ctx.rotate(sa+time*.25);ctx.globalAlpha=.10+.045*Math.sin(time*1.4+si);ctx.globalCompositeOperation='screen';
-      ctx.beginPath();ctx.moveTo(0,-ssz);ctx.lineTo(ssz*.85,ssz*.55);ctx.lineTo(-ssz*.7,ssz*.6);ctx.closePath();ctx.clip();
-      ctx.drawImage(main,sxs,sys,sw,sh,-ssz,-ssz,ssz*2,ssz*2);ctx.restore();
-    }
-    ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
-  }
-
-  if(edge&&edge.complete&&edge.naturalWidth){
-    var es=Math.max(W/edge.width,H/edge.height)*1.12,ew=edge.width*es,eh=edge.height*es;
-    for(var wi=0;wi<8;wi++){
-      ctx.save();ctx.globalCompositeOperation='screen';ctx.translate(cx,cy);ctx.rotate(-time*.09+wi*TAU/8);
-      ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,Math.max(W,H)*.8,-TAU/16,TAU/16);ctx.closePath();ctx.clip();
-      ctx.rotate(time*.20+wi*.18);if(wi%2)ctx.scale(-1,1);
-      ctx.globalAlpha=.10+.035*Math.sin(time*1.4+wi);ctx.drawImage(edge,-ew/2,-eh/2,ew,eh);ctx.restore();
-    }
-  }
-  // no hard rings: only a soft central breath of light
-  ctx.save();ctx.globalCompositeOperation='lighter';
-  var gg=ctx.createRadialGradient(cx,cy,0,cx,cy,85);
-  gg.addColorStop(0,'rgba(255,235,170,'+(0.10+0.03*Math.sin(time*1.2))+')');
-  gg.addColorStop(.55,'rgba(170,120,255,0.055)');
-  gg.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=gg;ctx.beginPath();ctx.arc(cx,cy,85,0,TAU);ctx.fill();
-  ctx.restore();ctx.globalAlpha=1;
+  drawBlackHole();
 }
 
 function paintStageBg(main,edge,offsetY){
@@ -2772,109 +2753,75 @@ function drawMenu(){
   ctx.textAlign='left';
 }
 function drawFusionScene(){
-  var t=fusionT,cx=W/2,cy=H*.46;
+  var t=fusionT,cx=W/2,cy=H*.44;
   var imgs=[GIMG.b1_1,GIMG.b2_1,GIMG.b3_1,GIMG.b4_1];
+  var names=['VOID SOVEREIGN','ABYSS DEVOURER','STAR BEHEMOTH','SERAPHIC WINGS'];
   var cols=['#ff5f7a','#c06aff','#ff9a3a','#ffe7a0'];
+  function cl(v){return Math.max(0,Math.min(1,v));}
   ctx.save();
-  // old bosses enter in pairs, then shatter into radial fractal copies as they near the core
-  function echoFracture(im,x,y,sz,q,color,bi,show){
-    // Golden-angle / self-similar tiling: the boss texture is literally cut into tiles,
-    // then each tile migrates onto a phyllotaxis spiral around the singularity.
-    var cols=6,rows=6,tw=im.width/cols,th=im.height/rows;
-    var gq=Math.max(0,Math.min(1,q));
-    // keep a ghost of the intact boss at the start
-    if(gq<.72){
-      ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=show*(1-gq)*.92;
-      ctx.translate(x+(cx-x)*gq*.25,y+(cy-y)*gq*.25);ctx.rotate(Math.sin(time*.6+bi)*.035);ctx.drawImage(im,-sz/2,-sz/2,sz,sz);ctx.restore();ctx.globalAlpha=1;
-    }
-    var golden=2.399963229728653; // 137.5 degrees
-    for(var r=0;r<rows;r++){
-      for(var c=0;c<cols;c++){
-        var idx=r*cols+c;
-        var ox=x-sz/2+(c+.5)*sz/cols, oy=y-sz/2+(r+.5)*sz/rows;
-        var ang=idx*golden+time*(.35+(idx%4)*.06)+bi*1.3;
-        var rad=16+Math.sqrt(idx+1)*(22+18*Math.sin(time*.8+idx*.3));
-        var ip=IFS_POINTS[(idx*7+bi*13)%IFS_POINTS.length]||{x:.5,y:.45};
-        var fx=cx+(ip.x-.5)*300+Math.cos(ang)*10, fy=cy+(ip.y-.45)*250+Math.sin(ang)*8;
-        var tx=ox+(fx-ox)*gq, ty=oy+(fy-oy)*gq;
-        var rot=gq*(ang+time*.35)+ (1-gq)*0;
-        var selfScale=(0.72+0.28*Math.pow(.82,idx%4))*(1-gq*.28);
-        var dw=sz/cols*selfScale*1.03, dh=sz/rows*selfScale*1.03;
-        ctx.save();ctx.globalCompositeOperation='lighter';
-        ctx.globalAlpha=show*(gq<.03?0.92:Math.min(1,0.22+gq*.85));
-        ctx.translate(tx,ty);ctx.rotate(rot);ctx.drawImage(im,c*tw,r*th,tw,th,-dw/2,-dh/2,dw,dh);ctx.restore();
+  // the four bosses enter one by one, dragging afterimages toward the distortion core
+  for(var i=0;i<4;i++){
+    var im=imgs[i];if(!im||!im.complete) continue;
+    var startT=.15+i*2.35,span=2.35;
+    var p=(t-startT)/span,q=cl(p);
+    if(p<-.05) continue;
+    var dir=i%2?1:-1;
+    var qe=q*q*(3-2*q);
+    var x=cx+dir*(W*.58)*(1-qe), y=cy+(i%2?22:-22)*(1-qe);
+    var sz=196*(1-.22*qe);
+    var fade=cl((1.15-q)/.25);
+    if(p<1.15){
+      // afterimages of the whole boss texture
+      for(var k=7;k>=1;k--){
+        var qk=cl(qe-k*.035);
+        var tx=cx+dir*(W*.58)*(1-qk),ty=cy+(i%2?22:-22)*(1-qk);
+        ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.055*(8-k)*fade;
+        ctx.translate(tx,ty);ctx.rotate(-dir*(.12+qk*.3));ctx.drawImage(im,-sz*.44,-sz*.44,sz*.88,sz*.88);ctx.restore();
       }
+      ctx.save();ctx.globalAlpha=fade*.95;ctx.translate(x,y);ctx.rotate(-dir*(.1+qe*.35));ctx.drawImage(im,-sz/2,-sz/2,sz,sz);ctx.restore();ctx.globalAlpha=1;
+      if(q<.7){ctx.save();ctx.globalAlpha=fade*.6;ctx.textAlign='center';ctx.fillStyle=cols[i];ctx.font='8px monospace';ctx.fillText(names[i],W/2,H*.255);ctx.restore();ctx.globalAlpha=1;}
     }
-    // a few long slivers along radial axes, keeping the kaleidoscope direction readable
-    if(gq>.18){
-      for(var j=0;j<8;j++){
-        var a=j/8*TAU+time*.2+bi;
-        ctx.save();ctx.translate(cx,cy);ctx.rotate(a);ctx.globalCompositeOperation='lighter';ctx.globalAlpha=show*gq*.18;
-        ctx.drawImage(im,im.width*(j/8),0,im.width/8,im.height,18+gq*65,-sz*.13,sz*.07,sz*.26);ctx.restore();
-      }
-    }
-    ctx.globalAlpha=1;
-  }
-  var pairs=[[0,1],[2,3]],sizes=[168,178,178,214];
-  for(var pi=0;pi<2;pi++){
-    var pair=pairs[pi],start=pi===0?.15:1.85,endT=pi===0?2.45:4.65;
-    var show=Math.max(0,Math.min(1,(t-start)/.55))*(1-Math.max(0,Math.min(1,(t-endT)/.55)));
-    if(show<=0) continue;
-    for(var k=0;k<2;k++){
-      var bi=pair[k],im=imgs[bi];if(!im||!im.complete) continue;
-      var side=k===0?-1:1;
-      var targetX=cx+side*(W*.285),targetY=H*.35+(k===1?H*.055:0);
-      var enter=Math.max(0,Math.min(1,(t-start)/.62));
-      var x=(side<0?-160:W+160)+(targetX-(side<0?-160:W+160))*enter;
-      var y=targetY;
-      var absorb=Math.max(0,Math.min(1,(t-(pi===0?1.25:3.0))/1.15));
-      var sz=sizes[bi];
-      echoFracture(im,x,y,sz,absorb,cols[bi],bi,show);
-      if(absorb<.25){
-        ctx.save();ctx.globalAlpha=show*.65;ctx.textAlign='center';ctx.fillStyle=cols[bi];ctx.font='8px monospace';
-        ctx.fillText(['VOID','ABYSS','BEHEMOTH','SERAPH'][bi],x,y+sz*.52);ctx.restore();ctx.globalAlpha=1;
+    // once the boss reaches the core, its texture becomes a self-similar fractal ring
+    var ringA=cl((q-.42)/.42);if(ringA>0){
+      var baseR=148-i*18;
+      for(var layer=0;layer<2;layer++){
+        var rr=baseR*(layer?.60:1),n=layer?7:11,ss=(layer?44:66);
+        for(var k2=0;k2<n;k2++){
+          var a=k2*TAU/n+i*1.35+time*.08*dir*(layer?1.5:1);
+          var px=cx+Math.cos(a)*rr,py=cy+Math.sin(a)*rr*.72;
+          ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=ringA*(layer?.22:.42);
+          ctx.translate(px,py);ctx.rotate(a+time*.18*dir);if((k2+layer)%2)ctx.scale(-1,1);
+          ctx.drawImage(im,-ss/2,-ss/2,ss,ss);ctx.restore();
+        }
       }
     }
   }
-  // singularity core
-  var cp=Math.max(0,Math.min(1,(t-.7)/2.7)),pr=30+cp*145;
-  ctx.save();ctx.globalCompositeOperation='lighter';
-  var g=ctx.createRadialGradient(cx,cy,0,cx,cy,pr);
-  g.addColorStop(0,'rgba(255,255,250,'+(0.65*cp)+')');
-  g.addColorStop(.18,'rgba(255,225,150,'+(0.50*cp)+')');
-  g.addColorStop(.48,'rgba(190,110,255,'+(0.32*cp)+')');
-  g.addColorStop(1,'rgba(40,10,80,0)');
-  ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,pr,0,TAU);ctx.fill();
-  ctx.globalAlpha=(0.25+0.35*cp);ctx.strokeStyle='#d6b0ff';ctx.lineWidth=2;
-  // no hard circular ring: leave the AI entity and its fractal shards to define the shape
-  ctx.restore();
-  // AI-generated distortion entity / intermediate transformation frames
+  // AI distortion entity growing at the eye, then absorbing the four rings
   function fuDraw(img,alpha,size,rot){
     if(!img||!img.complete||alpha<=0) return;
     ctx.save();ctx.globalCompositeOperation='lighter';ctx.translate(cx,cy);ctx.rotate(rot);ctx.globalAlpha=Math.min(1,alpha);ctx.drawImage(img,-size/2,-size/2,size,size);ctx.restore();
   }
-  var f1=GIMG.fu1,f2=GIMG.fu2,f3=GIMG.fu3;
-  var a1=Math.max(0,Math.min(1,(t-.75)/.7))*(1-Math.max(0,Math.min(1,(t-2.45)/.55)));
-  var a2=Math.max(0,Math.min(1,(t-2.15)/.55))*(1-Math.max(0,Math.min(1,(t-3.65)/.55)));
-  var a3=Math.max(0,Math.min(1,(t-3.3)/.55))*(1-Math.max(0,Math.min(1,(t-4.6)/.55)));
-  fuDraw(f1,a1,300+40*Math.sin(time*1.4),time*.12);
-  fuDraw(f2,a2,330+30*Math.sin(time*1.7),-time*.10);
-  fuDraw(f3,a3,360+30*Math.sin(time*1.9),time*.08);
-  // Boss5 materializes
-  var bp=Math.max(0,Math.min(1,(t-4.2)/1.0)),bimg=GIMG.b5_1;
+  var a1=cl((t-.7)/1.1)*(1-cl((t-6.8)/1.2));
+  var a2=cl((t-6.4)/1.1)*(1-cl((t-9.1)/1.1));
+  var a3=cl((t-8.6)/1.0)*(1-cl((t-10.95)/1.1));
+  fuDraw(GIMG.fu1,a1*.42,260+30*Math.sin(time*1.2),time*.08);
+  fuDraw(GIMG.fu2,a2*.58,320+24*Math.sin(time*1.5),-time*.09);
+  fuDraw(GIMG.fu3,a3*.72,360+20*Math.sin(time*1.7),time*.07);
+  // final composite
+  var bp=cl((t-9.55)/1.0),bimg=GIMG.b5_1;
   if(bimg&&bimg.complete&&bp>0){
-    ctx.save();ctx.globalCompositeOperation='lighter';ctx.translate(cx,cy);ctx.rotate(time*.18);ctx.scale(.55+bp*.45,.55+bp*.45);
-    ctx.globalAlpha=bp;ctx.drawImage(bimg,-170,-170,340,340);ctx.restore();
+    ctx.save();ctx.globalCompositeOperation='lighter';ctx.translate(cx,cy);ctx.rotate(time*.20);ctx.scale(.55+bp*.45,.55+bp*.45);
+    ctx.globalAlpha=bp;ctx.drawImage(bimg,-170,-170,340,340);ctx.restore();ctx.globalAlpha=1;
   }
-  // merge flash
-  if(t>3.1&&t<4.0){var fa=1-Math.abs((t-3.55)/.45);ctx.fillStyle='rgba(255,255,245,'+(0.35*fa)+')';ctx.fillRect(0,0,W,H);}
-  ctx.textAlign='center';ctx.font='900 18px "Arial Black", Arial, sans-serif';
-  ctx.fillStyle='#ffe6a0';ctx.globalAlpha=.85+0.15*Math.sin(time*8);
-  var label=t<1.5?'FOUR ECHOES':(t<3.2?'CONVERGENCE':(t<4.1?'SINGULARITY':'CHRONOS ECHO'));
+  if(t>9.25&&t<10.1){var fa=1-Math.abs((t-9.65)/.45);ctx.fillStyle='rgba(255,255,245,'+(0.28*fa)+')';ctx.fillRect(0,0,W,H);}
+  ctx.textAlign='center';ctx.font='900 17px "Arial Black", Arial, sans-serif';ctx.fillStyle='#ffe6a0';
+  ctx.globalAlpha=.85+0.15*Math.sin(time*8);
+  var label=t<4.8?'FOUR ECHOES':(t<7.1?'CONVERGENCE':(t<9.2?'SINGULARITY':'CHRONOS ECHO'));
   ctx.fillText(label,W/2,H*.18);
   ctx.globalAlpha=.55;ctx.fillStyle='#9fe8ff';ctx.font='9px monospace';ctx.fillText("TIME'S END",W/2,H*.21);
   ctx.globalAlpha=1;ctx.textAlign='left';ctx.restore();
 }
+
 function drawCast(){
   ctx.textAlign='center';
   ctx.globalAlpha=0.9;ctx.fillStyle='#ffe6a0';ctx.font='900 18px "Arial Black", Arial, sans-serif';ctx.fillText('TIME RECLAIMED',W/2,H*0.13);
@@ -3020,7 +2967,7 @@ function onDown(e){
     if(!audioReady){ audioReady=true; playBgm('m5'); return; }
     startGame(); return;
   }
-  if(state==='fusion'){ fusionT=5.4; return; }
+  if(state==='fusion'){ fusionT=10.8; return; }
   if(state==='cast'){ state='menu'; playBgm('m5'); return; }
   if(state==='win'||state==='over'){ startGame(); return; }
   var bx=W-64,by=H-78;
