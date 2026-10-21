@@ -17,8 +17,9 @@ if(typeof BGMSRC!=='undefined'){
   BGMSRC.s2boss='assets/audio/bgm-boss2.mp3';
   BGMSRC.s3boss='assets/audio/bgm-boss3.mp3';
   BGMSRC.s4boss='assets/audio/bgm-boss4.mp3';
+  BGMSRC.s5='assets/audio/bgm-stage5.mp3';
   BGMSRC.s5boss='assets/audio/bgm-boss5-final.mp3';
-  if(typeof BGMURL!=='undefined'){ BGMURL.s4=BGMSRC.s4; BGMURL.s2boss=BGMSRC.s2boss; BGMURL.s3boss=BGMSRC.s3boss; BGMURL.s4boss=BGMSRC.s4boss;BGMURL.s5boss=BGMSRC.s5boss; }
+  if(typeof BGMURL!=='undefined'){ BGMURL.s4=BGMSRC.s4; BGMURL.s2boss=BGMSRC.s2boss; BGMURL.s3boss=BGMSRC.s3boss; BGMURL.s4boss=BGMSRC.s4boss;BGMURL.s5=BGMSRC.s5;BGMURL.s5boss=BGMSRC.s5boss; }
 }
 var sampleSfx=sfx,sfxLast={},laserOsc=null,laserGain=null,audioBoosted=false,sfxExtraLoaded=false;
 function loadSfxExtras(){
@@ -300,7 +301,7 @@ var STAGES=[
    {t:55.8,type:4,n:4,form:'turret',spd:68},
    {t:59.2,type:8,n:4,form:'line',spd:60}
  ]},
- {name:"TIME'S END",bg:BG5,bgm:'s4',waves:[
+ {name:"TIME'S END",bg:BG5,bgm:'s5',waves:[
    {t:0.2,type:9,n:7,form:'fractal',spd:120},
    {t:3.8,type:10,n:5,form:'mandala',spd:96},
    {t:7.2,type:11,n:2,form:'line',spd:62},

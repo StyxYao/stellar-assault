@@ -10,3 +10,8 @@
 | Reserved | 智能矩阵 / Sentient Matrix | `assets/audio/bgm-boss5-final.mp3` | stage 5 on hold |
 
 All custom tracks are 192 kbps MP3, normalized to -16 LUFS / -1.5 dBTP.
+
+
+## Stage 5
+
+- `bgm-stage5.mp3` — 奇点 / Singularity, 180.6s, -16 LUFS, 192 kbps.
