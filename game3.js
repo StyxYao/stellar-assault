@@ -109,16 +109,19 @@ function playAirRaid(vol){
   osc.start(t0);lfo.start(t0);osc.stop(t0+dur);lfo.stop(t0+dur);
 }
 function playMissileLaunch(){
-  sfx('p_missile',0.34);
   if(!AC||muted) return;
-  noiseBurst(0.07,0.14,2200);
+  // short high-velocity "whoosh", never a long wind loop
+  noiseBurst(0.070,0.20,7200);
+  noiseBurst(0.040,0.10,9800,0.018);
+  tone(1700,620,0.10,0.18,'triangle');
+  tone(3200,1200,0.055,0.07,'sine',0.012);
 }
 function synthSfx(n,v){
   if(!AC||!master||muted) return;
   v=v||0.2;
   if(n==='p_normal') tone(1100,720,0.05,v,'square');
   else if(n==='p_spread'){tone(900,1200,0.04,v*0.8,'triangle');tone(700,1000,0.05,v*0.7,'triangle',0.02);tone(500,800,0.06,v*0.6,'triangle',0.04);}
-  else if(n==='p_missile'){noiseBurst(0.22,v*0.7,1200);tone(220,80,0.25,v*0.5,'sawtooth');}
+  else if(n==='p_missile'){noiseBurst(0.085,v*0.45,7000);tone(1800,520,0.095,v*0.40,'triangle');}
   else if(n==='e_shot') tone(240,160,0.08,v,'square');
   else if(n==='e_hit'){tone(2200,1300,0.028,v*0.7,'triangle');noiseBurst(0.02,v*0.5,4200);}
   else if(n==='b_hit'){tone(320,160,0.07,v,'square');noiseBurst(0.05,v*0.5,2000);}
