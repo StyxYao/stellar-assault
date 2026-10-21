@@ -1583,6 +1583,7 @@ function step(dt){
       score+=1000; player.bombs=Math.min(5,player.bombs+1);
       state='clear'; setBanner('STAGE CLEAR',STAGES[stage].name,3.0);
     }
+    if(boss){boss.prevX=boss.x;boss.prevY=boss.y;}
     var bdx2=boss?boss.x-player.x:0,bdy2=boss?boss.y-player.y:0;
     if(boss&&bdx2*bdx2+bdy2*bdy2<(boss.def.w*0.28*1.15)*(boss.def.w*0.28*1.15)) hitPlayer();
   }
@@ -1692,6 +1693,20 @@ function drawEnemy(e){
   }
   if(e.transport){ctx.fillStyle='#ffd27a';ctx.font='8px monospace';ctx.textAlign='center';ctx.fillText('SUPPLY',e.x,e.y-h/2-11);ctx.textAlign='left';}
 }
+var GLOW_CACHE={};
+function bossGlowLayer(key,img,rgb){
+  if(GLOW_CACHE[key]) return GLOW_CACHE[key];
+  try{
+    var size=420,pad=54,cv=document.createElement('canvas');cv.width=size;cv.height=size;
+    var g=cv.getContext('2d');
+    if('filter' in g) g.filter='blur(16px)';
+    g.drawImage(img,pad,pad,size-pad*2,size-pad*2);
+    g.filter='none';
+    g.globalCompositeOperation='source-in';
+    g.fillStyle='rgb('+rgb+')';g.fillRect(0,0,size,size);
+    GLOW_CACHE[key]=cv;return cv;
+  }catch(e){return null;}
+}
 function drawBoss(){
   if(!boss) return;
   var phase=boss.phase;
@@ -1708,21 +1723,52 @@ function drawBoss(){
   g.addColorStop(1,'rgba('+col+',0)');
   ctx.fillStyle=g;ctx.beginPath();ctx.arc(boss.x,boss.y,ar,0,TAU);ctx.fill();
   ctx.restore();
-  // Animated 3-frame halo for Boss 2 / Boss 4 (the sprite glow is baked/static)
+  // Layered living glow for Boss 2 / Boss 4: blurred body glow + breathing frames + electric arcs + afterimage
   if(stage===1||stage===3){
-    var fr=Math.floor(time*12)%3, aura=stage===3?'255,228,150':'190,125,255';
+    var aura=stage===3?'255,228,150':'190,125,255';
+    var fr=Math.floor(time*11)%4;
+    var breath=0.5+0.5*Math.sin(time*1.9);
+    var glow=bossGlowLayer('g'+(stage+1)+'_'+phase,img,aura);
+    var gsc=w*1.34+fr*4,hgsc=h*1.34+fr*4;
     ctx.save();ctx.globalCompositeOperation='lighter';
-    for(var ak=0;ak<3;ak++){
-      var rr=Math.min(w,h)*(0.42+ak*0.035)+fr*3+Math.sin(time*5+ak)*2;
-      ctx.globalAlpha=[0.10,0.20,0.14][fr]*(1-ak*0.22);
-      ctx.strokeStyle='rgba('+aura+',1)';ctx.lineWidth=ak===0?3:1.5;
+    // afterimage / motion trail of the glow layer
+    if(glow&&boss.prevX!==undefined){
+      var ga=0.10+breath*0.08;
+      ctx.globalAlpha=ga;ctx.drawImage(glow,boss.prevX-gsc*0.5,boss.prevY-hgsc*0.5,gsc,hgsc);
+    }
+    if(glow){
+      ctx.globalAlpha=0.34+breath*0.20+(fr===3?0.08:0);
+      ctx.drawImage(glow,boss.x-gsc*0.5,boss.y-hgsc*0.5,gsc,hgsc);
+      ctx.globalAlpha=0.14+fr*0.025;
+      ctx.drawImage(glow,boss.x-gsc*0.42,boss.y-hgsc*0.42,gsc*0.84,hgsc*0.84);
+    }
+    // breathing concentric halo
+    for(var ak=0;ak<4;ak++){
+      var rr=Math.min(w,h)*(0.40+ak*0.030)+fr*2.5+Math.sin(time*5+ak*1.3)*3;
+      ctx.globalAlpha=[0.10,0.18,0.14,0.22][fr]*(1-ak*0.16);
+      ctx.strokeStyle=ak===0?'#ffffff':'rgba('+aura+',1)';ctx.lineWidth=ak===0?2.4:1.3;
       ctx.beginPath();ctx.arc(boss.x,boss.y,rr,0,TAU);ctx.stroke();
     }
-    for(var ar2=0;ar2<8;ar2++){
-      var aa=ar2/8*TAU+time*0.25, r0=Math.min(w,h)*0.30, r1=Math.min(w,h)*0.55;
-      ctx.globalAlpha=0.07+0.05*fr;
-      ctx.strokeStyle='rgba('+aura+',1)';ctx.lineWidth=1.2;
+    // rotating rays
+    for(var ar2=0;ar2<10;ar2++){
+      var aa=ar2/10*TAU+time*0.28, r0=Math.min(w,h)*0.28, r1=Math.min(w,h)*0.54;
+      ctx.globalAlpha=0.045+0.035*breath;
+      ctx.strokeStyle='rgba('+aura+',1)';ctx.lineWidth=1.1;
       ctx.beginPath();ctx.moveTo(boss.x+Math.cos(aa)*r0,boss.y+Math.sin(aa)*r0);ctx.lineTo(boss.x+Math.cos(aa)*r1,boss.y+Math.sin(aa)*r1);ctx.stroke();
+    }
+    // electric arcs, changing every glow frame
+    for(var ea=0;ea<3;ea++){
+      var baseA=time*0.75+ea*TAU/3, rr0=Math.min(w,h)*0.33;
+      ctx.globalAlpha=0.16+0.10*breath;
+      ctx.strokeStyle=ea===0?'#ffffff':'rgba('+aura+',1)';ctx.lineWidth=1.2;
+      ctx.beginPath();
+      for(var seg=0;seg<=7;seg++){
+        var sa=baseA+(seg/7-0.5)*0.62;
+        var sr=rr0+Math.sin(time*18+seg*2.1+ea*4)*7+fr*1.5;
+        var px=boss.x+Math.cos(sa)*sr, py=boss.y+Math.sin(sa)*sr*0.62;
+        if(seg===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+      }
+      ctx.stroke();
     }
     ctx.restore();ctx.globalAlpha=1;
   }
