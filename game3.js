@@ -815,6 +815,7 @@ function playOneUp(){
   noiseBurst(0.025,0.045,5000,0.01);
 }
 function ammoType(it){ return ['N','S','L','M'][Math.floor(it.t/1.2)%4]; }
+function nextAmmoLetter(){var order=['normal','spread','laser','missile'],i=order.indexOf(player.weapon);return ['N','S','L','M'][(i+1)%4];}
 function applySpecial(t){
   player.weapon=t==='N'?'normal':(t==='S'?'spread':(t==='L'?'laser':(t==='M'?'missile':t)));
 }
@@ -2161,15 +2162,20 @@ function drawPlayerLaser(){
     g.addColorStop(0.72,'rgba(90,235,255,0.55)');g.addColorStop(1,'rgba(80,210,255,0)');
     ctx.fillStyle=g;ctx.fillRect(player.x-w,0,w*2,h);
     ctx.fillStyle='rgba(255,255,255,0.98)';ctx.fillRect(player.x-4,0,8,h);
-    // lightning crawling along both edges
+    // smooth energy filaments instead of jagged lightning
     for(var side=-1;side<=1;side+=2){
-      ctx.beginPath();ctx.strokeStyle=side<0?'#8ff6ff':'#ffe28a';ctx.lineWidth=2;
-      for(var yy=0;yy<h;yy+=26){
-        var xx=player.x+side*(w*0.55+Math.sin(time*28+yy*0.13+side)*8);
-        if(yy===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);
+      for(var fl=0;fl<2;fl++){
+        ctx.beginPath();
+        ctx.globalAlpha=fl===0?0.42:0.24;
+        ctx.strokeStyle=fl===0?'#9ff8ff':'#ffe28a';ctx.lineWidth=fl===0?1.8:1.2;
+        for(var yy=0;yy<h;yy+=7){
+          var xx=player.x+side*(w*(fl===0?0.52:0.66))+Math.sin(yy*0.025+time*11+fl*2.2+side)*4.0;
+          if(yy===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);
+        }
+        ctx.stroke();
       }
-      ctx.stroke();
     }
+    ctx.globalAlpha=1;
     var cg=ctx.createRadialGradient(player.x,player.y,0,player.x,player.y,62);
     cg.addColorStop(0,'rgba(255,255,255,0.95)');cg.addColorStop(0.3,'rgba(120,240,255,0.45)');cg.addColorStop(1,'rgba(0,0,0,0)');
     ctx.fillStyle=cg;ctx.beginPath();ctx.arc(player.x,player.y,62,0,TAU);ctx.fill();
@@ -2246,7 +2252,7 @@ function drawPhaseFx(){
 function drawItem(it){
   var cols={N:'#ffe6a0',P:'#7fe7ff',S:'#8dff9e',L:'#ff7ad5',M:'#ffb36b',W:'#c9a0ff',B:'#ffd36b'};
   if(it.type==='A'){
-    var at=ammoType(it),ac=cols[at]||'#7fe7ff';
+    var at=nextAmmoLetter(),ac=cols[at]||'#7fe7ff';
     ctx.save();ctx.translate(it.x,it.y);
     ctx.globalAlpha=0.25;ctx.fillStyle=ac;ctx.beginPath();ctx.arc(0,0,18,0,TAU);ctx.fill();
     ctx.globalAlpha=1;ctx.rotate(it.t*1.4);
@@ -2291,65 +2297,20 @@ function drawItem(it){
 
 function drawODAura(drawY){
   if(player.odT<=0) return;
-  var fr=Math.floor(time*20)%4, breath=0.5+0.5*Math.sin(time*9);
+  var imgs=[GIMG.od1,GIMG.od2,GIMG.od3,GIMG.od4];
+  var frame=Math.floor(time*12)%4,img=imgs[frame];
+  if(!img||!img.complete||!img.naturalWidth) return;
+  var breath=0.5+0.5*Math.sin(time*7);
+  var size=166+breath*10;
   ctx.save();ctx.globalCompositeOperation='lighter';
-  // afterimages from the ship's trail
-  if(GIMG.p2&&GIMG.p2.complete){
-    for(var ti=0;ti<3;ti++){
-      var tp=player.trail[4+ti*9];if(!tp) continue;
-      ctx.globalAlpha=0.10-ti*0.022;
-      ctx.drawImage(GIMG.p2,tp.x-40,tp.y-40,80,80);
-    }
-  }
-  // animated segmented rings
-  for(var k=0;k<3;k++){
-    var rr=46+k*17+fr*3+Math.sin(time*8+k)*3;
-    ctx.globalAlpha=[0.72,0.48,0.34][k]*(0.75+0.25*breath);
-    ctx.strokeStyle=k===0?'#fff4c4':(k===1?'#62eaff':'#ffcf6a');ctx.lineWidth=k===0?3.2:2;
-    var a0=time*(1.6+k*0.5)+k*2.1;
-    for(var seg=0;seg<4;seg++){
-      ctx.beginPath();ctx.arc(player.x,drawY,rr,a0+seg*1.35,a0+seg*1.35+0.72);ctx.stroke();
-    }
-  }
-  // four-point cross star + six-point hexagram
-  ctx.save();ctx.translate(player.x,drawY);ctx.rotate(time*0.7);
-  ctx.globalAlpha=0.60+0.20*breath;
-  ctx.strokeStyle='#ffe08a';ctx.lineWidth=3.4;
-  for(var cs=0;cs<4;cs++){
-    var ca=cs*Math.PI/2;
-    ctx.beginPath();ctx.moveTo(Math.cos(ca)*34,Math.sin(ca)*34);ctx.lineTo(Math.cos(ca)*84,Math.sin(ca)*84);ctx.stroke();
-  }
-  ctx.rotate(-time*1.5);
-  ctx.globalAlpha=0.42+0.18*breath;ctx.strokeStyle='#8ff6ff';ctx.lineWidth=2.2;
-  for(var tri=0;tri<2;tri++){
-    ctx.beginPath();
-    for(var hp=0;hp<3;hp++){
-      var ha=tri*Math.PI/3+hp*TAU/3-Math.PI/2;
-      var hx=Math.cos(ha)*62,hy=Math.sin(ha)*62;
-      if(hp===0)ctx.moveTo(hx,hy);else ctx.lineTo(hx,hy);
-    }
-    ctx.closePath();ctx.stroke();
-  }
-  ctx.restore();ctx.globalAlpha=1;
-  // electric overclock arcs
-  for(var e=0;e<5;e++){
-    var ea=time*2.2+e*TAU/5, rr0=32, rr1=78+fr*4;
-    ctx.globalAlpha=0.30+0.18*breath;ctx.strokeStyle=e%2?'#8ff6ff':'#ffd86a';ctx.lineWidth=1.3;
-    ctx.beginPath();
-    for(var s=0;s<=5;s++){
-      var aa=ea+(s/5-0.5)*0.32;
-      var jr=rr0+(rr1-rr0)*(s/5)+Math.sin(time*30+s*2.1+e)*4;
-      var px=player.x+Math.cos(aa)*jr,py=drawY+Math.sin(aa)*jr;
-      if(s===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
-    }
-    ctx.stroke();
-  }
-  // core flare
-  var cg=ctx.createRadialGradient(player.x,drawY,0,player.x,drawY,44);
-  cg.addColorStop(0,'rgba(255,255,240,'+(0.55+0.25*breath)+')');cg.addColorStop(0.35,'rgba(120,240,255,'+(0.22*breath)+')');cg.addColorStop(1,'rgba(255,210,80,0)');
-  ctx.fillStyle=cg;ctx.beginPath();ctx.arc(player.x,drawY,44,0,TAU);ctx.fill();
+  // one soft outer pass and one crisp animated aura pass
+  ctx.globalAlpha=0.26+0.10*breath;
+  ctx.drawImage(img,player.x-size*0.64,drawY-size*0.64,size*1.28,size*1.28);
+  ctx.globalAlpha=0.82;
+  ctx.drawImage(img,player.x-size*0.5,drawY-size*0.5,size,size);
   ctx.restore();ctx.globalAlpha=1;
 }
+
 function drawBombFx(){
   if(bombT<=0) return;
   var p=1-bombT/1.1,r=30+620*p,core=Math.max(0,24+170*p);
