@@ -70,13 +70,11 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 
 ## Audio
 
-- Stage field: `s5` — KALEIDOSCOPE, 05:42.8, normalized to -16 LUFS / 192 kbps
-- File: `assets/audio/bgm-stage5.mp3`
-- Menu: 奇点 / Singularity (`bgm-menu-singularity.mp3`)
-- Boss phase 1: `assets/audio/bgm-boss5.mp3` — 引力弹弓 / Gravitational Slingshot, 02:23.3
-- Boss phase 2: `assets/audio/bgm-boss5-phase2.mp3` — 维度破碎 / Dimension Break, 05:25.9
-- Boss final phase: `assets/audio/bgm-boss5-darkmatter.mp3` — 暗物质 / Dark Matter, 03:54.8
-- Ending: `assets/audio/bgm-boss5-final.mp3` — 虚实之间 / Between Realities, 06:29.95
+- Menu: 奇点 / Singularity
+- Stage field: 暗物质 / Dark Matter, starting at 00:58
+- Boss 5 battle: 维度破碎 / Dimension Break, starting at 00:25
+- Ending cast: KALEIDOSCOPE
+- All tracks normalized around -16 LUFS, 192 kbps
 
 ## Implementation notes
 
