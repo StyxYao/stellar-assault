@@ -42,7 +42,16 @@ Status: implemented as the final stage.
 
 ## Boss — CHRONOS ECHO
 
-Composite of the four previous bosses:
+Composite of the four previous bosses.
+
+### Entrance — Convergence
+
+- The four previous bosses appear as orbiting echo cores.
+- They spiral inward toward a central singularity.
+- The core flashes and materializes CHRONOS ECHO.
+- Cinematic labels: `FOUR ECHOES` → `CONVERGENCE` → `SINGULARITY` → `CHRONOS ECHO`.
+- The Boss battle theme begins during the convergence.
+
 
 - Red Void Sovereign
 - Purple Abyss Devourer
