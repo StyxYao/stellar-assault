@@ -4,7 +4,7 @@ prefix=s[:s.index('var specs=null;')]
 prefix=re.sub(r"BGMENU\.src='data:image/[^']+'", "BGMENU.src='assets/bg/menu.webp'", prefix, count=1)
 assets={
  'p2':'player-v2/p2_center.png','p3':'player-v2/p3_right.png','p4':'player-v2/p4_left.png',
- 'u1':'assets/bullets/u1n.png','u2':'assets/bullets/u2n.png','u4':'assets/bullets/u4n.png','u5':'assets/bullets/u5n.png'
+ 'u1':'assets/bullets/u1n.png','u2':'assets/bullets/u2n.png','u4':'assets/bullets/u4n.png','u5':'assets/bullets/u5n.png','w1':'gpt-assets/player/wing-drone.png'
 }
 enames=['small_fighter','medium_fighter','scout','bomber','mech','interceptor','aegis_warden','rail_lancer','mine_seeder']
 for bi in range(1,5):
