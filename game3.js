@@ -1964,14 +1964,9 @@ function paintFractalBg(main,edge,offsetY){
   if(main&&main.complete&&main.naturalWidth){
     var r1=Math.min(W,H)*.24,r2=Math.min(W,H)*.42;
     // three concentric rings: inner CCW, middle CW, outer CCW; same center, feathered overlap
-    fractalZone(0,main,-time*.070,1+Math.sin(time*.30)*.055,r2,Math.max(W,H)*.92,26,.96);
-    fractalZone(1,main, time*.135,1+Math.sin(time*.37)*.045,r1,r2,26,.97);
-    fractalZone(2,main,-time*.285,1+Math.sin(time*.43)*.060,0,r1,26,.98);
-    // deliberate glowing seams where the rings overlap
-    ctx.save();ctx.globalCompositeOperation='lighter';
-    ctx.globalAlpha=.22;ctx.strokeStyle='#c7a6ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,r1,0,TAU);ctx.stroke();
-    ctx.globalAlpha=.14;ctx.strokeStyle='#ffe7a0';ctx.lineWidth=5;ctx.beginPath();ctx.arc(cx,cy,r2,0,TAU);ctx.stroke();
-    ctx.restore();ctx.globalAlpha=1;
+    fractalZone(0,main,-time*.070,1+Math.sin(time*.30)*.055,r2,Math.max(W,H)*.92,74,.96);
+    fractalZone(1,main, time*.135,1+Math.sin(time*.37)*.045,r1,r2,74,.97);
+    fractalZone(2,main,-time*.285,1+Math.sin(time*.43)*.060,0,r1,74,.98);
   }
   if(edge&&edge.complete&&edge.naturalWidth){
     var es=Math.max(W/edge.width,H/edge.height)*1.12,ew=edge.width*es,eh=edge.height*es;
@@ -1982,17 +1977,13 @@ function paintFractalBg(main,edge,offsetY){
       ctx.globalAlpha=.10+.035*Math.sin(time*1.4+wi);ctx.drawImage(edge,-ew/2,-eh/2,ew,eh);ctx.restore();
     }
   }
+  // no hard rings: only a soft central breath of light
   ctx.save();ctx.globalCompositeOperation='lighter';
-  for(var k=0;k<4;k++){
-    var rr=48+k*34+Math.sin(time*1.4+k)*5;
-    ctx.globalAlpha=0.12-k*0.02;ctx.strokeStyle=k===0?'#ffe9a0':'#a98bff';ctx.lineWidth=k===0?2.5:1;
-    ctx.beginPath();ctx.arc(cx,cy,rr,time*(0.2+k*0.05),time*(0.2+k*0.05)+TAU*0.72);ctx.stroke();
-  }
-  for(var r=0;r<10;r++){
-    var a=r/10*TAU+time*.08,rr0=72,rr1=210+Math.sin(time*1.1+r)*18;
-    ctx.globalAlpha=0.08;ctx.strokeStyle=r%2?'#ffe7a0':'#9d8cff';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*rr0,cy+Math.sin(a)*rr0);ctx.lineTo(cx+Math.cos(a)*rr1,cy+Math.sin(a)*rr1);ctx.stroke();
-  }
+  var gg=ctx.createRadialGradient(cx,cy,0,cx,cy,85);
+  gg.addColorStop(0,'rgba(255,235,170,'+(0.10+0.03*Math.sin(time*1.2))+')');
+  gg.addColorStop(.55,'rgba(170,120,255,0.055)');
+  gg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=gg;ctx.beginPath();ctx.arc(cx,cy,85,0,TAU);ctx.fill();
   ctx.restore();ctx.globalAlpha=1;
 }
 
@@ -2711,9 +2702,34 @@ function drawFusionScene(){
   var imgs=[GIMG.b1_1,GIMG.b2_1,GIMG.b3_1,GIMG.b4_1];
   var cols=['#ff5f7a','#c06aff','#ff9a3a','#ffe7a0'];
   ctx.save();
-  // old bosses enter two at a time at near-original scale
-  var pairs=[[0,1],[2,3]];
-  var sizes=[168,178,178,214];
+  // old bosses enter in pairs, then shatter into radial fractal copies as they near the core
+  function echoFracture(im,x,y,sz,q,color,bi,show){
+    var mx=cx+(x-cx)*(1-q*.82),my=cy+(y-cy)*(1-q*.82);
+    ctx.save();ctx.globalCompositeOperation='lighter';
+    if(q<.97){ctx.globalAlpha=show*(1-q)*.92;ctx.translate(mx,my);ctx.rotate(Math.sin(time*.6+bi)*.04);ctx.drawImage(im,-sz/2,-sz/2,sz,sz);}
+    if(q>.02){
+      var n=12+Math.floor(q*22);
+      for(var j=0;j<n;j++){
+        var a=j/n*TAU+time*(.22+q*.35)+bi*1.7;
+        var rad=22+q*(88+26*Math.sin(time*1.5+j*.7));
+        var px=cx+Math.cos(a)*rad,py=cy+Math.sin(a)*rad*.72;
+        var psz=sz*(.12+.13*(1-q));
+        ctx.save();ctx.translate(px,py);ctx.rotate(a+time*.45);
+        ctx.globalAlpha=show*q*.42*(.45+.55*Math.sin(time*2+j));
+        ctx.drawImage(im,-psz/2,-psz/2,psz,psz);ctx.restore();
+      }
+      // long radial slivers: the boss texture is being pulled into the kaleidoscope
+      for(var j2=0;j2<10;j2++){
+        var a2=j2/10*TAU+time*.18+bi;
+        ctx.save();ctx.translate(cx,cy);ctx.rotate(a2);
+        ctx.globalAlpha=show*q*.20;
+        ctx.drawImage(im, im.width*(j2/10),0,im.width/10,im.height, 26+q*70,-sz*.12,sz*.07,sz*.24);
+        ctx.restore();
+      }
+    }
+    ctx.restore();ctx.globalAlpha=1;
+  }
+  var pairs=[[0,1],[2,3]],sizes=[168,178,178,214];
   for(var pi=0;pi<2;pi++){
     var pair=pairs[pi],start=pi===0?.15:1.85,endT=pi===0?2.45:4.65;
     var show=Math.max(0,Math.min(1,(t-start)/.55))*(1-Math.max(0,Math.min(1,(t-endT)/.55)));
@@ -2723,21 +2739,15 @@ function drawFusionScene(){
       var side=k===0?-1:1;
       var targetX=cx+side*(W*.285),targetY=H*.35+(k===1?H*.055:0);
       var enter=Math.max(0,Math.min(1,(t-start)/.62));
-      var x=(side<0?-150:W+150)+(targetX-(side<0?-150:W+150))*enter;
+      var x=(side<0?-160:W+160)+(targetX-(side<0?-160:W+160))*enter;
       var y=targetY;
-      var shrink=pi===1?Math.max(0,Math.min(1,(t-3.55)/.85)):0;
-      var sz=sizes[bi]*(1-shrink*.38);
-      x+=(cx-x)*shrink*.55;y+=(cy-y)*shrink*.55;
-      ctx.save();ctx.globalCompositeOperation='lighter';
-      ctx.globalAlpha=show*.92;
-      ctx.translate(x,y);ctx.rotate(side*enter*.08+Math.sin(time*.7+bi)*.025);
-      ctx.drawImage(im,-sz/2,-sz/2,sz,sz);
-      ctx.globalAlpha=show*.22;ctx.strokeStyle=cols[bi];ctx.lineWidth=2;
-      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(cx,cy);ctx.stroke();
-      ctx.restore();
-      // name tags
-      ctx.save();ctx.globalAlpha=show*.65;ctx.textAlign='center';ctx.fillStyle=cols[bi];ctx.font='8px monospace';
-      ctx.fillText(['VOID','ABYSS','BEHEMOTH','SERAPH'][bi],x,y+sz*.52);ctx.restore();ctx.globalAlpha=1;
+      var absorb=Math.max(0,Math.min(1,(t-(pi===0?1.25:3.0))/1.15));
+      var sz=sizes[bi];
+      echoFracture(im,x,y,sz,absorb,cols[bi],bi,show);
+      if(absorb<.25){
+        ctx.save();ctx.globalAlpha=show*.65;ctx.textAlign='center';ctx.fillStyle=cols[bi];ctx.font='8px monospace';
+        ctx.fillText(['VOID','ABYSS','BEHEMOTH','SERAPH'][bi],x,y+sz*.52);ctx.restore();ctx.globalAlpha=1;
+      }
     }
   }
   // singularity core
@@ -2750,7 +2760,7 @@ function drawFusionScene(){
   g.addColorStop(1,'rgba(40,10,80,0)');
   ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,pr,0,TAU);ctx.fill();
   ctx.globalAlpha=(0.25+0.35*cp);ctx.strokeStyle='#d6b0ff';ctx.lineWidth=2;
-  for(var k=0;k<3;k++){ctx.beginPath();ctx.arc(cx,cy,pr*(0.55+k*.18),time*(1.2+k*.4),time*(1.2+k*.4)+2.2);ctx.stroke();}
+  // no hard circular ring: leave the AI entity and its fractal shards to define the shape
   ctx.restore();
   // AI-generated distortion entity / intermediate transformation frames
   function fuDraw(img,alpha,size,rot){
