@@ -74,7 +74,8 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - File: `assets/audio/bgm-stage5.mp3` (dur. 03:00.6)
 - Boss phase 1: `assets/audio/bgm-boss5.mp3` — 引力弹弓 / Gravitational Slingshot, 02:23.3
 - Boss phase 2: `assets/audio/bgm-boss5-phase2.mp3` — 维度破碎 / Dimension Break, 05:25.9
-- Boss final phase: `assets/audio/bgm-boss5-final.mp3` — 虚实之间 / Between Realities, 06:29.95
+- Boss final phase: `assets/audio/bgm-boss5-darkmatter.mp3` — 暗物质 / Dark Matter, 03:54.8
+- Ending: `assets/audio/bgm-boss5-final.mp3` — 虚实之间 / Between Realities, 06:29.95
 
 ## Implementation notes
 

@@ -20,8 +20,9 @@ if(typeof BGMSRC!=='undefined'){
   BGMSRC.s5='assets/audio/bgm-stage5.mp3';
   BGMSRC.s5boss='assets/audio/bgm-boss5.mp3';
   BGMSRC.s5boss2='assets/audio/bgm-boss5-phase2.mp3';
-  BGMSRC.s5final='assets/audio/bgm-boss5-final.mp3';
-  if(typeof BGMURL!=='undefined'){ BGMURL.s4=BGMSRC.s4; BGMURL.s2boss=BGMSRC.s2boss; BGMURL.s3boss=BGMSRC.s3boss; BGMURL.s4boss=BGMSRC.s4boss;BGMURL.s5=BGMSRC.s5;BGMURL.s5boss=BGMSRC.s5boss;BGMURL.s5boss2=BGMSRC.s5boss2;BGMURL.s5final=BGMSRC.s5final; }
+  BGMSRC.s5final='assets/audio/bgm-boss5-darkmatter.mp3';
+  BGMSRC.s5ending='assets/audio/bgm-boss5-final.mp3';
+  if(typeof BGMURL!=='undefined'){ BGMURL.s4=BGMSRC.s4; BGMURL.s2boss=BGMSRC.s2boss; BGMURL.s3boss=BGMSRC.s3boss; BGMURL.s4boss=BGMSRC.s4boss;BGMURL.s5=BGMSRC.s5;BGMURL.s5boss=BGMSRC.s5boss;BGMURL.s5boss2=BGMSRC.s5boss2;BGMURL.s5final=BGMSRC.s5final;BGMURL.s5ending=BGMSRC.s5ending; }
 }
 var sampleSfx=sfx,sfxLast={},laserOsc=null,laserGain=null,audioBoosted=false,sfxExtraLoaded=false;
 function loadSfxExtras(){
@@ -1534,7 +1535,7 @@ function step(dt){
   }else if(state==='clear'){
     if(bannerT<=0){
       if(stage<STAGES.length-1){ state='warpOut'; warpT=1.1; warpSpeed=320; playWarpJet(0.9); }
-      else { state='win'; playBgm('m'); }
+      else { state='win'; playBgm(stage===4?'s5ending':'m'); }
     }
   }
 
