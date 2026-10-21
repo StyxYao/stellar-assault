@@ -11,6 +11,8 @@ var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
 var BG4=new Image();BG4.src='assets/bg/stage4-main.webp';
 var BG5=new Image();BG5.src='assets/bg/stage5-main.webp';
 var BG1_BH=new Image();BG1_BH.src='assets/bg/stage1-bh.webp';
+var JULIA_CANVAS=null,JULIA_CTX=null,JULIA_DATA=null,JULIA_TICK=0,JULIA_W=200,JULIA_H=430;
+var IFS_POINTS=(function(){var v=[{x:0,y:0},{x:1,y:0},{x:.5,y:.866}],p={x:.5,y:.35},out=[];for(var i=0;i<2600;i++){var q=v[(i*7)%3];p={x:(p.x+q.x)/2,y:(p.y+q.y)/2};if(i>60&&i%23===0)out.push(p);}return out;})();
 var bgmName='';var BGM_START={s5:0,s5boss:0,s5ending:0};
 if(typeof BGMSRC!=='undefined'){
   BGMSRC.s4='assets/audio/bgm-stage4.mp3';
@@ -1924,6 +1926,56 @@ function drawLoopLayer(img,scroll,alpha,fitWidth,mirror,blend){
   }
   ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over'; return true;
 }
+function paintJuliaKaleido(cx,cy){
+  if(!JULIA_CANVAS){
+    JULIA_CANVAS=document.createElement('canvas');JULIA_CANVAS.width=JULIA_W;JULIA_CANVAS.height=JULIA_H;
+    JULIA_CTX=JULIA_CANVAS.getContext('2d');JULIA_DATA=JULIA_CTX.createImageData(JULIA_W,JULIA_H);
+  }
+  if(JULIA_TICK++%3===0){
+    var d=JULIA_DATA.data,theta=.35+time*.045,cr=.7885*Math.cos(theta),ci=.7885*Math.sin(theta);
+    for(var y=0;y<JULIA_H;y++){
+      for(var x=0;x<JULIA_W;x++){
+        var nx=(x/JULIA_W-.5)*2.2,ny=(y/JULIA_H-.5)*2.2;
+        var r=Math.sqrt(nx*nx+ny*ny),a=Math.atan2(ny,nx);
+        // 6-fold mirrored kaleidoscope fold
+        var sec=TAU/6;
+        a=Math.abs(((a%sec)+sec)%sec-sec/2);
+        var zx=Math.cos(a)*r*1.25,zy=Math.sin(a)*r*1.25,it=0,max=32;
+        for(;it<max;it++){var xx=zx*zx-zy*zy+cr;zy=2*zx*zy+ci;zx=xx;if(zx*zx+zy*zy>16)break;}
+        var idx=(y*JULIA_W+x)*4;
+        if(it>=max){d[idx+3]=0;continue;}
+        var t=it/max;
+        d[idx]=Math.floor(80+165*t);d[idx+1]=Math.floor(175+75*t);d[idx+2]=Math.floor(220+35*t);
+        d[idx+3]=Math.floor(22+170*t*t);
+      }
+    }
+    JULIA_CTX.putImageData(JULIA_DATA,0,0);
+  }
+  ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.72;
+  ctx.drawImage(JULIA_CANVAS,0,0,W,H);ctx.restore();ctx.globalAlpha=1;
+}
+function drawSierpinskiField(cx,cy){
+  var R=Math.min(W,H)*.56;
+  var cols=['rgba(255,226,150,','rgba(150,220,255,','rgba(200,150,255,'];
+  function tri(x1,y1,x2,y2,x3,y3,d,col,alpha){
+    if(d<=0){
+      ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineTo(x3,y3);ctx.closePath();
+      ctx.strokeStyle=col+alpha+')';ctx.lineWidth=.95;ctx.stroke();return;
+    }
+    var ax=(x1+x2)/2,ay=(y1+y2)/2,bx=(x2+x3)/2,by=(y2+y3)/2,cx2=(x3+x1)/2,cy2=(y3+y1)/2;
+    tri(x1,y1,ax,ay,cx2,cy2,d-1,col,alpha);
+    tri(ax,ay,x2,y2,bx,by,d-1,col,alpha);
+    tri(cx2,cy2,bx,by,x3,y3,d-1,col,alpha);
+  }
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  for(var layer=0;layer<3;layer++){
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(time*(.025+layer*.012)+layer*2.094);
+    var br=1+Math.sin(time*.35+layer)*.045;ctx.scale(br,br);
+    tri(0,-R,-R*.866,R*.5,R*.866,R*.5,4,cols[layer],(.30-layer*.055));
+    ctx.restore();
+  }
+  ctx.restore();ctx.globalAlpha=1;
+}
 var FRACTAL_LAYERS=[];
 function fractalZone(idx,img,rot,scale,r0,r1,feather,alpha){
   if(!FRACTAL_LAYERS[idx]){
@@ -1968,6 +2020,10 @@ function paintFractalBg(main,edge,offsetY){
     fractalZone(1,main, time*.135,1+Math.sin(time*.37)*.045,r1,r2,74,.97);
     fractalZone(2,main,-time*.285,1+Math.sin(time*.43)*.060,0,r1,74,.98);
   }
+  paintJuliaKaleido(cx,cy);
+
+  drawSierpinskiField(cx,cy);
+
   // golden-angle crystal shards sampled from the background: visible fractal parts, not rings
   if(main&&main.complete&&main.naturalWidth){
     var golden=2.399963229728653;
@@ -2738,7 +2794,8 @@ function drawFusionScene(){
         var ox=x-sz/2+(c+.5)*sz/cols, oy=y-sz/2+(r+.5)*sz/rows;
         var ang=idx*golden+time*(.35+(idx%4)*.06)+bi*1.3;
         var rad=16+Math.sqrt(idx+1)*(22+18*Math.sin(time*.8+idx*.3));
-        var fx=cx+Math.cos(ang)*rad, fy=cy+Math.sin(ang)*rad*.72;
+        var ip=IFS_POINTS[(idx*7+bi*13)%IFS_POINTS.length]||{x:.5,y:.45};
+        var fx=cx+(ip.x-.5)*300+Math.cos(ang)*10, fy=cy+(ip.y-.45)*250+Math.sin(ang)*8;
         var tx=ox+(fx-ox)*gq, ty=oy+(fy-oy)*gq;
         var rot=gq*(ang+time*.35)+ (1-gq)*0;
         var selfScale=(0.72+0.28*Math.pow(.82,idx%4))*(1-gq*.28);

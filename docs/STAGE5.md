@@ -16,8 +16,11 @@ Status: implemented as the final stage.
 - The scene runs three concentric, same-center kaleidoscope rings with feathered overlap: inner CCW, middle CW, outer CCW, each at a different speed.
 - Ring boundaries use 74px feathered alpha blending; no ring strokes or gear-like outlines.
 - Sixteen extra background shards are sampled from the crystal image and placed on a golden-angle phyllotaxis spiral.
+- A 6-fold mirrored polar fold (kaleidoscope) drives a live Julia set: z = z² + c, with c orbiting slowly.
+- A recursive Sierpinski triangle IFS layer is drawn as three rotated, breathing wireframes.
+- IFS formula: p_{n+1} = (p_n + v_i) / 2, with three triangle vertices v_i.
 - The four old bosses enter two at a time at near-original scale.
-- Each boss texture is cut into a 6×6 tile grid; near the core those tiles migrate onto a golden-angle (137.5°) phyllotaxis spiral with self-similar scale reduction.
+- Each boss texture is cut into a 6×6 tile grid; the tiles migrate onto a Sierpinski IFS attractor around the core, with golden-angle rotation and self-similar scale reduction.
 - Boss 5 HP is increased by ×1.5 on top of the global boss multiplier (10080 total).
 - The old boss textures dissolve into the AI-generated distortion entity frames before the final composite forms.
 - Concentric eye-rings and 10 radial filaments are drawn procedurally over it.
