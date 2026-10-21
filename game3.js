@@ -1923,65 +1923,65 @@ function drawLoopLayer(img,scroll,alpha,fitWidth,mirror,blend){
   }
   ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over'; return true;
 }
+var FRACTAL_LAYERS=[];
+function fractalZone(idx,img,rot,scale,r0,r1,feather,alpha){
+  if(!FRACTAL_LAYERS[idx]){
+    var cv=document.createElement('canvas');cv.width=W;cv.height=H;FRACTAL_LAYERS[idx]=cv;
+  }
+  var c=FRACTAL_LAYERS[idx],g=c.getContext('2d');
+  g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,H);
+  var base=Math.max(W/img.width,H/img.height)*1.52*scale;
+  var bw=img.width*base,bh=img.height*base;
+  g.save();g.translate(W/2,H*.44);g.rotate(rot);g.drawImage(img,-bw/2,-bh/2,bw,bh);g.restore();
+  // feather the zone edges so the counter-rotating rings overlap instead of cutting
+  var R=Math.max(W,H)*.92;
+  var grd=g.createRadialGradient(W/2,H*.44,0,W/2,H*.44,R);
+  if(r0<=0){
+    grd.addColorStop(0,'rgba(0,0,0,1)');
+    grd.addColorStop(Math.max(0,(r1-feather)/R),'rgba(0,0,0,1)');
+    grd.addColorStop(Math.min(1,(r1+feather)/R),'rgba(0,0,0,0)');
+    grd.addColorStop(1,'rgba(0,0,0,0)');
+  }else if(r1>=R*.98){
+    grd.addColorStop(0,'rgba(0,0,0,0)');
+    grd.addColorStop(Math.max(0,(r0-feather)/R),'rgba(0,0,0,0)');
+    grd.addColorStop(Math.min(1,(r0+feather)/R),'rgba(0,0,0,1)');
+    grd.addColorStop(1,'rgba(0,0,0,1)');
+  }else{
+    grd.addColorStop(0,'rgba(0,0,0,0)');
+    grd.addColorStop(Math.max(0,(r0-feather)/R),'rgba(0,0,0,0)');
+    grd.addColorStop(Math.min(1,(r0+feather)/R),'rgba(0,0,0,1)');
+    grd.addColorStop(Math.max(0,(r1-feather)/R),'rgba(0,0,0,1)');
+    grd.addColorStop(Math.min(1,(r1+feather)/R),'rgba(0,0,0,0)');
+    grd.addColorStop(1,'rgba(0,0,0,0)');
+  }
+  g.globalCompositeOperation='destination-in';g.fillStyle=grd;g.fillRect(0,0,W,H);g.globalCompositeOperation='source-over';
+  ctx.save();ctx.globalAlpha=alpha;ctx.drawImage(c,0,0,W,H);ctx.restore();
+}
 function paintFractalBg(main,edge,offsetY){
   ctx.fillStyle='#04020c';ctx.fillRect(0,0,W,H);
+  var cx=W/2,cy=H*.44;
   if(main&&main.complete&&main.naturalWidth){
-    var sc=Math.max(W/main.width,H/main.height)*1.34;
-    var bw=main.width*sc,bh=main.height*sc;
-    ctx.save();ctx.translate(W/2,H/2);ctx.rotate(time*.10);ctx.scale(1+Math.sin(time*.35)*.07,1+Math.sin(time*.31)*.07);
-    ctx.globalAlpha=0.95;ctx.drawImage(main,-bw/2,-bh/2,bw,bh);ctx.restore();
+    var r1=Math.min(W,H)*.24,r2=Math.min(W,H)*.42;
+    // three concentric rings: inner CCW, middle CW, outer CCW; same center, feathered overlap
+    fractalZone(0,main,-time*.070,1+Math.sin(time*.30)*.055,r2,Math.max(W,H)*.92,26,.96);
+    fractalZone(1,main, time*.135,1+Math.sin(time*.37)*.045,r1,r2,26,.97);
+    fractalZone(2,main,-time*.285,1+Math.sin(time*.43)*.060,0,r1,26,.98);
+    // deliberate glowing seams where the rings overlap
+    ctx.save();ctx.globalCompositeOperation='lighter';
+    ctx.globalAlpha=.22;ctx.strokeStyle='#c7a6ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,r1,0,TAU);ctx.stroke();
+    ctx.globalAlpha=.14;ctx.strokeStyle='#ffe7a0';ctx.lineWidth=5;ctx.beginPath();ctx.arc(cx,cy,r2,0,TAU);ctx.stroke();
+    ctx.restore();ctx.globalAlpha=1;
   }
   if(edge&&edge.complete&&edge.naturalWidth){
-    var es=Math.max(W/edge.width,H/edge.height)*1.10,ew=edge.width*es,eh=edge.height*es;
-    var ecx=W/2,ecy=H*.44,baseRot=time*.10,breath=1+Math.sin(time*.55)*.065;
-    // true looping kaleidoscope: eight mirrored wedges rotating at different relative angles
+    var es=Math.max(W/edge.width,H/edge.height)*1.12,ew=edge.width*es,eh=edge.height*es;
     for(var wi=0;wi<8;wi++){
-      ctx.save();ctx.globalCompositeOperation='screen';
-      ctx.translate(ecx,ecy);ctx.rotate(baseRot+wi*TAU/8);
-      ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,Math.max(W,H)*.85,-TAU/16,TAU/16);ctx.closePath();ctx.clip();
-      ctx.rotate(-baseRot*1.7+wi*0.18);
-      if(wi%2)ctx.scale(-1,1);
-      ctx.globalAlpha=0.30+0.08*Math.sin(time*1.2+wi);
-      ctx.drawImage(edge,-ew*.5*breath,-eh*.5*breath,ew*breath,eh*breath);
-      ctx.restore();
+      ctx.save();ctx.globalCompositeOperation='screen';ctx.translate(cx,cy);ctx.rotate(-time*.09+wi*TAU/8);
+      ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,Math.max(W,H)*.8,-TAU/16,TAU/16);ctx.closePath();ctx.clip();
+      ctx.rotate(time*.20+wi*.18);if(wi%2)ctx.scale(-1,1);
+      ctx.globalAlpha=.10+.035*Math.sin(time*1.4+wi);ctx.drawImage(edge,-ew/2,-eh/2,ew,eh);ctx.restore();
     }
-    // secondary slow counter-rotating veil
-    ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=0.16;
-    ctx.translate(W/2,H/2);ctx.rotate(-time*.018);ctx.drawImage(edge,-ew/2,-eh/2,ew,eh);ctx.restore();
   }
-  // inner kaleidoscope disc: opposite rotation at a different speed
-  var cx=W/2,cy=H*0.44,ir=Math.min(W,H)*0.285;
-  if(main&&main.complete&&main.naturalWidth){
-    var isc=Math.max(W/main.width,H/main.height)*1.42;
-    var ibw=main.width*isc,ibh=main.height*isc;
-    ctx.save();ctx.beginPath();ctx.arc(cx,cy,ir,0,TAU);ctx.clip();
-    ctx.fillStyle='#03010a';ctx.fillRect(0,0,W,H);
-    ctx.translate(cx,cy);ctx.rotate(-time*.24);ctx.scale(1+Math.sin(time*.47)*.045,1+Math.sin(time*.43)*.045);
-    ctx.globalAlpha=1;ctx.drawImage(main,-ibw/2,-ibh/2,ibw,ibh);ctx.restore();
-  }
-  if(edge&&edge.complete&&edge.naturalWidth){
-    var ies=Math.max(W/edge.width,H/edge.height)*1.22,iew=edge.width*ies,ieh=edge.height*ies;
-    ctx.save();ctx.beginPath();ctx.arc(cx,cy,ir,0,TAU);ctx.clip();
-    for(var iw=0;iw<8;iw++){
-      ctx.save();ctx.globalCompositeOperation='screen';ctx.translate(cx,cy);ctx.rotate(-time*.22+iw*TAU/8);
-      ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,ir*.98,-TAU/16,TAU/16);ctx.closePath();ctx.clip();
-      ctx.rotate(time*.35+iw*.2);if(iw%2)ctx.scale(-1,1);
-      ctx.globalAlpha=0.20+0.06*Math.sin(time*1.5+iw);ctx.drawImage(edge,-iew/2,-ieh/2,iew,ieh);ctx.restore();
-    }
-    ctx.restore();
-  }
-  // deliberate seam between the counter-rotating discs
   ctx.save();ctx.globalCompositeOperation='lighter';
-  var seam=ctx.createRadialGradient(cx,cy,ir-12,cx,cy,ir+10);
-  seam.addColorStop(0,'rgba(3,1,10,0)');seam.addColorStop(0.55,'rgba(3,1,10,0.55)');seam.addColorStop(1,'rgba(3,1,10,0)');
-  ctx.fillStyle=seam;ctx.beginPath();ctx.arc(cx,cy,ir+10,0,TAU);ctx.fill();
-  ctx.globalAlpha=0.55;ctx.strokeStyle='#c7a6ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,ir,0,TAU);ctx.stroke();
-  ctx.globalAlpha=0.25;ctx.strokeStyle='#ffe7a0';ctx.lineWidth=5;ctx.beginPath();ctx.arc(cx,cy,ir+5,0,TAU);ctx.stroke();
-  ctx.restore();ctx.globalAlpha=1;
-
-  ctx.save();ctx.globalCompositeOperation='lighter';
-  // living central eye and kaleidoscope rings
-  var cx=W/2,cy=H*0.44;
   for(var k=0;k<4;k++){
     var rr=48+k*34+Math.sin(time*1.4+k)*5;
     ctx.globalAlpha=0.12-k*0.02;ctx.strokeStyle=k===0?'#ffe9a0':'#a98bff';ctx.lineWidth=k===0?2.5:1;
@@ -1994,6 +1994,7 @@ function paintFractalBg(main,edge,offsetY){
   }
   ctx.restore();ctx.globalAlpha=1;
 }
+
 function paintStageBg(main,edge,offsetY){
   if(stage===4){ paintFractalBg(main,edge,offsetY); return; }
 
@@ -2737,8 +2738,20 @@ function drawFusionScene(){
   ctx.globalAlpha=(0.25+0.35*cp);ctx.strokeStyle='#d6b0ff';ctx.lineWidth=2;
   for(var k=0;k<3;k++){ctx.beginPath();ctx.arc(cx,cy,pr*(0.55+k*.18),time*(1.2+k*.4),time*(1.2+k*.4)+2.2);ctx.stroke();}
   ctx.restore();
+  // AI-generated distortion entity / intermediate transformation frames
+  function fuDraw(img,alpha,size,rot){
+    if(!img||!img.complete||alpha<=0) return;
+    ctx.save();ctx.globalCompositeOperation='lighter';ctx.translate(cx,cy);ctx.rotate(rot);ctx.globalAlpha=Math.min(1,alpha);ctx.drawImage(img,-size/2,-size/2,size,size);ctx.restore();
+  }
+  var f1=GIMG.fu1,f2=GIMG.fu2,f3=GIMG.fu3;
+  var a1=Math.max(0,Math.min(1,(t-.75)/.7))*(1-Math.max(0,Math.min(1,(t-2.45)/.55)));
+  var a2=Math.max(0,Math.min(1,(t-2.15)/.55))*(1-Math.max(0,Math.min(1,(t-3.65)/.55)));
+  var a3=Math.max(0,Math.min(1,(t-3.3)/.55))*(1-Math.max(0,Math.min(1,(t-4.6)/.55)));
+  fuDraw(f1,a1,300+40*Math.sin(time*1.4),time*.12);
+  fuDraw(f2,a2,330+30*Math.sin(time*1.7),-time*.10);
+  fuDraw(f3,a3,360+30*Math.sin(time*1.9),time*.08);
   // Boss5 materializes
-  var bp=Math.max(0,Math.min(1,(t-3.35)/1.8)),bimg=GIMG.b5_1;
+  var bp=Math.max(0,Math.min(1,(t-4.2)/1.0)),bimg=GIMG.b5_1;
   if(bimg&&bimg.complete&&bp>0){
     ctx.save();ctx.globalCompositeOperation='lighter';ctx.translate(cx,cy);ctx.rotate(time*.18);ctx.scale(.55+bp*.45,.55+bp*.45);
     ctx.globalAlpha=bp;ctx.drawImage(bimg,-170,-170,340,340);ctx.restore();

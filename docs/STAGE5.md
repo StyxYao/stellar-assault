@@ -13,7 +13,8 @@ Status: implemented as the final stage.
 
 - `assets/bg/stage5-main.webp` — AI-generated kaleidoscopic fractal space.
 - `assets/bg/stage5-edge.webp` — transparent recursive shard overlay.
-- The scene runs a true looping kaleidoscope: eight clipped, mirrored and counter-rotating wedges of the fractal overlay, with breathing scale and a slow rotating veil.
+- The scene runs three concentric, same-center kaleidoscope rings with feathered overlap: inner CCW, middle CW, outer CCW, each at a different speed.
+- Ring boundaries use 26px feathered alpha blending and glowing seam rings.
 - Concentric eye-rings and 10 radial filaments are drawn procedurally over it.
 - No wormhole/tunnel scroll is used.
 
@@ -46,9 +47,10 @@ Composite of the four previous bosses.
 
 ### Entrance — Convergence
 
+- AI-generated distortion entity frames: `b5_entity`, `b5_fusion_mid1`, `b5_fusion_mid2`.
 - The four previous bosses appear as orbiting echo cores.
 - They spiral inward toward a central singularity.
-- The core flashes and materializes CHRONOS ECHO.
+- The AI entity core grows, dissolves into the intermediate fusion forms, and finally materializes CHRONOS ECHO.
 - Cinematic labels: `FOUR ECHOES` → `CONVERGENCE` → `SINGULARITY` → `CHRONOS ECHO`.
 - The Boss battle theme begins during the convergence.
 
