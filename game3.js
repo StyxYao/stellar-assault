@@ -4,7 +4,7 @@ var stage=0,state='menu',score=0,time=0,lastShot=0,lastHitSfx=0,shake=0;
 var enemies=[],bullets=[],shots=[],parts=[],stars=[],fx=[],ebullets=[],items=[],missiles=[],wingBeams=[],beams=[],orbBullets=[],phaseFx=[],blastZones=[],odLaserFx=[];
 var lastMissile=0,lastSpecial=0,optionT=0,laserTick=0,laserHitY=0,laserHitT=0,pickupMsg='',pickupT=0;
 var audioReady=false;
-var boss=null,runner=null;
+var boss=null,runner=null,bossFusionT=0,bossFusionOn=false;
 var stageT=0,waveIndex=0,nextTransport=0,banner='',bannerSub='',bannerT=0,castT=0,castScroll=0,fusionT=0;
 var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpeed=0,glowWarp=0,bombT=0,bombX=0,bombY=0;
 var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
@@ -576,7 +576,7 @@ function spawnBossNow(){
   var finalMul=stage===4?1.5:1;
   var bhp=Math.round(def.hp*1.4*hpMul*finalMul);
   boss={def:def,x:W/2,y:-130,hp:bhp,max:bhp,phase:0,invuln:1.2,entering:true,t:0,flash:0,patternIdx:0,patternT:0,aimT:0,ringT:0,laserT:0,hitFlash:0,hitX:W/2,hitY:180,ultT:def.ultRate-2.2,ultCharge:0,spiralT:0,spiralAng:0,broadT:0,blinkT:0};
-  if(stage===4){boss.y=205;boss.entering=false;boss.invuln=1.6;}
+  if(stage===4){boss.y=H*.44;boss.entering=false;boss.invuln=1.6;}
   if(stage===2) repairAudio();
   state='boss'; playBgm(['c','s2boss','s3boss','s4boss','s5boss'][stage]||'c'); setBossPattern(0);
 }
@@ -597,7 +597,7 @@ function setBossPattern(idx){
 }
 function bossPhase(p){
   for(var ub=beams.length-1;ub>=0;ub--) if(beams[ub].ult) beams.splice(ub,1);
-  boss.phase=p; boss.invuln=1.6; boss.hitFlash=0; boss.ultT=boss.def.ultRate-2.2; boss.ultCharge=0; boss.spiralT=0; boss.broadT=0; boss.blinkT=0; boss.aimT=0; boss.ringT=0; boss.laserT=0;
+  boss.phase=p; boss.invuln=1.6; if(stage===4&&p===1){bossFusionT=0;bossFusionOn=true;} boss.hitFlash=0; boss.ultT=boss.def.ultRate-2.2; boss.ultCharge=0; boss.spiralT=0; boss.broadT=0; boss.blinkT=0; boss.aimT=0; boss.ringT=0; boss.laserT=0;
   boom(boss.x,boss.y,1.5); shake=Math.max(shake,14);
   phaseFx.push({x:boss.x,y:boss.y,t:0,life:1.35,kind:'phase',phase:p});
   setBanner('PHASE '+(p+1),boss.def.name,1.6);
@@ -1735,6 +1735,7 @@ function step(dt){
           beginBossUltimate();
         }else{
           boss.patternT+=dt; if(boss.patternT>8) setBossPattern(boss.patternIdx+1);
+          if(bossFusionOn){bossFusionT+=dt;if(bossFusionT>2.6)bossFusionOn=false;}
           boss.aimT+=dt; boss.ringT+=dt; boss.laserT+=dt; boss.spiralT+=dt; boss.broadT+=dt; boss.blinkT+=dt;
           var rage=boss.phase===2?0.72:1;
           if(def.style==='octopus'){
@@ -2162,6 +2163,43 @@ function bossGlowLayer(key,img,rgb){
     GLOW_CACHE[key]=cv;return cv;
   }catch(e){return null;}
 }
+function drawChronosEntityHalo(w,h){
+  if(!boss) return;
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  for(var ring=0;ring<8;ring++){
+    var rr=w*.22+ring*w*.043;
+    var n=18+ring*5;
+    var rot=time*(ring%2?-.10:.075)+ring*.29;
+    for(var j=0;j<n;j++){
+      var a=j/n*TAU+rot;
+      var px=boss.x+Math.cos(a)*rr,py=boss.y+Math.sin(a)*rr*.74;
+      ctx.globalAlpha=.18+.14*Math.sin(time*2.2+j*.7+ring);
+      ctx.fillStyle=(ring%3===0)?'#fff6d8':'#c9e9ff';
+      ctx.beginPath();ctx.arc(px,py,1.1+(ring%2)*.5,0,TAU);ctx.fill();
+    }
+  }
+  ctx.restore();ctx.globalAlpha=1;
+}
+function drawBossFusionOverlay(w,h){
+  if(!bossFusionOn||!boss) return;
+  var q=Math.max(0,Math.min(1,bossFusionT/2.6));
+  var imgs=[GIMG.b1_1,GIMG.b2_1,GIMG.b3_1,GIMG.b4_1];
+  ctx.save();
+  for(var i=0;i<4;i++){
+    var im=imgs[i];if(!im||!im.complete) continue;
+    for(var k=0;k<8;k++){
+      var a=k*TAU/8+i*.38+time*.55;
+      var rr=(215*(1-q*.55))+i*8;
+      var px=boss.x+Math.cos(a)*rr,py=boss.y+Math.sin(a)*rr*.72;
+      var ss=108*(1-q*.30);
+      ctx.save();ctx.globalAlpha=.55*(1-q);
+      ctx.translate(px,py);ctx.rotate(a+Math.PI/2+time*.25);if((k+i)%2)ctx.scale(-1,1);
+      ctx.drawImage(im,-ss/2,-ss/2,ss,ss);
+      ctx.restore();
+    }
+  }
+  ctx.restore();ctx.globalAlpha=1;
+}
 function drawBoss(){
   if(!boss) return;
   var phase=boss.phase;
@@ -2229,6 +2267,7 @@ function drawBoss(){
     ctx.restore();ctx.globalAlpha=1;
   }
 
+  if(stage===4&&phase===0) drawChronosEntityHalo(w,h);
   if(stage===4) drawChronosFractal(w,h,phase);
   ctx.save();
   if(stage===4){
@@ -2299,6 +2338,7 @@ function drawBoss(){
     }
     ctx.restore();ctx.globalAlpha=1;
   }
+  if(stage===4&&boss.phase===1&&bossFusionOn) drawBossFusionOverlay(w,h);
   ctx.restore();
 }
 function bulletImg(){ return GIMG['u'+(stage===0?'1':(stage===1?'2':'5'))]; }
@@ -2775,7 +2815,7 @@ function drawFusionScene(){
       for(var k=7;k>=1;k--){
         var qk=cl(qe-k*.035);
         var tx=cx+dir*(W*.58)*(1-qk),ty=cy+(i%2?22:-22)*(1-qk);
-        ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.055*(8-k)*fade;
+        ctx.save();ctx.globalAlpha=.085*(8-k)*fade;
         ctx.translate(tx,ty);ctx.rotate(-dir*(.12+qk*.3));ctx.drawImage(im,-sz*.44,-sz*.44,sz*.88,sz*.88);ctx.restore();
       }
       ctx.save();ctx.globalAlpha=fade*.95;ctx.translate(x,y);ctx.rotate(-dir*(.1+qe*.35));ctx.drawImage(im,-sz/2,-sz/2,sz,sz);ctx.restore();ctx.globalAlpha=1;
@@ -2783,14 +2823,15 @@ function drawFusionScene(){
     }
     // once the boss reaches the core, its texture becomes a self-similar fractal ring
     var ringA=cl((q-.42)/.42);if(ringA>0){
-      var baseR=148-i*18;
+      // 8 whole-boss copies per ring, two rings; flat source-over overlap, no depth sorting
+      var baseR=152-i*14;
       for(var layer=0;layer<2;layer++){
-        var rr=baseR*(layer?.60:1),n=layer?7:11,ss=(layer?44:66);
+        var rr=baseR*(layer?.62:1),n=layer?4:8,ss=(layer?118:158);
         for(var k2=0;k2<n;k2++){
-          var a=k2*TAU/n+i*1.35+time*.08*dir*(layer?1.5:1);
+          var a=k2*TAU/n+i*.42+time*.07*dir*(layer?1.6:1);
           var px=cx+Math.cos(a)*rr,py=cy+Math.sin(a)*rr*.72;
-          ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=ringA*(layer?.22:.42);
-          ctx.translate(px,py);ctx.rotate(a+time*.18*dir);if((k2+layer)%2)ctx.scale(-1,1);
+          ctx.save();ctx.globalAlpha=ringA*(layer?.30:.62);
+          ctx.translate(px,py);ctx.rotate(a+Math.PI/2+time*.12*dir);if((k2+layer+i)%2)ctx.scale(-1,1);
           ctx.drawImage(im,-ss/2,-ss/2,ss,ss);ctx.restore();
         }
       }
@@ -2804,9 +2845,9 @@ function drawFusionScene(){
   var a1=cl((t-.7)/1.1)*(1-cl((t-6.8)/1.2));
   var a2=cl((t-6.4)/1.1)*(1-cl((t-9.1)/1.1));
   var a3=cl((t-8.6)/1.0)*(1-cl((t-10.95)/1.1));
-  fuDraw(GIMG.fu1,a1*.42,260+30*Math.sin(time*1.2),time*.08);
-  fuDraw(GIMG.fu2,a2*.58,320+24*Math.sin(time*1.5),-time*.09);
-  fuDraw(GIMG.fu3,a3*.72,360+20*Math.sin(time*1.7),time*.07);
+  fuDraw(GIMG.fu1,a1*.36,190+20*Math.sin(time*1.2),time*.08);
+  fuDraw(GIMG.fu2,a2*.46,235+18*Math.sin(time*1.5),-time*.09);
+  fuDraw(GIMG.fu3,a3*.54,265+16*Math.sin(time*1.7),time*.07);
   // final composite
   var bp=cl((t-9.55)/1.0),bimg=GIMG.b5_1;
   if(bimg&&bimg.complete&&bp>0){

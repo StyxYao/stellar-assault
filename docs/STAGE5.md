@@ -23,13 +23,16 @@ Status: implemented as the final stage.
 ## Boss 5 entrance
 
 - The four old bosses enter **one at a time**, not as a group.
+- Phase 1 uses only the new AI Hedron-like entity (`boss_5_phase1.png`); no old-boss armor.
 - Each boss moves from off-screen toward the black hole / distortion core.
 - While moving it leaves a chain of whole-texture afterimages.
-- At the core its texture is repeatedly stamped into a two-layer, self-similar fractal ring:
-  - Outer ring: 11 copies.
-  - Inner ring: 7 copies, 0.60 scale, offset angle.
+- At the core its whole sprite is stamped into a two-layer 8-way rosette:
+  - Outer ring: 8 copies.
+  - Inner ring: 4 copies, 0.62 scale, offset angle.
+  - Source-over overlap, no depth sorting: copies visibly overlap and occlude each other.
 - Finished rings remain in place around the eye for the next boss.
-- After all four rings are formed, the AI distortion frames absorb them and CHRONOS ECHO materializes.
+- After all four rings are formed, the AI distortion frames absorb them and the phase-1 entity materializes.
+- When HP crosses 60%, the entity is encased by the four boss copy-rosettes in a 2.6s phase-2 transition; phase-2 art is the composite form.
 - AI frames: `b5_entity`, `b5_fusion_mid1`, `b5_fusion_mid2`.
 - Boss 5 HP is ×1.5 on top of the global multiplier: **10080**.
 - Cinematic labels: `FOUR ECHOES` → `CONVERGENCE` → `SINGULARITY` → `CHRONOS ECHO`.
