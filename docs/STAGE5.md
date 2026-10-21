@@ -72,7 +72,8 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 
 - Stage field: `s5` — 奇点 / Singularity, normalized to -16 LUFS / 192 kbps
 - File: `assets/audio/bgm-stage5.mp3` (dur. 03:00.6)
-- Boss: `assets/audio/bgm-boss5-final.mp3` — 虚实之间 / Between Realities, 06:29.95
+- Boss phase 1–2: `assets/audio/bgm-boss5.mp3` — 引力弹弓 / Gravitational Slingshot, 02:23.3
+- Boss final phase: `assets/audio/bgm-boss5-final.mp3` — 虚实之间 / Between Realities, 06:29.95
 
 ## Implementation notes
 
