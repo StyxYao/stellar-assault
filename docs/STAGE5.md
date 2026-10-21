@@ -15,6 +15,8 @@ Status: implemented as the final stage.
 - `assets/bg/stage5-edge.webp` — transparent recursive shard overlay.
 - The scene runs three concentric, same-center kaleidoscope rings with feathered overlap: inner CCW, middle CW, outer CCW, each at a different speed.
 - Ring boundaries use 26px feathered alpha blending and glowing seam rings.
+- The four old bosses enter two at a time at near-original scale; the final composite is larger than each of them.
+- Boss 5 HP is increased by ×1.5 on top of the global boss multiplier.
 - Concentric eye-rings and 10 radial filaments are drawn procedurally over it.
 - No wormhole/tunnel scroll is used.
 

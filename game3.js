@@ -571,7 +571,8 @@ function startBossFusion(){
 function spawnBossNow(){
   var def=BOSSES[stage];
   var hpMul=stage===0?1.10:(stage===1?1.10:(stage===2?0.90:1.0));
-  var bhp=Math.round(def.hp*1.4*hpMul);
+  var finalMul=stage===4?1.5:1;
+  var bhp=Math.round(def.hp*1.4*hpMul*finalMul);
   boss={def:def,x:W/2,y:-130,hp:bhp,max:bhp,phase:0,invuln:1.2,entering:true,t:0,flash:0,patternIdx:0,patternT:0,aimT:0,ringT:0,laserT:0,hitFlash:0,hitX:W/2,hitY:180,ultT:def.ultRate-2.2,ultCharge:0,spiralT:0,spiralAng:0,broadT:0,blinkT:0};
   if(stage===4){boss.y=205;boss.entering=false;boss.invuln=1.6;}
   if(stage===2) repairAudio();
@@ -2710,21 +2711,34 @@ function drawFusionScene(){
   var imgs=[GIMG.b1_1,GIMG.b2_1,GIMG.b3_1,GIMG.b4_1];
   var cols=['#ff5f7a','#c06aff','#ff9a3a','#ffe7a0'];
   ctx.save();
-  // four old bosses spiral inward
-  for(var i=0;i<4;i++){
-    var im=imgs[i];if(!im||!im.complete) continue;
-    var delay=i*.16,q=Math.max(0,Math.min(1,(t-delay)/3.0));
-    var ang=-Math.PI/2+i*Math.PI/2+t*.65;
-    var rad=245*(1-q*.84);
-    var x=cx+Math.cos(ang)*rad,y=cy+Math.sin(ang)*rad*.72;
-    ctx.save();ctx.globalCompositeOperation='lighter';
-    ctx.globalAlpha=(0.25+0.55*q)*(1-Math.max(0,(t-3.2)/1.2));
-    ctx.translate(x,y);ctx.rotate(-t*.5);ctx.drawImage(im,-42,-42,84,84);
-    ctx.globalAlpha=0.15;ctx.strokeStyle=cols[i];ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(cx,cy);ctx.stroke();
-    ctx.restore();
-    ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=0.35*(1-q);
-    ctx.fillStyle=cols[i];ctx.beginPath();ctx.arc(x,y,6,0,TAU);ctx.fill();ctx.restore();
+  // old bosses enter two at a time at near-original scale
+  var pairs=[[0,1],[2,3]];
+  var sizes=[168,178,178,214];
+  for(var pi=0;pi<2;pi++){
+    var pair=pairs[pi],start=pi===0?.15:1.85,endT=pi===0?2.45:4.65;
+    var show=Math.max(0,Math.min(1,(t-start)/.55))*(1-Math.max(0,Math.min(1,(t-endT)/.55)));
+    if(show<=0) continue;
+    for(var k=0;k<2;k++){
+      var bi=pair[k],im=imgs[bi];if(!im||!im.complete) continue;
+      var side=k===0?-1:1;
+      var targetX=cx+side*(W*.285),targetY=H*.35+(k===1?H*.055:0);
+      var enter=Math.max(0,Math.min(1,(t-start)/.62));
+      var x=(side<0?-150:W+150)+(targetX-(side<0?-150:W+150))*enter;
+      var y=targetY;
+      var shrink=pi===1?Math.max(0,Math.min(1,(t-3.55)/.85)):0;
+      var sz=sizes[bi]*(1-shrink*.38);
+      x+=(cx-x)*shrink*.55;y+=(cy-y)*shrink*.55;
+      ctx.save();ctx.globalCompositeOperation='lighter';
+      ctx.globalAlpha=show*.92;
+      ctx.translate(x,y);ctx.rotate(side*enter*.08+Math.sin(time*.7+bi)*.025);
+      ctx.drawImage(im,-sz/2,-sz/2,sz,sz);
+      ctx.globalAlpha=show*.22;ctx.strokeStyle=cols[bi];ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(cx,cy);ctx.stroke();
+      ctx.restore();
+      // name tags
+      ctx.save();ctx.globalAlpha=show*.65;ctx.textAlign='center';ctx.fillStyle=cols[bi];ctx.font='8px monospace';
+      ctx.fillText(['VOID','ABYSS','BEHEMOTH','SERAPH'][bi],x,y+sz*.52);ctx.restore();ctx.globalAlpha=1;
+    }
   }
   // singularity core
   var cp=Math.max(0,Math.min(1,(t-.7)/2.7)),pr=30+cp*145;
