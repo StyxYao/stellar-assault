@@ -13,7 +13,8 @@ Status: implemented as the final stage.
 
 - `assets/bg/stage5-main.webp` — AI-generated kaleidoscopic fractal space.
 - `assets/bg/stage5-edge.webp` — transparent recursive shard overlay.
-- The scene is fixed, slowly rotating and breathing; concentric eye-rings and 10 radial filaments are drawn procedurally over it.
+- The scene runs a true looping kaleidoscope: eight clipped, mirrored and counter-rotating wedges of the fractal overlay, with breathing scale and a slow rotating veil.
+- Concentric eye-rings and 10 radial filaments are drawn procedurally over it.
 - No wormhole/tunnel scroll is used.
 
 ## New enemies
@@ -37,6 +38,7 @@ Status: implemented as the final stage.
 - No shared warm-up/bridge prefix; the final stage opens immediately in its own visual language.
 - Escalation from shard rings → prisms → echo wardens → mixed fractal mandalas.
 - Final waves intentionally overlap several formations to create a “collapse” rhythm before the boss.
+- Wave timestamps use no +26 second offset; the first fractal formation appears immediately after the intro.
 
 ## Boss — CHRONOS ECHO
 
@@ -47,7 +49,7 @@ Composite of the four previous bosses:
 - Orange Star Behemoth
 - White-gold Seraphic Wings
 
-Four colored echo cores orbit the boss and are visible throughout the fight. The phase art progressively reveals more of the absorbed bosses.
+Four colored echo cores orbit the boss and are visible throughout the fight. The phase art progressively reveals more of the absorbed bosses. The body also breathes, rotates slightly, shimmers with prismatic offsets and is surrounded by an animated fractal shard halo.
 
 ### Phase 1 — Dormant Singularity
 - Chronos Bloom: three staggered fractal rings with a player-facing gap
