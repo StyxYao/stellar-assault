@@ -815,9 +815,9 @@ function applySpecial(t){
   player.weapon=t==='N'?'normal':(t==='S'?'spread':(t==='L'?'laser':(t==='M'?'missile':t)));
 }
 function gainOD(n){
-  if(player.odT>0){player.odT=Math.min(3.2,player.odT+n*0.02);return false;}
+  if(player.odT>0){player.odT=Math.min(4.0,player.odT+n*0.02);return false;}
   player.od=Math.min(100,player.od+n);
-  if(player.od>=100){player.od=0;player.odT=3.0;sfx('b_charge',0.34);return true;}
+  if(player.od>=100){player.od=0;player.odT=4.0;sfx('b_charge',0.34);return true;}
   return false;
 }
 function collectItem(it){
@@ -862,6 +862,14 @@ function powerDamageFactor(){ return (([1,0.96,0.94,0.60][Math.max(0,Math.min(3,
 function addShot(x,y,vx,vy,dmg,wing,laser,special,max){ var f=powerDamageFactor(); shots.push({x:x,y:y,vx:vx,vy:vy,dmg:dmg*f*(wing?0.6615:1),wing:!!wing,laser:!!laser,special:!!special,max:!!max}); }
 function fireNormal(){
   var lv=player.specialPower;
+  if(player.odT>0){
+    for(var row=0;row<3;row++){
+      for(var i=-2;i<=2;i++) addShot(player.x+i*13,player.y-24-row*9,0,-940,2.4,false,false,true,true);
+    }
+    addShot(player.x-27,player.y-16,-110,-860,4.0,false,false,false,true);
+    addShot(player.x+27,player.y-16,110,-860,4.0,false,false,false,true);
+    return;
+  }
   if(lv<=1){ addShot(player.x-10,player.y-22,0,-900,3); addShot(player.x+10,player.y-22,0,-900,3); }
   else if(lv===2){ addShot(player.x-12,player.y-22,0,-900,3); addShot(player.x,player.y-26,0,-900,3); addShot(player.x+12,player.y-22,0,-900,3); }
   else if(lv===3){ addShot(player.x-20,player.y-18,-90,-880,2.6); addShot(player.x-7,player.y-24,0,-920,2.6); addShot(player.x+7,player.y-24,0,-920,2.6); addShot(player.x+20,player.y-18,90,-880,2.6); }
@@ -872,6 +880,14 @@ function fireNormal(){
   }
 }
 function fireSpread(){
+  if(player.odT>0){
+    var n=18,sp=760;
+    for(var i=0;i<n;i++){
+      var a=i/n*TAU+time*0.6;
+      addShot(player.x,player.y,Math.cos(a)*sp,Math.sin(a)*sp,1.55,false,false,true,true);
+    }
+    return;
+  }
   var n=3+(player.specialPower-1)*2,spread=0.13,sp=860;
   for(var i=0;i<n;i++){
     var a=(i-(n-1)/2)*spread;
@@ -884,9 +900,9 @@ function spawnMissile(x,y,wing,dmg,max){
   missiles.push({x:x,y:y,vx:wing?0:0,vy:52,t:0,ignite:0.2,life:2.8,dmg:dmg||6,wing:!!wing,max:!!max,ignited:false});
 }
 function launchMissiles(){
-  var n=player.specialPower;
+  var n=player.odT>0?8:player.specialPower;
   for(var i=0;i<n;i++){
-    var x=player.x+(i-(n-1)/2)*14;
+    var x=player.x+(i-(n-1)/2)*9;
     spawnMissile(x,player.y-16,false,player.specialPower>=4?8:6,player.specialPower>=4);
   }
   playMissileLaunch();
@@ -938,8 +954,32 @@ function bossLaser(){
   for(var i=0;i<n;i++) spawnBeam(boss.x,boss.y+10,a+(i-(n-1)/2)*0.18,1500,22,1.3,0.45,1,bossBeamColor(),true,boss);
   sfx('laser',0.06);
 }
+function laserDamageOD(){
+  var base=-Math.PI/2+time*1.45,w=18+Math.min(player.specialPower,3)*4;
+  var dmg=(2+player.specialPower*2)*powerDamageFactor()*0.55;
+  laserHitY=player.y;laserHitT=0.10;
+  for(var k=0;k<4;k++){
+    var ang=base+k*Math.PI/2,ca=Math.cos(ang),sa=Math.sin(ang);
+    for(var i=enemies.length-1;i>=0;i--){
+      var e=enemies[i],dx=e.x-player.x,dy=e.y-player.y;
+      var proj=dx*ca+dy*sa,perp=Math.abs(-dx*sa+dy*ca);
+      if(proj>20&&proj<760&&perp<w/2+enemyW(e)*0.32){
+        e.hp-=dmg;e.flash=0.1;sfx('e_hit',0.16);
+        if(e.hp<=0){var et=ET[e.type];score+=et.score;part(e.x,e.y,'#ffb066',9,160);enemyDeath(e);maybeDrop(e);removeEnemy(i);}
+      }
+    }
+    if(boss&&state==='boss'&&boss.invuln<=0){
+      var bx=boss.x-player.x,by=boss.y-player.y,bp=bx*ca+by*sa,be=Math.abs(-bx*sa+by*ca);
+      if(bp>0&&bp<760&&be<w/2+boss.def.w*0.16*1.15){
+        boss.hp-=dmg*0.7;boss.hitFlash=0.10;boss.hitX=player.x;boss.hitY=boss.y+16;
+      }
+    }
+  }
+  if(time-lastHitSfx>0.10){lastHitSfx=time;sfx('b_hit',0.10);}
+}
 function laserDamage(dt){
-  laserTick-=dt; if(laserTick>0) return; laserTick=player.odT>0?0.040:0.08;
+  laserTick-=dt; if(laserTick>0) return; laserTick=0.08;
+  if(player.odT>0){ laserDamageOD(); return; }
   var w=8+Math.min(player.specialPower,3)*5,dmg=(2+player.specialPower*2)*powerDamageFactor();
   var target=null,tIdx=-1,tY=0;
   for(var i=0;i<enemies.length;i++){
@@ -1322,9 +1362,9 @@ function step(dt){
     }else if(player.weapon==='laser'){
       laserDamage(dt);
     }else if(player.weapon==='missile'){
-      if(time-lastMissile>(player.odT>0?0.23:0.46)){ lastMissile=time; launchMissiles(); }
+      if(time-lastMissile>0.46){ lastMissile=time; launchMissiles(); }
     }else{
-      if(time-lastShot>(player.odT>0?0.050:0.10)){ lastShot=time; fireNormal(); if(Math.random()<0.7) sfx('p_normal',0.34); }
+      if(time-lastShot>(player.odT>0?0.033:0.10)){ lastShot=time; fireNormal(); if(Math.random()<0.7) sfx('p_normal',0.34); }
     }
   }
   if(bannerT>0) bannerT-=dt;
@@ -2053,6 +2093,23 @@ function drawOptions(){
 }
 function drawPlayerLaser(){
   if(player.weapon!=='laser'||(state!=='play'&&state!=='boss')) return;
+  if(player.odT>0){
+    var base=-Math.PI/2+time*1.45,w=18+Math.min(player.specialPower,3)*4;
+    ctx.save();ctx.globalCompositeOperation='lighter';
+    for(var k=0;k<4;k++){
+      var a=base+k*Math.PI/2,ex=player.x+Math.cos(a)*760,ey=player.y+Math.sin(a)*760;
+      var lg=ctx.createLinearGradient(player.x,player.y,ex,ey);
+      lg.addColorStop(0,'rgba(255,255,255,0.95)');lg.addColorStop(0.15,'rgba(120,245,255,0.75)');lg.addColorStop(1,'rgba(255,215,100,0.05)');
+      ctx.strokeStyle=lg;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(player.x,player.y);ctx.lineTo(ex,ey);ctx.stroke();
+      ctx.strokeStyle='rgba(255,255,255,0.95)';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(player.x,player.y);ctx.lineTo(ex,ey);ctx.stroke();
+      ctx.globalAlpha=0.7;ctx.strokeStyle='#ffe9a0';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.arc(ex,ey,14+Math.sin(time*18+k)*4,0,TAU);ctx.stroke();ctx.globalAlpha=1;
+    }
+    var cg=ctx.createRadialGradient(player.x,player.y,0,player.x,player.y,55);
+    cg.addColorStop(0,'rgba(255,255,255,0.8)');cg.addColorStop(0.35,'rgba(120,240,255,0.35)');cg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=cg;ctx.beginPath();ctx.arc(player.x,player.y,55,0,TAU);ctx.fill();
+    ctx.restore();ctx.globalAlpha=1;return;
+  }
   var lv=player.specialPower,w=8+Math.min(lv,3)*5+Math.sin(time*30)*2;
   var cols=['80,190,255','120,240,255','255,120,220','255,215,100'],c=cols[lv-1]||cols[0];
   var endY=laserHitY>0?laserHitY:0, h=Math.max(0,player.y-18-endY);
