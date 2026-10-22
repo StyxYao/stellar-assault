@@ -2093,15 +2093,42 @@ function drawBlackHole(){
   ctx.beginPath();ctx.arc(cx,cy,hr+4,0,TAU);ctx.stroke();
   ctx.restore();ctx.globalAlpha=1;
 }
-function paintFractalBg(main,edge,offsetY){
-  ctx.fillStyle='#04020c';ctx.fillRect(0,0,W,H);
-  var cx=W/2,cy=H*.44;
-  if(main&&main.complete&&main.naturalWidth){
-    var r1=Math.min(W,H)*.34;
-    // exactly two counter-rotating regions; the eye stays still
-    fractalZone(0,main, time*.085,1+Math.sin(time*.31)*.05,r1,Math.max(W,H)*.92,58,.97);
-    fractalZone(1,main,-time*.205,1+Math.sin(time*.43)*.055,0,r1,58,.98);
+function drawKaleidoLayer(img,cx,cy,n,rot,scale,alpha,mirror,ox,oy,filter,comp){
+  if(!img||!img.complete||!img.naturalWidth) return;
+  var step=TAU/n,R=Math.max(W,H)*1.06;
+  var sc=Math.max(W/img.width,H/img.height)*scale;
+  var bw=img.width*sc,bh=img.height*sc;
+  ctx.save();ctx.globalAlpha=1;
+  if(comp) ctx.globalCompositeOperation=comp;
+  for(var k=0;k<n;k++){
+    ctx.save();
+    ctx.beginPath();ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,R,k*step+rot-.008,(k+1)*step+rot+.008);ctx.closePath();ctx.clip();
+    ctx.translate(cx,cy);
+    var base=k*step+rot+step/2;
+    ctx.rotate(base);
+    if(mirror&&(k%2))ctx.scale(-1,1);
+    ctx.globalAlpha=alpha;
+    if(filter&&('filter' in ctx))ctx.filter=filter;
+    ctx.drawImage(img,-bw/2+ox*bw,-bh/2+oy*bh,bw,bh);
+    ctx.restore();
   }
+  ctx.restore();ctx.globalAlpha=1;ctx.filter='none';ctx.globalCompositeOperation='source-over';
+}
+function paintFractalBg(main,edge,offsetY){
+  ctx.fillStyle='#03020a';ctx.fillRect(0,0,W,H);
+  var cx=W/2,cy=H*.44,N=16;
+  // three self-similar crystal shells; inner/outer counter-rotate at different speeds
+  drawKaleidoLayer(main,cx,cy,N, time*.024,1.34,.97,0, .06,-.03,'hue-rotate(-8deg) saturate(1.08)',null);
+  drawKaleidoLayer(main,cx,cy,N,-time*.036,1.08,.62,1,-.09, .04,'hue-rotate(28deg) saturate(1.18)','screen');
+  drawKaleidoLayer(edge,cx,cy,N,-time*.014,1.22,.22,0, .04, .02,'hue-rotate(12deg) saturate(1.25)','screen');
+  // dark vortex fade so the crystal pours into one static eye
+  var hg=ctx.createRadialGradient(cx,cy,0,cx,cy,H*.13);
+  hg.addColorStop(0,'rgba(2,1,8,0.92)');
+  hg.addColorStop(.38,'rgba(3,2,10,0.62)');
+  hg.addColorStop(.72,'rgba(4,3,14,0.18)');
+  hg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=hg;ctx.beginPath();ctx.arc(cx,cy,H*.13,0,TAU);ctx.fill();
   if(!(stage===4&&(state==='boss'||state==='bossFusion'))) drawBlackHole();
 }
 

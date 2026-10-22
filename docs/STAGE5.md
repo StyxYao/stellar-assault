@@ -11,16 +11,17 @@ Status: implemented as the final stage.
 
 ## Background
 
-- `assets/bg/stage5-main.webp` — AI-generated kaleidoscopic crystal space.
-- **Two** counter-rotating regions share one center:
-  - Inner region: counter-clockwise.
-  - Outer region: clockwise.
-- They overlap through a 58px feathered alpha transition; no drawn rings, no gear outlines.
-- The exact center is a small, static black hole with a thin photon ring and a soft violet halo.
-- No accretion disk, no rotating eye, no tunnel scroll.
-- The black hole is the typhoon eye: the two crystal regions move around it while the center stays still.
-- During the Boss fight the background black hole is hidden, so each phase's own core is the only black hole.
-- Phase 3 no longer uses the old composite sprite as a body. The old art is a bottom light-only aura; above it are the Hedron core, white-hot halo, four rings, and finally the single black hole. All use the same center.
+- `assets/bg/stage5-main.webp` — AI-generated crystal space.
+- `assets/bg/stage5-edge.webp` — transparent shard layer.
+- The field is a true **16-fold mirrored kaleidoscope**:
+  - 16 clipped wedges per layer.
+  - Three crystal layers with different scales and opacities.
+  - Outer and inner layers counter-rotate at different speeds.
+  - Alternating wedges are mirrored.
+  - No concentric ring strokes or gear boundaries.
+- A small radial dark vortex fades the crystal into one static black hole at 44% height.
+- The black hole is the only static element; the layers rotate and breathe around it.
+- During the Boss fight the background black hole is hidden so each phase's own core is authoritative.
 
 ## Boss 5 entrance
 
