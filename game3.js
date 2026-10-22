@@ -2285,12 +2285,8 @@ function drawPhase3Rings(w,h){
   if(!boss) return;
   var imgs=[GIMG.b1_1,GIMG.b2_1,GIMG.b3_1,GIMG.b4_1];
   var ringR=[175,152,129,106],ringS=[92,78,64,52];
-  // the phase-3 art's black hole sits below the sprite center; match the body rotation and scale
-  var bodyAng=time*(0.20+2*0.050)+Math.sin(time*.45+2)*.04;
-  var bodyScale=1+Math.sin(time*1.35+2)*.035;
-  var dx=-0.00057*w*bodyScale, dy=0.03110*w*bodyScale;
-  var cx=boss.x+dx*Math.cos(bodyAng)-dy*Math.sin(bodyAng);
-  var cy=boss.y+dx*Math.sin(bodyAng)+dy*Math.cos(bodyAng);
+  // phase-3 rings share the sprite's geometric center; no extra art-hole offset
+  var cx=boss.x, cy=boss.y;
   for(var i=0;i<4;i++){
     var im=imgs[i];if(!im||!im.complete) continue;
     var dir=(i%2===0)?1:-1;
