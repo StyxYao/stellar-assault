@@ -2237,6 +2237,50 @@ function drawSpectralAura(w,h){
   ctx.restore();ctx.globalAlpha=1;
 }
 
+function drawPhase2FusionForm(){
+  if(!boss) return;
+  var cx=boss.x,cy=boss.y;
+  var imgs=[GIMG.b1_1,GIMG.b2_1,GIMG.b3_1,GIMG.b4_1];
+  var ringR=[150,126,102,78],ringS=[86,72,58,44];
+  // core Hedron
+  var hed=GIMG.np1;
+  if(hed&&hed.complete){
+    ctx.save();ctx.globalAlpha=.78;ctx.translate(cx,cy);ctx.rotate(time*.10);
+    var hs=235;ctx.drawImage(hed,-hs/2,-hs/2,hs,hs);ctx.restore();
+  }
+  // four 24-way rings locked around the core
+  for(var i=0;i<4;i++){
+    var im=imgs[i];if(!im||!im.complete) continue;
+    var rr=ringR[i],ss=ringS[i];
+    var dir=(i%2===0)?1:-1;
+    for(var k=0;k<24;k++){
+      var a=k*TAU/24+i*.35+time*.055*dir;
+      var px=cx+Math.cos(a)*rr,py=cy+Math.sin(a)*rr;
+      ctx.save();ctx.globalAlpha=1;
+      ctx.translate(px,py);ctx.rotate(a+Math.PI/2+time*.06*dir);if((k+i)%2)ctx.scale(-1,1);
+      ctx.drawImage(im,-ss/2,-ss/2,ss,ss);ctx.restore();
+    }
+  }
+  // top white-hot core, feathered outer 30%
+  ctx.save();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+  var R=104+7*Math.sin(time*2.2);
+  var g=ctx.createRadialGradient(cx,cy,0,cx,cy,R);
+  g.addColorStop(0,'rgba(255,255,255,0.98)');
+  g.addColorStop(.55,'rgba(255,255,250,0.94)');
+  g.addColorStop(.70,'rgba(255,246,220,0.72)');
+  g.addColorStop(.85,'rgba(220,235,255,0.24)');
+  g.addColorStop(1,'rgba(220,240,255,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.fill();
+  ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.55;
+  var fg=ctx.createRadialGradient(cx,cy,0,cx,cy,R*.52);
+  fg.addColorStop(0,'rgba(255,255,255,1)');fg.addColorStop(.4,'rgba(255,240,190,.6)');fg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=fg;ctx.beginPath();ctx.arc(cx,cy,R*.52,0,TAU);ctx.fill();
+  ctx.restore();ctx.globalAlpha=1;
+  if(boss.hitFlash>0){
+    ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(.55,boss.hitFlash*5);
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(cx,cy,R*.9,0,TAU);ctx.fill();ctx.restore();ctx.globalAlpha=1;
+  }
+}
 function drawPhase2BossHalo(w,h){
   if(!boss) return;
   var imgs=[GIMG.b1_1,GIMG.b2_1,GIMG.b3_1,GIMG.b4_1];
@@ -2294,6 +2338,7 @@ function drawBossFusionOverlay(w,h){
 function drawBoss(){
   if(!boss) return;
   var phase=boss.phase;
+  if(stage===4&&phase===1){drawPhase2FusionForm();return;}
   var img=GIMG[boss.def.key+(phase+1)]||GIMG[boss.def.key+'1'];
   if(stage===4&&phase===0){img=GIMG.np1||img;}
   if(!img||!img.complete) return;
