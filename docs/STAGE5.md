@@ -209,3 +209,9 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - `assets/video/phase2-loop.mp4`: 720x1200, 60fps, 7.05s, silent, watermark cropped.
 - Complete phase-2 visual: Hedron core + four rings supplied by the clip; procedural rings/core are skipped while it plays.
 - Slow global rotation is applied by the game; the clip's own animation continues.
+
+## Boss phase video sizing
+
+- Phase-2 and phase-3 video frames are drawn at 2x the previous frame scale.
+- Phase 3 uses the video's own black hole through a feathered circular alpha mask; the game no longer draws a second black hole.
+- Because a 2x-diameter ring is wider than the portrait screen, the outer edges intentionally bleed off-screen.
