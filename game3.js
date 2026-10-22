@@ -2329,7 +2329,7 @@ function paintFractalBg(main,edge,offsetY){
   if(bgVidReady){
     var sh=Math.max(H*1.16,W*1280/720),sw=sh*720/1280;
     ctx.save();ctx.globalCompositeOperation='source-over';ctx.globalAlpha=.94;if('filter' in ctx)ctx.filter='contrast(1.08) saturate(1.12) brightness(.94)';
-    ctx.drawImage(bgLoopVideo,cx-sw/2,cy-sh*(600/1280),sw,sh);ctx.filter='none';ctx.restore();ctx.globalAlpha=1;
+    ctx.drawImage(bgLoopVideo,cx-sw/2,cy-sh/2,sw,sh);ctx.filter='none';ctx.restore();ctx.globalAlpha=1;
     ctx.fillStyle='rgba(2,4,14,0.30)';ctx.fillRect(0,0,W,H);
   }else{
   // three self-similar crystal shells; inner/outer counter-rotate at different speeds
