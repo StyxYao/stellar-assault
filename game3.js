@@ -2241,14 +2241,34 @@ function drawPhase3CollapseForm(){
   if(!boss) return;
   var cx=boss.x,cy=boss.y;
   var imgs=[GIMG.r1,GIMG.r2,GIMG.r3,GIMG.r4];
-  var ringR=[170,148,126,104],ringS=[90,76,62,50];
-  // faint Hedron ghost behind the collapse, no black core of its own
+  var ringR=[190,164,138,112],ringS=[88,74,60,48];
+  // bottom layer: old phase-3 art as a light-only aura; black areas contribute nothing
+  var old=GIMG.b5_3;
+  if(old&&old.complete){
+    ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.26;
+    if('filter' in ctx) ctx.filter='blur(5px)';
+    ctx.translate(cx,cy);ctx.rotate(time*.025);
+    ctx.drawImage(old,-240,-240,480,480);
+    ctx.filter='none';ctx.restore();ctx.globalAlpha=1;
+  }
+  // white-hot halo around the hole, with feathered outer 30%
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  var hr=82+5*Math.sin(time*2.1);
+  var hg=ctx.createRadialGradient(cx,cy,0,cx,cy,hr);
+  hg.addColorStop(0,'rgba(255,255,255,0.78)');
+  hg.addColorStop(.50,'rgba(255,255,250,0.56)');
+  hg.addColorStop(.70,'rgba(255,246,220,0.30)');
+  hg.addColorStop(.85,'rgba(180,220,255,0.14)');
+  hg.addColorStop(1,'rgba(180,220,255,0)');
+  ctx.fillStyle=hg;ctx.beginPath();ctx.arc(cx,cy,hr,0,TAU);ctx.fill();
+  ctx.restore();ctx.globalAlpha=1;
   var hed=GIMG.np1;
   if(hed&&hed.complete){
-    ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.14;ctx.translate(cx,cy);ctx.rotate(-time*.06);
-    ctx.drawImage(hed,-135,-135,270,270);ctx.restore();ctx.globalAlpha=1;
+    ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.72;
+    ctx.translate(cx,cy);ctx.rotate(-time*.055);
+    ctx.drawImage(hed,-150,-150,300,300);ctx.restore();ctx.globalAlpha=1;
   }
-  // four rings, alternating spin, all centered on the black hole
+  // four rings, alternating spin, centered on the single hole
   for(var i=0;i<4;i++){
     var im=imgs[i];if(!im||!im.complete) continue;
     var dir=(i%2===0)?1:-1;
@@ -2260,21 +2280,8 @@ function drawPhase3CollapseForm(){
       ctx.drawImage(im,-ringS[i]/2,-ringS[i]/2,ringS[i],ringS[i]);ctx.restore();
     }
   }
-  // single black hole core, exactly at ring center
-  var R=68;
-  ctx.save();ctx.globalCompositeOperation='lighter';
-  var g=ctx.createRadialGradient(cx,cy,R*.7,cx,cy,R*2.5);
-  g.addColorStop(0,'rgba(190,150,255,0.22)');
-  g.addColorStop(.5,'rgba(120,70,210,0.10)');
-  g.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R*2.5,0,TAU);ctx.fill();
-  // radial fracture spokes
-  for(var sp=0;sp<12;sp++){
-    var aa=sp/12*TAU+time*.06;
-    ctx.globalAlpha=.20;ctx.strokeStyle=sp%2?'#ffd27a':'#b6a2ff';ctx.lineWidth=1.4;
-    ctx.beginPath();ctx.moveTo(cx+Math.cos(aa)*(R+4),cy+Math.sin(aa)*(R+4));ctx.lineTo(cx+Math.cos(aa)*(R+50),cy+Math.sin(aa)*(R+50));ctx.stroke();
-  }
-  ctx.restore();ctx.globalAlpha=1;
+  // final single black hole on top
+  var R=54;
   ctx.save();ctx.fillStyle='#000';ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.fill();ctx.restore();
   ctx.save();ctx.globalCompositeOperation='lighter';
   ctx.globalAlpha=.95;ctx.strokeStyle='#ffeec0';ctx.lineWidth=2.2;ctx.beginPath();ctx.arc(cx,cy,R+1.5,0,TAU);ctx.stroke();
@@ -2285,6 +2292,7 @@ function drawPhase3CollapseForm(){
     ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(cx,cy,R+10,0,TAU);ctx.stroke();ctx.restore();ctx.globalAlpha=1;
   }
 }
+
 function drawPhase2FusionForm(){
   if(!boss) return;
   var cx=boss.x,cy=boss.y;

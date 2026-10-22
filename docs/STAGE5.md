@@ -20,7 +20,7 @@ Status: implemented as the final stage.
 - No accretion disk, no rotating eye, no tunnel scroll.
 - The black hole is the typhoon eye: the two crystal regions move around it while the center stays still.
 - During the Boss fight the background black hole is hidden, so each phase's own core is the only black hole.
-- Phase 3 no longer uses the old composite sprite; its single black hole and all four rings are drawn from the same center.
+- Phase 3 no longer uses the old composite sprite as a body. The old art is a bottom light-only aura; above it are the Hedron core, white-hot halo, four rings, and finally the single black hole. All use the same center.
 
 ## Boss 5 entrance
 
