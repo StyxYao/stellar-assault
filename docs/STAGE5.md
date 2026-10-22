@@ -192,7 +192,7 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 
 ## Uploaded fusion cutscene
 
-- `assets/video/fusion.mp4`: 720x1280, 24fps, 15.04s, no audio, AI watermark cropped out.
+- `assets/video/fusion.mp4`: 720x1280, 24fps, 15.04s, no audio. The AI watermark is covered by a black box; the frame keeps its native aspect (no vertical stretch). In game it is cover-cropped and centered.
 - Replaces the procedural four-boss fusion when ready; full-screen source-over cutscene.
 - After the clip, the 2.6s awakening flash and phase-2 combat start.
 - Tapping during the fusion skips to the end; procedural fusion remains the fallback if video cannot play.
