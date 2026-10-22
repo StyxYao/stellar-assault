@@ -2537,26 +2537,37 @@ function drawHedronRecursiveForm(){
   // soft dark backing separates the recursive shell from the bright crystal field
   ctx.save();var bg0=ctx.createRadialGradient(cx,cy,base*.22,cx,cy,base*.62);bg0.addColorStop(0,'rgba(2,4,14,.42)');bg0.addColorStop(.7,'rgba(2,4,14,.18)');bg0.addColorStop(1,'rgba(2,4,14,0)');ctx.fillStyle=bg0;ctx.beginPath();ctx.arc(cx,cy,base*.62,0,TAU);ctx.fill();ctx.restore();
   if(A&&A.complete){
-    var bs=base*(1+.025*Math.sin(t*.7));
+    var bs=base*(1+.085*Math.sin(t*1.15));
     ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.97;
-    ctx.translate(cx,cy);ctx.rotate(Math.sin(t*.23)*.045);ctx.drawImage(A,-bs/2,-bs/2,bs,bs);ctx.restore();
+    ctx.translate(cx,cy);ctx.rotate(t*.11);ctx.drawImage(A,-bs/2,-bs/2,bs,bs);ctx.restore();
   }else if(GIMG.np1&&GIMG.np1.complete){
     ctx.save();ctx.translate(cx,cy);ctx.drawImage(GIMG.np1,-base/2,-base/2,base,base);ctx.restore();
+  }
+  // nested copies of the same shell; color and motion make the recursion legible
+  if(A&&A.complete){
+    for(var ai=0;ai<2;ai++){
+      var aq=(t*.33+ai*.5)%1;
+      var asz=base*(.72-.34*ai)*(1-.10*aq);
+      ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.56*(1-.18*ai);
+      ctx.translate(cx+Math.cos(t*.7+ai*2.1)*base*.012,cy+Math.sin(t*.6+ai*1.7)*base*.012);
+      ctx.rotate((ai%2?-1:1)*t*(.20+ai*.06)+ai*1.1);
+      ctx.drawImage(A,-asz/2,-asz/2,asz,asz);ctx.restore();
+    }
   }
   // a slow, infinite zoom of the inner self-similar shell
   if(B&&B.complete){
     for(var i=0;i<3;i++){
-      var q=(t*.13+i/3)%1;
-      var s=base*(.20+.64*q);
-      var al=.50*(1-q*.58);
+      var q=(t*.46+i/3)%1;
+      var s=base*(.14+.78*q);
+      var al=.78*(1-q*.38);
       ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=al;
-      ctx.translate(cx,cy);ctx.rotate((i%2?-1:1)*t*.055+i*.8);
+      ctx.translate(cx,cy);ctx.rotate((i%2?-1:1)*t*.34+i*.8);
       ctx.drawImage(B,-s/2,-s/2,s,s);ctx.restore();
     }
   }
   if(C&&C.complete){
-    ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.12;
-    ctx.translate(cx,cy);ctx.rotate(-t*.035);var cs=base*.95;
+    ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.17;
+    ctx.translate(cx,cy);ctx.rotate(-t*.11);var cs=base*(.82+.035*Math.sin(t*.9));
     ctx.drawImage(C,-cs/2,-cs/2,cs,cs);ctx.restore();
   }
   // white-hot heart remains readable on top of the recursive layers
@@ -2567,6 +2578,14 @@ function drawHedronRecursiveForm(){
   g.addColorStop(.74,'rgba(255,220,160,.24)');g.addColorStop(1,'rgba(255,220,160,0)');
   ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.fill();
   ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+  // visible orbital crystal arcs
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  for(var oa=0;oa<3;oa++){
+    var ar=base*(.54+oa*.045),ang=t*(.18+oa*.05)+oa*2.1;
+    ctx.globalAlpha=.28-oa*.05;ctx.strokeStyle=oa===1?'#ffe6a0':'#d8f1ff';ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.arc(cx,cy,ar,ang,ang+1.45);ctx.stroke();
+  }
+  ctx.restore();ctx.globalAlpha=1;
   if(boss.hitFlash>0){
     ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(.5,boss.hitFlash*4.5);
     drawFeatherAnnulus(cx,cy,base*.18,base*.55,Math.min(.55,boss.hitFlash*4.0));ctx.restore();ctx.globalAlpha=1;
@@ -3476,7 +3495,7 @@ function drawEntityArrivalScene(){
   var t=fusionT,q=Math.max(0,Math.min(1,t/3.3));
   var ease=1-Math.pow(1-q,3),cx=W/2,cy=H*.44;
   var size=34+356*ease;
-  var frames=[GIMG.np1];
+  var frames=[GIMG.hrA||GIMG.np1];
   var clock=t*0.85,fi=0,frac=0;
   ctx.save();
   // distant resonance ring
@@ -3487,14 +3506,22 @@ function drawEntityArrivalScene(){
     ctx.strokeStyle=r%2?'#c9e9ff':'#ffe7a0';ctx.lineWidth=1;
     ctx.beginPath();ctx.arc(cx,cy,rr,time*.12+r,time*.12+r+TAU*.78);ctx.stroke();
   }
-  // crossfading AI frames (source-over to keep the polyhedral detail)
-  ctx.globalCompositeOperation='source-over';
+  // recursive AI shell, screen keeps the black plate invisible
+  ctx.globalCompositeOperation='screen';
   for(var i=0;i<1;i++){
     var im=frames[i];if(!im||!im.complete) continue;
     var w=1;
     ctx.save();ctx.globalAlpha=ease*(.55+w*.45);
     ctx.translate(cx,cy);ctx.rotate(time*(.12+i*.035));ctx.scale(1+i*.025,1+i*.025);
     ctx.drawImage(im,-size/2,-size/2,size,size);ctx.restore();
+  }
+  if(GIMG.hrB&&GIMG.hrB.complete){
+    for(var z=0;z<2;z++){
+      var zq=((t*.5+z*.5)%1);
+      var zs=size*(.12+.64*zq);
+      ctx.globalAlpha=ease*.38*(1-zq*.5);ctx.globalCompositeOperation='screen';
+      ctx.save();ctx.translate(cx,cy);ctx.rotate((z%2?-1:1)*t*.25);ctx.drawImage(GIMG.hrB,-zs/2,-zs/2,zs,zs);ctx.restore();
+    }
   }
   // radial sparks while approaching
   for(var j=0;j<24;j++){
