@@ -2470,10 +2470,16 @@ function drawPhase3CollapseForm(){
   // bottom layer: old phase-3 art as a light-only aura; black areas contribute nothing
   var old=GIMG.b5_3;
   if(old&&old.complete){
-    ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.26;
-    if('filter' in ctx) ctx.filter='blur(5px)';
+    ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.30;
+    if('filter' in ctx) ctx.filter='blur(4px)';
     ctx.translate(cx,cy);ctx.rotate(time*.025);
-    ctx.drawImage(old,-240,-240,480,480);
+    ctx.drawImage(old,-330,-330,660,660);
+    ctx.filter='none';ctx.restore();ctx.globalAlpha=1;
+    // a wider, softer halo that deliberately spills past the rings
+    ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.14;
+    if('filter' in ctx) ctx.filter='blur(12px)';
+    ctx.translate(cx,cy);ctx.rotate(-time*.018);
+    ctx.drawImage(old,-390,-390,780,780);
     ctx.filter='none';ctx.restore();ctx.globalAlpha=1;
   }
   // white-hot halo around the hole, with feathered outer 30%
