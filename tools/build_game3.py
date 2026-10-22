@@ -4,7 +4,7 @@ prefix=s[:s.index('var specs=null;')]
 prefix=re.sub(r"BGMENU\.src='data:image/[^']+'", "BGMENU.src='assets/bg/menu.webp'", prefix, count=1)
 assets={
  'p2':'player-v2/p2_center.png','p3':'player-v2/p3_right.png','p4':'player-v2/p4_left.png',
- 'u1':'assets/bullets/u1n.png','u2':'assets/bullets/u2n.png','u4':'assets/bullets/u4n.png','u5':'assets/bullets/u5n.png','w1':'gpt-assets/player/wing-drone.png','np1':'gpt-assets/bosses/boss_5_phase1.png','np2':'gpt-assets/bosses/boss_5_phase1_b.png','np3':'gpt-assets/bosses/boss_5_phase1_c.png','fu1':'gpt-assets/bosses/b5_entity.png','fu2':'gpt-assets/bosses/b5_fusion_mid1.png','fu3':'gpt-assets/bosses/b5_fusion_mid2.png','od1':'gpt-assets/fx/od_aura_1.png','od2':'gpt-assets/fx/od_aura_2.png','od3':'gpt-assets/fx/od_aura_3.png','od4':'gpt-assets/fx/od_aura_4.png'
+ 'u1':'assets/bullets/u1n.png','u2':'assets/bullets/u2n.png','u4':'assets/bullets/u4n.png','u5':'assets/bullets/u5n.png','w1':'gpt-assets/player/wing-drone.png','r1':'gpt-assets/bosses/boss_1_ring.png','r2':'gpt-assets/bosses/boss_2_ring.png','r3':'gpt-assets/bosses/boss_3_ring.png','r4':'gpt-assets/bosses/boss_4_ring.png','np1':'gpt-assets/bosses/boss_5_phase1.png','np2':'gpt-assets/bosses/boss_5_phase1_b.png','np3':'gpt-assets/bosses/boss_5_phase1_c.png','fu1':'gpt-assets/bosses/b5_entity.png','fu2':'gpt-assets/bosses/b5_fusion_mid1.png','fu3':'gpt-assets/bosses/b5_fusion_mid2.png','od1':'gpt-assets/fx/od_aura_1.png','od2':'gpt-assets/fx/od_aura_2.png','od3':'gpt-assets/fx/od_aura_3.png','od4':'gpt-assets/fx/od_aura_4.png'
 }
 enames=['small_fighter','medium_fighter','scout','bomber','mech','interceptor','aegis_warden','rail_lancer','mine_seeder','fractal_shard','kaleido_prism','echo_warden']
 for bi in range(1,6):

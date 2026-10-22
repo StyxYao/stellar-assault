@@ -2240,7 +2240,7 @@ function drawSpectralAura(w,h){
 function drawPhase2FusionForm(){
   if(!boss) return;
   var cx=boss.x,cy=boss.y;
-  var imgs=[GIMG.b1_1,GIMG.b2_1,GIMG.b3_1,GIMG.b4_1];
+  var imgs=[GIMG.r1,GIMG.r2,GIMG.r3,GIMG.r4];
   var ringR=[152,132,112,92],ringS=[80,68,56,44];
   // core Hedron
   var hed=GIMG.np1;
@@ -2283,7 +2283,7 @@ function drawPhase2FusionForm(){
 }
 function drawPhase3Rings(w,h){
   if(!boss) return;
-  var imgs=[GIMG.b1_1,GIMG.b2_1,GIMG.b3_1,GIMG.b4_1];
+  var imgs=[GIMG.r1,GIMG.r2,GIMG.r3,GIMG.r4];
   var ringR=[175,152,129,106],ringS=[92,78,64,52];
   // measured phase-3 art hole offset: 3.5px left, 1px down (logical)
   var cx=boss.x-3.5, cy=boss.y+1.0;
@@ -3050,6 +3050,7 @@ function drawFusionHotCore(t,cx,cy){
 function drawFusionScene(tArg){
   var t=(typeof tArg==='number')?tArg:fusionT,cx=W/2,cy=H*.44;
   var imgs=[GIMG.b1_1,GIMG.b2_1,GIMG.b3_1,GIMG.b4_1];
+  var rimgs=[GIMG.r1,GIMG.r2,GIMG.r3,GIMG.r4];
   var names=['VOID SOVEREIGN','ABYSS DEVOURER','STAR BEHEMOTH','SERAPHIC WINGS'];
   var cols=['#ff5f7a','#c06aff','#ff9a3a','#ffe7a0'];
   function cl(v){return Math.max(0,Math.min(1,v));}
@@ -3100,7 +3101,7 @@ function drawFusionScene(tArg){
         var ss=80-i*12;
         ctx.save();ctx.globalAlpha=ringA;
         ctx.translate(px,py);ctx.rotate(a+Math.PI/2+time*.08*ringDir);if((k2+i)%2)ctx.scale(-1,1);
-        ctx.drawImage(im,-ss/2,-ss/2,ss,ss);ctx.restore();
+        ctx.drawImage(rimgs[i],-ss/2,-ss/2,ss,ss);ctx.restore();
       }
     }
     // 10 extra copies along the spiral from ring edge to the core; the innermost dissolves into Hedron
@@ -3112,7 +3113,7 @@ function drawFusionScene(tArg){
         var tss=60-tj*.8;
         ctx.save();ctx.globalAlpha=ta;
         ctx.translate(tpos.x,tpos.y);ctx.rotate(tq*2.2*dir+i*.4);
-        ctx.drawImage(im,-tss/2,-tss/2,tss,tss);ctx.restore();
+        ctx.drawImage(rimgs[i],-tss/2,-tss/2,tss,tss);ctx.restore();
       }
     }
   }
