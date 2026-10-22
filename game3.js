@@ -2895,6 +2895,22 @@ function drawFusionScene(tArg){
   var cols=['#ff5f7a','#c06aff','#ff9a3a','#ffe7a0'];
   function cl(v){return Math.max(0,Math.min(1,v));}
   ctx.save();
+  // the defeated phase-1 Hedron remains at the center, translucent, and overlaps the incoming bosses
+  var hed=GIMG.np1;
+  if(hed&&hed.complete){
+    var hAlpha=.62*(1-cl((t-8.9)/1.1))+.10;
+    var hSize=290+10*Math.sin(time*1.1);
+    ctx.save();ctx.globalAlpha=hAlpha;ctx.translate(cx,cy);ctx.rotate(time*.10);
+    ctx.drawImage(hed,-hSize/2,-hSize/2,hSize,hSize);ctx.restore();
+    ctx.save();ctx.globalCompositeOperation='lighter';
+    var hcols=['#7fe6ff','#ff86cf','#ffd36b'];
+    for(var hk=0;hk<3;hk++){
+      var ha=time*(.18+hk*.04)+hk*2.1;
+      ctx.globalAlpha=.38*(1-cl((t-9.1)/1.0));ctx.strokeStyle=hcols[hk];ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(cx,cy,132+hk*7,ha,ha+1.05);ctx.stroke();
+    }
+    ctx.restore();ctx.globalAlpha=1;
+  }
   // the four bosses enter one by one, dragging afterimages toward the distortion core
   for(var i=0;i<4;i++){
     var im=imgs[i];if(!im||!im.complete) continue;
@@ -2927,6 +2943,12 @@ function drawFusionScene(tArg){
         ctx.drawImage(im,-ss/2,-ss/2,ss,ss);ctx.restore();
       }
     }
+  }
+  // keep a translucent front layer of the Hedron so it visibly overlaps the boss copies
+  if(hed&&hed.complete&&t<10.0){
+    var hf=.20*(1-cl((t-9.0)/1.0));
+    ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=hf;ctx.translate(cx,cy);ctx.rotate(-time*.06);
+    ctx.drawImage(hed,-155,-155,310,310);ctx.restore();ctx.globalAlpha=1;
   }
   // AI distortion entity growing at the eye, then absorbing the four rings
   function fuDraw(img,alpha,size,rot){

@@ -28,6 +28,7 @@ Status: implemented as the final stage.
 - After appearing at the center, the phase-1 entity rises to the upper screen (about 26% height) over roughly one second.
 - Phase 1 has 36% of the total Boss 5 HP (3629). When it reaches 0, the game enters a 9.4s fusion cinematic.
 - Each boss enters from an off-screen **side edge** (left/right alternating), then follows a vortex spiral inward.
+- The Hedron core stays visible at the center; its back and front layers overlap the boss copies.
 - Each boss contributes exactly **24 whole-sprite copies**.
 - The copies are fully opaque and snapped to a perfect circular 24-way ring; no translucent afterimage trail.
 - Source-over overlap, no depth sorting: copies visibly overlap and occlude each other.
