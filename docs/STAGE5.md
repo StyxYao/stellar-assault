@@ -203,3 +203,9 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - Used as the complete phase-3 visual with screen blending; the game still draws the black-hole core and hit flash.
 - The whole video rotates slowly; its own animation continues inside.
 - Procedural phase-3 aura/rings are skipped while this clip is playing.
+
+## Phase-2 loop video
+
+- `assets/video/phase2-loop.mp4`: 720x1200, 60fps, 7.05s, silent, watermark cropped.
+- Complete phase-2 visual: Hedron core + four rings supplied by the clip; procedural rings/core are skipped while it plays.
+- Slow global rotation is applied by the game; the clip's own animation continues.

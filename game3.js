@@ -17,6 +17,7 @@ var stageT=0,waveIndex=0,nextTransport=0,banner='',bannerSub='',bannerT=0,castT=
 var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpeed=0,glowWarp=0,bombT=0,bombX=0,bombY=0;
 var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
 var BG4=new Image();BG4.src='assets/bg/stage4-main.webp';
+var phase2LoopVideo=document.createElement('video');phase2LoopVideo.src='assets/video/phase2-loop.mp4';phase2LoopVideo.loop=true;phase2LoopVideo.muted=true;phase2LoopVideo.playsInline=true;phase2LoopVideo.preload='auto';
 var phase3LoopVideo=document.createElement('video');phase3LoopVideo.src='assets/video/phase3-loop.mp4';phase3LoopVideo.loop=true;phase3LoopVideo.muted=true;phase3LoopVideo.playsInline=true;phase3LoopVideo.preload='auto';
 var fusionVideo=document.createElement('video');fusionVideo.src='assets/video/fusion.mp4';fusionVideo.loop=false;fusionVideo.muted=true;fusionVideo.playsInline=true;fusionVideo.preload='auto';
 var bgLoopVideo=document.createElement('video');bgLoopVideo.src='assets/video/kaleido-bg.mp4';bgLoopVideo.loop=true;bgLoopVideo.muted=true;bgLoopVideo.playsInline=true;bgLoopVideo.preload='auto';
@@ -2687,6 +2688,16 @@ function drawPhase3CollapseForm(){
 function drawPhase2FusionForm(){
   if(!boss) return;
   var cx=boss.x,cy=boss.y;
+  var p2v=phase2LoopVideo&&phase2LoopVideo.readyState>=2&&phase2LoopVideo.videoWidth>0&&!phase2LoopVideo.paused;
+  if(p2v){
+    var vh=phase2LoopVideo.videoHeight||1200,vw=phase2LoopVideo.videoWidth||720;
+    var sh=boss.def.w*1.24,sw=sh*vw/vh;
+    ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.98;
+    ctx.translate(cx,cy);ctx.rotate(time*.05);ctx.drawImage(phase2LoopVideo,-sw/2,-sh/2,sw,sh);ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+    if(boss.hitFlash>0){ctx.save();ctx.globalCompositeOperation='lighter';drawFeatherAnnulus(cx,cy,58,208,Math.min(.85,boss.hitFlash*5));drawFeatherAnnulus(cx,cy,96,178,Math.min(.55,boss.hitFlash*3.4));ctx.restore();ctx.globalAlpha=1;}
+    return;
+  }
+
   var imgs=[GIMG.r1,GIMG.r2,GIMG.r3,GIMG.r4];
   var ringR=[152,132,112,92],ringS=[80,68,56,44];
   // core Hedron
@@ -3939,6 +3950,7 @@ function onDown(e){
   e.preventDefault(); initAudio(); loadSfxExtras();
   try{hedronLoopVideo.play().catch(function(){});}catch(err){}
   try{phase3LoopVideo.play().catch(function(){});}catch(err){}
+  try{phase2LoopVideo.play().catch(function(){});}catch(err){}
   try{bgLoopVideo.play().catch(function(){});}catch(err){}
   try{if(AC&&AC.state==='suspended')AC.resume();}catch(err){}
   if(bgmPending){var pk=bgmPending;bgmPending='';playBgm(pk);}
