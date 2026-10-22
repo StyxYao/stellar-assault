@@ -149,3 +149,13 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - Hedron phase-1 bullets are white-hot with a rainbow rim; its beams are warm white.
 - Phase 2/3 hit flashes are additive ring bands only; the core and black hole stay stable.
 - Stage select now selects first and starts only via START; non-stage-5 backgrounds are pinned to the selected stage image.
+
+## Cast and content pass
+
+- Stage 5 waves are stretched to 1.5x and enemy counts are reduced by roughly 28%.
+- Stage-5 grunts are fractal echoes: the central current enemy plus mirrored copies of earlier-stage enemies arranged in tetra/octa/dodeca patterns.
+- Stage-5 bullets are larger faceted crystal prisms; facets use the source boss palette. Large shots become 12-sided dodeca prisms, medium shots 8-sided octa prisms, small shots 4-sided tetra prisms.
+- Phase-3 outer aura is now 820px plus a 960px soft halo, spilling visibly past the rings.
+- Phase 2/3 hit flashes are feathered radial annuli; the inner edge extends inward but fades to zero before the core/hole.
+- Cast: larger type, slower one-pass scroll, no black hole, no loop after the credits; final THANK YOU FOR PLAYING holds indefinitely.
+- Credits: 思齐Styx and DeepSeek.
