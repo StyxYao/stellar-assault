@@ -681,7 +681,7 @@ function drawPhase1DeathScene(){
     ctx.beginPath();ctx.arc(cx,cy,rr,0,TAU);ctx.stroke();
   }
   ctx.restore();ctx.globalAlpha=1;
-  var hed=GIMG.np1;
+  var hed=GIMG.hrA||GIMG.np1;
   if(hed&&hed.complete&&t<1.7){
     var alpha=Math.max(0,1-t/1.55),sz=260+(t*70);
     ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=alpha*.92;
@@ -2309,6 +2309,13 @@ function drawKaleidoCache(cv,rot,scale,alpha,filter,comp,ox,oy){
   ctx.drawImage(cv,-s/2+(ox||0)*s,-s/2+(oy||0)*s,s,s);
   ctx.restore();ctx.globalAlpha=1;ctx.filter='none';ctx.globalCompositeOperation='source-over';
 }
+function drawRecursiveBg(img,rot,scale,alpha,comp){
+  if(!img||!img.complete||!img.naturalWidth) return;
+  var sw=Math.max(W,H)*1.18*scale,sh=sw*img.height/img.width;
+  ctx.save();ctx.globalCompositeOperation=comp||'screen';ctx.globalAlpha=alpha;
+  ctx.translate(W/2,H*.44);ctx.rotate(rot);
+  ctx.drawImage(img,-sw/2,-sh/2,sw,sh);ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+}
 function paintFractalBg(main,edge,offsetY){
   ctx.fillStyle='#03020a';ctx.fillRect(0,0,W,H);
   var cx=W/2,cy=H*.44,N=16;
@@ -2321,6 +2328,9 @@ function paintFractalBg(main,edge,offsetY){
     drawKaleidoCache(cache,time*.028,1.58,.26,'hue-rotate(8deg) saturate(1.28)','screen',.06,-.05);
   }
   if(edge&&edge.complete) drawKaleidoLayer(edge,cx,cy,N,-time*.014,1.22,.18,0,.04,.02,'hue-rotate(12deg) saturate(1.25)','screen',0);
+  drawRecursiveBg(GIMG.kbA,time*.018,1.06+.035*Math.sin(time*.16),.10,'screen');
+  drawRecursiveBg(GIMG.kbB,-time*.024,1.30,.07,'screen');
+  drawRecursiveBg(GIMG.kbA,-time*.032,.72,.04,'screen');
   // dark vortex fade so the crystal pours into one static eye
   if(state!=='cast'){
     var hg=ctx.createRadialGradient(cx,cy,0,cx,cy,H*.13);
@@ -2518,6 +2528,51 @@ function drawFeatherAnnulus(cx,cy,inner,outer,alpha){
   g.addColorStop(1,'rgba(255,255,255,0)');
   ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,outer,0,TAU);ctx.fill();
 }
+function drawHedronRecursiveForm(){
+  if(!boss) return;
+  var cx=boss.x,cy=boss.y,t=time;
+  var A=GIMG.hrA,B=GIMG.hrB,C=GIMG.hrC;
+  var base=boss.def.w*1.26;
+  ctx.save();
+  // soft dark backing separates the recursive shell from the bright crystal field
+  ctx.save();var bg0=ctx.createRadialGradient(cx,cy,base*.22,cx,cy,base*.62);bg0.addColorStop(0,'rgba(2,4,14,.42)');bg0.addColorStop(.7,'rgba(2,4,14,.18)');bg0.addColorStop(1,'rgba(2,4,14,0)');ctx.fillStyle=bg0;ctx.beginPath();ctx.arc(cx,cy,base*.62,0,TAU);ctx.fill();ctx.restore();
+  if(A&&A.complete){
+    var bs=base*(1+.025*Math.sin(t*.7));
+    ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.97;
+    ctx.translate(cx,cy);ctx.rotate(Math.sin(t*.23)*.045);ctx.drawImage(A,-bs/2,-bs/2,bs,bs);ctx.restore();
+  }else if(GIMG.np1&&GIMG.np1.complete){
+    ctx.save();ctx.translate(cx,cy);ctx.drawImage(GIMG.np1,-base/2,-base/2,base,base);ctx.restore();
+  }
+  // a slow, infinite zoom of the inner self-similar shell
+  if(B&&B.complete){
+    for(var i=0;i<3;i++){
+      var q=(t*.13+i/3)%1;
+      var s=base*(.20+.64*q);
+      var al=.50*(1-q*.58);
+      ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=al;
+      ctx.translate(cx,cy);ctx.rotate((i%2?-1:1)*t*.055+i*.8);
+      ctx.drawImage(B,-s/2,-s/2,s,s);ctx.restore();
+    }
+  }
+  if(C&&C.complete){
+    ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.12;
+    ctx.translate(cx,cy);ctx.rotate(-t*.035);var cs=base*.95;
+    ctx.drawImage(C,-cs/2,-cs/2,cs,cs);ctx.restore();
+  }
+  // white-hot heart remains readable on top of the recursive layers
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  var R=base*.10+Math.sin(t*2.1)*2.2;
+  var g=ctx.createRadialGradient(cx,cy,0,cx,cy,R);
+  g.addColorStop(0,'rgba(255,255,255,.97)');g.addColorStop(.45,'rgba(255,248,220,.70)');
+  g.addColorStop(.74,'rgba(255,220,160,.24)');g.addColorStop(1,'rgba(255,220,160,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.fill();
+  ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+  if(boss.hitFlash>0){
+    ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(.5,boss.hitFlash*4.5);
+    drawFeatherAnnulus(cx,cy,base*.18,base*.55,Math.min(.55,boss.hitFlash*4.0));ctx.restore();ctx.globalAlpha=1;
+  }
+  ctx.restore();
+}
 function drawPhase3CollapseForm(){
   if(!boss) return;
   var cx=boss.x,cy=boss.y;
@@ -2703,6 +2758,7 @@ function drawBossFusionOverlay(w,h){
 function drawBoss(){
   if(!boss) return;
   var phase=boss.phase;
+  if(stage===4&&phase===0){drawHedronRecursiveForm();return;}
   if(stage===4&&phase===1){drawPhase2FusionForm();return;}
   if(stage===4&&phase===2){drawPhase3CollapseForm();return;}
   var img=GIMG[boss.def.key+(phase+1)]||GIMG[boss.def.key+'1'];

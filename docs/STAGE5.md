@@ -167,3 +167,10 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - All black JPEG backgrounds were converted to alpha PNG before use.
 - Stage-5 enemy fractal echoes now surround the new central enemy art instead of the old placeholder silhouettes.
 - Bullet visual size was reduced from the previous oversized procedural prisms and re-calibrated against the new art.
+
+## Recursive prototype
+
+- Qwen-Image samples were generated through Bailian (`qwen-image-2.1-pro` / `qwen-image-3.0-pro`).
+- Phase 1 now layers three generated Hedron recursion images: an outer shell, an inner self-similar shell that continuously zooms and counter-rotates, and a faint depth layer.
+- The background adds two generated recursive kaleidoscope textures as low-alpha screen layers over the cached 16-fold field.
+- Both are prototypes: the keyframes are static images animated by scale, rotation, alpha and masking, not true rendered 3D recursion yet.
