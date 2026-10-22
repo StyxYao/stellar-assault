@@ -138,3 +138,14 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - Tapping 1–5 starts that stage directly.
 - Stage 5 starts with Lv4 power, three options, wing 3 and three bombs so it is immediately playable.
 - Tapping elsewhere still starts from Stage 1.
+
+## Final polish pass
+
+- Kaleidoscope: 16-fold mirrored cache, three counter-rotating copies, glass-bead highlights, deep zoom layer.
+- Phase 1 death: explosion and white flash play first; the screen darkens only after the blast; then the omen starts.
+- Fusion end: a 2.6s awakening transition (white impact, rings, inward shards) before phase 2 attacks begin.
+- Phase 3 starts at 50% of the phase-2 bar.
+- Final Boss rotates through every previous boss signature: tentacle spiral/vortex, wall/crossfire/broadside, hive/swarm/rotating laser, seraph fan/halo/cross laser/gatling. Bullets and beams use the source boss palette.
+- Hedron phase-1 bullets are white-hot with a rainbow rim; its beams are warm white.
+- Phase 2/3 hit flashes are additive ring bands only; the core and black hole stay stable.
+- Stage select now selects first and starts only via START; non-stage-5 backgrounds are pinned to the selected stage image.
