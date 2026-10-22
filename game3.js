@@ -2561,7 +2561,7 @@ function drawHedronRecursiveForm(){
     }
   }
   // a slow, infinite zoom of the inner self-similar shell
-  if(B&&B.complete){
+  if(!useVid&&B&&B.complete){
     for(var i=0;i<3;i++){
       var q=(t*.46+i/3)%1;
       var s=base*(.14+.78*q);
@@ -2571,27 +2571,26 @@ function drawHedronRecursiveForm(){
       ctx.drawImage(B,-s/2,-s/2,s,s);ctx.restore();
     }
   }
-  if(C&&C.complete){
+  if(!useVid&&C&&C.complete){
     ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.17;
     ctx.translate(cx,cy);ctx.rotate(-t*.11);var cs=base*(.82+.035*Math.sin(t*.9));
     ctx.drawImage(C,-cs/2,-cs/2,cs,cs);ctx.restore();
   }
-  // white-hot heart remains readable on top of the recursive layers
-  ctx.save();ctx.globalCompositeOperation='lighter';
-  var R=base*.10+Math.sin(t*2.1)*2.2;
-  var g=ctx.createRadialGradient(cx,cy,0,cx,cy,R);
-  g.addColorStop(0,'rgba(255,255,255,.97)');g.addColorStop(.45,'rgba(255,248,220,.70)');
-  g.addColorStop(.74,'rgba(255,220,160,.24)');g.addColorStop(1,'rgba(255,220,160,0)');
-  ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.fill();
-  ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
-  // visible orbital crystal arcs
-  ctx.save();ctx.globalCompositeOperation='lighter';
-  for(var oa=0;oa<3;oa++){
-    var ar=base*(.54+oa*.045),ang=t*(.18+oa*.05)+oa*2.1;
-    ctx.globalAlpha=.28-oa*.05;ctx.strokeStyle=oa===1?'#ffe6a0':'#d8f1ff';ctx.lineWidth=1.8;
-    ctx.beginPath();ctx.arc(cx,cy,ar,ang,ang+1.45);ctx.stroke();
+  // when the uploaded loop is playing, let the video supply the core and orbit
+  if(!useVid){
+    ctx.save();ctx.globalCompositeOperation='lighter';
+    var R=base*.10+Math.sin(t*2.1)*2.2;
+    var g=ctx.createRadialGradient(cx,cy,0,cx,cy,R);
+    g.addColorStop(0,'rgba(255,255,255,.97)');g.addColorStop(.45,'rgba(255,248,220,.70)');
+    g.addColorStop(.74,'rgba(255,220,160,.24)');g.addColorStop(1,'rgba(255,220,160,0)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.fill();
+    for(var oa=0;oa<3;oa++){
+      var ar=base*(.54+oa*.045),ang=t*(.18+oa*.05)+oa*2.1;
+      ctx.globalAlpha=.28-oa*.05;ctx.strokeStyle=oa===1?'#ffe6a0':'#d8f1ff';ctx.lineWidth=1.8;
+      ctx.beginPath();ctx.arc(cx,cy,ar,ang,ang+1.45);ctx.stroke();
+    }
+    ctx.restore();ctx.globalAlpha=1;
   }
-  ctx.restore();ctx.globalAlpha=1;
   if(boss.hitFlash>0){
     ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(.5,boss.hitFlash*4.5);
     drawFeatherAnnulus(cx,cy,base*.18,base*.55,Math.min(.55,boss.hitFlash*4.0));ctx.restore();ctx.globalAlpha=1;
