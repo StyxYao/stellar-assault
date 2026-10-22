@@ -181,3 +181,11 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - Phase 1 battle uses the video with screen blending so its black plate disappears. When the video is playing, the procedural white core, orbital arcs and inner recursive layers are skipped; the clip supplies all visual elements. The same clip is also used as the Hedron body in phases 2 and 3 (under the rings and, in phase 3, under the black hole), so there is no second rotating Hedron layer.
 - Falls back to the generated static recursion layers until the video can play.
 - The video starts on the first tap, stays muted and loops.
+
+## Stabilized background video
+
+- Source: uploaded 720x1280, 8.1s video.
+- Center estimated per frame with 180-degree symmetry phase correlation; full-resolution centers were median-filtered and smoothed.
+- Each frame was cropped to 460x820 around the estimated center and rescaled to 720x1280, locking the kaleidoscope center.
+- The clip is ping-ponged to a 16.2s seamless loop (forward + reverse).
+- In game it is drawn centered at the black-hole position, with a darkening/contrast pass; the procedural kaleidoscope is the fallback if the video cannot play.

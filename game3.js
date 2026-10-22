@@ -17,6 +17,7 @@ var stageT=0,waveIndex=0,nextTransport=0,banner='',bannerSub='',bannerT=0,castT=
 var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpeed=0,glowWarp=0,bombT=0,bombX=0,bombY=0;
 var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
 var BG4=new Image();BG4.src='assets/bg/stage4-main.webp';
+var bgLoopVideo=document.createElement('video');bgLoopVideo.src='assets/video/kaleido-bg.mp4';bgLoopVideo.loop=true;bgLoopVideo.muted=true;bgLoopVideo.playsInline=true;bgLoopVideo.preload='auto';
 var hedronLoopVideo=document.createElement('video');hedronLoopVideo.src='assets/video/hedron-loop.mp4';hedronLoopVideo.loop=true;hedronLoopVideo.muted=true;hedronLoopVideo.playsInline=true;hedronLoopVideo.preload='auto';
 var BG5=new Image();BG5.src='assets/bg/stage5-main.webp';
 var BG1_BH=new Image();BG1_BH.src='assets/bg/stage1-bh.webp';
@@ -2320,6 +2321,13 @@ function drawRecursiveBg(img,rot,scale,alpha,comp){
 function paintFractalBg(main,edge,offsetY){
   ctx.fillStyle='#03020a';ctx.fillRect(0,0,W,H);
   var cx=W/2,cy=H*.44,N=16;
+  var bgVidReady=bgLoopVideo&&bgLoopVideo.readyState>=2&&bgLoopVideo.videoWidth>0&&!bgLoopVideo.paused;
+  if(bgVidReady){
+    var sh=Math.max(H*1.16,W*1280/720),sw=sh*720/1280;
+    ctx.save();ctx.globalCompositeOperation='source-over';ctx.globalAlpha=.94;if('filter' in ctx)ctx.filter='contrast(1.08) saturate(1.12) brightness(.94)';
+    ctx.drawImage(bgLoopVideo,cx-sw/2,cy-sh*(600/1280),sw,sh);ctx.filter='none';ctx.restore();ctx.globalAlpha=1;
+    ctx.fillStyle='rgba(2,4,14,0.30)';ctx.fillRect(0,0,W,H);
+  }else{
   // three self-similar crystal shells; inner/outer counter-rotate at different speeds
   var cache=(KALEIDO_SRC===main&&KALEIDO_CACHE)?KALEIDO_CACHE:buildKaleidoCache(main);
   if(cache){
@@ -2332,6 +2340,7 @@ function paintFractalBg(main,edge,offsetY){
   drawRecursiveBg(GIMG.kbA,time*.018,1.06+.035*Math.sin(time*.16),.10,'screen');
   drawRecursiveBg(GIMG.kbB,-time*.024,1.30,.07,'screen');
   drawRecursiveBg(GIMG.kbA,-time*.032,.72,.04,'screen');
+  }
   // dark vortex fade so the crystal pours into one static eye
   if(state!=='cast'){
     var hg=ctx.createRadialGradient(cx,cy,0,cx,cy,H*.13);
@@ -3908,6 +3917,7 @@ function pt(e){var r=cvs.getBoundingClientRect();return {x:(e.clientX-r.left)/r.
 function onDown(e){
   e.preventDefault(); initAudio(); loadSfxExtras();
   try{hedronLoopVideo.play().catch(function(){});}catch(err){}
+  try{bgLoopVideo.play().catch(function(){});}catch(err){}
   try{if(AC&&AC.state==='suspended')AC.resume();}catch(err){}
   if(bgmPending){var pk=bgmPending;bgmPending='';playBgm(pk);}
   var p=pt(e);
@@ -3968,6 +3978,7 @@ window.__drop=function(t){items.push({x:player.x,y:player.y-80,vy:20,type:t||'P'
 window.__boom=function(){boom(W/2,H*0.45,1.4);};
 window.__beam=function(){spawnBeam(W/2,180,Math.PI/2,1500,16,0.8,0.45,1,'#ff6a5a');};
 window.__bossLaser=function(){if(boss)bossLaser();};
+window.__bgv=function(){return {ready:bgLoopVideo.readyState,paused:bgLoopVideo.paused,w:bgLoopVideo.videoWidth,t:bgLoopVideo.currentTime,src:bgLoopVideo.currentSrc.slice(-24)};};
 window.__cast=function(){startCast();};
 window.__castEnd=function(){castScroll=CAST_TOTAL;castHoldT=2;};
 window.__p3=function(){if(boss)bossPhase(2);};
