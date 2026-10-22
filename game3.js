@@ -17,6 +17,7 @@ var stageT=0,waveIndex=0,nextTransport=0,banner='',bannerSub='',bannerT=0,castT=
 var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpeed=0,glowWarp=0,bombT=0,bombX=0,bombY=0;
 var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
 var BG4=new Image();BG4.src='assets/bg/stage4-main.webp';
+var hedronLoopVideo=document.createElement('video');hedronLoopVideo.src='assets/video/hedron-loop.mp4';hedronLoopVideo.loop=true;hedronLoopVideo.muted=true;hedronLoopVideo.playsInline=true;hedronLoopVideo.preload='auto';
 var BG5=new Image();BG5.src='assets/bg/stage5-main.webp';
 var BG1_BH=new Image();BG1_BH.src='assets/bg/stage1-bh.webp';
 var JULIA_CANVAS=null,JULIA_CTX=null,JULIA_DATA=null,JULIA_TICK=0,JULIA_W=200,JULIA_H=430;
@@ -2536,7 +2537,12 @@ function drawHedronRecursiveForm(){
   ctx.save();
   // soft dark backing separates the recursive shell from the bright crystal field
   ctx.save();var bg0=ctx.createRadialGradient(cx,cy,base*.22,cx,cy,base*.62);bg0.addColorStop(0,'rgba(2,4,14,.42)');bg0.addColorStop(.7,'rgba(2,4,14,.18)');bg0.addColorStop(1,'rgba(2,4,14,0)');ctx.fillStyle=bg0;ctx.beginPath();ctx.arc(cx,cy,base*.62,0,TAU);ctx.fill();ctx.restore();
-  if(A&&A.complete){
+  var useVid=hedronLoopVideo&&hedronLoopVideo.readyState>=2&&hedronLoopVideo.videoWidth>0&&!hedronLoopVideo.paused;
+  if(useVid){
+    var bs=base*(1+.035*Math.sin(t*1.15));
+    ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.98;
+    ctx.translate(cx,cy);ctx.drawImage(hedronLoopVideo,-bs/2,-bs/2,bs,bs);ctx.restore();
+  }else if(A&&A.complete){
     var bs=base*(1+.085*Math.sin(t*1.15));
     ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.97;
     ctx.translate(cx,cy);ctx.rotate(t*.11);ctx.drawImage(A,-bs/2,-bs/2,bs,bs);ctx.restore();
@@ -2544,7 +2550,7 @@ function drawHedronRecursiveForm(){
     ctx.save();ctx.translate(cx,cy);ctx.drawImage(GIMG.np1,-base/2,-base/2,base,base);ctx.restore();
   }
   // nested copies of the same shell; color and motion make the recursion legible
-  if(A&&A.complete){
+  if(!useVid&&A&&A.complete){
     for(var ai=0;ai<2;ai++){
       var aq=(t*.33+ai*.5)%1;
       var asz=base*(.72-.34*ai)*(1-.10*aq);
@@ -3893,6 +3899,7 @@ var dragging=false,dragLift=0,dragMaxY=H-70,lastTapAt=0,lastTapX=0,lastTapY=0;
 function pt(e){var r=cvs.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H};}
 function onDown(e){
   e.preventDefault(); initAudio(); loadSfxExtras();
+  try{hedronLoopVideo.play().catch(function(){});}catch(err){}
   try{if(AC&&AC.state==='suspended')AC.resume();}catch(err){}
   if(bgmPending){var pk=bgmPending;bgmPending='';playBgm(pk);}
   var p=pt(e);
