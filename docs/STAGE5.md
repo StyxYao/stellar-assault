@@ -26,7 +26,7 @@ Status: implemented as the final stage.
 - The four old bosses are **not** part of the entrance; they appear only after phase 1 is defeated.
 - Phase 1 uses the AI Hedron-like entity (`np1`–`np3`) with a high-contrast white-gold crystalline body, sharp cyan/magenta/violet rim arcs and a rotating dot halo; no soft full-body rainbow wash and no old-boss armor.
 - After appearing at the center, the phase-1 entity rises to the upper screen (about 26% height) over roughly one second.
-- Phase 1 has 36% of the total Boss 5 HP (3629). When it reaches 0, the game enters a 9.4s fusion cinematic.
+- Phase 1 has 36% of the total Boss 5 HP (3629) and its own depleted bar. At 0 it enters the dark omen card, then the 9.4s fusion cinematic; phase 2 refills a new 6451 HP bar.
 - Each boss enters from an off-screen **side edge** (left/right alternating), then follows a vortex spiral inward.
 - The Hedron core stays visible at the center; its back and front layers overlap the boss copies.
 - Each boss contributes exactly **24 whole-sprite copies** in the ring, plus **10 copies** along the spiral from the ring edge to the core.
@@ -35,15 +35,17 @@ Status: implemented as the final stage.
 - Source-over overlap, no depth sorting: copies visibly overlap and occlude each other.
 - Ring is a true circle, not an ellipse.
 - The phase-2 Boss keeps a matching 24-copy opaque halo around its body.
-- Phase sizes: phase 1 = 0.68, phase 2 = 0.78, phase 3 = 0.90 (phase 1 ≤ phase 2 < phase 3).
+- Phase sizes: phase 1 = 1.00 (original size), phase 2 = 1.10, phase 3 = 1.10 (phase 1 ≤ phase 2 = phase 3).
 - Finished rings remain in place around the eye for the next boss.
 - After all four rings are formed, the AI distortion frames absorb them and the composite phase-2 body materializes.
 - Phase 2 uses the original Boss 5 phase-1 composite art as its body, scaled to 70%, starts with the remaining 64% HP (6451), and rises to the upper screen after fusion.
 - Phase 3 keeps the existing phase-3 collapse art.
-- The phase-2 composite then fights with the old bosses' attack patterns. Phase 3 begins at 30% of the phase-2 bar and returns to the black-hole collapse form.
+- Phase 2/3 use a random rotating pool of old-boss ultimates: TENTACLE CAGE, LASER CURTAIN, SWARM SINGULARITY and SERAPHIC CHOIR; phase 3 fires two of them per cycle.
+- Phase 3 begins at 30% of the phase-2 bar and returns to the black-hole collapse form.
 - AI frames: `b5_entity`, `b5_fusion_mid1`, `b5_fusion_mid2`.
 - Boss 5 HP is ×1.5 on top of the global multiplier: **10080**.
 - Cinematic labels: `FOUR ECHOES` → `CONVERGENCE` → `SINGULARITY` → `CHRONOS ECHO`.
+- Omen font: Orbitron / Rajdhani, staggered two-line whisper with tracking and soft glow.
 
 ## New enemies
 
@@ -79,6 +81,7 @@ Composite of the four previous bosses.
 - They spiral inward toward a central singularity.
 - The AI entity core grows, dissolves into the intermediate fusion forms, and finally materializes CHRONOS ECHO.
 - Cinematic labels: `FOUR ECHOES` → `CONVERGENCE` → `SINGULARITY` → `CHRONOS ECHO`.
+- Omen font: Orbitron / Rajdhani, staggered two-line whisper with tracking and soft glow.
 - The Boss battle theme begins during the convergence.
 
 
@@ -104,7 +107,7 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - All phase 1 + 2 attacks combined
 - Faster bloom / cross / collapse cadence
 - Echo remnants remain visible around the core
-- Final death triggers a multi-wave explosion, whiteout, `TIME COLLAPSED` banner and `TIME RECLAIMED` ending
+- Final death triggers a dedicated finale: whiteout, expanding shockwaves, radial beams, large Sierpinski wireframes, 150 fractal shards, then `TIME IS SAVED... / FOR NOW...`, followed by Cast.
 
 ## Audio
 
