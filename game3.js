@@ -17,6 +17,7 @@ var stageT=0,waveIndex=0,nextTransport=0,banner='',bannerSub='',bannerT=0,castT=
 var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpeed=0,glowWarp=0,bombT=0,bombX=0,bombY=0;
 var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
 var BG4=new Image();BG4.src='assets/bg/stage4-main.webp';
+var phase3LoopVideo=document.createElement('video');phase3LoopVideo.src='assets/video/phase3-loop.mp4';phase3LoopVideo.loop=true;phase3LoopVideo.muted=true;phase3LoopVideo.playsInline=true;phase3LoopVideo.preload='auto';
 var fusionVideo=document.createElement('video');fusionVideo.src='assets/video/fusion.mp4';fusionVideo.loop=false;fusionVideo.muted=true;fusionVideo.playsInline=true;fusionVideo.preload='auto';
 var bgLoopVideo=document.createElement('video');bgLoopVideo.src='assets/video/kaleido-bg.mp4';bgLoopVideo.loop=true;bgLoopVideo.muted=true;bgLoopVideo.playsInline=true;bgLoopVideo.preload='auto';
 var hedronLoopVideo=document.createElement('video');hedronLoopVideo.src='assets/video/hedron-loop.mp4';hedronLoopVideo.loop=true;hedronLoopVideo.muted=true;hedronLoopVideo.playsInline=true;hedronLoopVideo.preload='auto';
@@ -2614,6 +2615,19 @@ function drawHedronRecursiveForm(){
 function drawPhase3CollapseForm(){
   if(!boss) return;
   var cx=boss.x,cy=boss.y;
+  var p3v=phase3LoopVideo&&phase3LoopVideo.readyState>=2&&phase3LoopVideo.videoWidth>0&&!phase3LoopVideo.paused;
+  if(p3v){
+    var vh=phase3LoopVideo.videoHeight||1200,vw=phase3LoopVideo.videoWidth||720;
+    var sh=boss.def.w*1.24,sw=sh*vw/vh;
+    ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.98;
+    ctx.translate(cx,cy);ctx.rotate(time*.04);ctx.drawImage(phase3LoopVideo,-sw/2,-sh/2,sw,sh);ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+    var R=54;
+    ctx.save();ctx.fillStyle='#000';ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.fill();ctx.restore();
+    ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.95;ctx.strokeStyle='#ffeec0';ctx.lineWidth=2.2;ctx.beginPath();ctx.arc(cx,cy,R+1.5,0,TAU);ctx.stroke();ctx.globalAlpha=.40;ctx.strokeStyle='#b58bff';ctx.lineWidth=5;ctx.beginPath();ctx.arc(cx,cy,R+5,0,TAU);ctx.stroke();ctx.restore();ctx.globalAlpha=1;
+    if(boss.hitFlash>0){ctx.save();ctx.globalCompositeOperation='lighter';drawFeatherAnnulus(cx,cy,60,238,Math.min(.82,boss.hitFlash*4.8));drawFeatherAnnulus(cx,cy,108,196,Math.min(.52,boss.hitFlash*3.2));ctx.restore();ctx.globalAlpha=1;}
+    return;
+  }
+
   var imgs=[GIMG.q1,GIMG.q2,GIMG.q3,GIMG.q4];
   var ringR=[190,164,138,112],ringS=[88,74,60,48];
   // bottom layer: old phase-3 art as a light-only aura; black areas contribute nothing
@@ -3924,6 +3938,7 @@ function pt(e){var r=cvs.getBoundingClientRect();return {x:(e.clientX-r.left)/r.
 function onDown(e){
   e.preventDefault(); initAudio(); loadSfxExtras();
   try{hedronLoopVideo.play().catch(function(){});}catch(err){}
+  try{phase3LoopVideo.play().catch(function(){});}catch(err){}
   try{bgLoopVideo.play().catch(function(){});}catch(err){}
   try{if(AC&&AC.state==='suspended')AC.resume();}catch(err){}
   if(bgmPending){var pk=bgmPending;bgmPending='';playBgm(pk);}

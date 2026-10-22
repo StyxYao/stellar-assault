@@ -196,3 +196,10 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - Replaces the procedural four-boss fusion when ready; full-screen source-over cutscene.
 - After the clip, the 2.6s awakening flash and phase-2 combat start.
 - Tapping during the fusion skips to the end; procedural fusion remains the fallback if video cannot play.
+
+## Phase-3 loop video
+
+- `assets/video/phase3-loop.mp4`: 720x1200, 60fps, 6.05s, silent, watermark cropped.
+- Used as the complete phase-3 visual with screen blending; the game still draws the black-hole core and hit flash.
+- The whole video rotates slowly; its own animation continues inside.
+- Procedural phase-3 aura/rings are skipped while this clip is playing.
