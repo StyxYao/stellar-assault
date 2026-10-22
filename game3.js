@@ -2529,6 +2529,16 @@ function drawFeatherAnnulus(cx,cy,inner,outer,alpha){
   g.addColorStop(1,'rgba(255,255,255,0)');
   ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,outer,0,TAU);ctx.fill();
 }
+function drawHedronVideoOrImage(cx,cy,size,img,alpha){
+  if(hedronLoopVideo&&hedronLoopVideo.readyState>=2&&hedronLoopVideo.videoWidth>0&&!hedronLoopVideo.paused){
+    ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=alpha;
+    ctx.drawImage(hedronLoopVideo,cx-size/2,cy-size/2,size,size);ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';return true;
+  }
+  if(img&&img.complete){
+    ctx.save();ctx.globalAlpha=alpha;ctx.translate(cx,cy);ctx.rotate(time*.08);ctx.drawImage(img,-size/2,-size/2,size,size);ctx.restore();ctx.globalAlpha=1;return true;
+  }
+  return false;
+}
 function drawHedronRecursiveForm(){
   if(!boss) return;
   var cx=boss.x,cy=boss.y,t=time;
@@ -2628,12 +2638,7 @@ function drawPhase3CollapseForm(){
   hg.addColorStop(1,'rgba(180,220,255,0)');
   ctx.fillStyle=hg;ctx.beginPath();ctx.arc(cx,cy,hr,0,TAU);ctx.fill();
   ctx.restore();ctx.globalAlpha=1;
-  var hed=GIMG.np1;
-  if(hed&&hed.complete){
-    ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.72;
-    ctx.translate(cx,cy);ctx.rotate(-time*.055);
-    ctx.drawImage(hed,-150,-150,300,300);ctx.restore();ctx.globalAlpha=1;
-  }
+  drawHedronVideoOrImage(cx,cy,300,GIMG.np1,.78);
   // four rings, alternating spin, centered on the single hole
   for(var i=0;i<4;i++){
     var im=imgs[i];if(!im||!im.complete) continue;
@@ -2667,11 +2672,7 @@ function drawPhase2FusionForm(){
   var imgs=[GIMG.r1,GIMG.r2,GIMG.r3,GIMG.r4];
   var ringR=[152,132,112,92],ringS=[80,68,56,44];
   // core Hedron
-  var hed=GIMG.np1;
-  if(hed&&hed.complete){
-    ctx.save();ctx.globalAlpha=.78;ctx.translate(cx,cy);ctx.rotate(time*.10);
-    var hs=235;ctx.drawImage(hed,-hs/2,-hs/2,hs,hs);ctx.restore();
-  }
+  var hedVideo=drawHedronVideoOrImage(cx,cy,235,GIMG.np1,.88);
   // four 24-way rings locked around the core
   for(var i=0;i<4;i++){
     var im=imgs[i];if(!im||!im.complete) continue;
@@ -2685,7 +2686,8 @@ function drawPhase2FusionForm(){
       ctx.drawImage(im,-ss/2,-ss/2,ss,ss);ctx.restore();
     }
   }
-  // top white-hot core, feathered outer 30%
+  // the uploaded video already contains the white-hot core
+  if(!hedVideo){
   ctx.save();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
   var R=64+5*Math.sin(time*2.2);
   var g=ctx.createRadialGradient(cx,cy,0,cx,cy,R);
@@ -2700,6 +2702,7 @@ function drawPhase2FusionForm(){
   fg.addColorStop(0,'rgba(255,255,255,1)');fg.addColorStop(.4,'rgba(255,240,190,.6)');fg.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=fg;ctx.beginPath();ctx.arc(cx,cy,R*.52,0,TAU);ctx.fill();
   ctx.restore();ctx.globalAlpha=1;
+  }
   if(boss.hitFlash>0){
     ctx.save();ctx.globalCompositeOperation='lighter';
     drawFeatherAnnulus(cx,cy,58,208,Math.min(.85,boss.hitFlash*5));
@@ -3511,16 +3514,22 @@ function drawEntityArrivalScene(){
     ctx.strokeStyle=r%2?'#c9e9ff':'#ffe7a0';ctx.lineWidth=1;
     ctx.beginPath();ctx.arc(cx,cy,rr,time*.12+r,time*.12+r+TAU*.78);ctx.stroke();
   }
-  // recursive AI shell, screen keeps the black plate invisible
+  // the uploaded loop is the single Hedron appearance; no second layer
   ctx.globalCompositeOperation='screen';
-  for(var i=0;i<1;i++){
-    var im=frames[i];if(!im||!im.complete) continue;
-    var w=1;
-    ctx.save();ctx.globalAlpha=ease*(.55+w*.45);
-    ctx.translate(cx,cy);ctx.rotate(time*(.12+i*.035));ctx.scale(1+i*.025,1+i*.025);
-    ctx.drawImage(im,-size/2,-size/2,size,size);ctx.restore();
+  var entranceVid=(hedronLoopVideo&&hedronLoopVideo.readyState>=2&&hedronLoopVideo.videoWidth>0);
+  if(entranceVid){
+    ctx.save();ctx.globalAlpha=ease;// direct loop, no extra rotation
+    ctx.drawImage(hedronLoopVideo,cx-size/2,cy-size/2,size,size);ctx.restore();
+  }else{
+    for(var i=0;i<1;i++){
+      var im=frames[i];if(!im||!im.complete) continue;
+      var w=1;
+      ctx.save();ctx.globalAlpha=ease*(.55+w*.45);
+      ctx.translate(cx,cy);ctx.rotate(time*(.12+i*.035));ctx.scale(1+i*.025,1+i*.025);
+      ctx.drawImage(im,-size/2,-size/2,size,size);ctx.restore();
+    }
   }
-  if(GIMG.hrB&&GIMG.hrB.complete){
+  if(!entranceVid&&GIMG.hrB&&GIMG.hrB.complete){
     for(var z=0;z<2;z++){
       var zq=((t*.5+z*.5)%1);
       var zs=size*(.12+.64*zq);

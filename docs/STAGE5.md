@@ -178,6 +178,6 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 ## Uploaded Hedron loop video
 
 - `assets/video/hedron-loop.mp4`: 720x720 crop, 24fps, no audio, 6s seamless loop.
-- Phase 1 battle uses the video with screen blending so its black plate disappears. When the video is playing, the procedural white core, orbital arcs and inner recursive layers are skipped; the clip supplies all visual elements.
+- Phase 1 battle uses the video with screen blending so its black plate disappears. When the video is playing, the procedural white core, orbital arcs and inner recursive layers are skipped; the clip supplies all visual elements. The same clip is also used as the Hedron body in phases 2 and 3 (under the rings and, in phase 3, under the black hole), so there is no second rotating Hedron layer.
 - Falls back to the generated static recursion layers until the video can play.
 - The video starts on the first tap, stays muted and loops.
