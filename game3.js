@@ -2285,8 +2285,8 @@ function drawPhase3Rings(w,h){
   if(!boss) return;
   var imgs=[GIMG.b1_1,GIMG.b2_1,GIMG.b3_1,GIMG.b4_1];
   var ringR=[175,152,129,106],ringS=[92,78,64,52];
-  // phase-3 rings share the sprite's geometric center; no extra art-hole offset
-  var cx=boss.x, cy=boss.y;
+  // measured phase-3 art hole offset: 3.5px left, 1px down (logical)
+  var cx=boss.x-3.5, cy=boss.y+1.0;
   for(var i=0;i<4;i++){
     var im=imgs[i];if(!im||!im.complete) continue;
     var dir=(i%2===0)?1:-1;

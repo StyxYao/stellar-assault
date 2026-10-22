@@ -20,7 +20,7 @@ Status: implemented as the final stage.
 - No accretion disk, no rotating eye, no tunnel scroll.
 - The black hole is the typhoon eye: the two crystal regions move around it while the center stays still.
 - During the Boss fight the background black hole is hidden, so each phase's own core is the only black hole.
-- Phase-3 rings are centered on the boss sprite's geometric center, matching the black hole the player sees in the phase-3 art.
+- Phase-3 rings use the measured art-hole offset: 3.5px left and 1px down from the sprite center, which puts the ring center on the phase-3 black hole.
 
 ## Boss 5 entrance
 
