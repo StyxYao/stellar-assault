@@ -188,4 +188,4 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - Center estimated per frame with 180-degree symmetry phase correlation; full-resolution centers were median-filtered and smoothed.
 - Each frame was cropped to 460x820 around the estimated center and rescaled to 720x1280, locking the kaleidoscope center.
 - The clip is ping-ponged to a 16.2s seamless loop (forward + reverse).
-- In game it is drawn centered at the black-hole position, with a darkening/contrast pass; the procedural kaleidoscope is the fallback if the video cannot play.
+- In game it is drawn centered in the playfield with a darkening/contrast pass; the background black hole has been removed entirely. The procedural kaleidoscope is the fallback if the video cannot play.

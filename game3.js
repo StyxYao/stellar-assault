@@ -2342,15 +2342,8 @@ function paintFractalBg(main,edge,offsetY){
   drawRecursiveBg(GIMG.kbA,-time*.032,.72,.04,'screen');
   }
   // dark vortex fade so the crystal pours into one static eye
-  if(state!=='cast'){
-    var hg=ctx.createRadialGradient(cx,cy,0,cx,cy,H*.13);
-    hg.addColorStop(0,'rgba(2,1,8,0.92)');
-    hg.addColorStop(.38,'rgba(3,2,10,0.62)');
-    hg.addColorStop(.72,'rgba(4,3,14,0.18)');
-    hg.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=hg;ctx.beginPath();ctx.arc(cx,cy,H*.13,0,TAU);ctx.fill();
-    if(!(stage===4&&(state==='boss'||state==='bossFusion'||state==='bossDeath1'))) drawBlackHole();
-  }
+  // no background black hole; the kaleidoscope center is the focal point
+
 }
 
 function paintStageBg(main,edge,offsetY){
