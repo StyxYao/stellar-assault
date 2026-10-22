@@ -2542,8 +2542,8 @@ function drawMaskedPhase3Video(video,cx,cy,size){
   var x=phaseMaskCtx;x.clearRect(0,0,S,S);x.globalCompositeOperation='source-over';
   var vw=video.videoWidth||720,vh=video.videoHeight||1200,crop=Math.min(vw,vh);
   x.drawImage(video,(vw-crop)/2,(vh-crop)/2,crop,crop,0,0,S,S);
-  var g=x.createRadialGradient(S/2,S/2,S*.40,S/2,S/2,S*.50);
-  g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(.78,'rgba(0,0,0,1)');g.addColorStop(1,'rgba(0,0,0,0)');
+  var g=x.createRadialGradient(S/2,S/2,S*.34,S/2,S/2,S*.50);
+  g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(.90,'rgba(0,0,0,1)');g.addColorStop(1,'rgba(0,0,0,0)');
   x.globalCompositeOperation='destination-in';x.fillStyle=g;x.fillRect(0,0,S,S);x.globalCompositeOperation='source-over';
   ctx.save();ctx.globalCompositeOperation='source-over';ctx.translate(cx,cy);ctx.rotate(time*.04);
   ctx.drawImage(phaseMaskCv,-size/2,-size/2,size,size);ctx.restore();
@@ -2698,11 +2698,9 @@ function drawPhase2FusionForm(){
   var cx=boss.x,cy=boss.y;
   var p2v=phase2LoopVideo&&phase2LoopVideo.readyState>=2&&phase2LoopVideo.videoWidth>0&&!phase2LoopVideo.paused;
   if(p2v){
-    var vw=phase2LoopVideo.videoWidth||720,vh=phase2LoopVideo.videoHeight||1200;
-    var sh=boss.def.w*2.0,sw=sh;
-    var sy=(vh-vw)/2;
-    ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.98;
-    ctx.translate(cx,cy);ctx.rotate(time*.05);ctx.drawImage(phase2LoopVideo,0,sy,vw,vw,-sw/2,-sh/2,sw,sh);ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+    var sz2=boss.def.w*2.0;
+    // opaque circular mask instead of screen blending; keeps the video colors solid
+    drawMaskedPhase3Video(phase2LoopVideo,cx,cy,sz2);
     if(boss.hitFlash>0){ctx.save();ctx.globalCompositeOperation='lighter';drawFeatherAnnulus(cx,cy,82,322,Math.min(.85,boss.hitFlash*5));drawFeatherAnnulus(cx,cy,140,270,Math.min(.55,boss.hitFlash*3.4));ctx.restore();ctx.globalAlpha=1;}
     return;
   }

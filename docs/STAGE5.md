@@ -215,3 +215,9 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - Phase-2 and phase-3 video frames are drawn at 2x the previous frame scale.
 - Phase 3 uses the video's own black hole through a feathered circular alpha mask; the game no longer draws a second black hole.
 - Because a 2x-diameter ring is wider than the portrait screen, the outer edges intentionally bleed off-screen.
+
+## Opaque phase video mask
+
+- Phase 2 and phase 3 videos are no longer screen-blended; they are drawn source-over through a feathered circular alpha mask.
+- The mask keeps video colors solid and transparent outside the boss silhouette; phase 3 keeps the video's own black hole.
+- Because the bosses are now 2x, their outer rings bleed off the portrait screen intentionally.
