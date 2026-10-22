@@ -30,12 +30,13 @@ Status: implemented as the final stage.
 - Each boss enters from a different **screen corner**; all four follow the same counter-clockwise spiral and are 90° apart.
 - The Hedron core stays visible at the center; its back and front layers overlap the boss copies.
 - A white-hot core layer is drawn on top of everything with a feathered outer 30%, so bodies entering the center are washed out by its light.
-- Each boss contributes exactly **24 whole-sprite copies** in the ring only after it reaches the core, plus **10 copies** sampled from the spiral path it has already travelled (never ahead of the boss). Ring copies are 86/72/58/44px and the four radii are 150/126/102/78; Boss 4's ring is now well inside Boss 3.
+- Each boss contributes exactly **24 whole-sprite copies** in the ring only after it reaches the core, plus **10 copies** sampled from the spiral path it has already travelled (never ahead of the boss). Ring copies are 80/68/56/44px and the four radii are 152/132/112/92; the white core is 64px so Boss 4's ring stays visible.
 - The innermost path copy dissolves into the Hedron core as the boss arrives.
 - The copies are fully opaque and snapped to a perfect circular 24-way ring; no translucent afterimage trail.
 - Source-over overlap, no depth sorting: copies visibly overlap and occlude each other.
 - Ring is a true circle, not an ellipse.
-- The phase-2 Boss itself is the 96-copy ring composition; its white-hot core is the topmost layer with a feathered outer 30%.
+- The phase-2 Boss itself is the 96-copy ring composition; its white-hot core is a 64px topmost layer with a feathered outer 30%.
+- Phase 3 overlays the same four 24-way rings (radii 175/152/129/106) on the existing phase-3 art.
 - Phase sizes: phase 1 = 1.00 (original), phase 2 = 0.99 (10% smaller than the previous 1.10), phase 3 = 1.10.
 - Finished rings remain in place around the eye for the next boss.
 - After all four rings are formed, the AI distortion frames absorb them and the composite phase-2 body materializes.

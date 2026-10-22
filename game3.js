@@ -2241,7 +2241,7 @@ function drawPhase2FusionForm(){
   if(!boss) return;
   var cx=boss.x,cy=boss.y;
   var imgs=[GIMG.b1_1,GIMG.b2_1,GIMG.b3_1,GIMG.b4_1];
-  var ringR=[150,126,102,78],ringS=[86,72,58,44];
+  var ringR=[152,132,112,92],ringS=[80,68,56,44];
   // core Hedron
   var hed=GIMG.np1;
   if(hed&&hed.complete){
@@ -2263,7 +2263,7 @@ function drawPhase2FusionForm(){
   }
   // top white-hot core, feathered outer 30%
   ctx.save();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
-  var R=104+7*Math.sin(time*2.2);
+  var R=64+5*Math.sin(time*2.2);
   var g=ctx.createRadialGradient(cx,cy,0,cx,cy,R);
   g.addColorStop(0,'rgba(255,255,255,0.98)');
   g.addColorStop(.55,'rgba(255,255,250,0.94)');
@@ -2279,6 +2279,22 @@ function drawPhase2FusionForm(){
   if(boss.hitFlash>0){
     ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(.55,boss.hitFlash*5);
     ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(cx,cy,R*.9,0,TAU);ctx.fill();ctx.restore();ctx.globalAlpha=1;
+  }
+}
+function drawPhase3Rings(w,h){
+  if(!boss) return;
+  var imgs=[GIMG.b1_1,GIMG.b2_1,GIMG.b3_1,GIMG.b4_1];
+  var ringR=[175,152,129,106],ringS=[92,78,64,52];
+  for(var i=0;i<4;i++){
+    var im=imgs[i];if(!im||!im.complete) continue;
+    var dir=(i%2===0)?1:-1;
+    for(var k=0;k<24;k++){
+      var a=k*TAU/24+i*.35+time*.055*dir;
+      var px=boss.x+Math.cos(a)*ringR[i],py=boss.y+Math.sin(a)*ringR[i];
+      ctx.save();ctx.globalAlpha=1;
+      ctx.translate(px,py);ctx.rotate(a+Math.PI/2+time*.06*dir);if((k+i)%2)ctx.scale(-1,1);
+      ctx.drawImage(im,-ringS[i]/2,-ringS[i]/2,ringS[i],ringS[i]);ctx.restore();
+    }
   }
 }
 function drawPhase2BossHalo(w,h){
@@ -2488,6 +2504,7 @@ function drawBoss(){
     ctx.restore();ctx.globalAlpha=1;
   }
   if(stage===4&&boss.phase===1) drawPhase2BossHalo(w,h);
+  if(stage===4&&boss.phase===2) drawPhase3Rings(w,h);
   ctx.restore();
 }
 function bulletImg(){ return GIMG['u'+(stage===0?'1':(stage===1?'2':'5'))]; }
@@ -3013,7 +3030,7 @@ function drawEntityArrivalScene(){
 function drawFusionHotCore(t,cx,cy){
   var a=1-Math.max(0,Math.min(1,(t-8.9)/1.0));
   if(a<=0) return;
-  var R=122+8*Math.sin(time*2.2);
+  var R=64+5*Math.sin(time*2.2);
   ctx.save();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
   var g=ctx.createRadialGradient(cx,cy,0,cx,cy,R);
   g.addColorStop(0,'rgba(255,255,255,'+(0.96*a)+')');
@@ -3057,7 +3074,7 @@ function drawFusionScene(tArg){
     var startT=.15+i*2.35,span=2.35;
     var p=(t-startT)/span,q=cl(p);
     if(p<-.05) continue;
-    var dir=1;
+    var dir=1,ringDir=(i%2===0)?1:-1;
     var qe=q*q*(3-2*q);
     var startAng=-3*Math.PI/4+i*Math.PI/2, spin=-2.2*TAU;
     function spiralPos(qq){
@@ -3074,13 +3091,13 @@ function drawFusionScene(tArg){
     // exactly 24 opaque copies per boss, locked to a perfect circular ring
     if(q>.94){
       var ringA=cl((q-.94)/.06);
-      var baseR=150-i*24;
+      var baseR=152-i*20;
       for(var k2=0;k2<24;k2++){
-        var a=k2*TAU/24+i*.35+time*.035*dir;
+        var a=k2*TAU/24+i*.35+time*.055*ringDir;
         var px=cx+Math.cos(a)*baseR, py=cy+Math.sin(a)*baseR;
-        var ss=86-i*14;
+        var ss=80-i*12;
         ctx.save();ctx.globalAlpha=ringA;
-        ctx.translate(px,py);ctx.rotate(a+Math.PI/2+time*.08*dir);if((k2+i)%2)ctx.scale(-1,1);
+        ctx.translate(px,py);ctx.rotate(a+Math.PI/2+time*.08*ringDir);if((k2+i)%2)ctx.scale(-1,1);
         ctx.drawImage(im,-ss/2,-ss/2,ss,ss);ctx.restore();
       }
     }
@@ -3090,7 +3107,7 @@ function drawFusionScene(tArg){
         var tq=cl(qe-(tj/10)*.24);
         var tpos=spiralPos(tq);
         var ta=.90;
-        var tss=74-tj*1.2;
+        var tss=60-tj*.8;
         ctx.save();ctx.globalAlpha=ta;
         ctx.translate(tpos.x,tpos.y);ctx.rotate(tq*2.2*dir+i*.4);
         ctx.drawImage(im,-tss/2,-tss/2,tss,tss);ctx.restore();
