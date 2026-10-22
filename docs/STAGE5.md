@@ -29,7 +29,8 @@ Status: implemented as the final stage.
 - Phase 1 has 36% of the total Boss 5 HP (3629) and its own depleted bar. At 0 it enters the dark omen card, then the 9.4s fusion cinematic; phase 2 refills a new 6451 HP bar.
 - Each boss enters from a different **screen corner**; all four follow the same counter-clockwise spiral and are 90° apart.
 - The Hedron core stays visible at the center; its back and front layers overlap the boss copies.
-- Each boss contributes exactly **24 whole-sprite copies** in the ring, plus **10 copies** along the spiral from the ring edge to the core. Ring copies are 86/72/58/44px and the four radii are 150/126/102/78 so the four boss rings do not hide each other.
+- A white-hot core layer is drawn on top of everything with a feathered outer 30%, so bodies entering the center are washed out by its light.
+- Each boss contributes exactly **24 whole-sprite copies** in the ring only after it reaches the core, plus **10 copies** sampled from the spiral path it has already travelled (never ahead of the boss). Ring copies are 86/72/58/44px and the four radii are 150/126/102/78; Boss 4's ring is now well inside Boss 3.
 - The innermost path copy dissolves into the Hedron core as the boss arrives.
 - The copies are fully opaque and snapped to a perfect circular 24-way ring; no translucent afterimage trail.
 - Source-over overlap, no depth sorting: copies visibly overlap and occlude each other.

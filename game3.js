@@ -1566,7 +1566,7 @@ function step(dt){
   if(laserHitT>0) laserHitT=Math.max(0,laserHitT-dt);
   if(stageFlash>0) stageFlash=Math.max(0,stageFlash-dt/0.6);
   if(stageWarp>0) stageWarp=Math.max(0,stageWarp-dt/1.5);
-  if(state==='bossOmen'){bossOmenT+=dt;if(bossOmenT>=4.2)startBossFusionCinematic();return;}
+  if(state==='bossOmen'){bossOmenT+=dt;if(bossOmenT>=6.5)startBossFusionCinematic();return;}
   if(state==='bossFusion'){bossFusionT+=dt;if(bossFusionT>=9.4)finishBossFusionPhase();return;}
   if(state==='fusion'){fusionT+=dt;if(fusionT>=3.6)spawnBossNow();return;}
   if(state==='finale'){finaleT+=dt;if(finaleT>=7.7)startCast();return;}
@@ -2898,11 +2898,11 @@ function drawMenu(){
 }
 function drawBossOmen(){
   var t=bossOmenT;
-  var a1=Math.max(0,Math.min(1,(t-.25)/.55))*Math.max(0,Math.min(1,(1.85-t)/.42));
-  var a2=Math.max(0,Math.min(1,(t-2.0)/.60))*Math.max(0,Math.min(1,(4.15-t)/.45));
+  var a1=Math.max(0,Math.min(1,(t-.25)/.70))*Math.max(0,Math.min(1,(2.55-t)/.55));
+  var a2=Math.max(0,Math.min(1,(t-2.90)/.75))*Math.max(0,Math.min(1,(6.25-t)/.55));
   var line1='YOU THINK YOU HAVE WON...';
-  var line2='BUT THAT WAS ONLY AN ECHO OF ONE POSSIBLE TIMELINE.';
-  var fs=20, spacing=1.0, wid=0;
+  var line2='BUT THAT WAS ONLY AN ECHO OF ONE TIMELINE.';
+  var fs=24, spacing=1.0, wid=0;
   function trackedWidth(txt){ctx.font='600 '+fs+'px Rajdhani, Arial, sans-serif';var w=0;for(var i=0;i<txt.length;i++)w+=ctx.measureText(txt[i]).width+spacing;return w;}
   while(fs>9){wid=trackedWidth(line2);if(wid<=W-32)break;fs-=.5;}
   function drawTracked(txt,y,alpha){
@@ -2965,6 +2965,24 @@ function drawEntityArrivalScene(){
   ctx.globalAlpha=1;ctx.textAlign='left';
   if(q>.94){ctx.fillStyle='rgba(255,255,245,'+((q-.94)/.06*.22)+')';ctx.fillRect(0,0,W,H);}
 }
+function drawFusionHotCore(t,cx,cy){
+  var a=1-Math.max(0,Math.min(1,(t-8.9)/1.0));
+  if(a<=0) return;
+  var R=122+8*Math.sin(time*2.2);
+  ctx.save();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+  var g=ctx.createRadialGradient(cx,cy,0,cx,cy,R);
+  g.addColorStop(0,'rgba(255,255,255,'+(0.96*a)+')');
+  g.addColorStop(.50,'rgba(255,255,250,'+(0.92*a)+')');
+  g.addColorStop(.68,'rgba(255,246,220,'+(0.78*a)+')');
+  g.addColorStop(.83,'rgba(220,235,255,'+(0.30*a)+')');
+  g.addColorStop(1,'rgba(220,240,255,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.fill();
+  ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.55*a;
+  var fg=ctx.createRadialGradient(cx,cy,0,cx,cy,R*.55);
+  fg.addColorStop(0,'rgba(255,255,255,1)');fg.addColorStop(.35,'rgba(255,240,190,.65)');fg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=fg;ctx.beginPath();ctx.arc(cx,cy,R*.55,0,TAU);ctx.fill();
+  ctx.restore();ctx.globalAlpha=1;
+}
 function drawFusionScene(tArg){
   var t=(typeof tArg==='number')?tArg:fusionT,cx=W/2,cy=H*.44;
   var imgs=[GIMG.b1_1,GIMG.b2_1,GIMG.b3_1,GIMG.b4_1];
@@ -2979,14 +2997,6 @@ function drawFusionScene(tArg){
     var hSize=290+10*Math.sin(time*1.1);
     ctx.save();ctx.globalAlpha=hAlpha;ctx.translate(cx,cy);ctx.rotate(time*.10);
     ctx.drawImage(hed,-hSize/2,-hSize/2,hSize,hSize);ctx.restore();
-    // white-hot Hedron core
-    ctx.save();ctx.globalCompositeOperation='lighter';
-    var cw=72+8*Math.sin(time*2.2), cg=ctx.createRadialGradient(cx,cy,0,cx,cy,cw);
-    cg.addColorStop(0,'rgba(255,255,255,'+(0.92*(1-cl((t-9.0)/1.1)))+')');
-    cg.addColorStop(.24,'rgba(255,246,220,'+(0.55*(1-cl((t-9.0)/1.1)))+')');
-    cg.addColorStop(.62,'rgba(160,220,255,0.18)');
-    cg.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=cg;ctx.beginPath();ctx.arc(cx,cy,cw,0,TAU);ctx.fill();ctx.restore();
     ctx.save();ctx.globalCompositeOperation='lighter';
     var hcols=['#7fe6ff','#ff86cf','#ffd36b'];
     for(var hk=0;hk<3;hk++){
@@ -3017,25 +3027,25 @@ function drawFusionScene(tArg){
       if(q<.7){ctx.save();ctx.globalAlpha=fade*.6;ctx.textAlign='center';ctx.fillStyle=cols[i];ctx.font='8px monospace';ctx.fillText(names[i],W/2,H*.255);ctx.restore();ctx.globalAlpha=1;}
     }
     // exactly 24 opaque copies per boss, locked to a perfect circular ring
-    if(q>.48){
+    if(q>.94){
+      var ringA=cl((q-.94)/.06);
       var baseR=150-i*24;
       for(var k2=0;k2<24;k2++){
         var a=k2*TAU/24+i*.35+time*.035*dir;
         var px=cx+Math.cos(a)*baseR, py=cy+Math.sin(a)*baseR;
         var ss=86-i*14;
-        ctx.save();ctx.globalAlpha=1;
+        ctx.save();ctx.globalAlpha=ringA;
         ctx.translate(px,py);ctx.rotate(a+Math.PI/2+time*.08*dir);if((k2+i)%2)ctx.scale(-1,1);
         ctx.drawImage(im,-ss/2,-ss/2,ss,ss);ctx.restore();
       }
     }
     // 10 extra copies along the spiral from ring edge to the core; the innermost dissolves into Hedron
-    if(q>.52){
-      for(var tj=0;tj<10;tj++){
-        var tq=.82+tj*.02;
+    if(q>.30){
+      for(var tj=1;tj<=10;tj++){
+        var tq=cl(qe-(tj/10)*.24);
         var tpos=spiralPos(tq);
-        var inner=tj===9;
-        var ta=inner?1-cl((q-.60)/.40):.88;
-        var tss=inner?52:74;
+        var ta=.90;
+        var tss=74-tj*1.2;
         ctx.save();ctx.globalAlpha=ta;
         ctx.translate(tpos.x,tpos.y);ctx.rotate(tq*2.2*dir+i*.4);
         ctx.drawImage(im,-tss/2,-tss/2,tss,tss);ctx.restore();
@@ -3066,6 +3076,7 @@ function drawFusionScene(tArg){
     ctx.globalAlpha=bp;ctx.drawImage(bimg,-170,-170,340,340);ctx.restore();ctx.globalAlpha=1;
   }
   if(t>9.25&&t<10.1){var fa=1-Math.abs((t-9.65)/.45);ctx.fillStyle='rgba(255,255,245,'+(0.28*fa)+')';ctx.fillRect(0,0,W,H);}
+  drawFusionHotCore(t,cx,cy);
   ctx.textAlign='center';ctx.font='900 17px "Arial Black", Arial, sans-serif';ctx.fillStyle='#ffe6a0';
   ctx.globalAlpha=.85+0.15*Math.sin(time*8);
   var label=t<4.8?'FOUR ECHOES':(t<7.1?'CONVERGENCE':(t<9.2?'SINGULARITY':'CHRONOS ECHO'));
@@ -3290,7 +3301,7 @@ function onDown(e){
     if(!audioReady){ audioReady=true; playBgm('m5'); return; }
     startGame(); return;
   }
-  if(state==='bossOmen'){ bossOmenT=4.2; return; }
+  if(state==='bossOmen'){ bossOmenT=6.5; return; }
   if(state==='bossFusion'){ bossFusionT=9.4; return; }
   if(state==='fusion'){ fusionT=3.6; return; }
   if(state==='cast'){ state='menu'; playBgm('m5'); return; }
