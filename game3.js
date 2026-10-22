@@ -2298,7 +2298,7 @@ function drawBoss(){
   if(stage===4&&phase===0){img=GIMG.np1||img;}
   if(!img||!img.complete) return;
   var phaseScale=[1,1.06,1.12][phase]||1;
-  if(stage===4) phaseScale=(phase===0?1.00:1.10);
+  if(stage===4) phaseScale=(phase===0?1.00:(phase===1?0.99:1.10));
   var w=boss.def.w*phaseScale*1.15,h=w*img.height/img.width;
   var cols=boss.def.glow||['90,200,255','255,120,220','255,170,80'],col=cols[phase]||cols[0];
   ctx.save();ctx.globalCompositeOperation='lighter';
@@ -2898,34 +2898,32 @@ function drawMenu(){
 }
 function drawBossOmen(){
   var t=bossOmenT;
-  var a1=Math.max(0,Math.min(1,(t-.25)/.75));
-  var a2=Math.max(0,Math.min(1,(t-1.25)/.85));
-  var out=Math.max(0,Math.min(1,(4.2-t)/.7));
-  var a=a1*out, b=a2*out;
-  ctx.save();ctx.textAlign='center';
+  var a1=Math.max(0,Math.min(1,(t-.25)/.55))*Math.max(0,Math.min(1,(1.85-t)/.42));
+  var a2=Math.max(0,Math.min(1,(t-2.0)/.60))*Math.max(0,Math.min(1,(4.15-t)/.45));
+  var line1='YOU THINK YOU HAVE WON...';
+  var line2='BUT THAT WAS ONLY AN ECHO OF ONE POSSIBLE TIMELINE.';
+  var fs=20, spacing=1.0, wid=0;
+  function trackedWidth(txt){ctx.font='600 '+fs+'px Rajdhani, Arial, sans-serif';var w=0;for(var i=0;i<txt.length;i++)w+=ctx.measureText(txt[i]).width+spacing;return w;}
+  while(fs>9){wid=trackedWidth(line2);if(wid<=W-32)break;fs-=.5;}
+  function drawTracked(txt,y,alpha){
+    if(alpha<=0)return;
+    ctx.font='600 '+fs+'px Rajdhani, Arial, sans-serif';ctx.textAlign='left';
+    var w=trackedWidth(txt),x=W/2-w/2;
+    ctx.fillStyle='rgba(245,245,255,'+alpha+')';
+    ctx.shadowColor='rgba(185,220,255,.55)';ctx.shadowBlur=10;
+    for(var i=0;i<txt.length;i++){var ch=txt[i];ctx.fillText(ch,x,y);x+=ctx.measureText(ch).width+spacing;}
+  }
+  ctx.save();
   ctx.globalCompositeOperation='lighter';
-  var g=ctx.createRadialGradient(W/2,H*.42,0,W/2,H*.42,H*.32);
-  g.addColorStop(0,'rgba(255,245,225,'+(0.06*Math.max(a,b))+')');
-  g.addColorStop(.5,'rgba(120,170,255,'+(0.035*Math.max(a,b))+')');
+  var g=ctx.createRadialGradient(W/2,H*.42,0,W/2,H*.42,H*.30);
+  g.addColorStop(0,'rgba(255,245,225,'+(0.055*Math.max(a1,a2))+')');
+  g.addColorStop(.55,'rgba(130,170,255,'+(0.030*Math.max(a1,a2))+')');
   g.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=g;ctx.beginPath();ctx.arc(W/2,H*.42,H*.32,0,TAU);ctx.fill();
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(W/2,H*.42,H*.30,0,TAU);ctx.fill();
   ctx.globalCompositeOperation='source-over';
-  ctx.shadowColor='rgba(190,225,255,0.65)';ctx.shadowBlur=14;
-  ctx.fillStyle='rgba(245,245,255,'+a+')';
-  ctx.font='600 18px Orbitron, Arial, sans-serif';
-  // tracked title
-  var title='YOU THINK YOU HAVE WON...',sp=2.4;
-  var tw=0;for(var i=0;i<title.length;i++)tw+=ctx.measureText(title[i]).width+sp;
-  var tx=W/2-tw/2;
-  for(var i=0;i<title.length;i++){var ch=title[i];ctx.textAlign='left';ctx.fillText(ch,tx,H*.39);tx+=ctx.measureText(ch).width+sp;}
-  ctx.textAlign='center';ctx.shadowBlur=10;
-  ctx.fillStyle='rgba(255,226,180,'+b+')';
-  ctx.font='600 14px Rajdhani, Arial, sans-serif';
-  ctx.fillText('BUT THAT WAS ONLY AN ECHO',W/2,H*.455);
-  ctx.fillText('OF ONE POSSIBLE TIMELINE.',W/2,H*.492);
-  ctx.shadowBlur=0;ctx.globalAlpha=.55*out;ctx.fillStyle='#8fb8d8';ctx.font='9px Orbitron, monospace';
-  ctx.fillText("TIME'S END",W/2,H*.58);
-  ctx.restore();ctx.globalAlpha=1;ctx.textAlign='left';
+  drawTracked(line1,H*.435,a1);
+  drawTracked(line2,H*.435,a2);
+  ctx.shadowBlur=0;ctx.restore();ctx.globalAlpha=1;ctx.textAlign='left';
 }
 
 function drawEntityArrivalScene(){
@@ -3004,11 +3002,11 @@ function drawFusionScene(tArg){
     var startT=.15+i*2.35,span=2.35;
     var p=(t-startT)/span,q=cl(p);
     if(p<-.05) continue;
-    var dir=i%2?1:-1;
+    var dir=1;
     var qe=q*q*(3-2*q);
-    var startAng=(i%2?0:Math.PI)+(i>>1)*.22, spin=2.2*TAU*dir;
+    var startAng=-3*Math.PI/4+i*Math.PI/2, spin=-2.2*TAU;
     function spiralPos(qq){
-      var aa=startAng+qq*spin, rr=Math.max(W,H)*.82*(1-qq)+18;
+      var aa=startAng+qq*spin, rr=Math.max(W,H)*.92*(1-qq)+18;
       return {x:cx+Math.cos(aa)*rr,y:cy+Math.sin(aa)*rr*.72};
     }
     var bp0=spiralPos(qe),x=bp0.x,y=bp0.y;
@@ -3020,11 +3018,11 @@ function drawFusionScene(tArg){
     }
     // exactly 24 opaque copies per boss, locked to a perfect circular ring
     if(q>.48){
-      var baseR=150-i*10;
+      var baseR=150-i*24;
       for(var k2=0;k2<24;k2++){
         var a=k2*TAU/24+i*.35+time*.035*dir;
         var px=cx+Math.cos(a)*baseR, py=cy+Math.sin(a)*baseR;
-        var ss=100;
+        var ss=86-i*14;
         ctx.save();ctx.globalAlpha=1;
         ctx.translate(px,py);ctx.rotate(a+Math.PI/2+time*.08*dir);if((k2+i)%2)ctx.scale(-1,1);
         ctx.drawImage(im,-ss/2,-ss/2,ss,ss);ctx.restore();
