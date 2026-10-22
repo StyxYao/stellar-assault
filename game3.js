@@ -4,7 +4,7 @@ var stage=0,state='menu',score=0,time=0,lastShot=0,lastHitSfx=0,shake=0;
 var enemies=[],bullets=[],shots=[],parts=[],stars=[],fx=[],ebullets=[],items=[],missiles=[],wingBeams=[],beams=[],orbBullets=[],phaseFx=[],blastZones=[],odLaserFx=[];
 var lastMissile=0,lastSpecial=0,optionT=0,laserTick=0,laserHitY=0,laserHitT=0,pickupMsg='',pickupT=0;
 var audioReady=false;
-var boss=null,runner=null,bossFusionT=0,bossFusionOn=false;
+var boss=null,runner=null,bossFusionT=0,bossFusionOn=false,bossOmenT=0;
 var stageT=0,waveIndex=0,nextTransport=0,banner='',bannerSub='',bannerT=0,castT=0,castScroll=0,fusionT=0;
 var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpeed=0,glowWarp=0,bombT=0,bombX=0,bombY=0;
 var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
@@ -580,10 +580,14 @@ function spawnBossNow(){
   if(stage===2) repairAudio();
   state='boss'; playBgm(['c','s2boss','s3boss','s4boss','s5boss'][stage]||'c'); setBossPattern(0);
 }
-function startBossFusionPhase(){
-  state='bossFusion';bossFusionT=0;boss=null;runner=null;
+function startBossOmen(){
+  state='bossOmen';bossOmenT=0;boss=null;runner=null;
   bullets.length=0;ebullets.length=0;orbBullets.length=0;beams.length=0;enemies.length=0;
-  phaseFx.length=0;setBanner('FUSION','FOUR ECHOES',9.0);shake=Math.max(shake,22);
+  phaseFx.length=0;shake=Math.max(shake,16);
+}
+function startBossFusionCinematic(){
+  state='bossFusion';bossFusionT=0;
+  setBanner('FUSION','FOUR ECHOES',9.0);shake=Math.max(shake,22);
   sfx('b_charge',0.65);
 }
 function finishBossFusionPhase(){
@@ -1523,6 +1527,7 @@ function step(dt){
   if(laserHitT>0) laserHitT=Math.max(0,laserHitT-dt);
   if(stageFlash>0) stageFlash=Math.max(0,stageFlash-dt/0.6);
   if(stageWarp>0) stageWarp=Math.max(0,stageWarp-dt/1.5);
+  if(state==='bossOmen'){bossOmenT+=dt;if(bossOmenT>=4.2)startBossFusionCinematic();return;}
   if(state==='bossFusion'){bossFusionT+=dt;if(bossFusionT>=9.4)finishBossFusionPhase();return;}
   if(state==='fusion'){fusionT+=dt;if(fusionT>=3.6)spawnBossNow();return;}
   if(state==='cast'){castT+=dt;castScroll+=38*dt;return;}
@@ -1845,7 +1850,7 @@ function step(dt){
       var bdx=b.x-player.x,bdy=b.y-player.y;
       if(bdx*bdx+bdy*bdy<(b.rad+player.r)*(b.rad+player.r)) hitPlayer();
     }
-    if(stage===4&&boss&&boss.phase===0&&boss.hp<=0){ startBossFusionPhase(); }
+    if(stage===4&&boss&&boss.phase===0&&boss.hp<=0){ startBossOmen(); }
     else if(boss.hp<=0){
       boss.hp=0;
       for(var k=0;k<30;k++) part(boss.x+rand(-70,70),boss.y+rand(-40,40),'#ffb066',2,220);
@@ -2251,7 +2256,7 @@ function drawBoss(){
   if(stage===4&&phase===0){img=GIMG.np1||img;}
   if(!img||!img.complete) return;
   var phaseScale=[1,1.06,1.12][phase]||1;
-  if(stage===4&&phase===1) phaseScale*=0.70;
+  if(stage===4) phaseScale=phase===0?0.68:(phase===1?0.78:0.90);
   var w=boss.def.w*phaseScale*1.15,h=w*img.height/img.width;
   var cols=boss.def.glow||['90,200,255','255,120,220','255,170,80'],col=cols[phase]||cols[0];
   ctx.save();ctx.globalCompositeOperation='lighter';
@@ -2849,6 +2854,29 @@ function drawMenu(){
   ctx.fillText('SFX: KENNEY SCI-FI SOUNDS (CC0)',W/2,H*0.89);
   ctx.textAlign='left';
 }
+function drawBossOmen(){
+  var t=bossOmenT;
+  var aIn=Math.max(0,Math.min(1,t/.65));
+  var aOut=Math.max(0,Math.min(1,(4.2-t)/.75));
+  var a=Math.min(aIn,aOut);
+  ctx.save();ctx.textAlign='center';
+  // faint gathering light behind the words
+  ctx.globalCompositeOperation='lighter';
+  var g=ctx.createRadialGradient(W/2,H*.44,0,W/2,H*.44,H*.30);
+  g.addColorStop(0,'rgba(255,220,150,'+(0.07*a)+')');
+  g.addColorStop(.55,'rgba(140,110,255,'+(0.05*a)+')');
+  g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(W/2,H*.44,H*.30,0,TAU);ctx.fill();
+  ctx.globalCompositeOperation='source-over';ctx.globalAlpha=a;
+  ctx.fillStyle='#f5e9d0';ctx.font='700 15px "Arial", sans-serif';
+  ctx.fillText('YOU THINK YOU HAVE WON...',W/2,H*.40);
+  ctx.globalAlpha=a*.92;ctx.fillStyle='#ffe2a8';ctx.font='700 14px "Arial", sans-serif';
+  ctx.fillText('BUT THAT WAS ONLY AN ECHO',W/2,H*.47);
+  ctx.fillText('OF ONE POSSIBLE TIMELINE.',W/2,H*.52);
+  ctx.globalAlpha=a*.62;ctx.fillStyle='#9fb8d8';ctx.font='9px monospace';
+  ctx.fillText("TIME'S END",W/2,H*.60);
+  ctx.restore();ctx.globalAlpha=1;ctx.textAlign='left';
+}
 function drawEntityArrivalScene(){
   var t=fusionT,q=Math.max(0,Math.min(1,t/3.3));
   var ease=1-Math.pow(1-q,3),cx=W/2,cy=H*.44;
@@ -2941,6 +2969,19 @@ function drawFusionScene(tArg){
         ctx.save();ctx.globalAlpha=1;
         ctx.translate(px,py);ctx.rotate(a+Math.PI/2+time*.08*dir);if((k2+i)%2)ctx.scale(-1,1);
         ctx.drawImage(im,-ss/2,-ss/2,ss,ss);ctx.restore();
+      }
+    }
+    // 10 extra copies along the spiral from ring edge to the core; the innermost dissolves into Hedron
+    if(q>.52){
+      for(var tj=0;tj<10;tj++){
+        var tq=.82+tj*.02;
+        var tpos=spiralPos(tq);
+        var inner=tj===9;
+        var ta=inner?1-cl((q-.60)/.40):.88;
+        var tss=inner?52:74;
+        ctx.save();ctx.globalAlpha=ta;
+        ctx.translate(tpos.x,tpos.y);ctx.rotate(tq*2.2*dir+i*.4);
+        ctx.drawImage(im,-tss/2,-tss/2,tss,tss);ctx.restore();
       }
     }
   }
@@ -3039,6 +3080,7 @@ function drawScene(){
   ctx.save();ctx.translate(sx,sy);
   if(state==='menu'){ drawMenu(); ctx.restore(); return; }
   if(state==='cast'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); ctx.fillStyle='rgba(2,4,14,0.45)';ctx.fillRect(0,0,W,H); drawCast(); ctx.restore(); return; }
+  if(state==='bossOmen'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); ctx.fillStyle='rgba(0,0,0,0.84)';ctx.fillRect(0,0,W,H); drawBossOmen(); ctx.restore(); return; }
   if(state==='bossFusion'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); ctx.fillStyle='rgba(2,2,12,0.28)';ctx.fillRect(0,0,W,H); drawFusionScene(bossFusionT); ctx.restore(); return; }
   if(state==='fusion'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); ctx.fillStyle='rgba(2,2,12,0.22)';ctx.fillRect(0,0,W,H); drawEntityArrivalScene(); ctx.restore(); return; }
   var bgOff=0;
@@ -3122,6 +3164,7 @@ function onDown(e){
     if(!audioReady){ audioReady=true; playBgm('m5'); return; }
     startGame(); return;
   }
+  if(state==='bossOmen'){ bossOmenT=4.2; return; }
   if(state==='bossFusion'){ bossFusionT=9.4; return; }
   if(state==='fusion'){ fusionT=3.6; return; }
   if(state==='cast'){ state='menu'; playBgm('m5'); return; }

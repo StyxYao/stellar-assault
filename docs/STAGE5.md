@@ -29,12 +29,13 @@ Status: implemented as the final stage.
 - Phase 1 has 36% of the total Boss 5 HP (3629). When it reaches 0, the game enters a 9.4s fusion cinematic.
 - Each boss enters from an off-screen **side edge** (left/right alternating), then follows a vortex spiral inward.
 - The Hedron core stays visible at the center; its back and front layers overlap the boss copies.
-- Each boss contributes exactly **24 whole-sprite copies**.
+- Each boss contributes exactly **24 whole-sprite copies** in the ring, plus **10 copies** along the spiral from the ring edge to the core.
+- The innermost path copy dissolves into the Hedron core as the boss arrives.
 - The copies are fully opaque and snapped to a perfect circular 24-way ring; no translucent afterimage trail.
 - Source-over overlap, no depth sorting: copies visibly overlap and occlude each other.
 - Ring is a true circle, not an ellipse.
 - The phase-2 Boss keeps a matching 24-copy opaque halo around its body.
-- Phase-2 body is scaled to 70% of the previous composite size.
+- Phase sizes: phase 1 = 0.68, phase 2 = 0.78, phase 3 = 0.90 (phase 1 ≤ phase 2 < phase 3).
 - Finished rings remain in place around the eye for the next boss.
 - After all four rings are formed, the AI distortion frames absorb them and the composite phase-2 body materializes.
 - Phase 2 uses the original Boss 5 phase-1 composite art as its body, scaled to 70%, starts with the remaining 64% HP (6451), and rises to the upper screen after fusion.
