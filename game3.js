@@ -17,6 +17,7 @@ var stageT=0,waveIndex=0,nextTransport=0,banner='',bannerSub='',bannerT=0,castT=
 var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpeed=0,glowWarp=0,bombT=0,bombX=0,bombY=0;
 var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
 var BG4=new Image();BG4.src='assets/bg/stage4-main.webp';
+var fusionVideo=document.createElement('video');fusionVideo.src='assets/video/fusion.mp4';fusionVideo.loop=false;fusionVideo.muted=true;fusionVideo.playsInline=true;fusionVideo.preload='auto';
 var bgLoopVideo=document.createElement('video');bgLoopVideo.src='assets/video/kaleido-bg.mp4';bgLoopVideo.loop=true;bgLoopVideo.muted=true;bgLoopVideo.playsInline=true;bgLoopVideo.preload='auto';
 var hedronLoopVideo=document.createElement('video');hedronLoopVideo.src='assets/video/hedron-loop.mp4';hedronLoopVideo.loop=true;hedronLoopVideo.muted=true;hedronLoopVideo.playsInline=true;hedronLoopVideo.preload='auto';
 var BG5=new Image();BG5.src='assets/bg/stage5-main.webp';
@@ -706,6 +707,7 @@ function drawPhase1DeathScene(){
 }
 function startBossFusionCinematic(){
   state='bossFusion';bossFusionT=0;
+  try{fusionVideo.currentTime=0;fusionVideo.play().catch(function(){});}catch(e){}
   setBanner('FUSION','FOUR ECHOES',9.0);shake=Math.max(shake,22);
   sfx('b_charge',0.65);
 }
@@ -1721,7 +1723,7 @@ function step(dt){
   if(stageWarp>0) stageWarp=Math.max(0,stageWarp-dt/1.5);
   if(state==='bossDeath1'){bossDeath1T+=dt;if(bossDeath1T>=2.7)startBossOmen();return;}
   if(state==='bossOmen'){bossOmenT+=dt;if(bossOmenT>=6.5)startBossFusionCinematic();return;}
-  if(state==='bossFusion'){bossFusionT+=dt;if(bossFusionT>=9.4)finishBossFusionPhase();return;}
+  if(state==='bossFusion'){bossFusionT+=dt;if(bossFusionT>=15.04)finishBossFusionPhase();return;}
   if(state==='fusion'){fusionT+=dt;if(fusionT>=3.6)spawnBossNow();return;}
   if(state==='bossAwaken'){bossAwakenT-=dt;if(bossAwakenT<=0){state='boss';if(boss)boss.invuln=1.4;setBossPattern(0);} }
   if(state==='finale'){finaleT+=dt;if(finaleT>=7.7)startCast();return;}
@@ -3832,7 +3834,19 @@ function drawScene(){
   if(state==='cast'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); ctx.fillStyle='rgba(2,4,14,0.45)';ctx.fillRect(0,0,W,H); drawCast(); ctx.restore(); return; }
   if(state==='bossDeath1'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); drawPhase1DeathScene(); ctx.restore(); return; }
   if(state==='bossOmen'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); ctx.fillStyle='rgba(0,0,0,0.84)';ctx.fillRect(0,0,W,H); drawBossOmen(); ctx.restore(); return; }
-  if(state==='bossFusion'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); ctx.fillStyle='rgba(2,2,12,0.28)';ctx.fillRect(0,0,W,H); drawFusionScene(bossFusionT); ctx.restore(); return; }
+  if(state==='bossFusion'){
+    var fvOK=fusionVideo&&fusionVideo.readyState>=2&&fusionVideo.videoWidth>0;
+    if(fvOK){
+      var sh=Math.max(H,W*1280/720),sw=sh*720/1280;
+      ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+      ctx.save();ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
+      ctx.drawImage(fusionVideo,(W-sw)/2,(H-sh)/2,sw,sh);ctx.restore();
+      ctx.fillStyle='rgba(2,2,12,0.12)';ctx.fillRect(0,0,W,H);
+    }else{
+      paintFractalBg(BG_MAIN[4],BG_EDGE[4],0);ctx.fillStyle='rgba(2,2,12,0.28)';ctx.fillRect(0,0,W,H);drawFusionScene(bossFusionT);
+    }
+    ctx.restore();return;
+  }
   if(state==='fusion'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); ctx.fillStyle='rgba(2,2,12,0.22)';ctx.fillRect(0,0,W,H); drawEntityArrivalScene(); ctx.restore(); return; }
   var bgOff=0;
   if(state==='warpIn'){var wpg=Math.min(1,1-warpT/0.95);bgOff=H*(1-wpg);}
@@ -3926,7 +3940,7 @@ function onDown(e){
     return;
   }
   if(state==='bossOmen'){ bossOmenT=6.5; return; }
-  if(state==='bossFusion'){ bossFusionT=9.4; return; }
+  if(state==='bossFusion'){ bossFusionT=15.04; try{fusionVideo.pause();}catch(e){} return; }
   if(state==='fusion'){ fusionT=3.6; return; }
   if(state==='cast'){ state='menu'; playBgm('m5'); return; }
   if(state==='win'||state==='over'){ startGame(); return; }

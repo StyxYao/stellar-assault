@@ -189,3 +189,10 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - Each frame was cropped to 460x820 around the estimated center and rescaled to 720x1280, locking the kaleidoscope center.
 - The clip is ping-ponged to a 16.2s seamless loop (forward + reverse).
 - In game it is drawn centered in the playfield with a darkening/contrast pass; the background black hole has been removed entirely. The procedural kaleidoscope is the fallback if the video cannot play.
+
+## Uploaded fusion cutscene
+
+- `assets/video/fusion.mp4`: 720x1280, 24fps, 15.04s, no audio, AI watermark cropped out.
+- Replaces the procedural four-boss fusion when ready; full-screen source-over cutscene.
+- After the clip, the 2.6s awakening flash and phase-2 combat start.
+- Tapping during the fusion skips to the end; procedural fusion remains the fallback if video cannot play.
