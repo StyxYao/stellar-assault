@@ -131,3 +131,10 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - `paintFractalBg()` handles the fixed kaleidoscope background.
 - `bossChronosBloom`, `bossEchoCross`, `bossCollapse` implement the boss identity.
 - Existing OD, A-cycle, bomb and combo systems remain active in the final stage.
+
+## Stage Select
+
+- The menu now has five stage buttons.
+- Tapping 1–5 starts that stage directly.
+- Stage 5 starts with Lv4 power, three options, wing 3 and three bombs so it is immediately playable.
+- Tapping elsewhere still starts from Stage 1.

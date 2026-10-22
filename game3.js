@@ -545,9 +545,23 @@ function startCast(){
 }
 function setBanner(txt,sub,t){ banner=txt; bannerSub=sub||''; bannerT=t; }
 
-function startGame(){
+function resetRun(){
   score=0; player.lives=3; player.hp=3; player.bombs=2; player.od=0; player.odT=0; player.powerXp=0; player.respawnT=0; player.respawnGift=false; player.noBlink=false; player.power=1; player.weapon='normal'; player.specialPower=1; player.options=0; player.wingPower=1; player.trail=[]; player.wingEntry=[]; items.length=0; missiles.length=0; wingBeams.length=0; beams.length=0; orbBullets.length=0;
-  stage=0; startStage(0);
+}
+function startGame(){
+  resetRun();
+  startStage(0);
+}
+function startAtStage(i){
+  i=Math.max(0,Math.min(STAGES.length-1,i|0));
+  resetRun();
+  // stage-select loadout: enough power to actually play the final stage
+  player.power=Math.min(4,1+i*0.8);
+  player.specialPower=Math.min(4,1+i);
+  player.wingPower=Math.min(4,1+i);
+  player.options=Math.min(3,i);
+  player.bombs=i>=4?3:2;
+  startStage(i);
 }
 function startStage(i){
   stage=i; stageT=0; waveIndex=0; nextTransport=24+Math.random()*10;
@@ -3019,6 +3033,12 @@ function drawBanner(){
   if(bannerSub){ctx.fillStyle='#9fb6cf';ctx.font='12px monospace';ctx.fillText(bannerSub,W/2,H*0.33+26);}
   ctx.globalAlpha=1;ctx.textAlign='left';
 }
+function stageSelectButtons(){
+  var bw=46,bh=38,gap=9,total=5*bw+4*gap,sx=W/2-total/2,sy=H*.625;
+  var out=[];
+  for(var i=0;i<5;i++)out.push({i:i,x:sx+i*(bw+gap),y:sy,w:bw,h:bh});
+  return out;
+}
 function drawMenu(){
   paintBg(BGMENU,1)||paintBg(BG1,1);
   ctx.fillStyle='rgba(2,4,12,0.05)';ctx.fillRect(0,0,W,H);
@@ -3030,6 +3050,18 @@ function drawMenu(){
   var gf='900 15px "Arial Black", "Helvetica Neue", Arial, sans-serif';
   var bf='900 21px "Arial Black", "Helvetica Neue", Arial, sans-serif';
   // key info: bold, technical, glowing
+  // stage select
+  ctx.font='900 10px "Arial Black", Arial, sans-serif';ctx.fillStyle='#b8e8ff';ctx.shadowColor='rgba(60,160,230,0.7)';ctx.shadowBlur=6;
+  ctx.fillText('STAGE SELECT',W/2,H*.592);
+  var sbs=stageSelectButtons();
+  for(var si=0;si<sbs.length;si++){
+    var sb=sbs[si];ctx.fillStyle=si===4?'rgba(80,40,20,0.72)':'rgba(6,18,30,0.62)';
+    ctx.fillRect(sb.x,sb.y,sb.w,sb.h);
+    ctx.strokeStyle=si===4?'#ffd27a':'#5d8fa8';ctx.lineWidth=si===4?2:1;ctx.strokeRect(sb.x,sb.y,sb.w,sb.h);
+    ctx.fillStyle=si===4?'#ffe2a8':'#dff4ff';ctx.font='900 16px "Arial Black", Arial, sans-serif';
+    ctx.textAlign='center';ctx.fillText(String(si+1),sb.x+sb.w/2,sb.y+25);
+  }
+  ctx.shadowBlur=0;
   ctx.font=gf;ctx.fillStyle='#dff4ff';ctx.shadowColor='rgba(70,190,255,0.95)';ctx.shadowBlur=10;
   ctx.fillText('5 STAGES  ·  5 BOSSES',W/2,H*0.70);
   ctx.font=bf;ctx.fillStyle='#ffd27a';ctx.shadowColor='rgba(255,170,50,0.9)';ctx.shadowBlur=14;
@@ -3447,7 +3479,12 @@ function onDown(e){
   if(bgmPending){var pk=bgmPending;bgmPending='';playBgm(pk);}
   var p=pt(e);
   if(state==='menu'){
-    if(!audioReady){ audioReady=true; playBgm('m5'); return; }
+    if(!audioReady){ audioReady=true; playBgm('m5'); }
+    var sbs=stageSelectButtons();
+    for(var si=0;si<sbs.length;si++){
+      var sb=sbs[si];
+      if(p.x>=sb.x&&p.x<=sb.x+sb.w&&p.y>=sb.y&&p.y<=sb.y+sb.h){ startAtStage(si); return; }
+    }
     startGame(); return;
   }
   if(state==='bossOmen'){ bossOmenT=6.5; return; }
