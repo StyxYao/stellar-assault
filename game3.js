@@ -2237,6 +2237,54 @@ function drawSpectralAura(w,h){
   ctx.restore();ctx.globalAlpha=1;
 }
 
+function drawPhase3CollapseForm(){
+  if(!boss) return;
+  var cx=boss.x,cy=boss.y;
+  var imgs=[GIMG.r1,GIMG.r2,GIMG.r3,GIMG.r4];
+  var ringR=[170,148,126,104],ringS=[90,76,62,50];
+  // faint Hedron ghost behind the collapse, no black core of its own
+  var hed=GIMG.np1;
+  if(hed&&hed.complete){
+    ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.14;ctx.translate(cx,cy);ctx.rotate(-time*.06);
+    ctx.drawImage(hed,-135,-135,270,270);ctx.restore();ctx.globalAlpha=1;
+  }
+  // four rings, alternating spin, all centered on the black hole
+  for(var i=0;i<4;i++){
+    var im=imgs[i];if(!im||!im.complete) continue;
+    var dir=(i%2===0)?1:-1;
+    for(var k=0;k<24;k++){
+      var a=k*TAU/24+i*.35+time*.055*dir;
+      var px=cx+Math.cos(a)*ringR[i],py=cy+Math.sin(a)*ringR[i];
+      ctx.save();ctx.globalAlpha=1;
+      ctx.translate(px,py);ctx.rotate(a+Math.PI/2+time*.06*dir);if((k+i)%2)ctx.scale(-1,1);
+      ctx.drawImage(im,-ringS[i]/2,-ringS[i]/2,ringS[i],ringS[i]);ctx.restore();
+    }
+  }
+  // single black hole core, exactly at ring center
+  var R=68;
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  var g=ctx.createRadialGradient(cx,cy,R*.7,cx,cy,R*2.5);
+  g.addColorStop(0,'rgba(190,150,255,0.22)');
+  g.addColorStop(.5,'rgba(120,70,210,0.10)');
+  g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R*2.5,0,TAU);ctx.fill();
+  // radial fracture spokes
+  for(var sp=0;sp<12;sp++){
+    var aa=sp/12*TAU+time*.06;
+    ctx.globalAlpha=.20;ctx.strokeStyle=sp%2?'#ffd27a':'#b6a2ff';ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.moveTo(cx+Math.cos(aa)*(R+4),cy+Math.sin(aa)*(R+4));ctx.lineTo(cx+Math.cos(aa)*(R+50),cy+Math.sin(aa)*(R+50));ctx.stroke();
+  }
+  ctx.restore();ctx.globalAlpha=1;
+  ctx.save();ctx.fillStyle='#000';ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.fill();ctx.restore();
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  ctx.globalAlpha=.95;ctx.strokeStyle='#ffeec0';ctx.lineWidth=2.2;ctx.beginPath();ctx.arc(cx,cy,R+1.5,0,TAU);ctx.stroke();
+  ctx.globalAlpha=.40;ctx.strokeStyle='#b58bff';ctx.lineWidth=5;ctx.beginPath();ctx.arc(cx,cy,R+5,0,TAU);ctx.stroke();
+  ctx.restore();ctx.globalAlpha=1;
+  if(boss.hitFlash>0){
+    ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(.5,boss.hitFlash*5);
+    ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(cx,cy,R+10,0,TAU);ctx.stroke();ctx.restore();ctx.globalAlpha=1;
+  }
+}
 function drawPhase2FusionForm(){
   if(!boss) return;
   var cx=boss.x,cy=boss.y;
@@ -2357,6 +2405,7 @@ function drawBoss(){
   if(!boss) return;
   var phase=boss.phase;
   if(stage===4&&phase===1){drawPhase2FusionForm();return;}
+  if(stage===4&&phase===2){drawPhase3CollapseForm();return;}
   var img=GIMG[boss.def.key+(phase+1)]||GIMG[boss.def.key+'1'];
   if(stage===4&&phase===0){img=GIMG.np1||img;}
   if(!img||!img.complete) return;

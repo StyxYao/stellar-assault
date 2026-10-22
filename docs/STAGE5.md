@@ -20,7 +20,7 @@ Status: implemented as the final stage.
 - No accretion disk, no rotating eye, no tunnel scroll.
 - The black hole is the typhoon eye: the two crystal regions move around it while the center stays still.
 - During the Boss fight the background black hole is hidden, so each phase's own core is the only black hole.
-- Phase-3 rings use the measured art-hole offset: 3.5px left and 1px down from the sprite center, which puts the ring center on the phase-3 black hole.
+- Phase 3 no longer uses the old composite sprite; its single black hole and all four rings are drawn from the same center.
 
 ## Boss 5 entrance
 
@@ -47,7 +47,7 @@ Status: implemented as the final stage.
 - Phase 2 starts with the remaining 64% HP (6451) and rises to the upper screen after fusion.
 - Phase 3 keeps the existing phase-3 collapse art.
 - Phase 2/3 use a random rotating pool of old-boss ultimates: TENTACLE CAGE, LASER CURTAIN, SWARM SINGULARITY and SERAPHIC CHOIR; phase 3 fires two of them per cycle.
-- Phase 3 begins at 30% of the phase-2 bar and returns to the black-hole collapse form.
+- Phase 3 begins at 30% of the phase-2 bar and is rebuilt as a fully procedural collapse form: one centered black hole plus four 24-way rings. The old phase-3 composite art is no longer drawn, so no extra black holes can appear.
 - AI frames: `b5_entity`, `b5_fusion_mid1`, `b5_fusion_mid2`.
 - Boss 5 HP is ×1.5 on top of the global multiplier: **10080**.
 - Cinematic labels: `FOUR ECHOES` → `CONVERGENCE` → `SINGULARITY` → `CHRONOS ECHO`.
