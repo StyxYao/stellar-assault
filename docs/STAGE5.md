@@ -19,6 +19,7 @@ Status: implemented as the final stage.
 - The exact center is a small, static black hole with a thin photon ring and a soft violet halo.
 - No accretion disk, no rotating eye, no tunnel scroll.
 - The black hole is the typhoon eye: the two crystal regions move around it while the center stays still.
+- During the Boss fight the background black hole is hidden, so each phase's own core is the only black hole and the phase-3 rings stay aligned with it.
 
 ## Boss 5 entrance
 

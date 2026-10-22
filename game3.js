@@ -2102,7 +2102,7 @@ function paintFractalBg(main,edge,offsetY){
     fractalZone(0,main, time*.085,1+Math.sin(time*.31)*.05,r1,Math.max(W,H)*.92,58,.97);
     fractalZone(1,main,-time*.205,1+Math.sin(time*.43)*.055,0,r1,58,.98);
   }
-  drawBlackHole();
+  if(!(stage===4&&(state==='boss'||state==='bossFusion'))) drawBlackHole();
 }
 
 function paintStageBg(main,edge,offsetY){
