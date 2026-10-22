@@ -1490,6 +1490,7 @@ function spawnWave(w){
     if(mode==='cross'){
       var ca=Math.atan2(H*0.55-y,W/2-x);e.vx=Math.cos(ca)*w.spd;e.vy=Math.sin(ca)*w.spd;
     }
+    if(e.type>=9)e.variant=Math.floor(Math.random()*6);
     enemies.push(e);
     if(e.type===6){for(var ok=0;ok<8;ok++) orbBullets.push({owner:e,ang:ok/8*TAU,r:50,spin:1.15,rad:4,type:2});}
   }
@@ -2383,8 +2384,11 @@ function drawSentry(e){
     ctx.fillStyle=e.hp/e.max>0.5?'#8dff9e':'#ffb36b';ctx.fillRect(bx,by,bw*Math.max(0,e.hp/e.max),bh);
   }
 }
+var S5_ENEMY_KEYS=['s5e1','s5e2','s5e3','s5e4','s5e5','s5e6'];
 function drawStage5Echo(e){
   var et=ET[e.type],key='n'+(e.type+1),img=GIMG[key];
+  var art=GIMG[S5_ENEMY_KEYS[(e.variant==null?e.type:e.variant)%6]];
+  if(art&&art.complete&&art.naturalWidth) img=art;
   var w=enemyW(e);
   var pools=[
     [GIMG.n1,GIMG.n2,GIMG.n3],
@@ -2406,14 +2410,14 @@ function drawStage5Echo(e){
     ctx.drawImage(im,-s/2,-s/2,s,s);ctx.restore();
   }
   // faceted crystal ring
-  ctx.globalAlpha=.55;ctx.strokeStyle=cols[(e.type-9)%3];ctx.lineWidth=1.4;
+  ctx.globalAlpha=.30;ctx.strokeStyle=cols[(e.type-9)%3];ctx.lineWidth=1.2;
   ctx.beginPath();
   for(var f=0;f<8;f++){var fa=f/8*TAU+time*.2,fr=w*.50;if(f===0)ctx.moveTo(Math.cos(fa)*fr,Math.sin(fa)*fr);else ctx.lineTo(Math.cos(fa)*fr,Math.sin(fa)*fr);}
   ctx.closePath();ctx.stroke();
   ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
   if(img&&img.complete){
-    var h=w*img.height/img.width;
-    ctx.drawImage(img,-w/2,-h/2,w,h);
+    var cw=w*1.18,h=cw*img.height/img.width;
+    ctx.save();ctx.globalCompositeOperation='source-over';if('filter'in ctx)ctx.filter='brightness(1.22) saturate(1.12)';ctx.drawImage(img,-cw/2,-h/2,cw,h);ctx.filter='none';ctx.restore();
     if(e.flash>0){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.55;ctx.drawImage(img,-w/2,-h/2,w,h);ctx.restore();}
   }
   ctx.restore();
@@ -2864,10 +2868,24 @@ function drawBullet(b){
   ctx.fillStyle='rgba(255,255,255,0.75)';ctx.fillRect(-0.7,-4,1.4,8);
   ctx.restore();ctx.globalCompositeOperation='source-over';
 }
+var S5_BULLET_KEYS=[['s5b2','s5b5'],['s5b1','s5b6'],['s5b3','s5b4'],['s5b4','s5b5'],['s5b6','s5b1'],['s5b1','s5b3']];
 function drawCrystalEB(e,p,pi){
   var R=e.rad*(e.type===2?2.55:3.15);
   var n=e.rad>=6?12:(e.type===2?8:4);
   var cols=[p.main,p.light,p.edge,p.core];
+  var key=S5_BULLET_KEYS[pi]&&S5_BULLET_KEYS[pi][e.type===2?1:0];
+  var art=key?GIMG[key]:null;
+  if(art&&art.complete&&art.naturalWidth){
+    var target=e.rad*(e.type===2?4.8:4.1);
+    var aw=target,ah=target*art.height/art.width;
+    if(ah<target){ah=target;aw=target*art.width/art.height;}
+    ctx.save();ctx.globalCompositeOperation='lighter';
+    ctx.globalAlpha=.55;ctx.fillStyle=p.glow;ctx.beginPath();ctx.arc(0,0,target*.48,0,TAU);ctx.fill();
+    ctx.globalAlpha=1;ctx.globalCompositeOperation='lighter';if('filter'in ctx)ctx.filter='brightness(1.55) saturate(1.35) contrast(1.12)';ctx.drawImage(art,-aw/2,-ah/2,aw,ah);ctx.filter='none';
+    ctx.globalCompositeOperation='lighter';ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(0,0,1.6,0,TAU);ctx.fill();ctx.strokeStyle=p.edge;ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(0,0,target*.30,0,TAU);ctx.stroke();
+    if(pi===5){var rb0=['#ff8a9e','#ffd27a','#7dffd8','#7fe6ff','#c9a6ff'];for(var k0=0;k0<3;k0++){ctx.globalAlpha=.20;ctx.globalCompositeOperation='lighter';ctx.strokeStyle=rb0[k0];ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(0,0,target*.55,time*1.4+k0*2,time*1.4+k0*2+2.1);ctx.stroke();}}
+    ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';return;
+  }
   ctx.save();ctx.globalCompositeOperation='lighter';
   var gl=ctx.createRadialGradient(0,0,0,0,0,R*2.0);
   gl.addColorStop(0,p.glow||'rgba(200,160,255,.5)');gl.addColorStop(.55,p.glow||'rgba(200,160,255,.2)');gl.addColorStop(1,'rgba(0,0,0,0)');

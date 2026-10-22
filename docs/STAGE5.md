@@ -159,3 +159,11 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - Phase 2/3 hit flashes are feathered radial annuli; the inner edge extends inward but fades to zero before the core/hole.
 - Cast: larger type, slower one-pass scroll, no black hole, no loop after the credits; final THANK YOU FOR PLAYING holds indefinitely.
 - Credits: 思齐Styx and DeepSeek.
+
+## Uploaded stage-5 art pass
+
+- Enemy art: 六套新敌机（坐标、拓扑炮塔、莫比乌斯猎手、轴核、递归、镜像偏折）轮换用于三类第五关杂兵。
+- Bullet art: 六套新子弹（分形簇、弧形时刃、折射三角、棱针、轨道矛、递归环）按 Boss 调色板分配；大型/中型/小型分别换用不同几何素材。
+- All black JPEG backgrounds were converted to alpha PNG before use.
+- Stage-5 enemy fractal echoes now surround the new central enemy art instead of the old placeholder silhouettes.
+- Bullet visual size was reduced from the previous oversized procedural prisms and re-calibrated against the new art.
