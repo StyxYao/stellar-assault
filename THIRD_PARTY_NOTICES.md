@@ -32,3 +32,12 @@ The stage and boss BGM tracks were supplied by the project owner. Their redistri
 ## Artwork
 
 Boss/enemy/player art was supplied or generated for this project. No separate license is granted by this repository.
+
+## Missile SFX
+
+- **Bottle Rocket** by Mike Koenig, SoundBible #709, CC BY 3.0.
+  - Source: https://soundbible.com/709-Bottle-Rocket.html
+  - Used as the in-game missile launch sample, trimmed and faded.
+- **Missle Launch** by Kibblesbob, SoundBible #1794, Public Domain.
+  - Source: https://soundbible.com/1794-Missle-Launch.html
+  - Reserved in `sfx-sel/` for a future heavy-missile layer; not currently played.

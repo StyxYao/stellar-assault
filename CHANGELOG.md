@@ -222,3 +222,9 @@
 - Small mowing segment at 7–17%, large mowing segment at 52–77%.
 - Fodder count diluted 20%; non-mow filler added across the stage.
 - Fodder aggression halved and initial fire delay raised.
+
+## 0.3.10 — missile C sample
+
+- Missile launch now uses the CC BY 3.0 Bottle Rocket sample (trimmed to 0.70s, faded).
+- Public-domain Missle Launch is retained in `sfx-sel/` for future heavy missiles.
+- Added attribution to Cast and THIRD_PARTY_NOTICES.

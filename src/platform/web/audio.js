@@ -148,23 +148,23 @@ function playAirRaid(vol){
 }
 function playMissileLaunch(){
   if(!AC||!master||muted) return;
-  var buf=SFXBUF['jetfly'];
+  var buf=SFXBUF['p_missile']||SFXBUF['jetfly'];
   if(!buf){noiseBurst(0.06,0.12,8000);tone(1600,600,0.07,0.10,'triangle');return;}
   var t=AC.currentTime,s=AC.createBufferSource();
-  s.buffer=buf;s.playbackRate.value=1.38;
-  var hp=AC.createBiquadFilter();hp.type='highpass';hp.frequency.value=140;
+  s.buffer=buf;s.playbackRate.value=1.0;
+  var hp=AC.createBiquadFilter();hp.type='highpass';hp.frequency.value=110;
   var g=AC.createGain();
   g.gain.setValueAtTime(0.95,t);
   g.gain.exponentialRampToValueAtTime(0.28,t+0.055);
   g.gain.exponentialRampToValueAtTime(0.0001,t+0.30);
   s.connect(hp);hp.connect(g);g.connect(master);
   s.onended=function(){try{s.disconnect();hp.disconnect();g.disconnect();}catch(e){}};
-  s.start(t);s.stop(t+0.64);
+  s.start(t);s.stop(t+0.70);
   g.gain.cancelScheduledValues(t);
   g.gain.setValueAtTime(0.95,t);
-  g.gain.exponentialRampToValueAtTime(0.24,t+0.12);
-  g.gain.exponentialRampToValueAtTime(0.0001,t+0.64);
-  tone(92,30,.58,.42,'sine');noiseBurst(.18,.16,1200);
+  g.gain.exponentialRampToValueAtTime(0.30,t+0.10);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+0.70);
+  tone(92,36,.56,.34,'sine');
 }
 function synthSfx(n,v){
   if(!AC||!master||muted) return;

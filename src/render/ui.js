@@ -372,6 +372,7 @@ var CAST_LINES=[
  ['MUSIC / COMPOSED BY','思齐Styx'],
  ['TRACKS','奇点 / KALEIDOSCOPE / 引力弹弓 / 维度破碎 / 暗物质 / 虚实之间'],
  ['SFX','KENNEY SCI-FI SOUNDS'],
+ ['MISSILE SFX','MIKE KOENIG · CC BY 3.0'],
  ['ENEMY ECHOES',''],
  ['SMALL FIGHTER · MEDIUM FIGHTER','scout wing'],
  ['SCOUT · BOMBER','raider wing'],
