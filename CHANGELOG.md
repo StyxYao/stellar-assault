@@ -95,3 +95,7 @@
 ## 0.2.18-phase6d — player weapons simulation
 
 - Moved weapon names/cycling, damage factor, shot creation, NORMAL/SPREAD fire, missiles and wing laser to `src/game/player-weapons.js`.
+
+## 0.2.19-phase6e — enemy systems
+
+- Moved wave spawning, enemy scaling, six stage-5 attacks and generic enemy fire to `src/game/enemies.js`.
