@@ -22,7 +22,8 @@ Build order:
 prefix + GIMG + BulletML specs
   + sfx_extra.js
   + src/modules.json modules
-  + game3.js (legacy core/update/render/audio)
+  + src/legacy/game.js (legacy coordinator/update)
++ src/legacy/sfx-extra.js
 ```
 
 ## Module rules

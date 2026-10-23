@@ -25,7 +25,7 @@ manifest=json.load(open('src/modules.json',encoding='utf-8'))
 module_parts=[]
 for rel in manifest['modules']:
     module_parts.append('// ---- '+rel+' ----\n'+open(rel,encoding='utf-8').read())
-game=open('sfx_extra.js',encoding='utf-8').read()+"\n"+"\n".join(module_parts)+"\n"+open('game3.js',encoding='utf-8').read()
+game=open('src/legacy/sfx-extra.js',encoding='utf-8').read()+"\n"+"\n".join(module_parts)+"\n"+open('src/legacy/game.js',encoding='utf-8').read()
 html=prefix+specs+game+"\n})();\n</script>\n</body>\n</html>"
 open('rrootage3.html','w',encoding='utf-8').write(html)
 print('bytes',len(html),'images',len(assets),'modules',len(manifest['modules']))

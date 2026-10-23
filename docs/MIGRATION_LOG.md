@@ -28,7 +28,8 @@ To restore the whole working tree to a checkpoint, use `tools/make_snapshot.sh` 
 | 14 | Web audio engine | `4bdef07` | `step/phase6a-web-audio` |
 | 15 | Effects renderer | `baf05bb` | `step/phase5f-effects` |
 | 16 | UI, menu and cutscene renderer | `af727c5` | `step/phase5g-ui` |
-| 17 | Player weapon renderer | pending | `step/phase5h-weapons` |
+| 17 | Player weapon renderer | `bf28c38` | `step/phase5h-weapons` |
+| 18 | Legacy coordinator isolated under src/legacy | pending | `step/phase6b-legacy-isolation` |
 
 ## Rollback examples
 

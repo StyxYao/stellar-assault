@@ -34,12 +34,12 @@ for required in ("src/core", "src/content", "src/render", "src/platform", "src/a
     if not (root / required).is_dir():
         errors.append(f"missing directory: {required}")
 
-legacy = root / "game3.js"
+legacy = root / "src" / "legacy" / "game.js"
 if legacy.exists():
     lines = len(legacy.read_text(encoding="utf-8").splitlines())
-    print(f"legacy game3.js: {lines} lines (target: shrink each phase)")
+    print(f"legacy src/legacy/game.js: {lines} lines (target: shrink each phase)")
 else:
-    errors.append("missing game3.js")
+    errors.append("missing src/legacy/game.js")
 
 if errors:
     for e in errors:

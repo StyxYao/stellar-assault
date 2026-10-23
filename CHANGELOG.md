@@ -81,3 +81,9 @@
 ## 0.2.15-phase5h — player weapons
 
 - Moved wing beams, shots, missiles, beams, options and player laser to `src/render/weapons.js`.
+
+## 0.2.16-phase6b — legacy isolation
+
+- Moved the remaining coordinator from root `game3.js` to `src/legacy/game.js`.
+- Moved `sfx_extra.js` to `src/legacy/sfx-extra.js`.
+- Root source tree now contains only modules plus built HTML artifacts.
