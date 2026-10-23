@@ -16,7 +16,8 @@ To restore the whole working tree to a checkpoint, use `tools/make_snapshot.sh` 
 | 2 | Stage-5 wave data extraction | `62a2b4d` | `step/phase2a-stage5-waves` |
 | 3 | Fixed-step clock to core + test | `25f0792` | `step/phase2b-fixed-step` |
 | 4 | Math core + player renderer | `f3ada70` | `step/phase3a-math-player` |
-| 5 | Collision core + player collision call sites | pending | `step/phase3b-collision` |
+| 5 | Collision core + player collision call sites | `883b589` | `step/phase3b-collision` |
+| 6 | Web pointer input adapter | pending | `step/phase3c-web-input` |
 
 ## Rollback examples
 

@@ -27,3 +27,8 @@
 - Extracted `circleOverlap` / `circleContains` to `src/core/collision.js`.
 - Replaced player-vs-enemy, orb, bullet and enemy-bullet circle checks.
 - Added collision unit test.
+
+## 0.2.4-phase3c — web input adapter
+
+- Moved pointer state, coordinate mapping and pointer handlers to `src/platform/web/input.js`.
+- Game/menu functions remain closure hooks during migration.
