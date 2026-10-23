@@ -15,7 +15,8 @@ function drawPlayerHitbox(px, py, r, t){
   var g = ctx.createRadialGradient(px, py, 0, px, py, halo);
   g.addColorStop(0, 'rgba(255,255,255,0.95)');
   g.addColorStop(0.22, 'rgba(120,255,255,' + (0.55 + pulse * 0.25) + ')');
-  g.addColorStop(0.58, 'rgba(255,70,220,' + (0.22 + pulse * 0.16) + ')');
+  g.addColorStop(0.54, 'rgba(255,120,80,' + (0.18 + pulse * 0.10) + ')');
+  g.addColorStop(0.58, 'rgba(255,70,220,' + (0.20 + pulse * 0.14) + ')');
   g.addColorStop(1, 'rgba(255,70,220,0)');
   ctx.fillStyle = g;
   ctx.beginPath(); ctx.arc(px, py, halo, 0, TAU); ctx.fill();
@@ -29,6 +30,12 @@ function drawPlayerHitbox(px, py, r, t){
   ctx.strokeStyle = flash ? '#ff66dd' : '#b6ffff';
   ctx.lineWidth = 1.8;
   ctx.beginPath(); ctx.arc(px, py, r, 0, TAU); ctx.stroke();
+
+  // restrained orange rim separates the core from the blue/white hull
+  ctx.globalAlpha = .48 + pulse * .12;
+  ctx.strokeStyle = 'rgba(255,150,55,1)';
+  ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.arc(px, py, r + 2.4, 0, TAU); ctx.stroke();
 
   // four rotating energy ticks make the 6px ring readable without obscuring the ship
   ctx.globalAlpha = 0.55 + pulse * 0.35;

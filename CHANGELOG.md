@@ -169,3 +169,9 @@
 - Player hitbox is a flashing energy core.
 - Cast header fades, rows wrap, spacing 70px.
 - Stage-1 supplied nebula image added as bottom layer.
+
+## 0.3.4 — layered nebula, warm hitbox rim, credits
+
+- Stage-1 supplied nebula is now an upper `screen` layer with two independent scroll speeds.
+- Player energy core adds a restrained orange rim against the blue/white hull.
+- Cast credits now state music composed by 思齐Styx and AI image sources QWEN IMAGE / GPT IMAGE; algorithmic visuals attributed separately.
