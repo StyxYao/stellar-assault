@@ -56,3 +56,7 @@
 ## 0.2.9-phase5c — bullet renderer
 
 - Moved `ebSprite`, bullet constants, `drawCrystalEB` and `drawEB` to `src/render/bullets.js`.
+
+## 0.2.10-phase5d — background renderer
+
+- Moved scrolling, kaleidoscope, recursive and stage background rendering to `src/render/background.js`.
