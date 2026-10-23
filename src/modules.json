@@ -17,6 +17,7 @@
     "src/render/bullets.js",
     "src/render/background.js",
     "src/render/bosses.js",
-    "src/platform/web/audio.js"
+    "src/platform/web/audio.js",
+    "src/render/effects.js"
   ]
 }

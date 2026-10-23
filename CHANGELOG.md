@@ -69,3 +69,7 @@
 
 - Moved BGM playback, SFX samples, synthesis, buses and laser loop to `src/platform/web/audio.js`.
 - Game code calls the same `playBgm` / `sfx` interface.
+
+## 0.2.13-phase5f — effects renderer
+
+- Moved explosion, phase FX, item, OD aura/laser FX, bomb FX and pickup messages to `src/render/effects.js`.

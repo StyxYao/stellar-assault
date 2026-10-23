@@ -25,7 +25,8 @@ To restore the whole working tree to a checkpoint, use `tools/make_snapshot.sh` 
 | 11 | Bullet renderer | `c745c78` | `step/phase5c-bullet-render` |
 | 12 | Background renderer | `e25c062` | `step/phase5d-background` |
 | 13 | Boss renderer | `a9a4e59` | `step/phase5e-boss-render` |
-| 14 | Web audio engine | pending | `step/phase6a-web-audio` |
+| 14 | Web audio engine | `4bdef07` | `step/phase6a-web-audio` |
+| 15 | Effects renderer | pending | `step/phase5f-effects` |
 
 ## Rollback examples
 
