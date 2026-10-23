@@ -256,3 +256,14 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - Stage start now stops the previous BGM and clears pending audio requests; stale menu requests no longer switch the track later.
 - Non-stage-5 backgrounds explicitly use the selected stage image, with `bgCurrent` only as a fallback.
 - Stage 1 keeps its current background; its separate accretion-disk layer is drawn at 115% brightness.
+
+## Weapon feedback / fusion / stage-5 pass
+
+- Phase-3 black hole is restored from the video's own center patch; no separate game black circle is drawn.
+- Stage-5 grunt art has no orbiting afterimages; one fixed skin per type.
+- Stage-5 bullet visuals reduced 15%.
+- Fusion cannot be skipped by tapping; tapping only starts/resumes the video. The cutscene plays its full 15s.
+- Background loop uses a cached first-frame crossfade across the loop seam.
+- Final-Boss signature bullets use the classic earlier-boss bullet sprites and palettes.
+- Missile launch SFX gain raised.
+- Normal/spread hit SFX now includes an inharmonic metallic impact layer.
