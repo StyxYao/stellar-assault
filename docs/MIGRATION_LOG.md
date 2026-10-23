@@ -19,7 +19,8 @@ To restore the whole working tree to a checkpoint, use `tools/make_snapshot.sh` 
 | 5 | Collision core + player collision call sites | `883b589` | `step/phase3b-collision` |
 | 6 | Web pointer input adapter | `445bd06` | `step/phase3c-web-input` |
 | 7 | Stage 1-4 wave tables to content | `f39d01b` | `step/phase4a-stage-waves` |
-| 8 | Boss definitions/palettes to content | pending | `step/phase4b-bosses` |
+| 8 | Boss definitions/palettes to content | `a1917f2` | `step/phase4b-bosses` |
+| 9 | Web video adapter | pending | `step/phase5a-web-video` |
 
 ## Rollback examples
 

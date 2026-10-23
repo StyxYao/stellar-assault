@@ -11,6 +11,7 @@
     "src/content/stage5-waves.js",
     "src/render/player-hitbox.js",
     "src/render/player.js",
-    "src/platform/web/input.js"
+    "src/platform/web/input.js",
+    "src/platform/web/video.js"
   ]
 }

@@ -43,3 +43,8 @@
 
 - Extracted `BOSSES` and `BOSS_PALETTES` to `src/content/bosses.js`.
 - Content validator checks five boss definitions and six palettes.
+
+## 0.2.7-phase5a — web video adapter
+
+- Moved video element creation, hidden DOM host and first-gesture priming to `src/platform/web/video.js`.
+- WeChat will replace this adapter with a video-surface implementation.
