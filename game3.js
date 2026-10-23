@@ -2536,18 +2536,25 @@ function drawFeatherAnnulus(cx,cy,inner,outer,alpha){
   g.addColorStop(1,'rgba(255,255,255,0)');
   ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,outer,0,TAU);ctx.fill();
 }
-function drawMaskedPhase3Video(video,cx,cy,size){
-  var S=512;
-  if(!phaseMaskCv){phaseMaskCv=document.createElement('canvas');phaseMaskCv.width=phaseMaskCv.height=S;phaseMaskCtx=phaseMaskCv.getContext('2d');}
+function drawKeyedBossVideo(video,cx,cy,size,hole,rot){
+  var S=384;
+  if(!phaseMaskCv){phaseMaskCv=document.createElement('canvas');phaseMaskCv.width=phaseMaskCv.height=S;phaseMaskCtx=phaseMaskCv.getContext('2d',{willReadFrequently:true});}
   var x=phaseMaskCtx;x.clearRect(0,0,S,S);x.globalCompositeOperation='source-over';
   var vw=video.videoWidth||720,vh=video.videoHeight||1200,crop=Math.min(vw,vh);
   x.drawImage(video,(vw-crop)/2,(vh-crop)/2,crop,crop,0,0,S,S);
-  var g=x.createRadialGradient(S/2,S/2,S*.34,S/2,S/2,S*.50);
-  g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(.90,'rgba(0,0,0,1)');g.addColorStop(1,'rgba(0,0,0,0)');
-  x.globalCompositeOperation='destination-in';x.fillStyle=g;x.fillRect(0,0,S,S);x.globalCompositeOperation='source-over';
-  ctx.save();ctx.globalCompositeOperation='source-over';ctx.translate(cx,cy);ctx.rotate(time*.04);
-  ctx.drawImage(phaseMaskCv,-size/2,-size/2,size,size);ctx.restore();
+  var id=x.getImageData(0,0,S,S),d=id.data;
+  for(var i=0;i<d.length;i+=4){
+    var m=Math.max(d[i],d[i+1],d[i+2]);
+    var a=Math.min(255,Math.max(0,(m-14)*4.5));
+    d[i+3]=a;
+  }
+  x.putImageData(id,0,0);
+  ctx.save();ctx.globalCompositeOperation='source-over';ctx.translate(cx,cy);ctx.rotate(rot||0);
+  ctx.drawImage(phaseMaskCv,-size/2,-size/2,size,size);
+  if(hole){ctx.fillStyle='#000';ctx.beginPath();ctx.arc(0,0,size*.13,0,TAU);ctx.fill();}
+  ctx.restore();
 }
+
 function drawHedronVideoOrImage(cx,cy,size,img,alpha){
   if(hedronLoopVideo&&hedronLoopVideo.readyState>=2&&hedronLoopVideo.videoWidth>0&&!hedronLoopVideo.paused){
     ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=alpha;
@@ -2631,9 +2638,9 @@ function drawPhase3CollapseForm(){
   var cx=boss.x,cy=boss.y;
   var p3v=phase3LoopVideo&&phase3LoopVideo.readyState>=2&&phase3LoopVideo.videoWidth>0&&!phase3LoopVideo.paused;
   if(p3v){
-    var sz=boss.def.w*2.0;
-    drawMaskedPhase3Video(phase3LoopVideo,cx,cy,sz);
-    if(boss.hitFlash>0){ctx.save();ctx.globalCompositeOperation='lighter';drawFeatherAnnulus(cx,cy,84,340,Math.min(.82,boss.hitFlash*4.8));drawFeatherAnnulus(cx,cy,148,290,Math.min(.52,boss.hitFlash*3.2));ctx.restore();ctx.globalAlpha=1;}
+    var sz=Math.min(W*1.15,H*.52);
+    drawKeyedBossVideo(phase3LoopVideo,cx,cy,sz,true,time*.04);
+    if(boss.hitFlash>0){ctx.save();ctx.globalCompositeOperation='lighter';drawFeatherAnnulus(cx,cy,66,240,Math.min(.28,boss.hitFlash*2.0));drawFeatherAnnulus(cx,cy,115,205,Math.min(.16,boss.hitFlash*1.4));ctx.restore();ctx.globalAlpha=1;}
     return;
   }
 
@@ -2698,10 +2705,10 @@ function drawPhase2FusionForm(){
   var cx=boss.x,cy=boss.y;
   var p2v=phase2LoopVideo&&phase2LoopVideo.readyState>=2&&phase2LoopVideo.videoWidth>0&&!phase2LoopVideo.paused;
   if(p2v){
-    var sz2=boss.def.w*2.0;
+    var sz2=Math.min(W*1.15,H*.52);
     // opaque circular mask instead of screen blending; keeps the video colors solid
-    drawMaskedPhase3Video(phase2LoopVideo,cx,cy,sz2);
-    if(boss.hitFlash>0){ctx.save();ctx.globalCompositeOperation='lighter';drawFeatherAnnulus(cx,cy,82,322,Math.min(.85,boss.hitFlash*5));drawFeatherAnnulus(cx,cy,140,270,Math.min(.55,boss.hitFlash*3.4));ctx.restore();ctx.globalAlpha=1;}
+    drawKeyedBossVideo(phase2LoopVideo,cx,cy,sz2,false,time*.05);
+    if(boss.hitFlash>0){ctx.save();ctx.globalCompositeOperation='lighter';drawFeatherAnnulus(cx,cy,64,232,Math.min(.30,boss.hitFlash*2.2));drawFeatherAnnulus(cx,cy,110,200,Math.min(.18,boss.hitFlash*1.5));ctx.restore();ctx.globalAlpha=1;}
     return;
   }
 
