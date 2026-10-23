@@ -616,7 +616,7 @@ function startStage(i){
   setStageBg(STAGES[i].bg);bgScroll=0;bgEdgeScroll=0;
   state='warpIn'; warpT=0.95; glowWarp=1.5; bombT=0; pickupT=0; pickupMsg='';
   player.x=target.x=W/2; player.y=H+90; target.y=H-130; player.invuln=2.0; player.bank=0;
-  playBgm(STAGES[i].bgm);
+  stopBgm();bgmPending='';playBgm(STAGES[i].bgm);
   playWarpJet(0.8);
 }
 function startBossWarn(){
@@ -2402,7 +2402,9 @@ function paintStageBg(main,edge,offsetY){
   if(stage===4){ paintFractalBg(main,edge,offsetY); return; }
 
   drawLoopLayer(main,bgScroll+(offsetY||0),1,false,false);
-  if(stage===0&&BG1_BH&&BG1_BH.complete&&BG1_BH.naturalWidth) drawLoopLayer(BG1_BH,0,1,false,false);
+  if(stage===0&&BG1_BH&&BG1_BH.complete&&BG1_BH.naturalWidth){
+    ctx.save();if('filter'in ctx)ctx.filter='brightness(1.15)';drawLoopLayer(BG1_BH,0,1,false,false);ctx.filter='none';ctx.restore();
+  }
   if(edge) drawLoopLayer(edge,bgEdgeScroll+(offsetY||0)*1.35,([0.90,0.82,0.72,0.50][stage]||0.8),true,true,['screen','soft-light','overlay','soft-light'][stage]||'source-over');
 }
 function drawBgDust(){
@@ -3111,7 +3113,8 @@ function drawEB(e){
       ctx.globalAlpha=.98;ctx.globalCompositeOperation='source-over';
       ctx.drawImage(art,-aw/2,-ah/2,aw,ah);
       ctx.globalCompositeOperation='lighter';ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(0,0,1.5,0,TAU);ctx.fill();
-      ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';return;
+      ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+      ctx.restore();return;
     }
   }
   if(stage===4){
@@ -3952,7 +3955,7 @@ function drawScene(){
   var bgOff=0;
   if(state==='warpIn'){var wpg=Math.min(1,1-warpT/0.95);bgOff=H*(1-wpg);}
   if(bgOff>0){ctx.fillStyle='#03060e';ctx.fillRect(0,0,W,H);}
-  var mainBg=(stage!==4&&bgCurrent)?bgCurrent:BG_MAIN[stage],edgeBg=BG_EDGE[stage];
+  var mainBg=(BG_MAIN[stage]&&BG_MAIN[stage].complete)?BG_MAIN[stage]:bgCurrent,edgeBg=BG_EDGE[stage];
   if(!mainBg||!mainBg.complete||!mainBg.naturalWidth) mainBg=bgCurrent;
   paintStageBg(mainBg,edgeBg,bgOff);
   ctx.fillStyle='rgba(4,6,18,'+(stage===3?0.28:(stage===2?0.10:(stage===0?0.08:0.06)))+')';ctx.fillRect(0,0,W,H);
@@ -4029,7 +4032,7 @@ function onDown(e){
   try{phase2LoopVideo.play().catch(function(){});}catch(err){}
   try{bgLoopVideo.play().catch(function(){});}catch(err){}
   try{if(AC&&AC.state==='suspended')AC.resume();}catch(err){}
-  if(bgmPending){var pk=bgmPending;bgmPending='';playBgm(pk);}
+  if(state==='menu'&&bgmPending){var pk=bgmPending;bgmPending='';playBgm(pk);}
   var p=pt(e);
   if(state==='menu'){
     if(!audioReady){ audioReady=true; playBgm('m5'); }

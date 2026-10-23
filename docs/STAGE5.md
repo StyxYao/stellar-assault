@@ -249,3 +249,10 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - Wave table now cycles all six types instead of reusing only types 9–11.
 - Skin is fixed by type; no random skin/stat mismatch.
 - Each enemy-family bullet art is tagged on the bullet and drawn with its own sprite.
+
+## Stability fixes
+
+- Fixed an unbalanced canvas `save/restore` in the stage-5 custom bullet renderer; bullet draws no longer accumulate rotation/translation, so background textures, enemies and HUD stay fixed.
+- Stage start now stops the previous BGM and clears pending audio requests; stale menu requests no longer switch the track later.
+- Non-stage-5 backgrounds explicitly use the selected stage image, with `bgCurrent` only as a fallback.
+- Stage 1 keeps its current background; its separate accretion-disk layer is drawn at 115% brightness.
