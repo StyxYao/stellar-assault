@@ -1,4 +1,4 @@
-import base64,os,re
+import base64,os,re,json
 s=open('bossrush.html',encoding='utf-8').read()
 prefix=s[:s.index('var specs=null;')]
 prefix=re.sub(r"BGMENU\.src='data:image/[^']+'", "BGMENU.src='assets/bg/menu.webp'", prefix, count=1)
@@ -21,7 +21,11 @@ a=prefix.index('var GIMG={};'); b=prefix.index('var BG1=')
 prefix=prefix[:a]+js+prefix[b:]
 prefix=prefix.replace('<title>BOSS RUSH · rRootage Tribute</title>','<title>STELLAR ASSAULT · 4 Stages</title>')
 specs="var specs=null;\ntry{ specs=XMLS.map(function(x){ return bulletml.buildXML(x); }); }catch(e){ console.error(e); }\n"
-game=open('sfx_extra.js',encoding='utf-8').read()+"\n"+open('game3.js',encoding='utf-8').read()
+manifest=json.load(open('src/modules.json',encoding='utf-8'))
+module_parts=[]
+for rel in manifest['modules']:
+    module_parts.append('// ---- '+rel+' ----\n'+open(rel,encoding='utf-8').read())
+game=open('sfx_extra.js',encoding='utf-8').read()+"\n"+"\n".join(module_parts)+"\n"+open('game3.js',encoding='utf-8').read()
 html=prefix+specs+game+"\n})();\n</script>\n</body>\n</html>"
 open('rrootage3.html','w',encoding='utf-8').write(html)
-print('bytes',len(html),'images',len(assets))
+print('bytes',len(html),'images',len(assets),'modules',len(manifest['modules']))
