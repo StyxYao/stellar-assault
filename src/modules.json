@@ -25,6 +25,7 @@
     "src/game/player-weapons.js",
     "src/game/enemies.js",
     "src/game/boss-ultimates.js",
-    "src/game/player-state.js"
+    "src/game/player-state.js",
+    "src/game/combat.js"
   ]
 }

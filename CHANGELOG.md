@@ -107,3 +107,7 @@
 ## 0.2.21-phase6g — player state
 
 - Moved bombs, hit handling, enemy removal/drops, weapon ammo, OD gain and item collection to `src/game/player-state.js`.
+
+## 0.2.22-phase6h — combat updates
+
+- Moved beam/laser updates, wingmen, options, missiles, OD laser, blast zones and transports to `src/game/combat.js`.
