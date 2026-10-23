@@ -30,7 +30,8 @@ To restore the whole working tree to a checkpoint, use `tools/make_snapshot.sh` 
 | 16 | UI, menu and cutscene renderer | `af727c5` | `step/phase5g-ui` |
 | 17 | Player weapon renderer | `bf28c38` | `step/phase5h-weapons` |
 | 18 | Legacy coordinator isolated under src/legacy | `4a5e3ff` | `step/phase6b-legacy-isolation` |
-| 19 | Boss attack patterns | pending | `step/phase6c-boss-patterns` |
+| 19 | Boss attack patterns | `d36acf8` | `step/phase6c-boss-patterns` |
+| 20 | Player weapons simulation | pending | `step/phase6d-player-weapons` |
 
 ## Rollback examples
 

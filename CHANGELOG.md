@@ -91,3 +91,7 @@
 ## 0.2.17-phase6c — boss patterns
 
 - Moved Boss aimed/ring/spiral/wall/broadside/seraph/vortex/crossfire/hive/halo/gatling/bomb/rotating-laser/cross-laser/chronos attacks to `src/game/boss-patterns.js`.
+
+## 0.2.18-phase6d — player weapons simulation
+
+- Moved weapon names/cycling, damage factor, shot creation, NORMAL/SPREAD fire, missiles and wing laser to `src/game/player-weapons.js`.

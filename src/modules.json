@@ -21,6 +21,7 @@
     "src/render/effects.js",
     "src/render/ui.js",
     "src/render/weapons.js",
-    "src/game/boss-patterns.js"
+    "src/game/boss-patterns.js",
+    "src/game/player-weapons.js"
   ]
 }
