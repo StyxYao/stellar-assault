@@ -26,16 +26,31 @@ function startAtStage(i){
 function prepareStageContent(s){
   var st=STAGES[s];if(st.__prepared)return;
   var list=st.waves;
-  if(s<4){for(var wi=0;wi<list.length;wi++)list[wi].t*=1.25;}
+  if(s<4){for(var wi=0;wi<list.length;wi++)list[wi].t*=1.5;} // +25% then +20%
   var lastT=list[list.length-1].t;
-  // one stage-5 echo as a mini boss at the halfway point of stages 1-4
-  if(s<4){list.push({t:lastT*0.5,type:9+s,n:1,form:'mid',spd:70,mini:true});}
-  // low-level fodder formations fill the empty screen; 1-2 shots each
+  // 25% mowing segment: dense, low-HP, low-aggression fodder
   var forms=['v','line','pincer','arc','orbit','fractal','ring','line','v','orbit'];
+  var mowStart=lastT*.18,mowEnd=lastT*.43,mfi=0;
+  for(var mt=mowStart;mt<mowEnd;mt+=1.6){
+    list.push({t:mt,type:(mfi%2?5:0),n:10+(mfi%3)*2,form:forms[mfi%forms.length],spd:105+(mfi%4)*8,aggr:0.12,fodder:true});
+    mfi++;
+  }
+  // light independent fodder across the rest of the stage
   var fi=0;
   for(var ft=3;ft<lastT-3;ft+=8.5){
-    list.push({t:ft,type:(fi%3===0?0:5),n:6+(fi%3)*2,form:forms[fi%forms.length],spd:90+(fi%4)*8,aggr:0.42,fodder:true});
+    list.push({t:ft,type:(fi%3===0?0:5),n:6+(fi%3)*2,form:forms[fi%forms.length],spd:90+(fi%4)*8,aggr:0.24,fodder:true});
     fi++;
+  }
+  // one stage-5 echo as a 50%-size mini boss at the halfway point of stages 1-4
+  if(s<4){
+    list.push({t:lastT*0.5,type:9+s,n:1,form:'mid',spd:70,mini:true});
+  }else{
+    var pairs=[[9,10,.55],[11,12,.70],[13,14,.85]];
+    for(var pi=0;pi<pairs.length;pi++){
+      var pp=pairs[pi];
+      list.push({t:lastT*pp[2],type:pp[0],n:1,form:'mid',spd:64,mini:true,x:W*.30});
+      list.push({t:lastT*pp[2]+0.35,type:pp[1],n:1,form:'mid',spd:64,mini:true,x:W*.70});
+    }
   }
   list.sort(function(a,b){return a.t-b.t;});
   st.__prepared=true;

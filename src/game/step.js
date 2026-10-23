@@ -92,9 +92,14 @@ function step(dt){
   }else if(state==='play'){
     stageT+=dt;
     var waves=STAGES[stage].waves;
-    while(waveIndex<waves.length&&waves[waveIndex].t<=stageT){
-      if(stage===4&&enemies.length>=6) break;
-      spawnWave(waves[waveIndex]); waveIndex++;
+    if(enemies.some(function(e){return e.mini;})){
+      // hold the next waves while a mini boss is alive
+      for(var wi=waveIndex;wi<waves.length;wi++) waves[wi].t+=dt;
+    }else{
+      while(waveIndex<waves.length&&waves[waveIndex].t<=stageT){
+        if(stage===4&&enemies.length>=6) break;
+        spawnWave(waves[waveIndex]); waveIndex++;
+      }
     }
     if(stageT>nextTransport&&!enemies.some(function(e){return e.transport;} )){ if(Math.random()<0.55) spawnTransport(); nextTransport=stageT+22+Math.random()*10; }
     if(waveIndex>=waves.length&&(enemies.length===0||stageT>waves[waves.length-1].t+8)) startBossWarn();

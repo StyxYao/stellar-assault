@@ -1,8 +1,9 @@
 // Enemy wave spawning, scaling and firing. Uses legacy world/projectile hooks.
 function spawnWave(w){
   if(w.form==='mid'){
-    var mhp=Math.round((w.mini?ET[w.type].hp*7:(320+stage*80))*0.85);
-    enemies.push({type:w.type,x:W/2,y:-60,baseX:W/2,tx:W/2,ty:250,mode:'turret',entering:true,t:0,phase:0,spd:80,hp:mhp,max:mhp,fireT:1.0,flash:0,elite:true,mini:!!w.mini,visT:0,first:true});
+    var mhp=Math.round(w.mini?(((BOSSES[stage]&&BOSSES[stage].hp)||1500)*0.50):((320+stage*80)*0.85));
+    var mx=w.x||W/2;
+    enemies.push({type:w.type,x:mx,y:-60,baseX:mx,tx:mx,ty:250,mode:'turret',entering:true,t:0,phase:0,spd:80,hp:mhp,max:mhp,fireT:1.0,flash:0,elite:true,mini:!!w.mini,visT:0,first:true});
     return;
   }
   if(w.form==='escort'){
@@ -37,7 +38,7 @@ function spawnWave(w){
     else { x=W/2+(i-(n-1)/2)*40; y=-50; baseX=x; mode='dive'; }
     var hpScale=(stage===4?1.0:(1+stage*0.18));
     var ehp=Math.round(ET[w.type].hp*hpScale*((w.elite&&(n<=2||i===0))?0.85:1));
-    var e={type:w.type,x:x,y:y,baseX:baseX,tx:tx,ty:ty,mode:mode,entering:(mode==='pincer'||mode==='turret'||mode==='orbitEnter'||mode==='ringEnter'||mode==='arc'),t:0,phase:i*0.7,spd:w.spd,hp:ehp,max:ehp,fireT:0.8+Math.random()*0.8,flash:0,noFire:!!w.noFire,aggr:w.aggr||1,role:w.role||'',visT:0,elite:!!w.elite&&(n<=2||i===0),first:(i===0&&waveIndex%2===0)};
+    var e={type:w.type,x:x,y:y,baseX:baseX,tx:tx,ty:ty,mode:mode,entering:(mode==='pincer'||mode==='turret'||mode==='orbitEnter'||mode==='ringEnter'||mode==='arc'),t:0,phase:i*0.7,spd:w.spd,hp:ehp,max:ehp,fireT:w.fodder?3.2+Math.random()*1.8:0.8+Math.random()*0.8,flash:0,noFire:!!w.noFire,aggr:w.aggr||1,role:w.role||'',visT:0,elite:!!w.elite&&(n<=2||i===0),first:(i===0&&waveIndex%2===0)};
     if(mode==='dive'){
       var a=Math.atan2(player.y-y,player.x-x);
       e.vx=Math.cos(a)*w.spd; e.vy=Math.sin(a)*w.spd;
@@ -49,8 +50,8 @@ function spawnWave(w){
     if(e.type===6){for(var ok=0;ok<8;ok++) orbBullets.push({owner:e,ang:ok/8*TAU,r:50,spin:1.15,rad:4,type:2});}
   }
 }
-function enemyScale(e){ return e.transport?1.45:(e.elite?1.6:1.5); }
-function enemyW(e){ return ET[e.type].w*enemyScale(e); }
+function enemyScale(e){ return e.mini?2.9:(e.transport?1.45:(e.elite?1.6:1.5)); }
+function enemyW(e){ return e.mini?((BOSSES[stage]&&BOSSES[stage].w)||250)*0.55:ET[e.type].w*enemyScale(e); }
 function s5Shot(e,x,y,vx,vy,rad,type,extra){
   if(ebullets.length>260) return null;
   var b={x:x,y:y,vx:vx,vy:vy,rad:rad,type:type||1,s5art:S5_ENEMY_BULLET[Math.max(0,Math.min(5,e.type-9))]};
@@ -95,11 +96,30 @@ function s5FireEnemy(e,ra){
   }
   sfx('e_shot',.16);
 }
+function miniBossFire(e,ra){
+  if(!e.miniAtk) e.miniAtk=0;
+  e.miniAtk++;
+  // retain the original stage-5 enemy attack
+  s5FireEnemy(e,ra);
+  // boss-flavoured additions, intentionally lower density than the real boss
+  if(e.miniAtk%3===0){
+    var gap=Math.atan2(player.y-e.y,player.x-e.x);
+    for(var i=0;i<12;i++){
+      var a=i/12*TAU+time*.2,da=Math.atan2(Math.sin(a-gap),Math.cos(a-gap));
+      if(Math.abs(da)<0.72) continue;
+      s5Shot(e,e.x,e.y,Math.cos(a)*105,Math.sin(a)*105,4.8,2);
+    }
+  }
+  if(e.miniAtk%4===0&&beams.length<4){
+    spawnBeam(e.x,e.y+8,ra,900,8,0.8,0.3,1,'#ff9a3a',false,e);
+  }
+}
 function fireEnemy(e){
   if(e.transport) return;
   if(e.visT!==undefined&&e.visT<0.22) return;
   if(bullets.length+ebullets.length>240) return;
   var ra=Math.atan2(player.y-e.y,player.x-e.x);
+  if(e.mini){miniBossFire(e,ra);return;}
   if(e.type>=9){s5FireEnemy(e,ra);return;}
   if(e.type===9){
     ebullets.push({x:e.x,y:e.y+8,vx:Math.cos(ra)*(235+stage*5),vy:Math.sin(ra)*(235+stage*5),rad:4,type:1});

@@ -203,3 +203,13 @@
 - Phase-2→3 explosion limited to Boss 5.
 - Missile tail 0.64s with fade.
 - Nebula 60% opacity.
+
+## 0.3.8 — mowing, mini bosses and pacing
+
+- Stage 1-4 timelines extended another 20% (total 1.5x from original).
+- Added a 25%-of-stage dense low-HP mowing segment to every stage; fodder fire rate lowered.
+- Added 50%-size/50%-HP mini bosses at the halfway point of stages 1-4 with health bars, recolored art, basic attacks plus boss-flavoured ring/beam patterns.
+- Waves are delayed while a mini boss is alive.
+- Stage 5 adds three pairs of mini bosses at ~55/70/85%.
+- BGM +15% to 0.765325.
+- Boss-5 lasers re-aim toward the player.
