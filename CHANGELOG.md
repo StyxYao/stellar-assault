@@ -48,3 +48,7 @@
 
 - Moved video element creation, hidden DOM host and first-gesture priming to `src/platform/web/video.js`.
 - WeChat will replace this adapter with a video-surface implementation.
+
+## 0.2.8-phase5b — enemy renderer
+
+- Moved stage-5 echo rendering and regular enemy rendering to `src/render/enemies.js`.

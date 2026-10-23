@@ -12,6 +12,7 @@
     "src/render/player-hitbox.js",
     "src/render/player.js",
     "src/platform/web/input.js",
-    "src/platform/web/video.js"
+    "src/platform/web/video.js",
+    "src/render/enemies.js"
   ]
 }
