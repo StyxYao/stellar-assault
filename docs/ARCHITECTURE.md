@@ -11,6 +11,7 @@ src/
   content/     pure game data (enemy archetypes; stage data next)
   core/        pure logic (no DOM, no canvas) — growing target
   render/      canvas 2D drawing modules
+  game/        gameplay systems (boss patterns; target: world interfaces)
   platform/    adapters for web / Steam / WeChat
   app/         composition roots for each platform
   modules.json ordered Phase-1 bundle manifest

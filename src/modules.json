@@ -20,6 +20,7 @@
     "src/platform/web/audio.js",
     "src/render/effects.js",
     "src/render/ui.js",
-    "src/render/weapons.js"
+    "src/render/weapons.js",
+    "src/game/boss-patterns.js"
   ]
 }

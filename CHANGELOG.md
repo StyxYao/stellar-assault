@@ -87,3 +87,7 @@
 - Moved the remaining coordinator from root `game3.js` to `src/legacy/game.js`.
 - Moved `sfx_extra.js` to `src/legacy/sfx-extra.js`.
 - Root source tree now contains only modules plus built HTML artifacts.
+
+## 0.2.17-phase6c — boss patterns
+
+- Moved Boss aimed/ring/spiral/wall/broadside/seraph/vortex/crossfire/hive/halo/gatling/bomb/rotating-laser/cross-laser/chronos attacks to `src/game/boss-patterns.js`.
