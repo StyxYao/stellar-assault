@@ -115,3 +115,8 @@
 ## 0.2.23-phase6i — stage flow
 
 - Moved run start, stage transitions, boss warn/fusion/phase flow and death transition to `src/game/stage-flow.js`.
+
+## 0.2.24-phase6j — main update
+
+- Moved the fixed-step gameplay update to `src/game/step.js`.
+- Legacy coordinator is now down to the render/frame composition root and small helpers.

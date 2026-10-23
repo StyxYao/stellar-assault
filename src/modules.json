@@ -27,6 +27,7 @@
     "src/game/boss-ultimates.js",
     "src/game/player-state.js",
     "src/game/combat.js",
-    "src/game/stage-flow.js"
+    "src/game/stage-flow.js",
+    "src/game/step.js"
   ]
 }
