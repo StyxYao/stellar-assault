@@ -52,3 +52,7 @@
 ## 0.2.8-phase5b — enemy renderer
 
 - Moved stage-5 echo rendering and regular enemy rendering to `src/render/enemies.js`.
+
+## 0.2.9-phase5c — bullet renderer
+
+- Moved `ebSprite`, bullet constants, `drawCrystalEB` and `drawEB` to `src/render/bullets.js`.

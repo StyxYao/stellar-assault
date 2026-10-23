@@ -21,7 +21,8 @@ To restore the whole working tree to a checkpoint, use `tools/make_snapshot.sh` 
 | 7 | Stage 1-4 wave tables to content | `f39d01b` | `step/phase4a-stage-waves` |
 | 8 | Boss definitions/palettes to content | `a1917f2` | `step/phase4b-bosses` |
 | 9 | Web video adapter | `c24a7c7` | `step/phase5a-web-video` |
-| 10 | Enemy renderer | pending | `step/phase5b-enemy-render` |
+| 10 | Enemy renderer | `60b7023` | `step/phase5b-enemy-render` |
+| 11 | Bullet renderer | pending | `step/phase5c-bullet-render` |
 
 ## Rollback examples
 
