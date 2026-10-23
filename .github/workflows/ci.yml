@@ -17,3 +17,5 @@ jobs:
           node -e "for (const f of ['src/content/enemy-archetypes.js','src/render/player-hitbox.js','game3.js']) new Function(require('fs').readFileSync(f,'utf8'))"
       - name: Structure guardrails
         run: python3 tools/check_structure.py
+      - name: Content validation
+        run: node tools/validate_content.mjs

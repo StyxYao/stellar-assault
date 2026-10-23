@@ -44,3 +44,5 @@ if errors:
         print(f"ERROR: {e}", file=sys.stderr)
     sys.exit(1)
 print("structure ok")
+
+# optional content validation is run separately by CI via tools/validate_content.mjs
