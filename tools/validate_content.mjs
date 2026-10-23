@@ -12,7 +12,12 @@ function loadVar(file, name) {
 const ET = loadVar('src/content/enemy-archetypes.js', 'ET');
 const waves = loadVar('src/content/stage5-waves.js', 'STAGE5_WAVES');
 const stageWaves = loadVar('src/content/stage-waves.js', 'STAGE_WAVES');
+const BOSSES = loadVar('src/content/bosses.js', 'BOSSES');
+const BOSS_PALETTES = loadVar('src/content/bosses.js', 'BOSS_PALETTES');
 const errors = [];
+if (BOSSES.length !== 5) errors.push(`BOSSES length ${BOSSES.length}, expected 5`);
+if (BOSS_PALETTES.length !== 6) errors.push(`BOSS_PALETTES length ${BOSS_PALETTES.length}, expected 6`);
+BOSSES.forEach((b, i) => { if (!b.key || !b.name || !(b.hp > 0)) errors.push(`bad boss ${i}`); });
 if (stageWaves.length !== 4) errors.push(`STAGE_WAVES length ${stageWaves.length}, expected 4`);
 stageWaves.forEach((list, i) => {
   if (!Array.isArray(list) || list.length < 10) errors.push(`stage ${i + 1} wave list invalid`);

@@ -38,3 +38,8 @@
 - Extracted stage 1-4 wave tables to `src/content/stage-waves.js`.
 - STAGES now consumes content modules; stage-5 remains separate.
 - Content validator checks all five stage wave tables.
+
+## 0.2.6-phase4b — boss content
+
+- Extracted `BOSSES` and `BOSS_PALETTES` to `src/content/bosses.js`.
+- Content validator checks five boss definitions and six palettes.
