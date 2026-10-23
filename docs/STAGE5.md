@@ -284,3 +284,11 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - Tap only starts/resumes the video. `HOLD SKIP` button requires a 1.1s hold.
 - Stage 1 keeps its current layers, with the earliest stage-1 planet/nebula art added underneath.
 - Stage-1 accretion disk brightness raised another 15% (1.15 -> 1.3225).
+
+## Video/audio follow-up
+
+- All videos are attached to a hidden DOM host and primed on the first pointer gesture; fusion autoplay no longer depends on the transition click.
+- Fusion progress follows video currentTime; HOLD SKIP is the only skip path.
+- Stage-5 background always draws the cached first frame underneath the video before the loop.
+- NORMAL blaster is lower/heavier; missile launch rate and high-pass were reduced and gain raised.
+- Stage 1 shows the earliest planet/nebula layer, current layer at 50%, plus a 18% screen nebula pass; disk boosted and bloomed.
