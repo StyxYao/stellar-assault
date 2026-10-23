@@ -35,7 +35,7 @@ function spawnWave(w){
     else if(w.form==='fractal'){ var fa=i/n*TAU*1.5; x=W/2+Math.cos(fa)*W*.44; y=-45+Math.sin(fa)*24; tx=W/2+Math.cos(fa)*78; ty=255+Math.sin(fa)*58; baseX=W/2; mode='ringEnter'; }
     else if(w.form==='spiral'){ var sa=i/n*TAU*1.7; x=W/2+Math.cos(sa)*W*.40; y=-55+Math.sin(sa)*22; tx=W/2+Math.cos(sa)*108; ty=265+Math.sin(sa)*76; baseX=W/2; mode='ringEnter'; }
     else { x=W/2+(i-(n-1)/2)*40; y=-50; baseX=x; mode='dive'; }
-    var hpScale=(stage===4?1.18:(1+stage*0.18));
+    var hpScale=(stage===4?1.0:(1+stage*0.18));
     var ehp=Math.round(ET[w.type].hp*hpScale*((w.elite&&(n<=2||i===0))?0.85:1));
     var e={type:w.type,x:x,y:y,baseX:baseX,tx:tx,ty:ty,mode:mode,entering:(mode==='pincer'||mode==='turret'||mode==='orbitEnter'||mode==='ringEnter'||mode==='arc'),t:0,phase:i*0.7,spd:w.spd,hp:ehp,max:ehp,fireT:0.8+Math.random()*0.8,flash:0,noFire:!!w.noFire,aggr:w.aggr||1,role:w.role||'',visT:0,elite:!!w.elite&&(n<=2||i===0),first:(i===0&&waveIndex%2===0)};
     if(mode==='dive'){

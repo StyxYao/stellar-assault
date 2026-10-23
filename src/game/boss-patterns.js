@@ -34,7 +34,7 @@ function bossSpiral(arms,dir,speed){
 }
 function bossWall(){
   if(!boss||boss.invuln>0) return;
-  var n=12,gap=2+Math.floor(Math.random()*(n-4));
+  var n=12,gap=Math.max(1,Math.min(n-2,Math.round((player.x-W*.08)/(W*.84)*(n-1))));
   for(var i=0;i<n;i++){
     if(Math.abs(i-gap)<1) continue;
     ebullets.push({x:W*0.08+i*(W*0.84/(n-1)),y:boss.y+30,vx:0,vy:95+stage*6,rad:5.5,type:1});

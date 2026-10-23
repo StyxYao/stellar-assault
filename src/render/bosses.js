@@ -107,6 +107,29 @@ function drawKeyedBossVideo(video,cx,cy,size,hole,rot){
   ctx.restore();
 }
 
+function drawPhaseGlitchTransition(cx,cy,size){
+  if(bossPhaseGlitchT<=0) return;
+  var a=PHASE_FIRST_CVS[phase2LoopVideo.currentSrc||phase2LoopVideo.src];
+  var b=PHASE_FIRST_CVS[phase3LoopVideo.currentSrc||phase3LoopVideo.src];
+  if(!a&&!b) return;
+  var tick=Math.floor(time*18),S=384,strips=10;
+  ctx.save();
+  ctx.globalCompositeOperation='lighter';
+  for(var i=0;i<strips;i++){
+    var sy=Math.floor(i*S/strips),sh=Math.ceil(S/strips);
+    var src=(i%3===0?b:a)||a||b;
+    var dx=((i%2?1:-1)*(8+(tick+i*3)%18));
+    var dy=((tick+i*7)%5)-2;
+    var alpha=.55+.3*Math.sin(tick+i);
+    ctx.globalAlpha=Math.max(.18,Math.min(.95,alpha));
+    ctx.drawImage(src,0,sy,S,sh,cx-size/2+dx,cy-size/2+sy/S*size+dy,size,sh/S*size);
+  }
+  // large split fragments
+  ctx.globalAlpha=.28;
+  ctx.drawImage((b||a),cx-size*.56,cy-size*.44,size*.18,size*.7);
+  ctx.drawImage((a||b),cx+size*.40,cy-size*.36,size*.18,size*.64);
+  ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+}
 function drawHedronVideoOrImage(cx,cy,size,img,alpha){
   if(hedronLoopVideo&&hedronLoopVideo.readyState>=2&&hedronLoopVideo.videoWidth>0&&!hedronLoopVideo.paused){
     ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=alpha;
@@ -192,6 +215,7 @@ function drawPhase3CollapseForm(){
   if(p3v){
     var sz=phaseBossSize();
     drawKeyedBossVideo(phase3LoopVideo,cx,cy,sz,true,time*.04);
+    drawPhaseGlitchTransition(cx,cy,sz);
     if(boss.hitFlash>0){ctx.save();ctx.globalCompositeOperation='lighter';drawFeatherAnnulus(cx,cy,66,240,Math.min(.28,boss.hitFlash*2.0));drawFeatherAnnulus(cx,cy,115,205,Math.min(.16,boss.hitFlash*1.4));ctx.restore();ctx.globalAlpha=1;}
     return;
   }

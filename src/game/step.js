@@ -231,6 +231,7 @@ function step(dt){
   updateBeams(dt);
   if(boss&&state==='boss'){
     var def=boss.def; boss.t+=dt;
+    if(bossPhaseGlitchT>0) bossPhaseGlitchT=Math.max(0,bossPhaseGlitchT-dt);
     if(boss.hitFlash>0) boss.hitFlash-=dt;
     if(boss.flash>0) boss.flash-=dt;
     if(boss.invuln>0) boss.invuln=Math.max(0,boss.invuln-dt);
@@ -251,10 +252,8 @@ function step(dt){
       else boss.y=ty+Math.sin(boss.t*0.8)*8;
       if(def.move==='dash'&&stage!==4) boss.y=ty+Math.sin(boss.t*0.55)*16;
       var hw=def.w/2+6; boss.x=Math.max(hw,Math.min(W-hw,boss.x));
-      if(boss.ultCharge<=0){
-        if(boss.phase===0&&boss.hp<boss.max*0.60&&stage!==4) bossPhase(1);
-        else if(boss.phase===1&&boss.hp<boss.max*(stage===4?0.50:0.30)) bossPhase(2);
-      }
+      if(boss.phase===0&&boss.hp<boss.max*0.60&&stage!==4) bossPhase(1);
+      else if(boss.phase===1&&boss.hp<boss.max*(stage===4?0.50:0.30)) bossPhase(2);
       if(boss.ultCharge>0){
         boss.ultCharge-=dt;
         if(boss.ultCharge<=0) bossUltimate();
@@ -391,6 +390,18 @@ function step(dt){
     if(boss&&bdx2*bdx2+bdy2*bdy2<(boss.def.w*0.28*1.15)*(boss.def.w*0.28*1.15)) hitPlayer();
   }
 
+  function enforceBossSafetyLane(){
+    if(stage!==4||!boss||boss.phase<1||state!=='boss') return;
+    var aim=Math.atan2(player.y-boss.y,player.x-boss.x);
+    for(var si=ebullets.length-1;si>=0;si--){
+      var sb=ebullets[si];if(!sb||sb.bomb) continue;
+      var sa=Math.atan2(sb.y-boss.y,sb.x-boss.x);
+      var sd=Math.atan2(Math.sin(sa-aim),Math.cos(sa-aim));
+      var dist=Math.hypot(sb.x-boss.x,sb.y-boss.y);
+      if(dist>38&&Math.abs(sd)<0.24) ebullets.splice(si,1);
+    }
+  }
+  enforceBossSafetyLane();
   for(var i=ebullets.length-1;i>=0;i--){
     var e=ebullets[i]; e.x+=e.vx*dt; e.y+=e.vy*dt;
     if(e.bomb){

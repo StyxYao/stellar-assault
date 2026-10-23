@@ -155,3 +155,17 @@
 - Cast waits for the last row to leave the screen before thanks.
 - Stage-1 supplied nebula image is in the bottom layer.
 - NORMAL uses the real gun sample.
+
+## 0.3.3 — final boss balance and transition
+
+- Stage-5 enemy HP coefficient back to 1.0.
+- Phase-2/3 boss video centers aligned; phase-2 art offset +10px.
+- Phase-2 to phase-3 transition checks at exactly 50% HP, independent of ultimate charge.
+- Phase-3 entry plays boss-death-class explosions and a 0.72s multi-frame glitch transition.
+- Phase-2/3 bullets enforce a player-facing safety lane; bullet-wall gap follows the player.
+- Boss blink invulnerability capped at 0.12s.
+- Fixed player invulnerability leaking from phase 1 into phase 2.
+- Fusion is primed and left playing; no click-to-play.
+- Player hitbox is a flashing energy core.
+- Cast header fades, rows wrap, spacing 70px.
+- Stage-1 supplied nebula image added as bottom layer.
