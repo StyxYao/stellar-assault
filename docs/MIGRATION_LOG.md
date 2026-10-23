@@ -37,7 +37,7 @@ To restore the whole working tree to a checkpoint, use `tools/make_snapshot.sh` 
 | 23 | Player state/economy | `10b71c9` | `step/phase6g-player-state` |
 | 24 | Combat updates | `eae4f23` | `step/phase6h-combat` |
 | 25 | Stage/Boss flow | `dbcdb77` | `step/phase6i-stage-flow` |
-| 26 | Main fixed-step update | pending | `step/phase6j-step` |
+| 26 | Main fixed-step update | `b4e9695` | `step/phase6j-step` |
 
 ## Rollback examples
 
@@ -53,3 +53,14 @@ git switch -c recover/pre-phase2 checkpoint/pre-phase2
 ```
 
 The step tag is annotated; its tag message records the scope.
+
+## Final checkpoint
+
+`checkpoint/modular-foundation` marks the validated web build after step 26.
+
+At this point:
+
+- 27 modules are listed in `src/modules.json`.
+- `src/legacy/game.js` is 440 lines and acts as the composition root.
+- All content, render, core, game and web-platform responsibilities have a home.
+- The remaining Phase-3 work is interface injection (World/Projectiles/Ports), not file splitting.

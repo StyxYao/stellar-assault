@@ -1,8 +1,8 @@
 # Architecture
 
-## Status: Phase 1 — file-level modularization
+## Status: Phase 2 — module boundaries complete
 
-The game started as a single `game3.js` inside one HTML closure. Phase 1 keeps the same runtime closure and fixed-timestep loop, but moves self-contained responsibility areas into `src/` modules assembled by `tools/build_game3.py` through `src/modules.json`.
+The game started as a 4218-line `game3.js` inside one HTML closure. Phase 2 has extracted content, core math/collision/clock, render systems, platform adapters and gameplay systems into `src/` modules. `src/legacy/game.js` is now a 440-line composition root.
 
 This is deliberately incremental: it keeps the game playable after every change and avoids a risky big-bang rewrite.
 
@@ -33,7 +33,7 @@ prefix + GIMG + BulletML specs
 - `core/` must be platform-neutral: no `window`, `document`, `Image`, `Audio`, `localStorage`.
 - `render/` may use the canvas context but must not own simulation state.
 - `platform/` owns browser/Steam/WeChat APIs.
-- `game3.js` is legacy during migration; new systems should not be added there.
+- `src/legacy/game.js` is a composition root during Phase 2; new systems should not be added there.
 
 ## Platform target
 

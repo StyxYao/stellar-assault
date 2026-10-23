@@ -120,3 +120,12 @@
 
 - Moved the fixed-step gameplay update to `src/game/step.js`.
 - Legacy coordinator is now down to the render/frame composition root and small helpers.
+
+## 0.3.0 — modular foundation complete
+
+- 26 extraction steps, each committed and tagged.
+- Legacy coordinator reduced from 4218 to 440 lines.
+- Content, core, render, game and web platform modules are separated.
+- Added structure checks, content validation, unit tests and CI.
+- Final web build and stage-1/stage-5 smoke tests pass.
+- Rollback checkpoints and local snapshots are documented in `docs/MIGRATION_LOG.md`.

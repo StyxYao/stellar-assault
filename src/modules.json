@@ -1,6 +1,6 @@
 {
-  "phase": 1,
-  "description": "Phase-1 file-level modules. Concatenated into the legacy closure; no runtime behavior change.",
+  "phase": 2,
+  "description": "Phase-2 module manifest. Ordered fragments concatenated into the web bundle.",
   "modules": [
     "src/core/fixed-step.js",
     "src/core/math.js",

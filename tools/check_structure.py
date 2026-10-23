@@ -30,7 +30,7 @@ else:
     if content_idx and render_idx and max(content_idx) > min(render_idx):
         errors.append("content modules should load before render modules")
 
-for required in ("src/core", "src/content", "src/render", "src/platform", "src/app", "docs/adr"):
+for required in ("src/core", "src/content", "src/render", "src/platform", "src/game", "src/app", "docs/adr"):
     if not (root / required).is_dir():
         errors.append(f"missing directory: {required}")
 
