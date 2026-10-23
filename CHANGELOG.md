@@ -32,3 +32,9 @@
 
 - Moved pointer state, coordinate mapping and pointer handlers to `src/platform/web/input.js`.
 - Game/menu functions remain closure hooks during migration.
+
+## 0.2.5-phase4a — all stage wave data
+
+- Extracted stage 1-4 wave tables to `src/content/stage-waves.js`.
+- STAGES now consumes content modules; stage-5 remains separate.
+- Content validator checks all five stage wave tables.

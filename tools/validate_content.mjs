@@ -11,7 +11,13 @@ function loadVar(file, name) {
 
 const ET = loadVar('src/content/enemy-archetypes.js', 'ET');
 const waves = loadVar('src/content/stage5-waves.js', 'STAGE5_WAVES');
+const stageWaves = loadVar('src/content/stage-waves.js', 'STAGE_WAVES');
 const errors = [];
+if (stageWaves.length !== 4) errors.push(`STAGE_WAVES length ${stageWaves.length}, expected 4`);
+stageWaves.forEach((list, i) => {
+  if (!Array.isArray(list) || list.length < 10) errors.push(`stage ${i + 1} wave list invalid`);
+  for (const w of list) if (!ET[w.type]) errors.push(`stage ${i + 1} references missing ET[${w.type}]`);
+});
 if (ET.length !== 15) errors.push(`ET length ${ET.length}, expected 15`);
 for (let t = 9; t <= 14; t++) {
   if (!waves.some(w => w.type === t)) errors.push(`stage5 waves never use enemy type ${t}`);
@@ -24,4 +30,4 @@ for (const w of waves) {
   if (!ET[w.type]) errors.push(`wave references missing ET[${w.type}]`);
 }
 if (errors.length) { errors.forEach(e => console.error('ERROR:', e)); process.exit(1); }
-console.log(`content ok: ${ET.length} archetypes, ${waves.length} stage-5 waves`);
+console.log(`content ok: ${ET.length} archetypes, ${stageWaves.reduce((n, x) => n + x.length, 0)} early waves, ${waves.length} stage-5 waves`);
