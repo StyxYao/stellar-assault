@@ -60,3 +60,7 @@
 ## 0.2.10-phase5d — background renderer
 
 - Moved scrolling, kaleidoscope, recursive and stage background rendering to `src/render/background.js`.
+
+## 0.2.11-phase5e — boss renderer
+
+- Moved all boss visuals (Hedron, phase videos, phase rings, overlays, sprite layers) to `src/render/bosses.js`.

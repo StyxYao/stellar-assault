@@ -23,7 +23,8 @@ To restore the whole working tree to a checkpoint, use `tools/make_snapshot.sh` 
 | 9 | Web video adapter | `c24a7c7` | `step/phase5a-web-video` |
 | 10 | Enemy renderer | `60b7023` | `step/phase5b-enemy-render` |
 | 11 | Bullet renderer | `c745c78` | `step/phase5c-bullet-render` |
-| 12 | Background renderer | pending | `step/phase5d-background` |
+| 12 | Background renderer | `e25c062` | `step/phase5d-background` |
+| 13 | Boss renderer | pending | `step/phase5e-boss-render` |
 
 ## Rollback examples
 

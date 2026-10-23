@@ -15,6 +15,7 @@
     "src/platform/web/video.js",
     "src/render/enemies.js",
     "src/render/bullets.js",
-    "src/render/background.js"
+    "src/render/background.js",
+    "src/render/bosses.js"
   ]
 }
