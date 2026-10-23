@@ -213,3 +213,12 @@
 - Stage 5 adds three pairs of mini bosses at ~55/70/85%.
 - BGM +15% to 0.765325.
 - Boss-5 lasers re-aim toward the player.
+
+## 0.3.9 — mowing timing, mini boss fix
+
+- Fixed mini bosses firing only once (`aggr` missing → NaN fire timer).
+- Mini boss HP raised to 60% of the corresponding boss.
+- Stage 1-4 flow extended to 1.8x original.
+- Small mowing segment at 7–17%, large mowing segment at 52–77%.
+- Fodder count diluted 20%; non-mow filler added across the stage.
+- Fodder aggression halved and initial fire delay raised.

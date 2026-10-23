@@ -26,25 +26,30 @@ function startAtStage(i){
 function prepareStageContent(s){
   var st=STAGES[s];if(st.__prepared)return;
   var list=st.waves;
-  if(s<4){for(var wi=0;wi<list.length;wi++)list[wi].t*=1.5;} // +25% then +20%
+  if(s<4){for(var wi=0;wi<list.length;wi++)list[wi].t*=1.8;} // +25%, +20%, +20%
   var lastT=list[list.length-1].t;
-  // 25% mowing segment: dense, low-HP, low-aggression fodder
   var forms=['v','line','pincer','arc','orbit','fractal','ring','line','v','orbit'];
-  var mowStart=lastT*.18,mowEnd=lastT*.43,mfi=0;
-  for(var mt=mowStart;mt<mowEnd;mt+=1.6){
-    list.push({t:mt,type:(mfi%2?5:0),n:10+(mfi%3)*2,form:forms[mfi%forms.length],spd:105+(mfi%4)*8,aggr:0.12,fodder:true});
+  // small early mowing segment
+  var smStart=lastT*.07,smEnd=lastT*.17,mfi=0;
+  for(var mt=smStart;mt<smEnd;mt+=2.2){
+    list.push({t:mt,type:(mfi%2?5:0),n:Math.round(8*.8),form:forms[mfi%forms.length],spd:110+(mfi%4)*8,aggr:0.06,fodder:true});
     mfi++;
   }
-  // light independent fodder across the rest of the stage
+  // large second-half mowing segment (25%+ of the stage)
+  var bgStart=lastT*.52,bgEnd=lastT*.77,gfi=0;
+  for(var gt=bgStart;gt<bgEnd;gt+=1.9){
+    list.push({t:gt,type:(gfi%2?5:0),n:Math.round((12+(gfi%3)*2)*.8),form:forms[gfi%forms.length],spd:118+(gfi%4)*8,aggr:0.06,fodder:true});
+    gfi++;
+  }
+  // non-mowing filler, diluted and low-aggression
   var fi=0;
   for(var ft=3;ft<lastT-3;ft+=8.5){
-    list.push({t:ft,type:(fi%3===0?0:5),n:6+(fi%3)*2,form:forms[fi%forms.length],spd:90+(fi%4)*8,aggr:0.24,fodder:true});
+    if((ft>=smStart&&ft<=smEnd)||(ft>=bgStart&&ft<=bgEnd)) continue;
+    list.push({t:ft,type:(fi%3===0?0:5),n:6+(fi%3)*2,form:forms[fi%forms.length],spd:90+(fi%4)*8,aggr:0.12,fodder:true});
     fi++;
   }
-  // one stage-5 echo as a 50%-size mini boss at the halfway point of stages 1-4
-  if(s<4){
-    list.push({t:lastT*0.5,type:9+s,n:1,form:'mid',spd:70,mini:true});
-  }else{
+  if(s<4){list.push({t:lastT*0.5,type:9+s,n:1,form:'mid',spd:70,mini:true});}
+  else{
     var pairs=[[9,10,.55],[11,12,.70],[13,14,.85]];
     for(var pi=0;pi<pairs.length;pi++){
       var pp=pairs[pi];

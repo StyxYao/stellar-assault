@@ -1,9 +1,9 @@
 // Enemy wave spawning, scaling and firing. Uses legacy world/projectile hooks.
 function spawnWave(w){
   if(w.form==='mid'){
-    var mhp=Math.round(w.mini?(((BOSSES[stage]&&BOSSES[stage].hp)||1500)*0.50):((320+stage*80)*0.85));
+    var mhp=Math.round(w.mini?(((BOSSES[stage]&&BOSSES[stage].hp)||1500)*0.60):((320+stage*80)*0.85));
     var mx=w.x||W/2;
-    enemies.push({type:w.type,x:mx,y:-60,baseX:mx,tx:mx,ty:250,mode:'turret',entering:true,t:0,phase:0,spd:80,hp:mhp,max:mhp,fireT:1.0,flash:0,elite:true,mini:!!w.mini,visT:0,first:true});
+    enemies.push({type:w.type,x:mx,y:-60,baseX:mx,tx:mx,ty:250,mode:'turret',entering:true,t:0,phase:0,spd:80,hp:mhp,max:mhp,fireT:1.0,flash:0,elite:true,mini:!!w.mini,aggr:1.0,visT:0,first:true});
     return;
   }
   if(w.form==='escort'){
@@ -38,7 +38,7 @@ function spawnWave(w){
     else { x=W/2+(i-(n-1)/2)*40; y=-50; baseX=x; mode='dive'; }
     var hpScale=(stage===4?1.0:(1+stage*0.18));
     var ehp=Math.round(ET[w.type].hp*hpScale*((w.elite&&(n<=2||i===0))?0.85:1));
-    var e={type:w.type,x:x,y:y,baseX:baseX,tx:tx,ty:ty,mode:mode,entering:(mode==='pincer'||mode==='turret'||mode==='orbitEnter'||mode==='ringEnter'||mode==='arc'),t:0,phase:i*0.7,spd:w.spd,hp:ehp,max:ehp,fireT:w.fodder?3.2+Math.random()*1.8:0.8+Math.random()*0.8,flash:0,noFire:!!w.noFire,aggr:w.aggr||1,role:w.role||'',visT:0,elite:!!w.elite&&(n<=2||i===0),first:(i===0&&waveIndex%2===0)};
+    var e={type:w.type,x:x,y:y,baseX:baseX,tx:tx,ty:ty,mode:mode,entering:(mode==='pincer'||mode==='turret'||mode==='orbitEnter'||mode==='ringEnter'||mode==='arc'),t:0,phase:i*0.7,spd:w.spd,hp:ehp,max:ehp,fireT:w.fodder?6.0+Math.random()*3.0:0.8+Math.random()*0.8,flash:0,noFire:!!w.noFire,aggr:w.aggr||1,role:w.role||'',visT:0,elite:!!w.elite&&(n<=2||i===0),first:(i===0&&waveIndex%2===0)};
     if(mode==='dive'){
       var a=Math.atan2(player.y-y,player.x-x);
       e.vx=Math.cos(a)*w.spd; e.vy=Math.sin(a)*w.spd;
