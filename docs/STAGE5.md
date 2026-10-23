@@ -267,3 +267,13 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - Final-Boss signature bullets use the classic earlier-boss bullet sprites and palettes.
 - Missile launch SFX gain raised.
 - Normal/spread hit SFX now includes an inharmonic metallic impact layer.
+
+## Stage-5 balance and feedback
+
+- Wave spawn is hard-capped at 6 alive enemies on stage 5; the next wave waits.
+- Stage-5 enemy HP multiplier is now 1.18 instead of 1.72.
+- Stage HP coefficients: 1: 1.00, 2: 1.18, 3: 1.36, 4: 1.54, 5: 1.18 (special).
+- Elite enemies use 0.85 HP; base HP by type is 92/125/62/155/88/128.
+- NORMAL fire now uses a descending square-wave blaster sound; hits add a shorter descending zap plus metal layer.
+- Background no longer falls back to the old procedural image; if the video is not ready it shows black.
+- Phase-2/3 video loops cross-fade their first frame across the loop seam.

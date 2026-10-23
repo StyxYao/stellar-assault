@@ -17,7 +17,7 @@ var fusionFadeT=0,stageT=0,waveIndex=0,nextTransport=0,banner='',bannerSub='',ba
 var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpeed=0,glowWarp=0,bombT=0,bombX=0,bombY=0;
 var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
 var BG4=new Image();BG4.src='assets/bg/stage4-main.webp';
-var phaseMaskCv=null,phaseMaskCtx=null,BG_FIRST_CV=null;
+var phaseMaskCv=null,phaseMaskCtx=null,BG_FIRST_CV=null,PHASE_FIRST_CVS={};
 var phase2LoopVideo=document.createElement('video');phase2LoopVideo.src='assets/video/phase2-loop.mp4';phase2LoopVideo.loop=true;phase2LoopVideo.muted=true;phase2LoopVideo.playsInline=true;phase2LoopVideo.preload='auto';
 var phase3LoopVideo=document.createElement('video');phase3LoopVideo.src='assets/video/phase3-loop.mp4';phase3LoopVideo.loop=true;phase3LoopVideo.muted=true;phase3LoopVideo.playsInline=true;phase3LoopVideo.preload='auto';
 var fusionVideo=document.createElement('video');fusionVideo.src='assets/video/fusion.mp4';fusionVideo.loop=false;fusionVideo.muted=true;fusionVideo.playsInline=true;fusionVideo.preload='auto';
@@ -75,6 +75,24 @@ function makeDistCurve(){
   for(var i=0;i<n;i++){var x=i*2/n-1;distCurve[i]=Math.tanh(x*3.2);}
   return distCurve;
 }
+function blasterShot(){
+  if(!AC||muted||!master) return;
+  var t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();
+  o.type='square';o.frequency.setValueAtTime(1750,t);o.frequency.exponentialRampToValueAtTime(190,t+.16);
+  g.gain.setValueAtTime(.34,t);g.gain.exponentialRampToValueAtTime(.001,t+.18);
+  var f=AC.createBiquadFilter();f.type='bandpass';f.frequency.value=1200;f.Q.value=.9;
+  o.connect(f);f.connect(g);g.connect(master);o.start(t);o.stop(t+.19);
+  noiseBurst(.016,.16,5200);
+}
+function blasterHit(v){
+  if(!AC||muted||!master) return;
+  var t=AC.currentTime;
+  var o=AC.createOscillator(),g=AC.createGain();
+  o.type='triangle';o.frequency.setValueAtTime(2400,t);o.frequency.exponentialRampToValueAtTime(520,t+.075);
+  g.gain.setValueAtTime(Math.max(.02,v*.65),t);g.gain.exponentialRampToValueAtTime(.001,t+.09);
+  o.connect(g);g.connect(master);o.start(t);o.stop(t+.10);
+  noiseBurst(.018,Math.max(.02,v*.35),6800);
+}
 function metalHit(v){
   if(!AC||muted) return;
   var t=AC.currentTime;
@@ -107,7 +125,7 @@ function playSample(n,v){
   s.start();
   if(n==='p_normal'){noiseBurst(0.018,v*0.95,8500);tone(170,78,0.03,v*0.50,'square');tone(1250,650,0.018,v*0.24,'triangle');}
   if(n==='p_spread'){noiseBurst(0.022,v*0.85,7600);tone(155,65,0.032,v*0.45,'square');}
-  if(n==='e_hit'){metalHit(v);noiseBurst(0.014,v*0.5,9500);tone(2300,1900,0.07,v*0.18,'triangle');tone(3700,3100,0.05,v*0.10,'sine',0.004);tone(1200,800,0.10,v*0.07,'square');}
+  if(n==='e_hit'){metalHit(v);blasterHit(v);noiseBurst(0.014,v*0.5,9500);tone(2300,1900,0.07,v*0.18,'triangle');tone(3700,3100,0.05,v*0.10,'sine',0.004);tone(1200,800,0.10,v*0.07,'square');}
   if(n==='b_hit'){metalHit(v*.8);tone(110,55,0.09,v*0.7,'sine');}
   if(n==='boom'){tone(85,40,0.32,v*0.55,'sine');noiseBurst(0.05,v*0.35,2600);}
   if(n==='hurt'){tone(260,90,0.18,v*0.9,'sawtooth');noiseBurst(0.055,v*0.2,1800);}
@@ -165,7 +183,7 @@ function synthSfx(n,v){
   else if(n==='p_spread'){tone(900,1200,0.04,v*0.8,'triangle');tone(700,1000,0.05,v*0.7,'triangle',0.02);tone(500,800,0.06,v*0.6,'triangle',0.04);}
   else if(n==='p_missile'){noiseBurst(0.085,v*0.45,7000);tone(1800,520,0.095,v*0.40,'triangle');}
   else if(n==='e_shot') tone(240,160,0.08,v,'square');
-  else if(n==='e_hit'){metalHit(v);tone(2300,1800,0.06,v*0.55,'triangle');tone(3700,3000,0.045,v*0.22,'sine');noiseBurst(0.014,v*0.4,9000);}
+  else if(n==='e_hit'){metalHit(v);blasterHit(v);tone(2300,1800,0.06,v*0.55,'triangle');tone(3700,3000,0.045,v*0.22,'sine');noiseBurst(0.014,v*0.4,9000);}
   else if(n==='b_hit'){tone(320,160,0.07,v,'square');noiseBurst(0.05,v*0.5,2000);}
   else if(n==='e_charge') tone(250,900,0.9,v,'sawtooth');
   else if(n==='b_charge'){tone(140,800,1.2,v,'sawtooth');tone(70,120,1.2,v*0.5,'sine');}
@@ -1505,7 +1523,8 @@ function spawnWave(w){
     else if(w.form==='fractal'){ var fa=i/n*TAU*1.5; x=W/2+Math.cos(fa)*W*.44; y=-45+Math.sin(fa)*24; tx=W/2+Math.cos(fa)*78; ty=255+Math.sin(fa)*58; baseX=W/2; mode='ringEnter'; }
     else if(w.form==='spiral'){ var sa=i/n*TAU*1.7; x=W/2+Math.cos(sa)*W*.40; y=-55+Math.sin(sa)*22; tx=W/2+Math.cos(sa)*108; ty=265+Math.sin(sa)*76; baseX=W/2; mode='ringEnter'; }
     else { x=W/2+(i-(n-1)/2)*40; y=-50; baseX=x; mode='dive'; }
-    var ehp=Math.round(ET[w.type].hp*(1+stage*0.18)*((w.elite&&(n<=2||i===0))?0.85:1));
+    var hpScale=(stage===4?1.18:(1+stage*0.18));
+    var ehp=Math.round(ET[w.type].hp*hpScale*((w.elite&&(n<=2||i===0))?0.85:1));
     var e={type:w.type,x:x,y:y,baseX:baseX,tx:tx,ty:ty,mode:mode,entering:(mode==='pincer'||mode==='turret'||mode==='orbitEnter'||mode==='ringEnter'||mode==='arc'),t:0,phase:i*0.7,spd:w.spd,hp:ehp,max:ehp,fireT:0.8+Math.random()*0.8,flash:0,noFire:!!w.noFire,aggr:w.aggr||1,role:w.role||'',visT:0,elite:!!w.elite&&(n<=2||i===0),first:(i===0&&waveIndex%2===0)};
     if(mode==='dive'){
       var a=Math.atan2(player.y-y,player.x-x);
@@ -1838,7 +1857,7 @@ function step(dt){
     }else if(player.weapon==='missile'){
       if(time-lastMissile>0.46){ lastMissile=time; launchMissiles(); }
     }else{
-      if(time-lastShot>(player.odT>0?0.033:0.10)){ lastShot=time; fireNormal(); if(Math.random()<0.7) sfx('p_normal',0.34); }
+      if(time-lastShot>(player.odT>0?0.033:0.10)){ lastShot=time; fireNormal(); if(Math.random()<0.8) blasterShot(); }
     }
   }
   if(bannerT>0) bannerT-=dt;
@@ -1847,7 +1866,10 @@ function step(dt){
   }else if(state==='play'){
     stageT+=dt;
     var waves=STAGES[stage].waves;
-    while(waveIndex<waves.length&&waves[waveIndex].t<=stageT){ spawnWave(waves[waveIndex]); waveIndex++; }
+    while(waveIndex<waves.length&&waves[waveIndex].t<=stageT){
+      if(stage===4&&enemies.length>=6) break;
+      spawnWave(waves[waveIndex]); waveIndex++;
+    }
     if(stageT>nextTransport&&!enemies.some(function(e){return e.transport;} )){ if(Math.random()<0.55) spawnTransport(); nextTransport=stageT+22+Math.random()*10; }
     if(waveIndex>=waves.length&&(enemies.length===0||stageT>waves[waves.length-1].t+8)) startBossWarn();
   }else if(state==='bossWarn'){
@@ -2387,7 +2409,7 @@ function drawRecursiveBg(img,rot,scale,alpha,comp){
 function paintFractalBg(main,edge,offsetY){
   ctx.fillStyle='#03020a';ctx.fillRect(0,0,W,H);
   var cx=W/2,cy=H*.44,N=16;
-  var bgVidReady=bgLoopVideo&&bgLoopVideo.readyState>=2&&bgLoopVideo.videoWidth>0&&!bgLoopVideo.paused;
+  var bgVidReady=bgLoopVideo&&bgLoopVideo.readyState>=2&&bgLoopVideo.videoWidth>0;
   if(bgVidReady){
     var sh=Math.max(H*1.16,W*1280/720),sw=sh*720/1280;
     ctx.save();ctx.globalCompositeOperation='source-over';ctx.globalAlpha=.94;if('filter' in ctx)ctx.filter='contrast(1.08) saturate(1.12) brightness(.94)';
@@ -2404,18 +2426,8 @@ function paintFractalBg(main,edge,offsetY){
     }
     ctx.fillStyle='rgba(2,4,14,0.30)';ctx.fillRect(0,0,W,H);
   }else{
-  // three self-similar crystal shells; inner/outer counter-rotate at different speeds
-  var cache=(KALEIDO_SRC===main&&KALEIDO_CACHE)?KALEIDO_CACHE:buildKaleidoCache(main);
-  if(cache){
-    var breath=1+.035*Math.sin(time*.17);
-    drawKaleidoCache(cache,time*.045,1.00*breath,.98,'hue-rotate(-6deg) saturate(1.10)',null,.02,-.01);
-    drawKaleidoCache(cache,-time*.064,1.20,.55,'hue-rotate(28deg) saturate(1.22)','screen',-.04,.03);
-    drawKaleidoCache(cache,time*.028,1.58,.26,'hue-rotate(8deg) saturate(1.28)','screen',.06,-.05);
-  }
-  if(edge&&edge.complete) drawKaleidoLayer(edge,cx,cy,N,-time*.014,1.22,.18,0,.04,.02,'hue-rotate(12deg) saturate(1.25)','screen',0);
-  drawRecursiveBg(GIMG.kbA,time*.018,1.06+.035*Math.sin(time*.16),.10,'screen');
-  drawRecursiveBg(GIMG.kbB,-time*.024,1.30,.07,'screen');
-  drawRecursiveBg(GIMG.kbA,-time*.032,.72,.04,'screen');
+    // video not ready yet: keep it black, never show the old procedural background
+    ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
   }
   // dark vortex fade so the crystal pours into one static eye
   // no background black hole; the kaleidoscope center is the focal point
@@ -2604,8 +2616,15 @@ function drawKeyedBossVideo(video,cx,cy,size,hole,rot){
     x.save();x.beginPath();x.arc(S/2,S/2,S*.16,0,TAU);x.clip();x.globalCompositeOperation='source-over';
     x.drawImage(video,hcx-hr,hcy-hr,hr*2,hr*2,S/2-S*.16,S/2-S*.16,S*.32,S*.32);x.restore();
   }
+  var firstKey=video.currentSrc||video.src;
+  if(!PHASE_FIRST_CVS[firstKey]){
+    var fc=document.createElement('canvas');fc.width=fc.height=S;fc.getContext('2d').drawImage(phaseMaskCv,0,0);PHASE_FIRST_CVS[firstKey]=fc;
+  }
+  var fcv=PHASE_FIRST_CVS[firstKey];var vt=video.currentTime||0,vd=video.duration||1,seam=.22,fa=0;
+  if(vt<seam)fa=1-vt/seam; else if(vt>vd-seam)fa=(vt-(vd-seam))/seam;
   ctx.save();ctx.globalCompositeOperation='source-over';ctx.translate(cx,cy);ctx.rotate(rot||0);
   ctx.drawImage(phaseMaskCv,-size/2,-size/2,size,size);
+  if(fa>0){ctx.globalAlpha=Math.min(1,fa);ctx.drawImage(fcv,-size/2,-size/2,size,size);ctx.globalAlpha=1;}
   ctx.restore();
 }
 
