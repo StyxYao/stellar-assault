@@ -175,3 +175,8 @@
 - Stage-1 supplied nebula is now an upper `screen` layer with two independent scroll speeds.
 - Player energy core adds a restrained orange rim against the blue/white hull.
 - Cast credits now state music composed by 思齐Styx and AI image sources QWEN IMAGE / GPT IMAGE; algorithmic visuals attributed separately.
+
+## 0.3.5 — visible stage1 nebula
+
+- Nebula is now a near-opaque source-over layer above the base backgrounds and below the black-hole layer.
+- It scrolls independently at 0.36×; rocks and nebula clouds are visible in game.

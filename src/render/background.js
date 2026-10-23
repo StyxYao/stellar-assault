@@ -212,18 +212,17 @@ function paintStageBg(main,edge,offsetY){
   if(stage===4){ paintFractalBg(main,edge,offsetY); return; }
 
   if(stage===0&&BG1_EARLIEST&&BG1_EARLIEST.complete&&BG1_EARLIEST.naturalWidth){
-    drawLoopLayer(BG1_EARLIEST,bgScroll*0.62,0.72,false,false);
+    drawLoopLayer(BG1_EARLIEST,bgScroll*0.62,0.34,false,false);
   }
-  drawLoopLayer(main,bgScroll+(offsetY||0),stage===0?0.52:1,false,false);
-  if(stage===0&&BG1_NEBULA&&BG1_NEBULA.complete&&BG1_NEBULA.naturalWidth){
-    // the supplied nebula is an upper light layer, not an opaque base; it scrolls at its own speed
-    ctx.save();ctx.globalCompositeOperation='screen';
-    drawLoopLayer(BG1_NEBULA,bgScroll*0.40,0.58,false,false,'screen');
-    drawLoopLayer(BG1_NEBULA,bgScroll*0.18,0.20,false,false,'screen');
-    ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
-  }
+  drawLoopLayer(main,bgScroll+(offsetY||0),stage===0?0.34:1,false,false);
   if(stage===0&&BG1_EARLIEST&&BG1_EARLIEST.complete&&BG1_EARLIEST.naturalWidth){
     ctx.save();ctx.globalAlpha=.10;ctx.globalCompositeOperation='screen';drawLoopLayer(BG1_EARLIEST,bgScroll*0.62,1,false,false);ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+  }
+  if(stage===0&&BG1_NEBULA&&BG1_NEBULA.complete&&BG1_NEBULA.naturalWidth){
+    ctx.save();
+    if('filter'in ctx)ctx.filter='saturate(1.25) contrast(1.05) brightness(1.08)';
+    drawLoopLayer(BG1_NEBULA,bgScroll*0.36,0.96,false,false,'source-over');
+    ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
   }
   if(stage===0&&BG1_BH&&BG1_BH.complete&&BG1_BH.naturalWidth){
     ctx.save();if('filter'in ctx)ctx.filter='brightness(1.72) saturate(1.15)';drawLoopLayer(BG1_BH,0,1,false,false);
@@ -231,6 +230,8 @@ function paintStageBg(main,edge,offsetY){
     ctx.filter='none';ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.restore();
   }
   if(edge) drawLoopLayer(edge,bgEdgeScroll+(offsetY||0)*1.35,([0.90,0.82,0.72,0.50][stage]||0.8),true,true,['screen','soft-light','overlay','soft-light'][stage]||'source-over');
+
+
 }
 function drawBgDust(){
   ctx.save();
