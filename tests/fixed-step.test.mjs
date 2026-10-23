@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+const ctx = { console };
+vm.createContext(ctx);
+vm.runInContext(fs.readFileSync('src/core/fixed-step.js', 'utf8') + '\n;globalThis.FixedStep=FixedStep;', ctx);
+const FixedStep = ctx.FixedStep;
+const fs1 = new FixedStep(1 / 60, 4);
+let calls = 0;
+fs1.advance(1 / 60 * 5, () => calls++);
+if (calls !== 4) throw new Error(`expected 4 capped steps, got ${calls}`);
+if (Math.abs(fs1.accumulator - 1 / 60) > 1e-9) throw new Error('leftover accumulator incorrect');
+fs1.reset();
+calls = 0;
+fs1.advance(1 / 60 * 2.5, () => calls++);
+if (calls !== 2) throw new Error(`expected 2 steps, got ${calls}`);
+console.log('fixed-step ok');

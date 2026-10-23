@@ -8,3 +8,10 @@
 - Added player hitbox ring/dot indicator at the exact collision radius.
 - Added architecture, roadmap and platform contract docs.
 - Added structure checker and CI smoke workflow.
+
+## 0.2.1-phase2a — content and clock extraction
+
+- Extracted stage-5 wave table to `src/content/stage5-waves.js`.
+- Extracted fixed-step accumulator to `src/core/fixed-step.js`; main loop now uses it.
+- Added content validator and fixed-step unit test.
+- Added checkpoint/step tags and migration log.

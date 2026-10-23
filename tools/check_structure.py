@@ -25,8 +25,10 @@ else:
                     if token in text:
                         errors.append(f"core module leaks platform API {token}: {rel}")
     order = manifest.get("modules", [])
-    if order and not order[0].startswith("src/content/"):
-        errors.append("content modules should load before render/legacy modules")
+    content_idx = [i for i, m in enumerate(order) if m.startswith("src/content/")]
+    render_idx = [i for i, m in enumerate(order) if m.startswith("src/render/")]
+    if content_idx and render_idx and max(content_idx) > min(render_idx):
+        errors.append("content modules should load before render modules")
 
 for required in ("src/core", "src/content", "src/render", "src/platform", "src/app", "docs/adr"):
     if not (root / required).is_dir():

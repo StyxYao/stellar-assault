@@ -14,6 +14,7 @@ To restore the whole working tree to a checkpoint, use `tools/make_snapshot.sh` 
 |---|---|---|---|
 | 1 | Phase-1 structure, enemy data, hitbox renderer, CI | `037d743` | `checkpoint/phase1` |
 | 2 | Stage-5 wave data extraction | `62a2b4d` | `step/phase2a-stage5-waves` |
+| 3 | Fixed-step clock to core + test | pending | `step/phase2b-fixed-step` |
 
 ## Rollback examples
 
