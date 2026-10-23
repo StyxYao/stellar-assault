@@ -277,3 +277,10 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - NORMAL fire now uses a descending square-wave blaster sound; hits add a shorter descending zap plus metal layer.
 - Background no longer falls back to the old procedural image; if the video is not ready it shows black.
 - Phase-2/3 video loops cross-fade their first frame across the loop seam.
+
+## Fusion and stage-1 background
+
+- Fusion now starts automatically; its progress is driven by the video's currentTime, so a blocked autoplay cannot expire the cutscene while showing frame 1.
+- Tap only starts/resumes the video. `HOLD SKIP` button requires a 1.1s hold.
+- Stage 1 keeps its current layers, with the earliest stage-1 planet/nebula art added underneath.
+- Stage-1 accretion disk brightness raised another 15% (1.15 -> 1.3225).

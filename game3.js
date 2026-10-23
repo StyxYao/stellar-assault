@@ -13,7 +13,7 @@ var enemies=[],bullets=[],shots=[],parts=[],stars=[],fx=[],ebullets=[],items=[],
 var lastMissile=0,lastSpecial=0,optionT=0,laserTick=0,laserHitY=0,laserHitT=0,pickupMsg='',pickupT=0;
 var audioReady=false;
 var boss=null,runner=null,bossFusionT=0,bossFusionOn=false,bossOmenT=0,selectedStage=0,bossDeath1T=0,bossAwakenT=0,SIG_BOSS=-1;
-var fusionFadeT=0,stageT=0,waveIndex=0,nextTransport=0,banner='',bannerSub='',bannerT=0,castT=0,castScroll=0,castHoldT=0,fusionT=0,finaleT=0;
+var fusionHoldT=0,fusionHoldActive=false,fusionFadeT=0,stageT=0,waveIndex=0,nextTransport=0,banner='',bannerSub='',bannerT=0,castT=0,castScroll=0,castHoldT=0,fusionT=0,finaleT=0;
 var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpeed=0,glowWarp=0,bombT=0,bombX=0,bombY=0;
 var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
 var BG4=new Image();BG4.src='assets/bg/stage4-main.webp';
@@ -25,6 +25,7 @@ var bgLoopVideo=document.createElement('video');bgLoopVideo.src='assets/video/ka
 var hedronLoopVideo=document.createElement('video');hedronLoopVideo.src='assets/video/hedron-loop.mp4';hedronLoopVideo.loop=true;hedronLoopVideo.muted=true;hedronLoopVideo.playsInline=true;hedronLoopVideo.preload='auto';
 var BG5=new Image();BG5.src='assets/bg/stage5-main.webp';
 var BG1_BH=new Image();BG1_BH.src='assets/bg/stage1-bh.webp';
+var BG1_EARLIEST=new Image();BG1_EARLIEST.src='assets/bg/stage1-earliest.webp';
 var JULIA_CANVAS=null,JULIA_CTX=null,JULIA_DATA=null,JULIA_TICK=0,JULIA_W=200,JULIA_H=430;
 var IFS_POINTS=(function(){var v=[{x:0,y:0},{x:1,y:0},{x:.5,y:.866}],p={x:.5,y:.35},out=[];for(var i=0;i<2600;i++){var q=v[(i*7)%3];p={x:(p.x+q.x)/2,y:(p.y+q.y)/2};if(i>60&&i%23===0)out.push(p);}return out;})();
 var bgmName='';var BGM_START={s5:0,s5boss:0,s5ending:0};
@@ -93,6 +94,17 @@ function blasterHit(v){
   o.connect(g);g.connect(master);o.start(t);o.stop(t+.10);
   noiseBurst(.018,Math.max(.02,v*.35),6800);
 }
+function spreadHit(v){
+  if(!AC||muted||!master) return;
+  var t=AC.currentTime;
+  var o=AC.createOscillator(),g=AC.createGain();
+  o.type='square';o.frequency.setValueAtTime(820,t);o.frequency.exponentialRampToValueAtTime(180,t+.075);
+  g.gain.setValueAtTime(Math.max(.015,v*.58),t);g.gain.exponentialRampToValueAtTime(.001,t+.085);
+  o.connect(g);g.connect(master);o.start(t);o.stop(t+.09);
+  noiseBurst(.026,Math.max(.02,v*.62),4200);
+  tone(1900,620,.035,Math.max(.02,v*.30),'sawtooth');
+}
+function weaponHitFx(v){ if(player&&player.weapon==='spread') spreadHit(v); else sfx('e_hit',v); }
 function metalHit(v){
   if(!AC||muted) return;
   var t=AC.currentTime;
@@ -745,7 +757,7 @@ function drawPhase1DeathScene(){
 function startBossFusionCinematic(){
   state='bossFusion';bossFusionT=0;
   try{fusionVideo.currentTime=0;fusionVideo.play().catch(function(){});}catch(e){}
-  fusionFadeT=1.15;
+  fusionFadeT=1.15;fusionHoldT=0;fusionHoldActive=false;
   setBanner('FUSION','FOUR ECHOES',9.0);
   sfx('b_charge',0.65);
 }
@@ -1341,7 +1353,7 @@ function laserDamageOD(){
     var e=enemies[i];if(e._odDead){var et=ET[e.type];score+=et.score;part(e.x,e.y,'#ffb066',10,170);enemyDeath(e);maybeDrop(e);removeEnemy(i);}
   }
   laserHitY=topY;laserHitT=0.10;
-  if(time-lastHitSfx>0.08){lastHitSfx=time;sfx('e_hit',0.12);}
+  if(time-lastHitSfx>0.08){lastHitSfx=time;weaponHitFx(0.12);}
 }
 
 function laserDamage(dt){
@@ -1361,7 +1373,7 @@ function laserDamage(dt){
     boss.hp-=dmg*0.7;boss.hitFlash=0.12;boss.hitX=player.x;boss.hitY=boss.y+20;sfx('b_hit',0.22);
     if(time-lastHitSfx>0.12){lastHitSfx=time;sfx('b_hit',0.1);}
   }else{
-    var et=ET[target.type];target.hp-=dmg;target.flash=0.1;sfx('e_hit',0.12);
+    var et=ET[target.type];target.hp-=dmg;target.flash=0.1;weaponHitFx(0.12);
     if(target.hp<=0){score+=et.score;part(target.x,target.y,'#ffb066',9,160);enemyDeath(target);maybeDrop(target);removeEnemy(tIdx);}
   }
 }
@@ -1447,7 +1459,7 @@ function updateMissiles(dt){
     for(var j=enemies.length-1;j>=0;j--){
       var e=enemies[j],et=ET[e.type];
       if(Math.abs(m.x-e.x)<enemyW(e)*0.45&&Math.abs(m.y-e.y)<enemyW(e)*0.5){
-        e.hp-=m.dmg;e.flash=0.1;hit=true;sfx('e_hit',0.20);boom(m.x,m.y,0.5);
+        e.hp-=m.dmg;e.flash=0.1;hit=true;weaponHitFx(0.20);boom(m.x,m.y,0.5);
         if(e.hp<=0){score+=et.score;part(e.x,e.y,'#ffb066',9,160);enemyDeath(e);maybeDrop(e);removeEnemy(j);}
         break;
       }
@@ -1806,7 +1818,18 @@ function step(dt){
   if(stageWarp>0) stageWarp=Math.max(0,stageWarp-dt/1.5);
   if(state==='bossDeath1'){bossDeath1T+=dt;if(bossDeath1T>=2.7)startBossOmen();return;}
   if(state==='bossOmen'){bossOmenT+=dt;if(bossOmenT>=6.5)startBossFusionCinematic();return;}
-  if(state==='bossFusion'){bossFusionT+=dt;if(fusionFadeT>0)fusionFadeT=Math.max(0,fusionFadeT-dt);if(bossFusionT>=15.04)finishBossFusionPhase();return;}
+  if(state==='bossFusion'){
+    if(fusionFadeT>0)fusionFadeT=Math.max(0,fusionFadeT-dt);
+    if(fusionHoldActive){fusionHoldT+=dt;if(fusionHoldT>=1.1){try{fusionVideo.currentTime=fusionVideo.duration;}catch(e){}finishBossFusionPhase();return;}}
+    if(fusionVideo&&fusionVideo.readyState>=2&&fusionVideo.videoWidth>0){
+      if(fusionVideo.paused&&!fusionHoldActive){try{fusionVideo.play().catch(function(){});}catch(e){}}
+      if(!fusionVideo.paused){
+        bossFusionT=fusionVideo.currentTime;
+        if(fusionVideo.ended||fusionVideo.currentTime>=fusionVideo.duration-0.04){finishBossFusionPhase();return;}
+      }
+    }
+    return;
+  }
   if(state==='fusion'){fusionT+=dt;if(fusionT>=3.6)spawnBossNow();return;}
   if(state==='bossAwaken'){bossAwakenT-=dt;if(bossAwakenT<=0){state='boss';if(boss)boss.invuln=1.4;setBossPattern(0);} }
   if(state==='finale'){finaleT+=dt;if(finaleT>=7.7)startCast();return;}
@@ -1888,7 +1911,7 @@ function step(dt){
     for(var j=enemies.length-1;j>=0;j--){
       var e=enemies[j],et=ET[e.type];
       if(Math.abs(s.x-e.x)<enemyW(e)*0.45&&Math.abs(s.y-e.y)<enemyW(e)*0.5){
-        e.hp-=s.dmg; e.flash=0.1; hit=true; sfx('e_hit',0.20);
+        e.hp-=s.dmg; e.flash=0.1; hit=true; weaponHitFx(0.20);
         if(e.hp<=0){ score+=et.score; part(e.x,e.y,'#ffb066',9,160); enemyDeath(e); maybeDrop(e); removeEnemy(j); }
         break;
       }
@@ -2437,9 +2460,12 @@ function paintFractalBg(main,edge,offsetY){
 function paintStageBg(main,edge,offsetY){
   if(stage===4){ paintFractalBg(main,edge,offsetY); return; }
 
-  drawLoopLayer(main,bgScroll+(offsetY||0),1,false,false);
+  if(stage===0&&BG1_EARLIEST&&BG1_EARLIEST.complete&&BG1_EARLIEST.naturalWidth){
+    drawLoopLayer(BG1_EARLIEST,bgScroll*0.62,0.92,false,false);
+  }
+  drawLoopLayer(main,bgScroll+(offsetY||0),stage===0?0.86:1,false,false);
   if(stage===0&&BG1_BH&&BG1_BH.complete&&BG1_BH.naturalWidth){
-    ctx.save();if('filter'in ctx)ctx.filter='brightness(1.15)';drawLoopLayer(BG1_BH,0,1,false,false);ctx.filter='none';ctx.restore();
+    ctx.save();if('filter'in ctx)ctx.filter='brightness(1.3225)';drawLoopLayer(BG1_BH,0,1,false,false);ctx.filter='none';ctx.restore();
   }
   if(edge) drawLoopLayer(edge,bgEdgeScroll+(offsetY||0)*1.35,([0.90,0.82,0.72,0.50][stage]||0.8),true,true,['screen','soft-light','overlay','soft-light'][stage]||'source-over');
 }
@@ -3986,6 +4012,14 @@ function drawScene(){
       paintFractalBg(BG_MAIN[4],BG_EDGE[4],0);ctx.fillStyle='rgba(2,2,12,0.28)';ctx.fillRect(0,0,W,H);drawFusionScene(bossFusionT);
     }
     if(fusionFadeT>0){ctx.fillStyle='rgba(0,0,0,'+Math.min(1,fusionFadeT/1.15)+')';ctx.fillRect(0,0,W,H);}
+    var fbx=W-104,fby=64,fbw=92,fbh=30;
+    ctx.save();ctx.globalCompositeOperation='source-over';
+    ctx.fillStyle='rgba(6,10,22,0.58)';ctx.fillRect(fbx,fby,fbw,fbh);
+    ctx.strokeStyle='rgba(160,220,255,0.55)';ctx.lineWidth=1;ctx.strokeRect(fbx,fby,fbw,fbh);
+    ctx.fillStyle='rgba(160,220,255,0.22)';ctx.fillRect(fbx,fby,fbw*(fusionHoldT/1.1),fbh);
+    ctx.fillStyle='#cfeaff';ctx.font='10px monospace';ctx.textAlign='center';ctx.fillText('HOLD SKIP',fbx+fbw/2,fby+19);
+    if(fusionVideo.paused){ctx.fillStyle='rgba(255,255,255,.85)';ctx.font='12px monospace';ctx.fillText('TAP TO PLAY FUSION',W/2,H-120);}
+    ctx.textAlign='left';ctx.restore();
     ctx.restore();return;
   }
   if(state==='fusion'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); ctx.fillStyle='rgba(2,2,12,0.22)';ctx.fillRect(0,0,W,H); drawEntityArrivalScene(); ctx.restore(); return; }
@@ -4083,7 +4117,11 @@ function onDown(e){
     return;
   }
   if(state==='bossOmen'){ bossOmenT=6.5; return; }
-  if(state==='bossFusion'){ try{fusionVideo.play().catch(function(){});}catch(e){} return; }
+  if(state==='bossFusion'){
+    var fsx=W-104,fsy=64,fsw=92,fsh=30;
+    if(p.x>=fsx&&p.x<=fsx+fsw&&p.y>=fsy&&p.y<=fsy+fsh){fusionHoldActive=true;fusionHoldT=0;return;}
+    fusionHoldActive=false;try{fusionVideo.play().catch(function(){});}catch(e){} return;
+  }
   if(state==='fusion'){ fusionT=3.6; return; }
   if(state==='cast'){ state='menu'; playBgm('m5'); return; }
   if(state==='win'||state==='over'){ startGame(); return; }
@@ -4101,7 +4139,7 @@ function onMove(e){
   e.preventDefault();
   var p=pt(e);target.x=Math.max(22,Math.min(W-22,p.x));target.y=Math.max(70,Math.min(dragMaxY,p.y-dragLift));
 }
-function onUp(){dragging=false;}
+function onUp(){dragging=false;if(state==='bossFusion'){fusionHoldActive=false;fusionHoldT=0;}}
 cvs.addEventListener('pointerdown',onDown,{passive:false});
 cvs.addEventListener('pointermove',onMove,{passive:false});
 cvs.addEventListener('pointerup',onUp);
