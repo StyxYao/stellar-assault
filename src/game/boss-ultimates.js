@@ -23,7 +23,7 @@ function ultimateName(def){
   return def.style==='octopus'?'TENTACLE CAGE':(def.style==='dread'?'LASER CURTAIN':(def.style==='chronos'?'CHRONOS COLLAPSE':'SWARM SINGULARITY'));
 }
 function ultOctopus(){
-  var gap=Math.atan2(player.y-boss.y,player.x-boss.x);
+  var gap=bossGapAngle();
   for(var r=0;r<5;r++){
     var n=24+r*3,sp=88+r*20,gw=0.56,gapR=gap+r*0.28;
     for(var i=0;i<n;i++){
@@ -33,7 +33,7 @@ function ultOctopus(){
     }
   }
   for(var i=0;i<4;i++){
-    var aa=Math.atan2(player.y-boss.y,player.x-boss.x)+(i-1.5)*0.13;
+    var aa=bossGapAngle()+(i-1.5)*0.13;
     ebullets.push({x:boss.x,y:boss.y+12,vx:Math.cos(aa)*205,vy:Math.sin(aa)*205,rad:6,type:1});
   }
 }
@@ -48,7 +48,7 @@ function ultDread(){
     }
   }
   for(var i=0;i<7;i++){
-    var aa=Math.atan2(player.y-boss.y,player.x-boss.x)+(i-3)*0.10;
+    var aa=bossGapAngle()+(i-3)*0.10;
     ebullets.push({x:boss.x,y:boss.y+16,vx:Math.cos(aa)*185,vy:Math.sin(aa)*185,rad:6,type:1});
   }
 }
@@ -66,12 +66,12 @@ function ultHive(){
     }
   }
   for(var i=0;i<3;i++){
-    var aa=Math.atan2(player.y-boss.y,player.x-boss.x)+(i-1)*0.16;
+    var aa=bossGapAngle()+(i-1)*0.16;
     ebullets.push({x:boss.x,y:boss.y+10,vx:Math.cos(aa)*230,vy:Math.sin(aa)*230,rad:6,type:1});
   }
 }
 function ultSeraph(){
-  var base=Math.atan2(player.y-boss.y,player.x-boss.x);
+  var base=bossGapAngle();
   var boost=(stage===4&&boss.phase===2)?1.28:1;
   for(var r=0;r<4;r++){
     var n=18+r*4,sp=(72+r*18)*boost,gap=0.50,gapR=base+r*.22;

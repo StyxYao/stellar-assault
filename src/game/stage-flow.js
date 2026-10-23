@@ -36,6 +36,7 @@ function startStage(i){
 function startBossWarn(){
   stopBgm(); playAirRaid(0.55);
   state='bossWarn'; setBanner('WARNING',BOSSES[stage].name,2.8); player.invuln=0;
+  if(player.respawnT>0){player.respawnT=0;player.x=W/2;player.y=H-130;target.x=W/2;target.y=H-130;player.invuln=1.4;}
   ebullets.length=0; bullets.length=0; orbBullets.length=0;
   for(var i=0;i<enemies.length;i++){part(enemies[i].x,enemies[i].y,'#ffb066',6,120);enemyDeath(enemies[i]);}
   enemies.length=0;
@@ -185,7 +186,7 @@ function setBossPattern(idx){
 }
 function bossPhase(p){
   for(var ub=beams.length-1;ub>=0;ub--) if(beams[ub].ult) beams.splice(ub,1);
-  if(p===2&&boss){
+  if(stage===4&&p===2&&boss){
     bossPhaseGlitchT=0.72;
     bossDeathBoom(boss,true);
     for(var pe=0;pe<7;pe++) fx.push({x:boss.x+rand(-90,90),y:boss.y+rand(-60,60),t:-pe*.035,sc:2.0+pe*.22,seed:Math.random()*TAU,kind:'boss',life:2.0});

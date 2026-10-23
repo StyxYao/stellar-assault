@@ -390,18 +390,6 @@ function step(dt){
     if(boss&&bdx2*bdx2+bdy2*bdy2<(boss.def.w*0.28*1.15)*(boss.def.w*0.28*1.15)) hitPlayer();
   }
 
-  function enforceBossSafetyLane(){
-    if(stage!==4||!boss||boss.phase<1||state!=='boss') return;
-    var aim=Math.atan2(player.y-boss.y,player.x-boss.x);
-    for(var si=ebullets.length-1;si>=0;si--){
-      var sb=ebullets[si];if(!sb||sb.bomb) continue;
-      var sa=Math.atan2(sb.y-boss.y,sb.x-boss.x);
-      var sd=Math.atan2(Math.sin(sa-aim),Math.cos(sa-aim));
-      var dist=Math.hypot(sb.x-boss.x,sb.y-boss.y);
-      if(dist>38&&Math.abs(sd)<0.24) ebullets.splice(si,1);
-    }
-  }
-  enforceBossSafetyLane();
   for(var i=ebullets.length-1;i>=0;i--){
     var e=ebullets[i]; e.x+=e.vx*dt; e.y+=e.vy*dt;
     if(e.bomb){

@@ -159,8 +159,12 @@ function playMissileLaunch(){
   g.gain.exponentialRampToValueAtTime(0.0001,t+0.30);
   s.connect(hp);hp.connect(g);g.connect(master);
   s.onended=function(){try{s.disconnect();hp.disconnect();g.disconnect();}catch(e){}};
-  s.start(t);s.stop(t+0.32);
-  tone(92,36,.26,.55,'sine');noiseBurst(.05,.22,1600);
+  s.start(t);s.stop(t+0.64);
+  g.gain.cancelScheduledValues(t);
+  g.gain.setValueAtTime(0.95,t);
+  g.gain.exponentialRampToValueAtTime(0.24,t+0.12);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+0.64);
+  tone(92,30,.58,.42,'sine');noiseBurst(.18,.16,1200);
 }
 function synthSfx(n,v){
   if(!AC||!master||muted) return;
@@ -281,7 +285,7 @@ function playBgm(k){
       bgmAudio.addEventListener('canplay',seek,{once:true});
       setTimeout(seek,80);setTimeout(seek,320);
     }
-    bgmAudio.volume=0.605;
+    bgmAudio.volume=0.6655;
     var pr=bgmAudio.play();
     if(pr&&pr.catch) pr.catch(function(){
       bgmPending=k;

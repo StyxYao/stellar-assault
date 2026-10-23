@@ -13,8 +13,8 @@ function drawPlayerHitbox(px, py, r, t){
 
   // hot core halo
   var g = ctx.createRadialGradient(px, py, 0, px, py, halo);
-  g.addColorStop(0, 'rgba(255,255,255,0.95)');
-  g.addColorStop(0.22, 'rgba(120,255,255,' + (0.55 + pulse * 0.25) + ')');
+  g.addColorStop(0, 'rgba(255,255,255,0.72)');
+  g.addColorStop(0.22, 'rgba(120,255,255,' + (0.34 + pulse * 0.18) + ')');
   g.addColorStop(0.54, 'rgba(255,120,80,' + (0.18 + pulse * 0.10) + ')');
   g.addColorStop(0.58, 'rgba(255,70,220,' + (0.20 + pulse * 0.14) + ')');
   g.addColorStop(1, 'rgba(255,70,220,0)');
@@ -23,7 +23,7 @@ function drawPlayerHitbox(px, py, r, t){
 
   // exact hitbox: solid energy core + ring
   ctx.globalAlpha = 0.65 + pulse * 0.35;
-  ctx.fillStyle = flash ? 'rgba(255,255,255,0.92)' : 'rgba(160,255,255,0.72)';
+  ctx.fillStyle = flash ? 'rgba(255,255,255,0.66)' : 'rgba(160,255,255,0.52)';
   ctx.beginPath(); ctx.arc(px, py, Math.max(2.2, r * 0.72), 0, TAU); ctx.fill();
 
   ctx.globalAlpha = 0.9;
@@ -50,9 +50,9 @@ function drawPlayerHitbox(px, py, r, t){
   }
 
   // white-hot centre
-  ctx.globalAlpha = 1;
-  ctx.fillStyle = '#ffffff';
-  ctx.beginPath(); ctx.arc(px, py, 1.2, 0, TAU); ctx.fill();
+  ctx.globalAlpha = .78;
+  ctx.fillStyle = '#f4ffff';
+  ctx.beginPath(); ctx.arc(px, py, 1.1, 0, TAU); ctx.fill();
 
   ctx.restore();
   ctx.globalAlpha = 1;

@@ -221,7 +221,7 @@ function paintStageBg(main,edge,offsetY){
   if(stage===0&&BG1_NEBULA&&BG1_NEBULA.complete&&BG1_NEBULA.naturalWidth){
     ctx.save();
     if('filter'in ctx)ctx.filter='saturate(1.25) contrast(1.05) brightness(1.08)';
-    drawLoopLayer(BG1_NEBULA,bgScroll*0.36,0.96,false,false,'source-over');
+    drawLoopLayer(BG1_NEBULA,bgScroll*0.36,0.60,false,false,'source-over');
     ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
   }
   if(stage===0&&BG1_BH&&BG1_BH.complete&&BG1_BH.naturalWidth){

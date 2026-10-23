@@ -3,7 +3,7 @@ function bossAimed(n){
   if(!boss||boss.invuln>0) return;
   if(bullets.length+ebullets.length>260) return;
   if(stage===2) n=Math.max(2,Math.round(n*0.7));
-  var a=Math.atan2(player.y-boss.y,player.x-boss.x),sp=185+stage*8,spread=0.22;
+  var a=bossGapAngle(),sp=185+stage*8,spread=0.22;
   for(var i=0;i<n;i++){
     if(n>=5&&Math.abs(i-(n-1)/2)<1.01) continue;
     var ang=a+(i-(n-1)/2)*spread;
@@ -11,11 +11,12 @@ function bossAimed(n){
   }
   sfx('e_shot',0.20);
 }
+function bossGapAngle(){ return Math.PI/2 + Math.sin(time*0.42)*0.9; }
 function bossRing(n){
   if(!boss||boss.invuln>0||n<=0) return;
   sfx('e_shot',0.17);
   if(bullets.length+ebullets.length>280) return;
-  n=Math.min(n,14);var sp=92+stage*7,gap=Math.atan2(player.y-boss.y,player.x-boss.x);
+  n=Math.min(n,14);var sp=92+stage*7,gap=bossGapAngle();
   for(var i=0;i<n;i++){
     var a=i/n*TAU+time*0.25;
     var da=Math.atan2(Math.sin(a-gap),Math.cos(a-gap));
@@ -34,9 +35,9 @@ function bossSpiral(arms,dir,speed){
 }
 function bossWall(){
   if(!boss||boss.invuln>0) return;
-  var n=12,gap=Math.max(1,Math.min(n-2,Math.round((player.x-W*.08)/(W*.84)*(n-1))));
+  var n=12,gap=2+Math.floor(((Math.sin(time*.55)+1)/2)*(n-4));
   for(var i=0;i<n;i++){
-    if(Math.abs(i-gap)<1) continue;
+    if(Math.abs(i-gap)<1.5) continue;
     ebullets.push({x:W*0.08+i*(W*0.84/(n-1)),y:boss.y+30,vx:0,vy:95+stage*6,rad:5.5,type:1});
   }
   sfx('e_shot',0.2);
@@ -65,7 +66,7 @@ function bossSeraphFan(){
 function bossVortex(){
   if(!boss||boss.invuln>0) return;
   if(bullets.length+ebullets.length>270) return;
-  var arms=2,per=10,sp=88+stage*7,gap=Math.atan2(player.y-boss.y,player.x-boss.x);
+  var arms=2,per=10,sp=88+stage*7,gap=bossGapAngle();
   for(var arm=0;arm<arms;arm++){
     for(var i=0;i<per;i++){
       var a=arm/arms*TAU+i/per*TAU+time*0.45;
@@ -78,7 +79,7 @@ function bossVortex(){
 }
 function bossCrossfire(){
   if(!boss||boss.invuln>0) return;
-  var a=Math.atan2(player.y-boss.y,player.x-boss.x);
+  var a=bossGapAngle();
   if(beams.length<5){
     spawnBeam(boss.x-82,boss.y+18,a,1400,13,0.8,0.32,1,bossBeamColor(),false,boss);
     spawnBeam(boss.x+82,boss.y+18,a,1400,13,0.8,0.32,1,bossBeamColor(),false,boss);
@@ -94,7 +95,7 @@ function bossCrossfire(){
 function bossHiveBurst(){
   if(!boss||boss.invuln>0) return;
   if(bullets.length+ebullets.length>270) return;
-  var gap=Math.atan2(player.y-boss.y,player.x-boss.x),per=stage===2?7:10;
+  var gap=bossGapAngle(),per=stage===2?7:10;
   for(var r=0;r<2;r++){
     for(var i=0;i<per;i++){
       var a=i/12*TAU+r*0.26+time*0.18;
@@ -109,7 +110,7 @@ function bossHalo(){
   if(!boss||boss.invuln>0) return;
   if(bullets.length+ebullets.length>280) return;
   var n=18,sp=98+stage*6,a0=time*0.38;
-  var gap=Math.atan2(player.y-boss.y,player.x-boss.x);
+  var gap=bossGapAngle();
   for(var i=0;i<n;i++){
     var a=a0+i/n*TAU;
     var da=Math.atan2(Math.sin(a-gap),Math.cos(a-gap));
@@ -125,7 +126,7 @@ function bossHalo(){
 function bossGatling(){
   if(!boss||boss.invuln>0) return;
   if(bullets.length+ebullets.length>275) return;
-  var a=Math.atan2(player.y-boss.y,player.x-boss.x),sp=245+stage*8;
+  var a=bossGapAngle(),sp=245+stage*8;
   for(var i=0;i<6;i++){
     var aa=a+(i-2.5)*0.045;
     ebullets.push({x:boss.x,y:boss.y+14,vx:Math.cos(aa)*sp,vy:Math.sin(aa)*sp,rad:3.8,type:1});
@@ -175,7 +176,7 @@ function bossCrossArms(){
 function bossChronosBloom(){
   if(!boss||boss.invuln>0) return;
   if(bullets.length+ebullets.length>300) return;
-  var gap=Math.atan2(player.y-boss.y,player.x-boss.x);
+  var gap=bossGapAngle();
   for(var r=0;r<3;r++){
     for(var i=0;i<12;i++){
       var a=i/12*TAU+r*.24+time*.12;
@@ -190,7 +191,7 @@ function bossEchoCross(){
   if(!boss||boss.invuln>0) return;
   if(beams.length>7) return;
   var cols=['#ff5f7a','#c06aff','#ff9a3a','#ffe7a0'];
-  var ta=Math.atan2(player.y-boss.y,player.x-boss.x);
+  var ta=bossGapAngle();
   for(var i=0;i<4;i++){
     var a=time*.35+i*Math.PI/2;
     var ex=boss.x+Math.cos(a)*110,ey=boss.y+Math.sin(a)*72;
@@ -201,7 +202,7 @@ function bossEchoCross(){
 function bossCollapse(){
   if(!boss||boss.invuln>0) return;
   if(bullets.length+ebullets.length>320) return;
-  var gap=Math.atan2(player.y-boss.y,player.x-boss.x);
+  var gap=bossGapAngle();
   for(var i=0;i<22;i++){
     var a=i/22*TAU+time*.25;
     var da=Math.atan2(Math.sin(a-gap),Math.cos(a-gap));
@@ -213,7 +214,7 @@ function bossCollapse(){
 function bossSwarm(){
   if(!boss||boss.invuln>0) return;
   for(var s=-1;s<=1;s+=2){
-    var base=Math.atan2(player.y-boss.y,player.x-boss.x)+s*0.24;
+    var base=bossGapAngle()+s*0.24;
     for(var k=0;k<2;k++){
       if(stage===2&&s>0&&k===1) continue;
       var a=base+(k-1.5)*0.10;

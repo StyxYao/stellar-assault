@@ -180,3 +180,15 @@
 
 - Nebula is now a near-opaque source-over layer above the base backgrounds and below the black-hole layer.
 - It scrolls independently at 0.36×; rocks and nebula clouds are visible in game.
+
+## 0.3.6 — warning, missile tail, boss gaps and typography
+
+- Phase-2→3 explosion only applies to stage 5.
+- Missile launch tail doubled to 0.64s with a long decay.
+- BGM volume +10% (0.605 -> 0.6655).
+- Player energy core dimmed to avoid white clipping.
+- Stage-1 nebula opacity set to 60%.
+- Cast body type increased to 16px; CAST/THANK YOU use white Orbitron.
+- Boss-5 safety bullets no longer delete themselves near the player; radial gaps move independently of the player.
+- Boss-wall gap widened to two bullets and moves slowly.
+- Player respawn state is cleared when WARNING starts.

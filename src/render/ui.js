@@ -397,7 +397,7 @@ function drawCast(){
   ctx.textAlign='center';
   var headA=Math.max(0,1-castT/3.2);
   if(headA>0){
-    ctx.globalAlpha=.9*headA;ctx.fillStyle='#ffe6a0';ctx.font='900 22px "Arial Black", Arial, sans-serif';ctx.fillText('TIME RECLAIMED',W/2,H*0.13);
+    ctx.globalAlpha=.9*headA;ctx.fillStyle='#eaf7ff';ctx.font='600 23px Orbitron, Arial, sans-serif';ctx.fillText('TIME RECLAIMED',W/2,H*0.13);
     ctx.globalAlpha=.65*headA;ctx.fillStyle='#9fe8ff';ctx.font='12px monospace';ctx.fillText('FINAL CHAPTER  ·  TIME\'S END',W/2,H*0.18);
   }
   ctx.globalAlpha=1;
@@ -407,12 +407,12 @@ function drawCast(){
     for(var i=0;i<CAST_LINES.length;i++){
       var y=startY+i*CAST_LINE_H;if(y<-80||y>H+80) continue;
       var isTitle=i===0;
-      var titleFont=(isTitle?'900 30px':'900 20px')+' "Arial Black", Arial, sans-serif';
-      ctx.fillStyle=isTitle?'#ffd27a':'#eaf4ff';ctx.font=titleFont;
+      var titleFont=(isTitle?'600 32px':'600 19px')+' Orbitron, Arial, sans-serif';
+      ctx.fillStyle=isTitle?'#ffffff':'#eaf4ff';ctx.font=titleFont;
       var tlines=wrapCastText(CAST_LINES[i][0],W-48,titleFont);
       for(var tl=0;tl<tlines.length;tl++)ctx.fillText(tlines[tl],W/2,y+tl*20);
       if(CAST_LINES[i][1]){
-        var subFont='13px monospace';ctx.fillStyle=isTitle?'#9fe8ff':'#8fb8ca';ctx.font=subFont;
+        var subFont='16px Rajdhani, Arial, sans-serif';ctx.fillStyle=isTitle?'#9fe8ff':'#8fb8ca';ctx.font=subFont;
         var slines=wrapCastText(CAST_LINES[i][1],W-48,subFont);
         for(var sl=0;sl<slines.length;sl++)ctx.fillText(slines[sl],W/2,y+20+tl*20+sl*14);
       }
@@ -422,10 +422,10 @@ function drawCast(){
     var fa=Math.min(1,castHoldT/1.4);
     ctx.fillStyle='rgba(2,4,14,'+(0.62*fa)+')';ctx.fillRect(0,0,W,H);
     ctx.globalAlpha=fa;
-    ctx.fillStyle='#ffe6a0';ctx.shadowColor='rgba(255,190,80,0.8)';ctx.shadowBlur=18;
-    ctx.font='900 31px "Arial Black", Arial, sans-serif';ctx.fillText('THANK YOU',W/2,H*0.39);
-    ctx.font='900 31px "Arial Black", Arial, sans-serif';ctx.fillText('FOR PLAYING',W/2,H*0.46);
-    ctx.shadowBlur=0;ctx.fillStyle='#cfe8ff';ctx.font='600 22px Rajdhani, Arial, sans-serif';
+    ctx.fillStyle='#ffffff';ctx.shadowColor='rgba(160,225,255,0.9)';ctx.shadowBlur=22;
+    ctx.font='600 38px Orbitron, Arial, sans-serif';ctx.fillText('THANK YOU',W/2,H*0.39);
+    ctx.font='600 38px Orbitron, Arial, sans-serif';ctx.fillText('FOR PLAYING',W/2,H*0.46);
+    ctx.shadowBlur=0;ctx.fillStyle='#f2fbff';ctx.font='600 22px Orbitron, Arial, sans-serif';
     ctx.fillText('思齐Styx',W/2,H*0.55);
     ctx.fillStyle='#8fb8ca';ctx.font='14px monospace';ctx.fillText('with DeepSeek',W/2,H*0.60);
     ctx.fillStyle='#7f93a8';ctx.font='11px monospace';ctx.fillText('THE END',W/2,H*0.67);
