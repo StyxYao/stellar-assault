@@ -13,4 +13,19 @@ To restore the whole working tree to a checkpoint, use `tools/make_snapshot.sh` 
 | Step | Scope | Commit | Tag |
 |---|---|---|---|
 | 1 | Phase-1 structure, enemy data, hitbox renderer, CI | `037d743` | `checkpoint/phase1` |
-| 2 | Stage-5 wave data extraction | pending | `step/phase2a-stage5-waves` |
+| 2 | Stage-5 wave data extraction | `62a2b4d` | `step/phase2a-stage5-waves` |
+
+## Rollback examples
+
+```bash
+# inspect the step before a regression
+git show step/phase2a-stage5-waves
+
+# return to the checkpoint before phase 2
+git checkout checkpoint/pre-phase2
+
+# create a safe branch from a checkpoint
+git switch -c recover/pre-phase2 checkpoint/pre-phase2
+```
+
+The step tag is annotated; its tag message records the scope.
