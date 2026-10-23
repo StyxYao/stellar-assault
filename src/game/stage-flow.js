@@ -23,7 +23,25 @@ function startAtStage(i){
   player.bombs=i>=4?3:2;
   startStage(i);
 }
+function prepareStageContent(s){
+  var st=STAGES[s];if(st.__prepared)return;
+  var list=st.waves;
+  if(s<4){for(var wi=0;wi<list.length;wi++)list[wi].t*=1.25;}
+  var lastT=list[list.length-1].t;
+  // one stage-5 echo as a mini boss at the halfway point of stages 1-4
+  if(s<4){list.push({t:lastT*0.5,type:9+s,n:1,form:'mid',spd:70,mini:true});}
+  // low-level fodder formations fill the empty screen; 1-2 shots each
+  var forms=['v','line','pincer','arc','orbit','fractal','ring','line','v','orbit'];
+  var fi=0;
+  for(var ft=3;ft<lastT-3;ft+=8.5){
+    list.push({t:ft,type:(fi%3===0?0:5),n:6+(fi%3)*2,form:forms[fi%forms.length],spd:90+(fi%4)*8,aggr:0.42,fodder:true});
+    fi++;
+  }
+  list.sort(function(a,b){return a.t-b.t;});
+  st.__prepared=true;
+}
 function startStage(i){
+  prepareStageContent(i);
   stage=i; stageT=0; waveIndex=0; nextTransport=24+Math.random()*10;
   enemies.length=0; bullets.length=0; ebullets.length=0; shots.length=0; fx.length=0; items.length=0; missiles.length=0; wingBeams.length=0; beams.length=0; orbBullets.length=0; phaseFx.length=0; blastZones.length=0; odLaserFx.length=0; player.trail=[];
   boss=null; runner=null; phaseFx.length=0;

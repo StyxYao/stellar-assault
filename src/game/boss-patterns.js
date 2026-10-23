@@ -44,8 +44,9 @@ function bossWall(){
 }
 function bossBroadside(){
   if(!boss||boss.invuln>0) return;
-  spawnBeam(boss.x-78,boss.y+24,Math.PI/2,1600,20,1.2,0.42,1,bossBeamColor(),true,boss);
-  spawnBeam(boss.x+78,boss.y+24,Math.PI/2,1600,20,1.2,0.42,1,bossBeamColor(),true,boss);
+  var ba=Math.atan2(player.y-(boss.y+24),player.x-boss.x);
+  spawnBeam(boss.x-78,boss.y+24,ba,1600,20,1.2,0.42,1,bossBeamColor(),true,boss);
+  spawnBeam(boss.x+78,boss.y+24,ba,1600,20,1.2,0.42,1,bossBeamColor(),true,boss);
   shake=Math.max(shake,5);
 }
 function bossSeraphFan(){
@@ -168,8 +169,9 @@ function bossCrossArms(){
   var cx=W/2,cy=H*0.48,len=Math.max(W,H)*0.9;
   var pal=(boss.crossOrb&&boss.crossOrb.pal!=null)?boss.crossOrb.pal:(SIG_BOSS>=0?SIG_BOSS:4);
   var col=(BOSS_PALETTES[pal]||BOSS_PALETTES[4]).beam;
+  var aim=Math.atan2(player.y-cy,player.x-cx);
   for(var k=0;k<4;k++){
-    spawnBeam(cx,cy,k*Math.PI/2,len,12,0.28,0.82,1,col,false,null);
+    spawnBeam(cx,cy,aim+k*Math.PI/2,len,12,0.28,0.82,1,col,false,null);
   }
   sfx('laser_fire',0.45);
 }
@@ -191,10 +193,10 @@ function bossEchoCross(){
   if(!boss||boss.invuln>0) return;
   if(beams.length>7) return;
   var cols=['#ff5f7a','#c06aff','#ff9a3a','#ffe7a0'];
-  var ta=bossGapAngle();
   for(var i=0;i<4;i++){
     var a=time*.35+i*Math.PI/2;
     var ex=boss.x+Math.cos(a)*110,ey=boss.y+Math.sin(a)*72;
+    var ta=Math.atan2(player.y-ey,player.x-ex)+(i-1.5)*0.035;
     spawnBeam(ex,ey,ta,1200,8,0.72,0.28,1,cols[i],false,null);
   }
   sfx('e_charge',0.22);

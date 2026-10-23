@@ -381,7 +381,7 @@ var CAST_LINES=[
  ['SPECIAL THANKS','EVERY PILOT WHO REACHED THE END'],
  ['','']
 ];
-var CAST_LINE_H=70,CAST_TOTAL=CAST_LINES.length*CAST_LINE_H+H*0.9+100;
+var CAST_LINE_H=84,CAST_TOTAL=CAST_LINES.length*CAST_LINE_H+H*0.9+100;
 function wrapCastText(text,maxW,font){
   ctx.font=font;
   var out=[],line='';
@@ -407,14 +407,14 @@ function drawCast(){
     for(var i=0;i<CAST_LINES.length;i++){
       var y=startY+i*CAST_LINE_H;if(y<-80||y>H+80) continue;
       var isTitle=i===0;
-      var titleFont=(isTitle?'600 32px':'600 19px')+' Orbitron, Arial, sans-serif';
+      var titleFont=(isTitle?'600 32px':'600 20px')+' Orbitron, Arial, sans-serif';
       ctx.fillStyle=isTitle?'#ffffff':'#eaf4ff';ctx.font=titleFont;
       var tlines=wrapCastText(CAST_LINES[i][0],W-48,titleFont);
       for(var tl=0;tl<tlines.length;tl++)ctx.fillText(tlines[tl],W/2,y+tl*20);
       if(CAST_LINES[i][1]){
-        var subFont='16px Rajdhani, Arial, sans-serif';ctx.fillStyle=isTitle?'#9fe8ff':'#8fb8ca';ctx.font=subFont;
+        var subFont='20px Rajdhani, Arial, sans-serif';ctx.fillStyle=isTitle?'#9fe8ff':'#8fb8ca';ctx.font=subFont;
         var slines=wrapCastText(CAST_LINES[i][1],W-48,subFont);
-        for(var sl=0;sl<slines.length;sl++)ctx.fillText(slines[sl],W/2,y+20+tl*20+sl*14);
+        for(var sl=0;sl<slines.length;sl++)ctx.fillText(slines[sl],W/2,y+26+tl*21+sl*19);
       }
     }
   }

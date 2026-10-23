@@ -1,8 +1,8 @@
 // Enemy wave spawning, scaling and firing. Uses legacy world/projectile hooks.
 function spawnWave(w){
   if(w.form==='mid'){
-    var mhp=Math.round((320+stage*80)*0.85);
-    enemies.push({type:w.type,x:W/2,y:-60,baseX:W/2,tx:W/2,ty:250,mode:'turret',entering:true,t:0,phase:0,spd:80,hp:mhp,max:mhp,fireT:1.0,flash:0,elite:true,visT:0,first:true});
+    var mhp=Math.round((w.mini?ET[w.type].hp*7:(320+stage*80))*0.85);
+    enemies.push({type:w.type,x:W/2,y:-60,baseX:W/2,tx:W/2,ty:250,mode:'turret',entering:true,t:0,phase:0,spd:80,hp:mhp,max:mhp,fireT:1.0,flash:0,elite:true,mini:!!w.mini,visT:0,first:true});
     return;
   }
   if(w.form==='escort'){

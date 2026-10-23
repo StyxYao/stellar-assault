@@ -192,3 +192,14 @@
 - Boss-5 safety bullets no longer delete themselves near the player; radial gaps move independently of the player.
 - Boss-wall gap widened to two bullets and moves slowly.
 - Player respawn state is cleared when WARNING starts.
+
+## 0.3.7 — stage pacing, fodder and laser aim
+
+- Stage 1-4 wave timelines extended 25%; mini-boss echo at the halfway point of each.
+- Added dense low-HP fodder formations to all stages for clear-screen pacing.
+- Boss-5 lasers now originate toward the player instead of firing at the screen edge.
+- BGM +15% to 0.765325.
+- Cast body text 20px, line height 84px; white Orbitron headings.
+- Phase-2→3 explosion limited to Boss 5.
+- Missile tail 0.64s with fade.
+- Nebula 60% opacity.

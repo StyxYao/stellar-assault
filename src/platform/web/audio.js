@@ -285,7 +285,7 @@ function playBgm(k){
       bgmAudio.addEventListener('canplay',seek,{once:true});
       setTimeout(seek,80);setTimeout(seek,320);
     }
-    bgmAudio.volume=0.6655;
+    bgmAudio.volume=0.765325;
     var pr=bgmAudio.play();
     if(pr&&pr.catch) pr.catch(function(){
       bgmPending=k;
