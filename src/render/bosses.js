@@ -97,6 +97,8 @@ function drawKeyedBossVideo(video,cx,cy,size,hole,rot){
   var fcv=PHASE_FIRST_CVS[firstKey];var vt=video.currentTime||0,vd=video.duration||1,seam=.22,fa=0;
   if(vt<seam)fa=1-vt/seam; else if(vt>vd-seam)fa=(vt-(vd-seam))/seam;
   ctx.save();ctx.globalCompositeOperation='source-over';ctx.translate(cx,cy);ctx.rotate(rot||0);
+  // static fallback underlay: covers decoder gaps at the loop seam with the same-size first frame
+  if(fcv)ctx.drawImage(fcv,-size/2,-size/2,size,size);
   ctx.drawImage(phaseMaskCv,-size/2,-size/2,size,size);
   if(fa>0){ctx.globalAlpha=Math.min(1,fa);ctx.drawImage(fcv,-size/2,-size/2,size,size);ctx.globalAlpha=1;}
   ctx.restore();

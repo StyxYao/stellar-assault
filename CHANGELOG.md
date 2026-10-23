@@ -129,3 +129,16 @@
 - Added structure checks, content validation, unit tests and CI.
 - Final web build and stage-1/stage-5 smoke tests pass.
 - Rollback checkpoints and local snapshots are documented in `docs/MIGRATION_LOG.md`.
+
+## 0.3.1 — presentation, fusion, audio and cast pass
+
+- Player hitbox is now a flashing white/cyan/magenta energy core at the exact 6px radius, with rotating ticks.
+- Phase-2/3 videos draw their cached first frame as a same-size static underlay, covering loop decoder gaps.
+- Boss-5 bullet visuals reduced to match smaller collision bodies.
+- Fusion is primed on the first gesture, played automatically and cannot be started/skipped by a normal tap.
+- Menu BGM restored to the original `m` track.
+- NORMAL fire uses the real `sfx-sel/gun.mp3` blaster sample; fabricated layers remain as fallback.
+- Boss blink no longer grants long invulnerability (cap 0.12s).
+- Added the supplied stage-1 nebula image beneath the earliest/current layers.
+- Finale waits for `TIME IS SAVED` to fade before cast.
+- Cast includes all enemy names, wraps long entries, and waits for the last line to leave the screen before `THANK YOU`.

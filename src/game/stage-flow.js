@@ -126,7 +126,7 @@ function drawPhase1DeathScene(){
 }
 function startBossFusionCinematic(){
   state='bossFusion';bossFusionT=0;
-  try{fusionVideo.currentTime=0;fusionVideo.play().catch(function(){});}catch(e){}
+  try{fusionVideo.loop=false;fusionVideo.currentTime=0;fusionVideo.play().catch(function(){});}catch(e){}
   fusionFadeT=1.15;fusionHoldT=0;fusionHoldActive=false;
   setBanner('FUSION','FOUR ECHOES',9.0);
   sfx('b_charge',0.65);

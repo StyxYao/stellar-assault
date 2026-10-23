@@ -22,6 +22,7 @@ var phaseMaskCv=null,phaseMaskCtx=null,BG_FIRST_CV=null,PHASE_FIRST_CVS={};
 var BG5=new Image();BG5.src='assets/bg/stage5-main.webp';
 var BG1_BH=new Image();BG1_BH.src='assets/bg/stage1-bh.webp';
 var BG1_EARLIEST=new Image();BG1_EARLIEST.src='assets/bg/stage1-earliest.webp';
+var BG1_NEBULA=new Image();BG1_NEBULA.src='assets/bg/stage1-nebula.webp';
 var JULIA_CANVAS=null,JULIA_CTX=null,JULIA_DATA=null,JULIA_TICK=0,JULIA_W=200,JULIA_H=430;
 var IFS_POINTS=(function(){var v=[{x:0,y:0},{x:1,y:0},{x:.5,y:.866}],p={x:.5,y:.35},out=[];for(var i=0;i<2600;i++){var q=v[(i*7)%3];p={x:(p.x+q.x)/2,y:(p.y+q.y)/2};if(i>60&&i%23===0)out.push(p);}return out;})();
 // web audio engine lives in src/platform/web/audio.js
@@ -321,7 +322,6 @@ function drawScene(){
     ctx.strokeStyle='rgba(160,220,255,0.55)';ctx.lineWidth=1;ctx.strokeRect(fbx,fby,fbw,fbh);
     ctx.fillStyle='rgba(160,220,255,0.22)';ctx.fillRect(fbx,fby,fbw*(fusionHoldT/1.1),fbh);
     ctx.fillStyle='#cfeaff';ctx.font='10px monospace';ctx.textAlign='center';ctx.fillText('HOLD SKIP',fbx+fbw/2,fby+19);
-    if(fusionVideo.paused){ctx.fillStyle='rgba(255,255,255,.85)';ctx.font='12px monospace';ctx.fillText('TAP TO PLAY FUSION',W/2,H-120);}
     ctx.textAlign='left';ctx.restore();
     ctx.restore();return;
   }
@@ -391,7 +391,7 @@ function drawScene(){
 
 window.__beams=function(){return beams.map(function(b){return {ang:+(b.ang*180/Math.PI).toFixed(0),t:+b.t.toFixed(2),charge:b.charge,fire:b.fire,owner:!!b.owner,sweep:b.sweepSpeed||0};});};
 window.__orb=function(){return boss&&boss.crossOrb?{x:Math.round(boss.crossOrb.x),y:Math.round(boss.crossOrb.y),t:+boss.crossOrb.t.toFixed(2)}:null;};
-window.__g=function(){return {state:state,stage:stage,score:score,enemies:enemies.length,bullets:bullets.length,ebullets:ebullets.length,hp:boss?Math.round(boss.hp):0,phase:boss?boss.phase:-1,bx:boss?Math.round(boss.x):0,lt:boss?+(boss.laserT.toFixed(1)):0,ut:boss?+(boss.ultT.toFixed(1)):0,uc:boss?+(boss.ultCharge.toFixed(1)):0,style:boss?boss.def.style:'',power:player.specialPower,items:items.length,shots:shots.length,weapon:player.weapon,options:player.options,lives:player.lives,php:player.hp,bombs:player.bombs};};
+window.__g=function(){return {state:state,stage:stage,score:score,enemies:enemies.length,bullets:bullets.length,ebullets:ebullets.length,hp:boss?Math.round(boss.hp):0,inv:boss?+(boss.invuln||0).toFixed(2):0,phase:boss?boss.phase:-1,bx:boss?Math.round(boss.x):0,lt:boss?+(boss.laserT.toFixed(1)):0,ut:boss?+(boss.ultT.toFixed(1)):0,uc:boss?+(boss.ultCharge.toFixed(1)):0,style:boss?boss.def.style:'',power:player.specialPower,items:items.length,shots:shots.length,weapon:player.weapon,options:player.options,lives:player.lives,php:player.hp,bombs:player.bombs};};
 window.__god=function(){player.invuln=99999;player.noBlink=true;};
 window.__stage=function(n){startStage(n);};
 window.__boss=function(){if(!boss)spawnBoss();};

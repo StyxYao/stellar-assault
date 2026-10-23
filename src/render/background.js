@@ -211,12 +211,15 @@ function paintFractalBg(main,edge,offsetY){
 function paintStageBg(main,edge,offsetY){
   if(stage===4){ paintFractalBg(main,edge,offsetY); return; }
 
-  if(stage===0&&BG1_EARLIEST&&BG1_EARLIEST.complete&&BG1_EARLIEST.naturalWidth){
-    drawLoopLayer(BG1_EARLIEST,bgScroll*0.62,1,false,false);
+  if(stage===0&&BG1_NEBULA&&BG1_NEBULA.complete&&BG1_NEBULA.naturalWidth){
+    drawLoopLayer(BG1_NEBULA,bgScroll*0.30,0.96,false,false);
   }
-  drawLoopLayer(main,bgScroll+(offsetY||0),stage===0?0.50:1,false,false);
   if(stage===0&&BG1_EARLIEST&&BG1_EARLIEST.complete&&BG1_EARLIEST.naturalWidth){
-    ctx.save();ctx.globalAlpha=.18;ctx.globalCompositeOperation='screen';drawLoopLayer(BG1_EARLIEST,bgScroll*0.62,1,false,false);ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+    drawLoopLayer(BG1_EARLIEST,bgScroll*0.62,0.55,false,false);
+  }
+  drawLoopLayer(main,bgScroll+(offsetY||0),stage===0?0.46:1,false,false);
+  if(stage===0&&BG1_EARLIEST&&BG1_EARLIEST.complete&&BG1_EARLIEST.naturalWidth){
+    ctx.save();ctx.globalAlpha=.10;ctx.globalCompositeOperation='screen';drawLoopLayer(BG1_EARLIEST,bgScroll*0.62,1,false,false);ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
   }
   if(stage===0&&BG1_BH&&BG1_BH.complete&&BG1_BH.naturalWidth){
     ctx.save();if('filter'in ctx)ctx.filter='brightness(1.72) saturate(1.15)';drawLoopLayer(BG1_BH,0,1,false,false);

@@ -34,13 +34,13 @@ function ebSprite(pi,type){
 var S5_BULLET_KEYS=[['s5b2','s5b5'],['s5b1','s5b6'],['s5b3','s5b4'],['s5b4','s5b5'],['s5b6','s5b1'],['s5b1','s5b3']];
 var S5_ENEMY_BULLET=['s5b4','s5b5','s5b2','s5b6','s5b1','s5b3'];
 function drawCrystalEB(e,p,pi){
-  var R=e.rad*(e.type===2?2.17:2.68);
+  var R=e.rad*(e.type===2?1.85:2.25);
   var n=e.rad>=6?12:(e.type===2?8:4);
   var cols=[p.main,p.light,p.edge,p.core];
   var key=S5_BULLET_KEYS[pi]&&S5_BULLET_KEYS[pi][e.type===2?1:0];
   var art=key?GIMG[key]:null;
   if(art&&art.complete&&art.naturalWidth){
-    var target=e.rad*(e.type===2?4.8:4.1);
+    var target=e.rad*(e.type===2?3.6:3.25);
     var aw=target,ah=target*art.height/art.width;
     if(ah<target){ah=target;aw=target*art.width/art.height;}
     ctx.save();ctx.globalCompositeOperation='lighter';
@@ -106,7 +106,7 @@ function drawEB(e){
   if(e.s5art){
     var art=GIMG[e.s5art];
     if(art&&art.complete&&art.naturalWidth){
-      var target=e.rad*3.06,aw=target,ah=target*art.height/art.width;
+      var target=e.rad*2.35,aw=target,ah=target*art.height/art.width;
       if(ah<target){ah=target;aw=target*art.width/art.height;}
       ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.55;
       ctx.fillStyle=p.glow;ctx.beginPath();ctx.arc(0,0,e.rad*1.7,0,TAU);ctx.fill();

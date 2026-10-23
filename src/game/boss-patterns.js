@@ -225,7 +225,7 @@ function bossSwarm(){
 function bossBlink(){
   if(!boss||boss.invuln>0) return;
   for(var k=0;k<12;k++) part(boss.x+rand(-50,50),boss.y+rand(-30,30),'#c58bff',2,180);
-  boss.x=rand(80,W-80);boss.y=210+rand(-20,20);boss.invuln=0.45;
+  boss.x=rand(80,W-80);boss.y=210+rand(-20,20);boss.invuln=Math.min(boss.invuln||0,0.12);
   for(var k=0;k<12;k++) part(boss.x+rand(-50,50),boss.y+rand(-30,30),'#c58bff',2,180);
   sfx('e_charge',0.3);
 }

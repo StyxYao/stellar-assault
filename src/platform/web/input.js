@@ -11,7 +11,7 @@ function onDown(e){
   if(state==='menu'&&bgmPending){var pk=bgmPending;bgmPending='';playBgm(pk);}
   var p=pt(e);
   if(state==='menu'){
-    if(!audioReady){ audioReady=true; playBgm('m5'); }
+    if(!audioReady){ audioReady=true; playBgm('m'); }
     var sbs=stageSelectButtons();
     for(var si=0;si<sbs.length;si++){
       var sb=sbs[si];
@@ -25,10 +25,10 @@ function onDown(e){
   if(state==='bossFusion'){
     var fsx=W-104,fsy=64,fsw=92,fsh=30;
     if(p.x>=fsx&&p.x<=fsx+fsw&&p.y>=fsy&&p.y<=fsy+fsh){fusionHoldActive=true;fusionHoldT=0;return;}
-    fusionHoldActive=false;try{fusionVideo.play().catch(function(){});}catch(e){} return;
+    fusionHoldActive=false;return;
   }
   if(state==='fusion'){ fusionT=3.6; return; }
-  if(state==='cast'){ state='menu'; playBgm('m5'); return; }
+  if(state==='cast'){ state='menu'; playBgm('m'); return; }
   if(state==='win'||state==='over'){ startGame(); return; }
   var bx=W-64,by=H-78;
   if((p.x-bx)*(p.x-bx)+(p.y-by)*(p.y-by)<54*54){ bomb(); return; }

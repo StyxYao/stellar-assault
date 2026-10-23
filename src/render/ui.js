@@ -369,10 +369,27 @@ var CAST_LINES=[
  ['PATTERNS','KENTA CHO  ·  BSD-3'],
  ['MUSIC','奇点 / KALEIDOSCOPE / 引力弹弓 / 维度破碎 / 暗物质 / 虚实之间'],
  ['SFX','KENNEY SCI-FI SOUNDS'],
+ ['ENEMY ECHOES',''],
+ ['SMALL FIGHTER · MEDIUM FIGHTER','scout wing'],
+ ['SCOUT · BOMBER','raider wing'],
+ ['MECH · INTERCEPTOR','aegis warden'],
+ ['RAIL LANCER · MINE SEEDER','fractal shard'],
+ ['KALEIDO PRISM · ECHO WARDEN','void echoes'],
  ['SPECIAL THANKS','EVERY PILOT WHO REACHED THE END'],
  ['','']
 ];
-var CAST_LINE_H=44,CAST_TOTAL=CAST_LINES.length*CAST_LINE_H+180;
+var CAST_LINE_H=70,CAST_TOTAL=CAST_LINES.length*CAST_LINE_H+H*0.9+100;
+function wrapCastText(text,maxW,font){
+  ctx.font=font;
+  var out=[],line='';
+  for(var i=0;i<text.length;i++){
+    var ch=text.charAt(i),test=line+ch;
+    if(line&&ctx.measureText(test).width>maxW){out.push(line);line=ch;}
+    else line=test;
+  }
+  if(line)out.push(line);
+  return out;
+}
 function drawCast(){
   ctx.textAlign='center';
   ctx.globalAlpha=.9;ctx.fillStyle='#ffe6a0';ctx.font='900 22px "Arial Black", Arial, sans-serif';ctx.fillText('TIME RECLAIMED',W/2,H*0.13);
@@ -380,16 +397,18 @@ function drawCast(){
   ctx.globalAlpha=1;
   var castDone=castScroll>=CAST_TOTAL;
   if(!castDone){
-    var startY=H*0.86-castScroll;
+    var startY=H*0.90-castScroll;
     for(var i=0;i<CAST_LINES.length;i++){
-      var y=startY+i*CAST_LINE_H;if(y<-50||y>H+50) continue;
+      var y=startY+i*CAST_LINE_H;if(y<-80||y>H+80) continue;
       var isTitle=i===0;
-      ctx.fillStyle=isTitle?'#ffd27a':'#eaf4ff';
-      ctx.font=(isTitle?'900 30px':'900 20px')+' "Arial Black", Arial, sans-serif';
-      ctx.fillText(CAST_LINES[i][0],W/2,y);
+      var titleFont=(isTitle?'900 30px':'900 20px')+' "Arial Black", Arial, sans-serif';
+      ctx.fillStyle=isTitle?'#ffd27a':'#eaf4ff';ctx.font=titleFont;
+      var tlines=wrapCastText(CAST_LINES[i][0],W-48,titleFont);
+      for(var tl=0;tl<tlines.length;tl++)ctx.fillText(tlines[tl],W/2,y+tl*20);
       if(CAST_LINES[i][1]){
-        ctx.fillStyle=isTitle?'#9fe8ff':'#8fb8ca';ctx.font='13px monospace';
-        ctx.fillText(CAST_LINES[i][1],W/2,y+17);
+        var subFont='13px monospace';ctx.fillStyle=isTitle?'#9fe8ff':'#8fb8ca';ctx.font=subFont;
+        var slines=wrapCastText(CAST_LINES[i][1],W-48,subFont);
+        for(var sl=0;sl<slines.length;sl++)ctx.fillText(slines[sl],W/2,y+20+tl*20+sl*14);
       }
     }
   }

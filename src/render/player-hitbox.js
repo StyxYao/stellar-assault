@@ -1,49 +1,51 @@
-// Player hitbox indicator.
-// Exact collision circle: player.r (6 logical px). The outer glow is visual only.
+// Player hitbox indicator. The filled core and inner ring show the exact r=6 collision radius.
+// The rotating outer ticks are visual only.
 function drawPlayerHitbox(px, py, r, t){
   if(state !== 'play' && state !== 'boss') return;
   if(player.respawnT > 0) return;
 
-  var pulse = 0.5 + 0.5 * Math.sin(t * 5.2);
-  var ring = r;                 // exact collision radius
-  var halo = r + 7 + pulse * 2; // purely visual
+  var pulse = 0.5 + 0.5 * Math.sin(t * 9.0);
+  var halo = r + 6 + pulse * 3;
+  var flash = Math.floor(t * 12) % 2 === 0;
 
   ctx.save();
   ctx.globalCompositeOperation = 'lighter';
 
-  // soft focus halo
+  // hot core halo
   var g = ctx.createRadialGradient(px, py, 0, px, py, halo);
-  g.addColorStop(0, 'rgba(210,250,255,0)');
-  g.addColorStop(0.46, 'rgba(120,225,255,0.10)');
-  g.addColorStop(0.72, 'rgba(90,205,255,' + (0.16 + pulse * 0.08) + ')');
-  g.addColorStop(1, 'rgba(80,190,255,0)');
+  g.addColorStop(0, 'rgba(255,255,255,0.95)');
+  g.addColorStop(0.22, 'rgba(120,255,255,' + (0.55 + pulse * 0.25) + ')');
+  g.addColorStop(0.58, 'rgba(255,70,220,' + (0.22 + pulse * 0.16) + ')');
+  g.addColorStop(1, 'rgba(255,70,220,0)');
   ctx.fillStyle = g;
-  ctx.beginPath();
-  ctx.arc(px, py, halo, 0, TAU);
-  ctx.fill();
+  ctx.beginPath(); ctx.arc(px, py, halo, 0, TAU); ctx.fill();
 
-  // exact hitbox ring
-  ctx.globalAlpha = 0.82 + pulse * 0.18;
-  ctx.strokeStyle = '#dffaff';
-  ctx.lineWidth = 1.1;
-  ctx.beginPath();
-  ctx.arc(px, py, ring, 0, TAU);
-  ctx.stroke();
+  // exact hitbox: solid energy core + ring
+  ctx.globalAlpha = 0.65 + pulse * 0.35;
+  ctx.fillStyle = flash ? 'rgba(255,255,255,0.92)' : 'rgba(160,255,255,0.72)';
+  ctx.beginPath(); ctx.arc(px, py, Math.max(2.2, r * 0.72), 0, TAU); ctx.fill();
 
-  // second, thinner ring makes the tiny 6px radius readable on phone screens
-  ctx.globalAlpha = 0.36 + pulse * 0.14;
-  ctx.strokeStyle = '#8fe8ff';
-  ctx.lineWidth = 0.7;
-  ctx.beginPath();
-  ctx.arc(px, py, ring + 2.2, 0, TAU);
-  ctx.stroke();
-
-  // center point
   ctx.globalAlpha = 0.9;
+  ctx.strokeStyle = flash ? '#ff66dd' : '#b6ffff';
+  ctx.lineWidth = 1.8;
+  ctx.beginPath(); ctx.arc(px, py, r, 0, TAU); ctx.stroke();
+
+  // four rotating energy ticks make the 6px ring readable without obscuring the ship
+  ctx.globalAlpha = 0.55 + pulse * 0.35;
+  ctx.strokeStyle = '#ff9cf0';
+  ctx.lineWidth = 1;
+  for (var i = 0; i < 4; i++) {
+    var a = t * 2.4 + i * Math.PI / 2;
+    ctx.beginPath();
+    ctx.moveTo(px + Math.cos(a) * (r + 1), py + Math.sin(a) * (r + 1));
+    ctx.lineTo(px + Math.cos(a) * (r + 5), py + Math.sin(a) * (r + 5));
+    ctx.stroke();
+  }
+
+  // white-hot centre
+  ctx.globalAlpha = 1;
   ctx.fillStyle = '#ffffff';
-  ctx.beginPath();
-  ctx.arc(px, py, 1.15, 0, TAU);
-  ctx.fill();
+  ctx.beginPath(); ctx.arc(px, py, 1.2, 0, TAU); ctx.fill();
 
   ctx.restore();
   ctx.globalAlpha = 1;

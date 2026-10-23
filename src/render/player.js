@@ -11,6 +11,6 @@ function drawPlayerEntity(){
     if(player.specialPower>=4){ctx.save();ctx.globalCompositeOperation='lighter';var ag=ctx.createRadialGradient(player.x,drawY,0,player.x,drawY,52);ag.addColorStop(0,'rgba(255,215,100,0.28)');ag.addColorStop(1,'rgba(255,180,40,0)');ctx.fillStyle=ag;ctx.beginPath();ctx.arc(player.x,drawY,52,0,TAU);ctx.fill();ctx.restore();}
     drawODAura(drawY);
     ctx.drawImage(gi,player.x-40*psc,drawY-40*psc,80*psc,80*psc);ctx.globalAlpha=1;
-    drawPlayerHitbox(player.x,drawY,player.r,time);
   }
+  drawPlayerHitbox(player.x,drawY,player.r,time);
 }
