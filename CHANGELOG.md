@@ -64,3 +64,8 @@
 ## 0.2.11-phase5e — boss renderer
 
 - Moved all boss visuals (Hedron, phase videos, phase rings, overlays, sprite layers) to `src/render/bosses.js`.
+
+## 0.2.12-phase6a — web audio adapter
+
+- Moved BGM playback, SFX samples, synthesis, buses and laser loop to `src/platform/web/audio.js`.
+- Game code calls the same `playBgm` / `sfx` interface.
