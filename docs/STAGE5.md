@@ -298,3 +298,9 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - Logical canvas is 390x844.
 - CSS now preserves 390:844 with `min()` sizing and centers it; non-matching viewports letterbox instead of stretching.
 - This prevents boss rings/sprites from being vertically squashed on devices whose viewport is not exactly 390:844.
+
+## Phase-2/3 static underlay
+
+- The phase video and its cached/static underlay now share `phaseBossSize()` = `min(W*1.15, H*.52)`.
+- The phase-3 ring packet underlay is scaled by the same size.
+- Recorded but intentionally unchanged: the underlay rotates at its own speed, uses its own hit-flash response, and can use a different blend/alpha. The resulting surreal mismatch is left as-is for now.

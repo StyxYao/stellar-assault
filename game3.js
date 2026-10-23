@@ -2756,14 +2756,14 @@ function drawPhase3CollapseForm(){
   var cx=boss.x,cy=boss.y;
   var p3v=phase3LoopVideo&&phase3LoopVideo.readyState>=2&&phase3LoopVideo.videoWidth>0&&!phase3LoopVideo.paused;
   if(p3v){
-    var sz=Math.min(W*1.15,H*.52);
+    var sz=phaseBossSize();
     drawKeyedBossVideo(phase3LoopVideo,cx,cy,sz,true,time*.04);
     if(boss.hitFlash>0){ctx.save();ctx.globalCompositeOperation='lighter';drawFeatherAnnulus(cx,cy,66,240,Math.min(.28,boss.hitFlash*2.0));drawFeatherAnnulus(cx,cy,115,205,Math.min(.16,boss.hitFlash*1.4));ctx.restore();ctx.globalAlpha=1;}
     return;
   }
 
   var imgs=[GIMG.q1,GIMG.q2,GIMG.q3,GIMG.q4];
-  var ringR=[190,164,138,112],ringS=[88,74,60,48];
+  var ringR=[190*scale,164*scale,138*scale,112*scale],ringS=[88*scale,74*scale,60*scale,48*scale];
   // bottom layer: old phase-3 art as a light-only aura; black areas contribute nothing
   var old=GIMG.b5_3;
   if(old&&old.complete){
@@ -2823,7 +2823,7 @@ function drawPhase2FusionForm(){
   var cx=boss.x,cy=boss.y;
   var p2v=phase2LoopVideo&&phase2LoopVideo.readyState>=2&&phase2LoopVideo.videoWidth>0&&!phase2LoopVideo.paused;
   if(p2v){
-    var sz2=Math.min(W*1.15,H*.52);
+    var sz2=phaseBossSize();
     // opaque circular mask instead of screen blending; keeps the video colors solid
     drawKeyedBossVideo(phase2LoopVideo,cx,cy,sz2,false,time*.05);
     if(boss.hitFlash>0){ctx.save();ctx.globalCompositeOperation='lighter';drawFeatherAnnulus(cx,cy,64,232,Math.min(.30,boss.hitFlash*2.2));drawFeatherAnnulus(cx,cy,110,200,Math.min(.18,boss.hitFlash*1.5));ctx.restore();ctx.globalAlpha=1;}
@@ -2871,7 +2871,9 @@ function drawPhase2FusionForm(){
     ctx.restore();ctx.globalAlpha=1;
   }
 }
-function drawPhase3Rings(w,h){
+function phaseBossSize(){ return Math.min(W*1.15,H*.52); }
+function drawPhase3Rings(w,h,scale){
+  scale=scale||1;
   if(!boss) return;
   var imgs=[GIMG.r1,GIMG.r2,GIMG.r3,GIMG.r4];
   var ringR=[175,152,129,106],ringS=[92,78,64,52];
@@ -3097,8 +3099,8 @@ function drawBoss(){
     }
     ctx.restore();ctx.globalAlpha=1;
   }
-  if(stage===4&&boss.phase===1) drawPhase2BossHalo(w,h);
-  if(stage===4&&boss.phase===2) drawPhase3Rings(w,h);
+  if(stage===4&&boss.phase===1) drawPhase2BossHalo(phaseBossSize(),phaseBossSize());
+  if(stage===4&&boss.phase===2) drawPhase3Rings(phaseBossSize(),phaseBossSize(),phaseBossSize()/430);
   ctx.restore();
 }
 function bulletImg(){ return GIMG['u'+(stage===0?'1':(stage===1?'2':'5'))]; }
