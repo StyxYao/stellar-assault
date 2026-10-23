@@ -17,7 +17,7 @@ var fusionHoldT=0,fusionHoldActive=false,fusionFadeT=0,stageT=0,waveIndex=0,next
 var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpeed=0,glowWarp=0,bombT=0,bombX=0,bombY=0;
 var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
 var BG4=new Image();BG4.src='assets/bg/stage4-main.webp';
-var phaseMaskCv=null,phaseMaskCtx=null,BG_FIRST_CV=null,PHASE_FIRST_CVS={};
+var phaseMaskCv=null,phaseMaskCtx=null,BG_FIRST_CV=null,PHASE_FIRST_CVS={},PHASE_GLITCH_CVS={};
 // web video elements/host/priming live in src/platform/web/video.js
 var BG5=new Image();BG5.src='assets/bg/stage5-main.webp';
 var BG1_BH=new Image();BG1_BH.src='assets/bg/stage1-bh.webp';

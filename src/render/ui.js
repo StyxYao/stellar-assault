@@ -392,8 +392,11 @@ function wrapCastText(text,maxW,font){
 }
 function drawCast(){
   ctx.textAlign='center';
-  ctx.globalAlpha=.9;ctx.fillStyle='#ffe6a0';ctx.font='900 22px "Arial Black", Arial, sans-serif';ctx.fillText('TIME RECLAIMED',W/2,H*0.13);
-  ctx.globalAlpha=.65;ctx.fillStyle='#9fe8ff';ctx.font='12px monospace';ctx.fillText('FINAL CHAPTER  ·  TIME\'S END',W/2,H*0.18);
+  var headA=Math.max(0,1-castT/3.2);
+  if(headA>0){
+    ctx.globalAlpha=.9*headA;ctx.fillStyle='#ffe6a0';ctx.font='900 22px "Arial Black", Arial, sans-serif';ctx.fillText('TIME RECLAIMED',W/2,H*0.13);
+    ctx.globalAlpha=.65*headA;ctx.fillStyle='#9fe8ff';ctx.font='12px monospace';ctx.fillText('FINAL CHAPTER  ·  TIME\'S END',W/2,H*0.18);
+  }
   ctx.globalAlpha=1;
   var castDone=castScroll>=CAST_TOTAL;
   if(!castDone){

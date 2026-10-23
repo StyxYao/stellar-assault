@@ -71,10 +71,13 @@ function startBossPhase1Death(){
   state='bossDeath1';bossDeath1T=0;
   bullets.length=0;ebullets.length=0;orbBullets.length=0;beams.length=0;enemies.length=0;
   player.invuln=99;if(boss)bossDeathBoom(boss,true);
-  if(boss) for(var i=0;i<34;i++){
-    var a=rand(0,TAU),v=rand(80,460);
-    part(boss.x+Math.cos(a)*rand(0,60),boss.y+Math.sin(a)*rand(0,45),
-      ['#fff6d8','#ffe7a0','#ff9a3a','#c9a6ff'][i%4],rand(2,5),v);
+  if(boss){
+    for(var i=0;i<64;i++){
+      var a=rand(0,TAU),v=rand(100,620);
+      part(boss.x+Math.cos(a)*rand(0,110),boss.y+Math.sin(a)*rand(0,80),
+        ['#fff6d8','#ffe7a0','#ff9a3a','#c9a6ff'][i%4],rand(2.5,6),v);
+    }
+    for(var bb=0;bb<5;bb++) fx.push({x:boss.x+rand(-80,80),y:boss.y+rand(-60,60),t:-bb*.06,sc:2.4+bb*.28,seed:Math.random()*TAU,kind:'boss',life:2.3});
   }
   sfx('bomb_big',1.0);
 }
@@ -138,7 +141,7 @@ function finishBossFusionPhase(){
   boss.y=H*.44;boss.entering=false;boss.invuln=2.2;
   state='bossAwaken';bossAwakenT=2.6;boss.bossSigT=0;
   bullets.length=0;ebullets.length=0;beams.length=0;orbBullets.length=0;
-  player.invuln=Math.max(player.invuln,2.8);
+  player.invuln=2.8;
   setBanner('CHRONOS ECHO','FUSED FORM',2.4);
 }
 function drawBossAwakenFx(){

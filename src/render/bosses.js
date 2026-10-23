@@ -93,12 +93,15 @@ function drawKeyedBossVideo(video,cx,cy,size,hole,rot){
   var firstKey=video.currentSrc||video.src;
   if(!PHASE_FIRST_CVS[firstKey]){
     var fc=document.createElement('canvas');fc.width=fc.height=S;fc.getContext('2d').drawImage(phaseMaskCv,0,0);PHASE_FIRST_CVS[firstKey]=fc;
+    PHASE_GLITCH_CVS[firstKey]=phaseGlitchFrames(fc,S);
   }
   var fcv=PHASE_FIRST_CVS[firstKey];var vt=video.currentTime||0,vd=video.duration||1,seam=.22,fa=0;
   if(vt<seam)fa=1-vt/seam; else if(vt>vd-seam)fa=(vt-(vd-seam))/seam;
   ctx.save();ctx.globalCompositeOperation='source-over';ctx.translate(cx,cy);ctx.rotate(rot||0);
   // static fallback underlay: covers decoder gaps at the loop seam with the same-size first frame
-  if(fcv)ctx.drawImage(fcv,-size/2,-size/2,size,size);
+  var glitch=PHASE_GLITCH_CVS[firstKey];
+  var under=glitch?glitch[Math.floor(time*10)%glitch.length]:fcv;
+  if(under)ctx.drawImage(under,-size/2,-size/2,size,size);
   ctx.drawImage(phaseMaskCv,-size/2,-size/2,size,size);
   if(fa>0){ctx.globalAlpha=Math.min(1,fa);ctx.drawImage(fcv,-size/2,-size/2,size,size);ctx.globalAlpha=1;}
   ctx.restore();
@@ -256,7 +259,7 @@ function drawPhase2FusionForm(){
   if(p2v){
     var sz2=phaseBossSize();
     // opaque circular mask instead of screen blending; keeps the video colors solid
-    drawKeyedBossVideo(phase2LoopVideo,cx,cy,sz2,false,time*.05);
+    drawKeyedBossVideo(phase2LoopVideo,cx+10,cy,sz2,false,time*.05);
     if(boss.hitFlash>0){ctx.save();ctx.globalCompositeOperation='lighter';drawFeatherAnnulus(cx,cy,64,232,Math.min(.30,boss.hitFlash*2.2));drawFeatherAnnulus(cx,cy,110,200,Math.min(.18,boss.hitFlash*1.5));ctx.restore();ctx.globalAlpha=1;}
     return;
   }

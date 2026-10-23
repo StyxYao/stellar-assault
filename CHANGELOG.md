@@ -142,3 +142,16 @@
 - Added the supplied stage-1 nebula image beneath the earliest/current layers.
 - Finale waits for `TIME IS SAVED` to fade before cast.
 - Cast includes all enemy names, wraps long entries, and waits for the last line to leave the screen before `THANK YOU`.
+
+## 0.3.2 — phase alignment and finale polish
+
+- Phase-2/3 boss art center aligned with a +10px phase-2 offset.
+- Phase-1 explosion particles/explosion cards enlarged.
+- Phase-2/3 static underlay now cycles three glitch-shifted cached frames.
+- Fixed player invulnerability persisting from phase-1 death into phase 2 (99 -> 2.8).
+- Fusion primed and left playing on first gesture; no click-to-play path.
+- Player hitbox uses a bright flashing energy core.
+- Cast header fades, long rows wrap, spacing increased to 70px.
+- Cast waits for the last row to leave the screen before thanks.
+- Stage-1 supplied nebula image is in the bottom layer.
+- NORMAL uses the real gun sample.
