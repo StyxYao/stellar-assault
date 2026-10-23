@@ -292,3 +292,9 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - Stage-5 background always draws the cached first frame underneath the video before the loop.
 - NORMAL blaster is lower/heavier; missile launch rate and high-pass were reduced and gain raised.
 - Stage 1 shows the earliest planet/nebula layer, current layer at 50%, plus a 18% screen nebula pass; disk boosted and bloomed.
+
+## Canvas aspect
+
+- Logical canvas is 390x844.
+- CSS now preserves 390:844 with `min()` sizing and centers it; non-matching viewports letterbox instead of stretching.
+- This prevents boss rings/sprites from being vertically squashed on devices whose viewport is not exactly 390:844.
