@@ -1979,7 +1979,7 @@ function step(dt){
     }
     var edx=e.x-player.x,edy=e.y-player.y;
     var er=ET[e.type].r*(e.transport?1.45:(e.elite?1.6:1.5));
-    if(edx*edx+edy*edy<(er+player.r)*(er+player.r)) hitPlayer();
+    if(circleOverlap(e.x,e.y,er,player.x,player.y,player.r)) hitPlayer();
     if(e.y>H+70||e.x<-90||e.x>W+90) removeEnemy(i);
   }
 
@@ -1993,7 +1993,7 @@ function step(dt){
   for(var oi=orbBullets.length-1;oi>=0;oi--){
     var ob=orbBullets[oi];if(!ob.owner||ob.owner.hp<=0||enemies.indexOf(ob.owner)<0){orbBullets.splice(oi,1);continue;}
     ob.ang+=ob.spin*dt;ob.x=ob.owner.x+Math.cos(ob.ang)*ob.r;ob.y=ob.owner.y+Math.sin(ob.ang)*ob.r;
-    var odx=ob.x-player.x,ody=ob.y-player.y;if(odx*odx+ody*ody<(ob.rad+player.r)*(ob.rad+player.r)) hitPlayer();
+    if(circleOverlap(ob.x,ob.y,ob.rad,player.x,player.y,player.r)) hitPlayer();
   }
   updateBlastZones(dt);
   updateODLaserFx(dt);
@@ -2140,7 +2140,7 @@ function step(dt){
       if(b.dead||b.x<-40||b.x>W+40||b.y<-40||b.y>H+40){bullets.splice(i,1);continue;}
       if(wingmanBlock(b.x,b.y,b.rad)){bullets.splice(i,1);continue;}
       var bdx=b.x-player.x,bdy=b.y-player.y;
-      if(bdx*bdx+bdy*bdy<(b.rad+player.r)*(b.rad+player.r)) hitPlayer();
+      if(circleOverlap(b.x,b.y,b.rad,player.x,player.y,player.r)) hitPlayer();
     }
     if(stage===4&&boss&&boss.phase===0&&boss.hp<=0){ boss.hp=0; startBossPhase1Death(); }
     else if(boss.hp<=0){
@@ -2182,7 +2182,7 @@ function step(dt){
     if(e.x<-30||e.x>W+30||e.y<-30||e.y>H+30){ebullets.splice(i,1);continue;}
     if(wingmanBlock(e.x,e.y,e.rad)){ebullets.splice(i,1);continue;}
     var ex=e.x-player.x,ey=e.y-player.y;
-    if(ex*ex+ey*ey<(e.rad+player.r)*(e.rad+player.r)) hitPlayer();
+    if(circleOverlap(e.x,e.y,e.rad,player.x,player.y,player.r)) hitPlayer();
   }
 }
 

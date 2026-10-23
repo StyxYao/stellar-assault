@@ -21,3 +21,9 @@
 - Extracted `rand`, clamp/lerp/dist helpers to `src/core/math.js`.
 - Extracted player ship rendering to `src/render/player.js`.
 - Added math unit test and player module smoke coverage.
+
+## 0.2.3-phase3b — collision core
+
+- Extracted `circleOverlap` / `circleContains` to `src/core/collision.js`.
+- Replaced player-vs-enemy, orb, bullet and enemy-bullet circle checks.
+- Added collision unit test.

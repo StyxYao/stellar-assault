@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+const ctx = { Math };
+vm.createContext(ctx);
+vm.runInContext(fs.readFileSync('src/core/collision.js', 'utf8') + '\n;globalThis.api={circleOverlap,circleContains};', ctx);
+const { circleOverlap, circleContains } = ctx.api;
+if (!circleOverlap(0, 0, 5, 9, 0, 5)) throw new Error('edge overlap failed');
+if (circleOverlap(0, 0, 4, 10, 0, 4)) throw new Error('separation failed');
+if (!circleContains(1, 1, 0, 0, 2)) throw new Error('contains failed');
+if (circleContains(3, 0, 0, 0, 2)) throw new Error('outside failed');
+console.log('collision ok');
