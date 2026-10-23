@@ -15,3 +15,9 @@
 - Extracted fixed-step accumulator to `src/core/fixed-step.js`; main loop now uses it.
 - Added content validator and fixed-step unit test.
 - Added checkpoint/step tags and migration log.
+
+## 0.2.2-phase3a — math and player renderer
+
+- Extracted `rand`, clamp/lerp/dist helpers to `src/core/math.js`.
+- Extracted player ship rendering to `src/render/player.js`.
+- Added math unit test and player module smoke coverage.

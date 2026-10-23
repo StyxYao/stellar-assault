@@ -20,4 +20,6 @@ jobs:
       - name: Content validation
         run: node tools/validate_content.mjs
       - name: Core tests
-        run: node tests/fixed-step.test.mjs
+        run: |
+          node tests/fixed-step.test.mjs
+          node tests/math.test.mjs
