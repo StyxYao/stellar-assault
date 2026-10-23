@@ -103,3 +103,7 @@
 ## 0.2.20-phase6f — boss ultimates
 
 - Moved ultimate dispatch, four boss ultimates, fused-boss signatures and signature tagging to `src/game/boss-ultimates.js`.
+
+## 0.2.21-phase6g — player state
+
+- Moved bombs, hit handling, enemy removal/drops, weapon ammo, OD gain and item collection to `src/game/player-state.js`.
