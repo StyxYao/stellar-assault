@@ -228,3 +228,9 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - Black background is luma-keyed per frame: dark pixels become transparent, so there are no black borders.
 - Phase 3 keeps its own black hole by repainting a black core at the video center; no second game hole.
 - Hit flash brightness and feather width were reduced to avoid a washed-out overlay.
+
+## Fusion fade-in
+
+- Phase-1 death, omen and fusion start no longer add screen shake.
+- Fusion starts from black and fades into the uploaded cutscene over 1.15s.
+- Boss rush preview jumps directly to Boss 5 phase 1, skipping stages and waves.

@@ -13,7 +13,7 @@ var enemies=[],bullets=[],shots=[],parts=[],stars=[],fx=[],ebullets=[],items=[],
 var lastMissile=0,lastSpecial=0,optionT=0,laserTick=0,laserHitY=0,laserHitT=0,pickupMsg='',pickupT=0;
 var audioReady=false;
 var boss=null,runner=null,bossFusionT=0,bossFusionOn=false,bossOmenT=0,selectedStage=0,bossDeath1T=0,bossAwakenT=0,SIG_BOSS=-1;
-var stageT=0,waveIndex=0,nextTransport=0,banner='',bannerSub='',bannerT=0,castT=0,castScroll=0,castHoldT=0,fusionT=0,finaleT=0;
+var fusionFadeT=0,stageT=0,waveIndex=0,nextTransport=0,banner='',bannerSub='',bannerT=0,castT=0,castScroll=0,castHoldT=0,fusionT=0,finaleT=0;
 var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpeed=0,glowWarp=0,bombT=0,bombX=0,bombY=0;
 var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
 var BG4=new Image();BG4.src='assets/bg/stage4-main.webp';
@@ -567,13 +567,13 @@ function enemyBombExplode(e){
   }
   shake=Math.max(shake,bossBomb?16:4);
 }
-function bossDeathBoom(b){
+function bossDeathBoom(b,noShake){
   for(var i=0;i<11;i++){
     var a=i/11*TAU,rr=rand(20,95);
     fx.push({x:b.x+Math.cos(a)*rr,y:b.y+Math.sin(a)*rr,t:-i*0.035,sc:rand(0.7,1.9),seed:Math.random()*TAU,kind:i%3?'boss':'elite',life:rand(1.2,1.8)});
   }
   phaseFx.push({x:b.x,y:b.y,t:0,life:1.8,kind:'death'});
-  sfx('bomb_big',1.0); shake=30;
+  sfx('bomb_big',1.0); if(!noShake)shake=30;
 }
 function part(x,y,col,n,sp){
   n=n||6; sp=sp||90;
@@ -648,13 +648,12 @@ function spawnBossNow(){
 function startBossOmen(){
   state='bossOmen';bossOmenT=0;boss=null;runner=null;
   bullets.length=0;ebullets.length=0;orbBullets.length=0;beams.length=0;enemies.length=0;
-  phaseFx.length=0;shake=Math.max(shake,16);
+  phaseFx.length=0;
 }
 function startBossPhase1Death(){
   state='bossDeath1';bossDeath1T=0;
   bullets.length=0;ebullets.length=0;orbBullets.length=0;beams.length=0;enemies.length=0;
-  player.invuln=99;if(boss)bossDeathBoom(boss);
-  shake=Math.max(shake,34);
+  player.invuln=99;if(boss)bossDeathBoom(boss,true);
   if(boss) for(var i=0;i<34;i++){
     var a=rand(0,TAU),v=rand(80,460);
     part(boss.x+Math.cos(a)*rand(0,60),boss.y+Math.sin(a)*rand(0,45),
@@ -711,7 +710,8 @@ function drawPhase1DeathScene(){
 function startBossFusionCinematic(){
   state='bossFusion';bossFusionT=0;
   try{fusionVideo.currentTime=0;fusionVideo.play().catch(function(){});}catch(e){}
-  setBanner('FUSION','FOUR ECHOES',9.0);shake=Math.max(shake,22);
+  fusionFadeT=1.15;
+  setBanner('FUSION','FOUR ECHOES',9.0);
   sfx('b_charge',0.65);
 }
 function finishBossFusionPhase(){
@@ -722,7 +722,7 @@ function finishBossFusionPhase(){
   state='bossAwaken';bossAwakenT=2.6;boss.bossSigT=0;
   bullets.length=0;ebullets.length=0;beams.length=0;orbBullets.length=0;
   player.invuln=Math.max(player.invuln,2.8);
-  setBanner('CHRONOS ECHO','FUSED FORM',2.4);shake=Math.max(shake,26);
+  setBanner('CHRONOS ECHO','FUSED FORM',2.4);
 }
 function drawBossAwakenFx(){
   var q=Math.max(0,Math.min(1,1-bossAwakenT/2.6));
@@ -1726,7 +1726,7 @@ function step(dt){
   if(stageWarp>0) stageWarp=Math.max(0,stageWarp-dt/1.5);
   if(state==='bossDeath1'){bossDeath1T+=dt;if(bossDeath1T>=2.7)startBossOmen();return;}
   if(state==='bossOmen'){bossOmenT+=dt;if(bossOmenT>=6.5)startBossFusionCinematic();return;}
-  if(state==='bossFusion'){bossFusionT+=dt;if(bossFusionT>=15.04)finishBossFusionPhase();return;}
+  if(state==='bossFusion'){bossFusionT+=dt;if(fusionFadeT>0)fusionFadeT=Math.max(0,fusionFadeT-dt);if(bossFusionT>=15.04)finishBossFusionPhase();return;}
   if(state==='fusion'){fusionT+=dt;if(fusionT>=3.6)spawnBossNow();return;}
   if(state==='bossAwaken'){bossAwakenT-=dt;if(bossAwakenT<=0){state='boss';if(boss)boss.invuln=1.4;setBossPattern(0);} }
   if(state==='finale'){finaleT+=dt;if(finaleT>=7.7)startCast();return;}
@@ -3884,6 +3884,7 @@ function drawScene(){
     }else{
       paintFractalBg(BG_MAIN[4],BG_EDGE[4],0);ctx.fillStyle='rgba(2,2,12,0.28)';ctx.fillRect(0,0,W,H);drawFusionScene(bossFusionT);
     }
+    if(fusionFadeT>0){ctx.fillStyle='rgba(0,0,0,'+Math.min(1,fusionFadeT/1.15)+')';ctx.fillRect(0,0,W,H);}
     ctx.restore();return;
   }
   if(state==='fusion'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); ctx.fillStyle='rgba(2,2,12,0.22)';ctx.fillRect(0,0,W,H); drawEntityArrivalScene(); ctx.restore(); return; }
