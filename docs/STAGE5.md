@@ -234,3 +234,18 @@ Four colored echo cores orbit the boss and are visible throughout the fight. The
 - Phase-1 death, omen and fusion start no longer add screen shake.
 - Fusion starts from black and fades into the uploaded cutscene over 1.15s.
 - Boss rush preview jumps directly to Boss 5 phase 1, skipping stages and waves.
+
+## Six independent stage-5 enemy archetypes
+
+| type | skin | role | HP base | attack | bullet | preferred formations |
+|---|---|---|---|---|---|---|
+| 9 | Coordinate cube | mid tank | 92 | 3-way aim + side lattice | prism needle | fractal / mandala |
+| 10 | Topology turret | heavy turret | 125 | 5-way fan + lance beam | orbital spear | turret / pincer |
+| 11 | Mobius hunter | fast raider | 62 | paired fast curved shots | arc blade | line / strafe |
+| 12 | Axis core | heavy radial | 155 | 12-way gap ring + aimed shot | recursive ring | ring |
+| 13 | Recursive orb | spiral pressure | 88 | double-arm spiral | fractal cluster | spiral |
+| 14 | Mirror deflection | mirror turret | 128 | mirrored cross fans + beam | refraction triangle | mandala / arc / pincer |
+
+- Wave table now cycles all six types instead of reusing only types 9–11.
+- Skin is fixed by type; no random skin/stat mismatch.
+- Each enemy-family bullet art is tagged on the bullet and drawn with its own sprite.
