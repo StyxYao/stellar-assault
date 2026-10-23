@@ -99,3 +99,7 @@
 ## 0.2.19-phase6e — enemy systems
 
 - Moved wave spawning, enemy scaling, six stage-5 attacks and generic enemy fire to `src/game/enemies.js`.
+
+## 0.2.20-phase6f — boss ultimates
+
+- Moved ultimate dispatch, four boss ultimates, fused-boss signatures and signature tagging to `src/game/boss-ultimates.js`.

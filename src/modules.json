@@ -23,6 +23,7 @@
     "src/render/weapons.js",
     "src/game/boss-patterns.js",
     "src/game/player-weapons.js",
-    "src/game/enemies.js"
+    "src/game/enemies.js",
+    "src/game/boss-ultimates.js"
   ]
 }
