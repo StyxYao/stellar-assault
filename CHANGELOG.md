@@ -73,3 +73,7 @@
 ## 0.2.13-phase5f — effects renderer
 
 - Moved explosion, phase FX, item, OD aura/laser FX, bomb FX and pickup messages to `src/render/effects.js`.
+
+## 0.2.14-phase5g — UI and cutscenes
+
+- Moved HUD, menu, banners, boss omen, fusion/finale/cast screens and end screen to `src/render/ui.js`.
