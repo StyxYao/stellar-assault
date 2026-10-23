@@ -77,3 +77,7 @@
 ## 0.2.14-phase5g — UI and cutscenes
 
 - Moved HUD, menu, banners, boss omen, fusion/finale/cast screens and end screen to `src/render/ui.js`.
+
+## 0.2.15-phase5h — player weapons
+
+- Moved wing beams, shots, missiles, beams, options and player laser to `src/render/weapons.js`.
