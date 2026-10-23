@@ -35,7 +35,8 @@ To restore the whole working tree to a checkpoint, use `tools/make_snapshot.sh` 
 | 21 | Enemy systems | `ff6f5b5` | `step/phase6e-enemies` |
 | 22 | Boss ultimates/signatures | `fcf92e7` | `step/phase6f-boss-ultimates` |
 | 23 | Player state/economy | `10b71c9` | `step/phase6g-player-state` |
-| 24 | Combat updates | pending | `step/phase6h-combat` |
+| 24 | Combat updates | `eae4f23` | `step/phase6h-combat` |
+| 25 | Stage/Boss flow | pending | `step/phase6i-stage-flow` |
 
 ## Rollback examples
 

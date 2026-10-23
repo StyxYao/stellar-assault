@@ -111,3 +111,7 @@
 ## 0.2.22-phase6h — combat updates
 
 - Moved beam/laser updates, wingmen, options, missiles, OD laser, blast zones and transports to `src/game/combat.js`.
+
+## 0.2.23-phase6i — stage flow
+
+- Moved run start, stage transitions, boss warn/fusion/phase flow and death transition to `src/game/stage-flow.js`.
