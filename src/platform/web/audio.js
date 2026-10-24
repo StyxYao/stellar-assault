@@ -77,7 +77,7 @@ function spreadHit(v){
   noiseBurst(.026,Math.max(.02,v*.62),4200);
   tone(1900,620,.035,Math.max(.02,v*.30),'sawtooth');
 }
-function weaponHitFx(v){ if(player&&player.weapon==='spread') spreadHit(v); else sfx('e_hit',v); }
+function weaponHitFx(v){ sfx('e_hit',player&&player.weapon==='spread'?v*0.9:v); }
 function metalHit(v){
   if(!AC||muted) return;
   var t=AC.currentTime;
