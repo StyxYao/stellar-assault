@@ -78,6 +78,9 @@ function desktopKeyDown(e) {
     if (k === 'enter' || k === ' ') { settingsActivate(); return; }
     return;
   }
+  if (k === 'v' && state === 'menu') { if (typeof toggleSelectedShip === 'function') toggleSelectedShip(); return; }
+  if (k === 'c' && player && player.ship === 'aegis') { e.preventDefault && e.preventDefault(); if (!e.repeat) aegisTapCharge(); return; }
+  if (k === 'f' && player && player.ship === 'aegis') { e.preventDefault && e.preventDefault(); if (!e.repeat) aegisTapForce(); return; }
   if (k === 's' && desktopPaused) { openSettings(); return; }
   var movement = ['arrowleft','arrowright','arrowup','arrowdown','a','d','w','s'];
   if (movement.indexOf(k) >= 0) {
@@ -158,6 +161,13 @@ function desktopPoll() {
   desktopPadSeen.left = pad.axes[0] < -0.65;
   desktopPadSeen.right = pad.axes[0] > 0.65;
 
+  if (state === 'menu' && desktopPadEdge(pad, 3)) {
+    if (typeof toggleSelectedShip === 'function') toggleSelectedShip();
+  }
+  if (player && player.ship === 'aegis' && (state === 'play' || state === 'boss')) {
+    if (desktopPadEdge(pad, 3)) aegisTapCharge();
+    if (desktopPadEdge(pad, 5)) aegisTapForce();
+  }
   if (start) desktopTogglePause();
   if (a) desktopConfirm();
   if (b || x) desktopBomb();

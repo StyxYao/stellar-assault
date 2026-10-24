@@ -8,6 +8,7 @@
 {
   "version": 1,
   "campaign": { "unlockedStage": 4, "bestScore": 0, "clears": 0, "lastStage": 0 },
+  "ships": { "vector": { "bestScore": 0 }, "aegis": { "bestScore": 0 }, "selected": "vector" },
   "settings": {
     "master": 1.0,
     "bgm": 1.0,

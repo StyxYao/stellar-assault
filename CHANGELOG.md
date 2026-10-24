@@ -316,3 +316,10 @@
 - Added master/BGM/SFX volume settings and pause-menu settings panel.
 - Added fullscreen setting, menu best score, run/stage save hooks.
 - Added CloudSavePort and save/cloud documentation.
+
+## 0.4.3 — AEGIS R1 sandbox prototype
+
+- Added AEGIS ship selection, Force, limited shield, charge matrix and touch buttons.
+- Added per-ship score persistence and menu ship selector.
+- Added W-to-charge conversion for AEGIS.
+- Added AEGIS prototype acceptance notes.

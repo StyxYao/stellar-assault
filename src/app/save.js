@@ -5,6 +5,7 @@ var SAVE_STORAGE_KEY = 'stellar-assault-save-v1';
 var DEFAULT_SAVE = {
   version: SAVE_VERSION,
   campaign: { unlockedStage: 4, bestScore: 0, clears: 0, lastStage: 0 },
+  ships: { vector: { bestScore: 0 }, aegis: { bestScore: 0 }, selected: 'vector' },
   settings: { master: 1, bgm: 1, sfx: 1, fullscreen: false, language: 'zh', difficulty: 'normal' },
   stats: { runs: 0, gameOvers: 0, wins: 0 },
   updatedAt: 0
@@ -37,6 +38,14 @@ function normalizeSave(raw) {
     out.settings.language = raw.settings.language === 'en' ? 'en' : 'zh';
     out.settings.difficulty = raw.settings.difficulty === 'expert' ? 'expert' : 'normal';
   }
+  if (raw.ships && typeof raw.ships === 'object') {
+    out.ships.vector.bestScore = Math.max(0, Number(raw.ships.vector && raw.ships.vector.bestScore) || 0);
+    out.ships.aegis.bestScore = Math.max(0, Number(raw.ships.aegis && raw.ships.aegis.bestScore) || 0);
+    out.ships.selected = raw.ships.selected === 'aegis' ? 'aegis' : 'vector';
+  } else {
+    // v1 migration: the old campaign best belongs to VECTOR.
+    out.ships.vector.bestScore = out.campaign.bestScore;
+  }
   if (raw.stats && typeof raw.stats === 'object') {
     out.stats.runs = Math.max(0, Number(raw.stats.runs) || 0);
     out.stats.gameOvers = Math.max(0, Number(raw.stats.gameOvers) || 0);
@@ -64,6 +73,7 @@ function initSaveStore() {
   if (SaveStore.ready) return;
   SaveStore.data = normalizeSave(readLocalSave());
   SaveStore.ready = true;
+  if (typeof setSelectedShip === 'function') setSelectedShip(SaveStore.data.ships.selected, false);
   applyGameSettings();
   try {
     if (window.desktopBridge && window.desktopBridge.save && window.desktopBridge.save.load) {
@@ -121,6 +131,9 @@ function recordRunEnd(won) {
     SaveStore.data.stats.gameOvers++;
   }
   c.bestScore = Math.max(c.bestScore, score || 0);
+  var sid = (typeof player !== 'undefined' && player.ship) ? player.ship : 'vector';
+  if (!SaveStore.data.ships[sid]) SaveStore.data.ships[sid] = { bestScore: 0 };
+  SaveStore.data.ships[sid].bestScore = Math.max(SaveStore.data.ships[sid].bestScore || 0, score || 0);
   c.lastStage = stage;
   persistSave(true);
 }
@@ -128,6 +141,9 @@ function recordRunEnd(won) {
 function recordScoreSnapshot() {
   if (!SaveStore.data) return;
   SaveStore.data.campaign.bestScore = Math.max(SaveStore.data.campaign.bestScore, score || 0);
+  var sid = (typeof player !== 'undefined' && player.ship) ? player.ship : 'vector';
+  if (!SaveStore.data.ships[sid]) SaveStore.data.ships[sid] = { bestScore: 0 };
+  SaveStore.data.ships[sid].bestScore = Math.max(SaveStore.data.ships[sid].bestScore || 0, score || 0);
   SaveStore.data.campaign.lastStage = stage;
   persistSave();
 }

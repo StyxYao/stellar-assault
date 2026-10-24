@@ -2,6 +2,7 @@
 function step(dt){
   if(typeof updateDesktopInput==='function'&&!desktopPaused) updateDesktopInput(dt);
   time+=dt;
+  if(typeof updateAegis==='function') updateAegis(dt);
   setLaserSound(player.weapon==='laser'&&(state==='play'||state==='boss'));
   for(var i=0;i<parts.length;i++){var p=parts[i];p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=0.98;p.vy*=0.98;}
   for(var i=parts.length-1;i>=0;i--) if(parts[i].life<=0) parts.splice(i,1);

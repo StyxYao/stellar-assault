@@ -13,4 +13,5 @@ function drawPlayerEntity(){
     ctx.drawImage(gi,player.x-40*psc,drawY-40*psc,80*psc,80*psc);ctx.globalAlpha=1;
   }
   drawPlayerHitbox(player.x,drawY,player.r,time);
+  if(typeof drawAegisShipFx==='function') drawAegisShipFx();
 }

@@ -23,9 +23,11 @@ function drawHUD(){
   ctx.fillStyle='#cfe0f0';ctx.font='11px monospace';
   var hpx='HP ';for(var hi=0;hi<player.maxHp;hi++)hpx+=(hi<player.hp?'●':'○');
   ctx.fillStyle='#8dff9e';ctx.fillText(hpx,16,H-78);ctx.fillStyle='#cfe0f0';
-  ctx.fillText('WING '+player.options+'·P'+player.wingPower,16,H-60);
+  if(player.ship==='aegis'){ctx.fillStyle='#9fe8ff';ctx.fillText('FORCE · SHIELD '+Math.round(aegisState.shield)+'%',16,H-60);ctx.fillStyle='#cfe0f0';}
+  else ctx.fillText('WING '+player.options+'·P'+player.wingPower,16,H-60);
   ctx.fillText('SHIPS '+player.lives,16,H-42);ctx.fillText('BOMB '+player.bombs,16,H-24);
   drawBombBtn();
+  if(typeof drawAegisControls==='function') drawAegisControls();
 }
 function drawBanner(){
   if(bannerT<=0||!banner) return;
@@ -43,6 +45,7 @@ function stageSelectButtons(){
   return out;
 }
 function menuStartButton(){return {x:W/2-108,y:H*.688,w:216,h:42};}
+function menuShipButton(){return {x:W/2-110,y:H*.535,w:220,h:38};}
 function drawMenu(){
   paintBg(BGMENU,1)||paintBg(BG1,1);
   ctx.fillStyle='rgba(2,4,12,0.05)';ctx.fillRect(0,0,W,H);
@@ -56,6 +59,11 @@ function drawMenu(){
   // key info: bold, technical, glowing
   // stage select
   ctx.font='900 10px "Arial Black", Arial, sans-serif';ctx.fillStyle='#b8e8ff';ctx.shadowColor='rgba(60,160,230,0.7)';ctx.shadowBlur=6;
+  var shb=menuShipButton();
+  ctx.fillStyle='rgba(6,18,30,0.70)';ctx.fillRect(shb.x,shb.y,shb.w,shb.h);
+  ctx.strokeStyle=selectedShip==='aegis'?'#ffd36b':'#5d8fa8';ctx.lineWidth=1.2;ctx.strokeRect(shb.x,shb.y,shb.w,shb.h);
+  ctx.fillStyle='#eaf8ff';ctx.font='700 11px Arial, sans-serif';ctx.textAlign='center';
+  ctx.fillText('SHIP · '+(SHIP_DEFS[selectedShip]?SHIP_DEFS[selectedShip].label:selectedShip.toUpperCase()),W/2,shb.y+24);
   ctx.fillText('STAGE SELECT',W/2,H*.592);
   var sbs=stageSelectButtons();
   for(var si=0;si<sbs.length;si++){
@@ -72,7 +80,7 @@ function drawMenu(){
   ctx.fillText('START  ·  STAGE '+(selectedStage+1),W/2,stb.y+27);
   ctx.shadowBlur=0;
   try {
-    var best=SaveStore&&SaveStore.data?SaveStore.data.campaign.bestScore:0;
+    var best=typeof aegisBestScore==='function'?aegisBestScore():(SaveStore&&SaveStore.data?SaveStore.data.campaign.bestScore:0);
     ctx.fillStyle='#8fb8ca';ctx.font='9px monospace';
     ctx.fillText('BEST  '+String(best).padStart(7,'0'),W/2,H*.735);
   } catch(e) {}

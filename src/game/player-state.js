@@ -50,7 +50,7 @@ function hitPlayer(){
     player.respawnT=1.3; player.respawnGift=atMin;
     player.x=W/2; player.y=H-130; target.x=player.x; target.y=player.y;
     boom(dX,dY,1.5,'player');
-    if(player.lives<=0){ player.respawnT=0; state='over'; if(typeof recordRunEnd==='function') recordRunEnd(false); playBgm('m5'); }
+    if(player.lives<=0){ player.respawnT=0; state='over'; if(player.ship==='aegis'&&typeof aegisOnDeath==='function') aegisOnDeath(); if(typeof recordRunEnd==='function') recordRunEnd(false); playBgm('m5'); }
   }
 }
 function removeEnemy(idx){
@@ -122,7 +122,10 @@ function collectItem(it){
     var at=ammoType(it);applySpecial(at);score+=70;pickupMsg='WEAPON · '+weaponName()+' LV'+player.specialPower+(player.specialPower>=4?' MAX':'');
   }else if(t==='S'||t==='L'||t==='M'){ applySpecial(t); score+=80; pickupMsg=weaponName()+' LV'+player.specialPower+(player.specialPower>=4?' MAX':''); }
   else if(t==='W'){
-    if(player.options<4||player.wingPower<3){addWingman();pickupMsg='WING '+player.options+' P'+player.wingPower;}
+    if(player.ship==='aegis'){
+      if(typeof aegisGainCharge==='function') aegisGainCharge(25);
+      score+=100;pickupMsg='W → CHARGE +25%';
+    }else if(player.options<4||player.wingPower<3){addWingman();pickupMsg='WING '+player.options+' P'+player.wingPower;}
     else{pickupMsg=gainOD(15)?'OVERDRIVE!':'WING MAX +15 OD';}
     score+=40;
   }else if(t==='1UP'){
