@@ -96,10 +96,10 @@ function playSample(n,v,raw){
   if(!AC||!master||!SFXBUF[n]||sfxActive>56) return;
   sfxActive++;
   var s=AC.createBufferSource();s.buffer=SFXBUF[n];
-  var rate={p_normal:1.0,p_spread:1.08,pickup_real:1.06,jetfly:2.0,bomb_big:1.0,p_laser:1.0,p_missile:1.90,e_shot:0.9,e_hit:1.22,b_hit:0.86,boom:0.82,laser_fire:0.95,pickup:1.1,hurt:0.8,e_charge:1.0,b_charge:1.0}[n]||1;
+  var rate={p_normal:1.0,p_spread:1.08,pickup_real:1.06,jetfly:2.0,bomb_big:1.0,p_laser:1.0,p_missile:1.90,e_shot:0.9,e_hit:1.0,b_hit:0.80,boom:1.0,laser_fire:0.95,pickup:1.1,hurt:0.8,e_charge:1.0,b_charge:1.0}[n]||1;
   s.playbackRate.value=rate;
   var g=AC.createGain();g.gain.value=v;
-  var soft=(n==='e_charge'||n==='b_charge'||n==='pickup'||n==='pickup_real'||n==='siren'||n==='jetfly'||n==='bomb_big');
+  var soft=(n==='e_charge'||n==='b_charge'||n==='pickup'||n==='pickup_real'||n==='siren'||n==='jetfly'||n==='bomb_big'||n==='e_hit'||n==='b_hit'||n==='boom');
   if(soft){s.connect(g);}
   else{
     var sh=AC.createWaveShaper();sh.curve=makeDistCurve();sh.oversample='2x';
@@ -110,9 +110,6 @@ function playSample(n,v,raw){
   s.start();
   if(n==='p_normal'&&!raw){noiseBurst(0.018,v*0.95,8500);tone(170,78,0.03,v*0.50,'square');tone(1250,650,0.018,v*0.24,'triangle');}
   if(n==='p_spread'){noiseBurst(0.022,v*0.85,7600);tone(155,65,0.032,v*0.45,'square');}
-  if(n==='e_hit'){metalHit(v);blasterHit(v);noiseBurst(0.014,v*0.5,9500);tone(2300,1900,0.07,v*0.18,'triangle');tone(3700,3100,0.05,v*0.10,'sine',0.004);tone(1200,800,0.10,v*0.07,'square');}
-  if(n==='b_hit'){metalHit(v*.8);tone(110,55,0.09,v*0.7,'sine');}
-  if(n==='boom'){tone(85,40,0.32,v*0.55,'sine');noiseBurst(0.05,v*0.35,2600);}
   if(n==='hurt'){tone(260,90,0.18,v*0.9,'sawtooth');noiseBurst(0.055,v*0.2,1800);}
 }
 function playWarpJet(vol){

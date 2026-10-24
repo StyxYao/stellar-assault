@@ -263,3 +263,11 @@
 - Boss supply drops every 25s (two pickups).
 - Mini boss health labels use per-type names and show their current skill name.
 - Sparse low-count filler waves added outside mowing windows.
+
+## 0.3.16 — impact and explosion samples
+
+- S/N impact uses Classic Ricochet (C), pitch-adjusted per weapon.
+- Normal explosions use Grenade Explosion (C).
+- Boss/large explosions use Explosion Ultra Bass (B).
+- Removed stacked synthesized hit/boom layers.
+- Added attribution to Cast and THIRD_PARTY_NOTICES.

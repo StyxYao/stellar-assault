@@ -41,3 +41,18 @@ Boss/enemy/player art was supplied or generated for this project. No separate li
 - **Missle Launch** by Kibblesbob, SoundBible #1794, Public Domain.
   - Source: https://soundbible.com/1794-Missle-Launch.html
   - Reserved in `sfx-sel/` for a future heavy-missile layer; not currently played.
+
+## Impact SFX
+
+- **Classic Ricochet** by Grant Evans, SoundBible #2043, Sampling Plus 1.0.
+  - Source: https://soundbible.com/2043-Classic-Ricochet.html
+  - Used for S/N weapon impact, pitch-adjusted per weapon.
+
+## Explosion SFX
+
+- **Grenade Explosion** by Mike Koenig, SoundBible #1467, CC BY 3.0.
+  - Source: https://soundbible.com/1467-Grenade-Explosion.html
+  - Used for normal enemy/object explosions.
+- **Explosion Ultra Bass** by Mark DiAngelo, SoundBible #1807, CC BY 3.0.
+  - Source: https://soundbible.com/1807-Explosion-Ultra-Bass.html
+  - Used for boss and large explosions.

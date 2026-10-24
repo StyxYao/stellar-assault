@@ -373,6 +373,8 @@ var CAST_LINES=[
  ['TRACKS','奇点 / KALEIDOSCOPE / 引力弹弓 / 维度破碎 / 暗物质 / 虚实之间'],
  ['SFX','KENNEY SCI-FI SOUNDS'],
  ['MISSILE SFX','MIKE KOENIG · CC BY 3.0'],
+ ['IMPACT SFX','GRANT EVANS · SAMPLING PLUS'],
+ ['EXPLOSION SFX','MIKE KOENIG · MARK DIANGELO'],
  ['ENEMY ECHOES',''],
  ['SMALL FIGHTER · MEDIUM FIGHTER','scout wing'],
  ['SCOUT · BOMBER','raider wing'],
