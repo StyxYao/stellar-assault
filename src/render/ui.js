@@ -71,6 +71,11 @@ function drawMenu(){
   ctx.fillStyle='#ffe7b0';ctx.font='900 18px "Arial Black", Arial, sans-serif';ctx.textAlign='center';
   ctx.fillText('START  ·  STAGE '+(selectedStage+1),W/2,stb.y+27);
   ctx.shadowBlur=0;
+  try {
+    var best=SaveStore&&SaveStore.data?SaveStore.data.campaign.bestScore:0;
+    ctx.fillStyle='#8fb8ca';ctx.font='9px monospace';
+    ctx.fillText('BEST  '+String(best).padStart(7,'0'),W/2,H*.735);
+  } catch(e) {}
   ctx.font=gf;ctx.fillStyle='#dff4ff';ctx.shadowColor='rgba(70,190,255,0.95)';ctx.shadowBlur=10;
   ctx.fillText('5 STAGES  ·  5 BOSSES',W/2,H*0.772);
   ctx.shadowBlur=0;

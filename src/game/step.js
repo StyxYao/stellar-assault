@@ -44,7 +44,7 @@ function step(dt){
     warpT-=dt; warpSpeed+=1100*dt; player.y-=warpSpeed*dt; player.x=W/2;
     if(warpT<=0){
       if(stage<STAGES.length-1) startStage(stage+1);
-      else state='win';
+      else { state='win'; if(typeof recordRunEnd==='function') recordRunEnd(true); }
     }
     return;
   }
@@ -109,7 +109,7 @@ function step(dt){
   }else if(state==='clear'){
     if(bannerT<=0){
       if(stage<STAGES.length-1){ state='warpOut'; warpT=1.1; warpSpeed=320; playWarpJet(0.9); }
-      else { if(stage===4) startCast(); else {state='win';playBgm('m5');} }
+      else { if(stage===4){ if(typeof recordRunEnd==='function') recordRunEnd(true); startCast(); } else {state='win'; if(typeof recordRunEnd==='function') recordRunEnd(true); playBgm('m5');} }
     }
   }
 
@@ -406,7 +406,7 @@ function step(dt){
           var pa=rand(0,TAU),pv=rand(80,520);
           part(W/2+Math.cos(pa)*rand(0,70),H*.44+Math.sin(pa)*rand(0,50),['#ff5f7a','#c06aff','#ff9a3a','#ffe7a0','#7fe6ff'][pk%5],rand(2,5),pv);
         }
-      }else{setBanner('STAGE CLEAR',STAGES[stage].name,3.0);state='clear';}
+      }else{setBanner('STAGE CLEAR',STAGES[stage].name,3.0);state='clear';if(typeof recordStageClear==='function') recordStageClear();}
       boss=null; runner=null;
     }
     if(boss){boss.prevX=boss.x;boss.prevY=boss.y;}

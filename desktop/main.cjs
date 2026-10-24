@@ -14,6 +14,7 @@ app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
 
 let win = null;
 let statePath = null;
+let savePath = null;
 let fullscreenState = false;
 
 function readState() {
@@ -114,12 +115,31 @@ function createWindow() {
   });
 }
 
+function readSaveFile() {
+  try { return JSON.parse(fs.readFileSync(savePath, 'utf8')); } catch { return null; }
+}
+function writeSaveFile(data) {
+  try {
+    if (!data || typeof data !== 'object') return false;
+    const tmp = savePath + '.tmp';
+    fs.mkdirSync(path.dirname(savePath), { recursive: true });
+    fs.writeFileSync(tmp, JSON.stringify(data, null, 2));
+    fs.renameSync(tmp, savePath);
+    return true;
+  } catch (e) {
+    console.warn('save write failed', e.message);
+    return false;
+  }
+}
+ipcMain.handle('save:load', () => readSaveFile());
+ipcMain.handle('save:write', (_event, data) => writeSaveFile(data));
 ipcMain.handle('window:toggle-fullscreen', () => setWindowFullscreen(!isWindowFullscreen()));
 ipcMain.handle('window:is-fullscreen', () => isWindowFullscreen());
 ipcMain.handle('app:quit', () => { app.quit(); });
 
 app.whenReady().then(() => {
   statePath = path.join(app.getPath('userData'), 'window-state.json');
+  savePath = path.join(app.getPath('userData'), 'save.json');
   Menu.setApplicationMenu(null);
   createWindow();
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });

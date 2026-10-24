@@ -308,3 +308,11 @@
 - Added mouse hover movement, left-click manual fire and right-click bomb.
 - Added Boss Rush / Tower mode descriptors and RankingPort contracts.
 - Added docs/MODES_ARCHITECTURE.md; modes are not exposed in the menu yet.
+
+## 0.4.2 — Steam M2 save/settings
+
+- Added versioned save schema, normalization and migration policy.
+- Added localStorage save plus Electron atomic save.json mirror.
+- Added master/BGM/SFX volume settings and pause-menu settings panel.
+- Added fullscreen setting, menu best score, run/stage save hooks.
+- Added CloudSavePort and save/cloud documentation.

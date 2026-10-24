@@ -50,7 +50,7 @@ function hitPlayer(){
     player.respawnT=1.3; player.respawnGift=atMin;
     player.x=W/2; player.y=H-130; target.x=player.x; target.y=player.y;
     boom(dX,dY,1.5,'player');
-    if(player.lives<=0){ player.respawnT=0; state='over'; playBgm('m5'); }
+    if(player.lives<=0){ player.respawnT=0; state='over'; if(typeof recordRunEnd==='function') recordRunEnd(false); playBgm('m5'); }
   }
 }
 function removeEnemy(idx){

@@ -12,6 +12,20 @@ if(typeof BGMSRC!=='undefined'){
   if(typeof BGMURL!=='undefined'){ BGMURL.s4=BGMSRC.s4; BGMURL.s2boss=BGMSRC.s2boss; BGMURL.s3boss=BGMSRC.s3boss; BGMURL.s4boss=BGMSRC.s4boss;BGMURL.m5=BGMSRC.m5;BGMURL.s5=BGMSRC.s5;BGMURL.s5boss=BGMSRC.s5boss;BGMURL.s5ending=BGMSRC.s5ending; }
 }
 var sampleSfx=sfx,sfxLast={},laserOsc=null,laserGain=null,missileSrc=null,missileGain=null,audioBoosted=false,sfxExtraLoaded=false;
+var masterVolume=1,bgmVolume=1,sfxVolume=1;
+function applyAudioVolumes(){
+  var m=Math.max(0,Math.min(1,masterVolume));
+  var sf=Math.max(0,Math.min(1,sfxVolume));
+  var bg=Math.max(0,Math.min(1,bgmVolume));
+  try{if(master) master.gain.value=0.61965*m*sf;}catch(e){}
+  try{if(typeof bgmAudio!=='undefined'&&bgmAudio) bgmAudio.volume=0.765325*m*bg;}catch(e){}
+}
+function setAudioVolumes(masterLevel,bgmLevel,sfxLevel){
+  if(masterLevel!=null) masterVolume=Math.max(0,Math.min(1,masterLevel));
+  if(bgmLevel!=null) bgmVolume=Math.max(0,Math.min(1,bgmLevel));
+  if(sfxLevel!=null) sfxVolume=Math.max(0,Math.min(1,sfxLevel));
+  applyAudioVolumes();
+}
 function loadSfxExtras(){
   if(sfxExtraLoaded||!AC||typeof SFX_EXTRA==='undefined') return;
   sfxExtraLoaded=true;
@@ -196,6 +210,7 @@ function repairAudio(){
     if(!master){master=AC.createGain();master.connect(AC.destination);audioBoosted=false;}
     if(!audioBoosted){boostAudio();return;}
     master.gain.value=0.61965;
+    applyAudioVolumes();
   }catch(e){}
 }
 function rebuildSfxBus(){
@@ -208,6 +223,7 @@ function rebuildSfxBus(){
     comp.threshold.value=-16;comp.knee.value=20;comp.ratio.value=5;comp.attack.value=0.003;comp.release.value=0.25;
     master.connect(comp);comp.connect(AC.destination);
     audioBoosted=true;
+    applyAudioVolumes();
   }catch(e){}
 }
 sfx=function(n,v){
@@ -229,6 +245,7 @@ function boostAudio(){
     comp.threshold.value=-16;comp.knee.value=20;comp.ratio.value=5;comp.attack.value=0.003;comp.release.value=0.25;
     master.disconnect();master.connect(comp);comp.connect(AC.destination);
     master.gain.value=0.61965;audioBoosted=true;
+    applyAudioVolumes();
   }catch(e){}
 }
 function setLaserSound(on){
@@ -285,7 +302,7 @@ function playBgm(k){
       bgmAudio.addEventListener('canplay',seek,{once:true});
       setTimeout(seek,80);setTimeout(seek,320);
     }
-    bgmAudio.volume=0.765325;
+    applyAudioVolumes();
     var pr=bgmAudio.play();
     if(pr&&pr.catch) pr.catch(function(){
       bgmPending=k;

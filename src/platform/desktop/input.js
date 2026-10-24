@@ -14,10 +14,12 @@ function desktopSetPaused(v) {
   if (v) {
     if (!desktopCanPause()) return;
     desktopPaused = true;
+    try { if (typeof recordScoreSnapshot === 'function') recordScoreSnapshot(); } catch (e) {}
     desktopPauseBgmWasPlaying = !!(bgmAudio && !bgmAudio.paused);
     try { if (bgmAudio) bgmAudio.pause(); } catch (e) {}
   } else {
     desktopPaused = false;
+    if (typeof closeSettings === 'function') closeSettings();
     if (desktopPauseBgmWasPlaying && bgmAudio) {
       try { bgmAudio.play().catch(function(){}); } catch (e) {}
     }
@@ -55,6 +57,7 @@ function desktopConfirm() {
 }
 
 function desktopQuit() {
+  try { if (typeof recordScoreSnapshot === 'function') recordScoreSnapshot(); } catch (e) {}
   try {
     if (window.desktopBridge && window.desktopBridge.quit) window.desktopBridge.quit();
   } catch (e) {}
@@ -66,6 +69,16 @@ function desktopBomb() {
 
 function desktopKeyDown(e) {
   var k = String(e.key || '').toLowerCase();
+  if (typeof settingsOpen !== 'undefined' && settingsOpen) {
+    if (k === 'escape' || k === 'q') { closeSettings(); return; }
+    if (k === 'arrowup' || k === 'w') { settingsMove(-1); return; }
+    if (k === 'arrowdown' || k === 's') { settingsMove(1); return; }
+    if (k === 'arrowleft' || k === 'a') { settingsAdjust(-1); return; }
+    if (k === 'arrowright' || k === 'd') { settingsAdjust(1); return; }
+    if (k === 'enter' || k === ' ') { settingsActivate(); return; }
+    return;
+  }
+  if (k === 's' && desktopPaused) { openSettings(); return; }
   var movement = ['arrowleft','arrowright','arrowup','arrowdown','a','d','w','s'];
   if (movement.indexOf(k) >= 0) {
     desktopKeys[k] = true;
@@ -123,6 +136,23 @@ function desktopPoll() {
   var b = desktopPadEdge(pad, 1);
   var x = desktopPadEdge(pad, 2);
   var start = desktopPadEdge(pad, 9) || desktopPadEdge(pad, 8);
+  if (typeof settingsOpen !== 'undefined' && settingsOpen) {
+    var sup = desktopPadEdge(pad, 12) || (pad.axes[1] < -0.65 && !desktopPadSeen.up);
+    var sdown = desktopPadEdge(pad, 13) || (pad.axes[1] > 0.65 && !desktopPadSeen.down);
+    var sleft = desktopPadEdge(pad, 14) || (pad.axes[0] < -0.65 && !desktopPadSeen.left);
+    var sright = desktopPadEdge(pad, 15) || (pad.axes[0] > 0.65 && !desktopPadSeen.right);
+    desktopPadSeen.up = pad.axes[1] < -0.65;
+    desktopPadSeen.down = pad.axes[1] > 0.65;
+    desktopPadSeen.left = pad.axes[0] < -0.65;
+    desktopPadSeen.right = pad.axes[0] > 0.65;
+    if (sup) settingsMove(-1);
+    if (sdown) settingsMove(1);
+    if (sleft) settingsAdjust(-1);
+    if (sright) settingsAdjust(1);
+    if (a) settingsActivate();
+    if (b) closeSettings();
+    return;
+  }
   var left = desktopPadEdge(pad, 14) || (pad.axes[0] < -0.65 && !desktopPadSeen.left);
   var right = desktopPadEdge(pad, 15) || (pad.axes[0] > 0.65 && !desktopPadSeen.right);
   desktopPadSeen.left = pad.axes[0] < -0.65;
@@ -166,6 +196,7 @@ function updateDesktopInput(dt) {
 
 function drawDesktopPause() {
   if (!desktopPaused) return;
+  if (typeof settingsOpen !== 'undefined' && settingsOpen) { drawSettingsPanel(); return; }
   ctx.save();
   ctx.fillStyle = 'rgba(2,6,14,0.72)';
   ctx.fillRect(0, 0, W, H);
@@ -181,7 +212,8 @@ function drawDesktopPause() {
   ctx.fillText('ESC / START  RESUME', W / 2, H * 0.45);
   ctx.fillStyle = '#8fb8ca';
   ctx.font = '15px Rajdhani, Arial, sans-serif';
-  ctx.fillText('Q  QUIT', W / 2, H * 0.49);
+  ctx.fillText('S  SETTINGS', W / 2, H * 0.49);
+  ctx.fillText('Q  QUIT', W / 2, H * 0.53);
   ctx.textAlign = 'left';
   ctx.restore();
   ctx.globalAlpha = 1;

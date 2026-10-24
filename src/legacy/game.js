@@ -428,6 +428,7 @@ window.__damage=function(d){for(var i=0;i<enemies.length;i++) enemies[i].hp=Math
 window.__item=function(t,x,y){items.push({x:x,y:y,vy:0,type:t,t:0});};
 window.__max=function(){player.specialPower=4;player.power=4;};
 window.__itemT=function(t,tm,x,y){items.push({x:x||player.x,y:y||player.y-90,vy:0,type:t,t:tm||0});};
+if(typeof initSaveStore==='function') initSaveStore();
 var last=performance.now(),fixedStep=new FixedStep(1/60,4);
 function frame(now){
   var dt=Math.min(0.05,(now-last)/1000);last=now;
