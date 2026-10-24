@@ -242,3 +242,8 @@
 - Target points can be any direction/distance around the player, clamped to the screen.
 - A dashed warning ring with exactly the real blast radius is drawn at each bomb target.
 - Bomb blast radius is carried on the projectile and reused by the explosion.
+
+## 0.3.13 — longer stages, thinner big mow
+
+- Stage 1-4 timeline extended another 20% (now 2.16x original).
+- Large mowing segment interval 1.9s -> 2.375s, reducing density 20%.

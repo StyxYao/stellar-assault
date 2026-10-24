@@ -26,7 +26,7 @@ function startAtStage(i){
 function prepareStageContent(s){
   var st=STAGES[s];if(st.__prepared)return;
   var list=st.waves;
-  if(s<4){for(var wi=0;wi<list.length;wi++)list[wi].t*=1.8;} // +25%, +20%, +20%
+  if(s<4){for(var wi=0;wi<list.length;wi++)list[wi].t*=2.16;} // +25%, +20%, +20%, +20%
   var lastT=list[list.length-1].t;
   var forms=['v','line','pincer','arc','orbit','fractal','ring','line','v','orbit'];
   // small early mowing segment
@@ -37,7 +37,7 @@ function prepareStageContent(s){
   }
   // large second-half mowing segment (25%+ of the stage)
   var bgStart=lastT*.52,bgEnd=lastT*.77,gfi=0;
-  for(var gt=bgStart;gt<bgEnd;gt+=1.9){
+  for(var gt=bgStart;gt<bgEnd;gt+=2.375){
     list.push({t:gt,type:(gfi%2?5:0),n:Math.round((12+(gfi%3)*2)*.8),form:forms[gfi%forms.length],spd:118+(gfi%4)*8,aggr:0.06,fodder:true});
     gfi++;
   }
