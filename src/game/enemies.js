@@ -1,5 +1,11 @@
 // Enemy wave spawning, scaling and firing. Uses legacy world/projectile hooks.
 function spawnWave(w){
+  if(w.form==='mid'&&w.miniPair){
+    for(var mp=0;mp<w.miniPair.length;mp++){
+      spawnWave({form:'mid',type:w.miniPair[mp].type,x:w.miniPair[mp].x,mini:true,spd:64});
+    }
+    return;
+  }
   if(w.form==='mid'){
     var mhp=Math.round(w.mini?bossTotalHp(stage)*(stage===4?0.22:0.75):((320+stage*80)*0.85));
     var mx=w.x||W/2;

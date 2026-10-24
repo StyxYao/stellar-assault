@@ -282,3 +282,14 @@
 - Missile sample shortened to 0.58s with downward pitch and gain; previous instance cancelled.
 - N shot volume -10% and every shot plays (no random skipped sample).
 - Player bomb layers large explosion B with public-domain heavy missile A.
+
+## 0.3.18 — centered sparks, atomic mini pairs, movement
+
+- S/N hit spark is drawn at the enemy/boss center; mini boss hurtbox tightened to remove the empty edge area.
+- Stage-5 mini bosses spawn atomically as pairs, bypassing the normal enemy cap.
+- Mini boss movement varies by type; Mobius and Axis no longer share the same position/motion.
+- Stage-5 mini boss HP ratio corrected to 22% of the boosted boss total.
+- Mini boss fights drop two supplies every 25s.
+- M missile count is specialPower+1.
+- Missile sample shortened and pitch-dropped; N shot volume -10% with no skipped shots.
+- Player bomb layers B explosion with A heavy missile.

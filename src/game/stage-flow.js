@@ -60,8 +60,7 @@ function prepareStageContent(s){
     var pairs=[[9,10,.55],[11,12,.70],[13,14,.85]];
     for(var pi=0;pi<pairs.length;pi++){
       var pp=pairs[pi];
-      list.push({t:lastT*pp[2],type:pp[0],n:1,form:'mid',spd:64,mini:true,x:W*.30});
-      list.push({t:lastT*pp[2],type:pp[1],n:1,form:'mid',spd:64,mini:true,x:W*.70});
+      list.push({t:lastT*pp[2],form:'mid',miniPair:[{type:pp[0],x:W*.28},{type:pp[1],x:W*.72}]});
     }
   }
   list.sort(function(a,b){return a.t-b.t;});

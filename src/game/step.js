@@ -97,7 +97,7 @@ function step(dt){
       for(var wi=waveIndex;wi<waves.length;wi++) waves[wi].t+=dt;
     }else{
       while(waveIndex<waves.length&&waves[waveIndex].t<=stageT){
-        if(stage===4&&enemies.length>=6) break;
+        if(stage===4&&enemies.length>=6&&!waves[waveIndex].miniPair) break;
         spawnWave(waves[waveIndex]); waveIndex++;
       }
     }
@@ -118,15 +118,15 @@ function step(dt){
     var hit=false;
     for(var j=enemies.length-1;j>=0;j--){
       var e=enemies[j],et=ET[e.type];
-      if(Math.abs(s.x-e.x)<enemyW(e)*0.45&&Math.abs(s.y-e.y)<enemyW(e)*0.5){
-        e.hp-=s.dmg; e.flash=0.1; hit=true; weaponHitFx(0.20); hitSpark(s.x,s.y,player.weapon==='spread',false);
+      if(Math.abs(s.x-e.x)<enemyW(e)*(e.mini?0.30:0.45)&&Math.abs(s.y-e.y)<enemyW(e)*(e.mini?0.32:0.5)){
+        e.hp-=s.dmg; e.flash=0.1; hit=true; weaponHitFx(0.20); hitSpark(e.x,e.y,player.weapon==='spread',false);
         if(e.hp<=0){ score+=et.score; part(e.x,e.y,'#ffb066',9,160); enemyDeath(e); maybeDrop(e); removeEnemy(j); }
         break;
       }
     }
     if(!hit&&boss&&state==='boss'&&boss.invuln<=0){
       if(Math.abs(s.x-boss.x)<boss.def.w*0.30*1.15&&Math.abs(s.y-boss.y)<boss.def.h*0.34*1.15){
-        boss.hp-=s.dmg; boss.flash=0.1; boss.hitFlash=0.14; boss.hitX=s.x; boss.hitY=s.y; score+=5; hit=true; sfx('b_hit',0.30); hitSpark(s.x,s.y,false,true);
+        boss.hp-=s.dmg; boss.flash=0.1; boss.hitFlash=0.14; boss.hitX=s.x; boss.hitY=s.y; score+=5; hit=true; sfx('b_hit',0.30); hitSpark(boss.x,boss.y,false,true);
         part(s.x,s.y,'#ffd28a',2,70);
         if(time-lastHitSfx>0.06){lastHitSfx=time;sfx('b_hit',0.22);}
       }
@@ -188,6 +188,13 @@ function step(dt){
     }else if(e.mode==='turret'&&e.entering){
       e.y+=e.spd*1.5*dt;
       if(e.y>=e.ty){e.y=e.ty;e.entering=false;e.baseX=e.x;}
+    }else if(e.mode==='turret'&&e.mini){
+      if(e.type===11){e.x=e.baseX+Math.sin(e.t*1.2)*88;e.y=e.ty+Math.sin(e.t*.7)*10;}
+      else if(e.type===12){e.x=e.baseX+Math.cos(e.t*.95)*50;e.y=e.ty+Math.sin(e.t*1.5)*32;}
+      else if(e.type===13){e.x=e.baseX+Math.cos(e.t*.7)*64;e.y=e.ty+Math.sin(e.t*.7)*20;}
+      else if(e.type===14){e.x=e.baseX+Math.sin(e.t*.9+Math.PI)*62;e.y=e.ty+Math.cos(e.t*1.2)*18;}
+      else if(e.type===10){e.x=e.baseX+Math.sin(e.t*.8)*38;e.y=e.ty+Math.cos(e.t*1.1)*24;}
+      else {e.x=e.baseX+Math.sin(e.t*1.4)*42;e.y=e.ty+Math.sin(e.t*.9)*14;}
     }else if(e.mode==='turret'){
       e.x=e.baseX+Math.sin(e.t*1.5)*24;
       if(e.t>10&&!e.elite){e.mode='down';e.spd=75;}

@@ -87,7 +87,7 @@ function laserDamage(dt){
   laserHitY=target?tY:0;laserHitT=target?0.12:0;
   if(!target) return;
   if(isBoss){
-    boss.hp-=dmg*0.7;boss.hitFlash=0.12;boss.hitX=player.x;boss.hitY=boss.y+20;sfx('b_hit',0.22);hitSpark(player.x,boss.y+20,false,true);
+    boss.hp-=dmg*0.7;boss.hitFlash=0.12;boss.hitX=player.x;boss.hitY=boss.y+20;sfx('b_hit',0.22);hitSpark(boss.x,boss.y+20,false,true);
     if(time-lastHitSfx>0.12){lastHitSfx=time;sfx('b_hit',0.1);}
   }else{
     var et=ET[target.type];target.hp-=dmg;target.flash=0.1;weaponHitFx(0.12);hitSpark(target.x,target.y,player.weapon==='spread',false);
