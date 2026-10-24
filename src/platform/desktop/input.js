@@ -202,3 +202,18 @@ window.__desktop = function() {
   return { paused: desktopPaused, state: state, targetX: target.x, targetY: target.y, audio: (typeof AC !== 'undefined' && AC) ? AC.state : 'none' };
 };
 window.__desktopPause = function(v) { desktopSetPaused(!!v); };
+
+// Mouse left button: menu confirm, or a manual fire pulse while playing.
+// Normal auto-fire remains active, so holding is never required.
+function desktopPrimaryFire() {
+  if (desktopPaused) return;
+  if (state === 'menu') { desktopMenuStart(); return; }
+  if (state === 'cast') { state = 'menu'; playBgm('m'); return; }
+  if (state === 'win' || state === 'over') { startGame(); return; }
+  if (state !== 'play' && state !== 'boss') return;
+  try {
+    if (player.weapon === 'spread' && typeof fireSpread === 'function') fireSpread();
+    else if (player.weapon === 'missile' && typeof launchMissiles === 'function') launchMissiles();
+    else if (typeof fireNormal === 'function') fireNormal();
+  } catch (e) {}
+}

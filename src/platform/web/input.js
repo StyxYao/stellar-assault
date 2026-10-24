@@ -3,6 +3,10 @@ var dragging=false,dragLift=0,dragMaxY=H-70,lastTapAt=0,lastTapX=0,lastTapY=0;
 function pt(e){var r=cvs.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H};}
 function onDown(e){
   e.preventDefault();
+  if(e.pointerType==='mouse'&&e.button===2){
+    // contextmenu handles the single bomb call; do not fire twice here
+    return;
+  }
   if(typeof desktopPaused!=='undefined'&&desktopPaused){desktopSetPaused(false);return;}primeVideos(); initAudio(); loadSfxExtras();
   try{hedronLoopVideo.play().catch(function(){});}catch(err){}
   try{phase3LoopVideo.play().catch(function(){});}catch(err){}
@@ -11,6 +15,7 @@ function onDown(e){
   try{if(AC&&AC.state==='suspended')AC.resume();}catch(err){}
   if(state==='menu'&&bgmPending){var pk=bgmPending;bgmPending='';playBgm(pk);}
   var p=pt(e);
+  if(e.pointerType==='mouse'&&(state==='play'||state==='boss')&&typeof desktopPrimaryFire==='function') desktopPrimaryFire();
   if(state==='menu'){
     if(!audioReady){ audioReady=true; playBgm('m'); }
     var sbs=stageSelectButtons();
@@ -41,6 +46,11 @@ function onDown(e){
   target.y=Math.max(70,Math.min(dragMaxY,p.y-dragLift));
 }
 function onMove(e){
+  if(e.pointerType==='mouse'&&(state==='play'||state==='boss')&&!(typeof desktopPaused!=='undefined'&&desktopPaused)){
+    e.preventDefault();
+    var mp=pt(e);target.x=Math.max(22,Math.min(W-22,mp.x));target.y=Math.max(70,Math.min(H-70,mp.y));
+    return;
+  }
   if(!dragging) return;
   e.preventDefault();
   var p=pt(e);target.x=Math.max(22,Math.min(W-22,p.x));target.y=Math.max(70,Math.min(dragMaxY,p.y-dragLift));
@@ -50,3 +60,4 @@ cvs.addEventListener('pointerdown',onDown,{passive:false});
 cvs.addEventListener('pointermove',onMove,{passive:false});
 cvs.addEventListener('pointerup',onUp);
 cvs.addEventListener('pointercancel',onUp);
+cvs.addEventListener('contextmenu',function(e){e.preventDefault();if((typeof desktopPaused==='undefined'||!desktopPaused)&&(state==='play'||state==='boss')&&typeof bomb==='function')bomb();});

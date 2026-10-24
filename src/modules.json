@@ -9,6 +9,8 @@
     "src/content/stage-waves.js",
     "src/content/bosses.js",
     "src/content/stage5-waves.js",
+    "src/app/modes.js",
+    "src/app/ranking.js",
     "src/render/player-hitbox.js",
     "src/render/player.js",
     "src/platform/web/input.js",

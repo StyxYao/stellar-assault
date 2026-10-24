@@ -302,3 +302,9 @@
 - Added pause overlay, BGM pause/resume and blur auto-pause.
 - Primed all hidden videos for keyboard-driven desktop start.
 - Added M1 acceptance document.
+
+## 0.4.1 — mouse controls and mode contracts
+
+- Added mouse hover movement, left-click manual fire and right-click bomb.
+- Added Boss Rush / Tower mode descriptors and RankingPort contracts.
+- Added docs/MODES_ARCHITECTURE.md; modes are not exposed in the menu yet.

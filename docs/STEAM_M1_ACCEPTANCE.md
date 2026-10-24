@@ -41,6 +41,9 @@ npm start
 | Keyboard stage select (`←/→`) | PASS |
 | Enter starts selected stage | PASS |
 | Keyboard movement | PASS |
+| Mouse hover follows ship | PASS |
+| Mouse left click manual fire | PASS |
+| Mouse right click bomb | PASS |
 | Z bomb | PASS |
 | Esc pause | PASS |
 | Pause freezes game state | PASS |
