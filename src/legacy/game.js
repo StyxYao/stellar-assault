@@ -432,10 +432,11 @@ var last=performance.now(),fixedStep=new FixedStep(1/60,4);
 function frame(now){
   var dt=Math.min(0.05,(now-last)/1000);last=now;
   try{
-    fixedStep.advance(dt,function(fixedDt){step(fixedDt);});
+    if(typeof desktopPoll==='function') desktopPoll();
+    if(!desktopPaused) fixedStep.advance(dt,function(fixedDt){step(fixedDt);});
     draw();
+    if(typeof drawDesktopPause==='function') drawDesktopPause();
   }catch(e){ console.error('frame error',e); }
-  document.addEventListener('visibilitychange',function(){try{if(!document.hidden&&AC&&AC.state==='suspended')AC.resume();}catch(e){}});
-requestAnimationFrame(frame);
+  requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);

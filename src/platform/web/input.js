@@ -2,7 +2,8 @@
 var dragging=false,dragLift=0,dragMaxY=H-70,lastTapAt=0,lastTapX=0,lastTapY=0;
 function pt(e){var r=cvs.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H};}
 function onDown(e){
-  e.preventDefault();primeVideos(); initAudio(); loadSfxExtras();
+  e.preventDefault();
+  if(typeof desktopPaused!=='undefined'&&desktopPaused){desktopSetPaused(false);return;}primeVideos(); initAudio(); loadSfxExtras();
   try{hedronLoopVideo.play().catch(function(){});}catch(err){}
   try{phase3LoopVideo.play().catch(function(){});}catch(err){}
   try{phase2LoopVideo.play().catch(function(){});}catch(err){}

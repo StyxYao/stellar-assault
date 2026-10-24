@@ -293,3 +293,12 @@
 - M missile count is specialPower+1.
 - Missile sample shortened and pitch-dropped; N shot volume -10% with no skipped shots.
 - Player bomb layers B explosion with A heavy missile.
+
+## 0.4.0 — Steam M1 desktop shell
+
+- Added Electron desktop shell with fitted 9:16 window, fullscreen and window-state persistence.
+- Added keyboard input: menu navigation, movement, bomb, pause, fullscreen.
+- Added gamepad input: menu, movement, bomb, pause.
+- Added pause overlay, BGM pause/resume and blur auto-pause.
+- Primed all hidden videos for keyboard-driven desktop start.
+- Added M1 acceptance document.

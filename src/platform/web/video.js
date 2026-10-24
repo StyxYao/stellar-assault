@@ -13,8 +13,10 @@ document.body.appendChild(VIDEO_HOST);
 var videosPrimed=false;
 function primeVideos(){
   videosPrimed=true;
-  // Keep the hidden fusion video running silently after the first gesture.
-  // This grants playback permission before the cutscene, so no click-to-play is needed later.
-  try{fusionVideo.muted=true;fusionVideo.loop=true;fusionVideo.play().catch(function(){});}catch(e){}
+  // Desktop/keyboard input has no pointerdown. Prime every hidden video so stage,
+  // phase and fusion playback are already permitted when first needed.
+  [fusionVideo,bgLoopVideo,phase2LoopVideo,phase3LoopVideo,hedronLoopVideo].forEach(function(v){
+    try{v.muted=true;v.play().catch(function(){});}catch(e){}
+  });
 }
 
