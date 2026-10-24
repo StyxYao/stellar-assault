@@ -228,3 +228,10 @@
 - Missile launch now uses the CC BY 3.0 Bottle Rocket sample (trimmed to 0.70s, faded).
 - Public-domain Missle Launch is retained in `sfx-sel/` for future heavy missiles.
 - Added attribution to Cast and THIRD_PARTY_NOTICES.
+
+## 0.3.11 — missile C original and boss HP
+
+- Missile launch uses the full original Bottle Rocket sample, no trim/EQ/fade.
+- A new missile launch stops the previous missile source before starting.
+- Big bosses HP ×1.5; phase-2 max now derives from the boosted total.
+- Mini bosses HP set to 75% of the boosted big-boss total.

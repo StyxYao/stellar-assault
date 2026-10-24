@@ -91,11 +91,15 @@ function startBossFusion(){
   playBgm('s5boss');
   sfx('b_charge',0.50);
 }
+function bossTotalHp(s){
+  var def=BOSSES[s];
+  var hpMul=s===0?1.10:(s===1?1.10:(s===2?0.90:1.0));
+  var finalMul=s===4?1.5:1;
+  return Math.round(def.hp*1.4*hpMul*finalMul*1.5);
+}
 function spawnBossNow(){
   var def=BOSSES[stage];
-  var hpMul=stage===0?1.10:(stage===1?1.10:(stage===2?0.90:1.0));
-  var finalMul=stage===4?1.5:1;
-  var bhp=Math.round(def.hp*1.4*hpMul*finalMul);
+  var bhp=bossTotalHp(stage);
   boss={def:def,x:W/2,y:-130,hp:bhp,max:bhp,phase:0,invuln:1.2,entering:true,t:0,flash:0,patternIdx:0,patternT:0,aimT:0,ringT:0,laserT:0,hitFlash:0,hitX:W/2,hitY:180,ultT:def.ultRate-2.2,ultCharge:0,spiralT:0,spiralAng:0,broadT:0,blinkT:0,bossSigT:0};
   if(stage===4){boss.y=H*.44;boss.entering=false;boss.invuln=1.6;boss.totalHp=bhp;boss.max=Math.round(bhp*.36);boss.hp=boss.max;}
   if(stage===2) repairAudio();
@@ -176,7 +180,7 @@ function startBossFusionCinematic(){
 function finishBossFusionPhase(){
   state='boss';bossFusionT=0;
   spawnBossNow();
-  boss.phase=1;boss.max=Math.round(10080*.64);boss.hp=boss.max;
+  boss.phase=1;boss.max=Math.round((boss.totalHp||10080)*.64);boss.hp=boss.max;
   boss.y=H*.44;boss.entering=false;boss.invuln=2.2;
   state='bossAwaken';bossAwakenT=2.6;boss.bossSigT=0;
   bullets.length=0;ebullets.length=0;beams.length=0;orbBullets.length=0;

@@ -11,7 +11,7 @@ if(typeof BGMSRC!=='undefined'){
   BGMSRC.s5ending='assets/audio/bgm-ending-kaleidoscope.mp3';
   if(typeof BGMURL!=='undefined'){ BGMURL.s4=BGMSRC.s4; BGMURL.s2boss=BGMSRC.s2boss; BGMURL.s3boss=BGMSRC.s3boss; BGMURL.s4boss=BGMSRC.s4boss;BGMURL.m5=BGMSRC.m5;BGMURL.s5=BGMSRC.s5;BGMURL.s5boss=BGMSRC.s5boss;BGMURL.s5ending=BGMSRC.s5ending; }
 }
-var sampleSfx=sfx,sfxLast={},laserOsc=null,laserGain=null,audioBoosted=false,sfxExtraLoaded=false;
+var sampleSfx=sfx,sfxLast={},laserOsc=null,laserGain=null,missileSrc=null,missileGain=null,audioBoosted=false,sfxExtraLoaded=false;
 function loadSfxExtras(){
   if(sfxExtraLoaded||!AC||typeof SFX_EXTRA==='undefined') return;
   sfxExtraLoaded=true;
@@ -148,23 +148,23 @@ function playAirRaid(vol){
 }
 function playMissileLaunch(){
   if(!AC||!master||muted) return;
-  var buf=SFXBUF['p_missile']||SFXBUF['jetfly'];
+  // cancel the previous missile immediately; only one launch sample may sound
+  if(missileSrc){
+    try{missileSrc.stop();}catch(e){}
+    try{missileSrc.disconnect();}catch(e){}
+    try{if(missileGain)missileGain.disconnect();}catch(e){}
+    missileSrc=null;missileGain=null;
+  }
+  var buf=SFXBUF['p_missile'];
   if(!buf){noiseBurst(0.06,0.12,8000);tone(1600,600,0.07,0.10,'triangle');return;}
   var t=AC.currentTime,s=AC.createBufferSource();
-  s.buffer=buf;s.playbackRate.value=1.0;
-  var hp=AC.createBiquadFilter();hp.type='highpass';hp.frequency.value=110;
-  var g=AC.createGain();
-  g.gain.setValueAtTime(0.95,t);
-  g.gain.exponentialRampToValueAtTime(0.28,t+0.055);
-  g.gain.exponentialRampToValueAtTime(0.0001,t+0.30);
-  s.connect(hp);hp.connect(g);g.connect(master);
-  s.onended=function(){try{s.disconnect();hp.disconnect();g.disconnect();}catch(e){}};
-  s.start(t);s.stop(t+0.70);
-  g.gain.cancelScheduledValues(t);
-  g.gain.setValueAtTime(0.95,t);
-  g.gain.exponentialRampToValueAtTime(0.30,t+0.10);
-  g.gain.exponentialRampToValueAtTime(0.0001,t+0.70);
-  tone(92,36,.56,.34,'sine');
+  s.buffer=buf;
+  s.playbackRate.value=1;
+  var g=AC.createGain();g.gain.value=0.9;
+  s.connect(g);g.connect(master);
+  missileSrc=s;missileGain=g;
+  s.onended=function(){if(missileSrc===s){missileSrc=null;missileGain=null;}try{s.disconnect();g.disconnect();}catch(e){}};
+  s.start(t);
 }
 function synthSfx(n,v){
   if(!AC||!master||muted) return;
