@@ -1,3 +1,5 @@
+> **Superseded by [ROADMAP_V2.md](ROADMAP_V2.md)** — death economy is frozen and ship-02 design now comes first.
+
 # 开发顺序决策：Campaign / Boss 机制优先
 
 日期：2026-10-24  
