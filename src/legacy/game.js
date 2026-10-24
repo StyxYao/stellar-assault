@@ -154,7 +154,7 @@ function enemyDeath(e){
   else boom(e.x,e.y,0.75,'normal');
 }
 function enemyBombExplode(e){
-  var bossBomb=!!e.bossBomb,rad=bossBomb?118:72;
+  var bossBomb=!!e.bossBomb,rad=e.blastR||(bossBomb?118:72);
   blastZones.push({x:e.x,y:e.y,t:0,life:bossBomb?0.60:0.42,r:rad,hit:false,boss:bossBomb});
   fx.push({x:e.x,y:e.y,t:0,sc:bossBomb?2.4:1.15,seed:Math.random()*TAU,kind:'enemybomb',life:bossBomb?1.15:0.9});
   if(AC&&!muted){

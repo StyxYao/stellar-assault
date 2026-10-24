@@ -399,7 +399,16 @@ function step(dt){
     var e=ebullets[i]; e.x+=e.vx*dt; e.y+=e.vy*dt;
     if(e.bomb){
       e.fuse-=dt;
-      if(e.fuse<=0){ enemyBombExplode(e); ebullets.splice(i,1); continue; }
+      if(e.tx!=null){
+        var bdx=e.tx-e.x,bdy=e.ty-e.y,bd=Math.hypot(bdx,bdy);
+        var bstep=Math.min(bd,(e.bombSpeed||220)*dt);
+        if(bd>2){e.x+=bdx/bd*bstep;e.y+=bdy/bd*bstep;}
+        if(bd<=6||e.fuse<=0){
+          e.x=e.tx;e.y=e.ty;enemyBombExplode(e);ebullets.splice(i,1);continue;
+        }
+      }else if(e.fuse<=0){
+        enemyBombExplode(e);ebullets.splice(i,1);continue;
+      }
       if(e.x<-40||e.x>W+40||e.y>H+40){ ebullets.splice(i,1); }
       continue;
     }

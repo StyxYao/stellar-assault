@@ -155,7 +155,10 @@ function fireEnemy(e){
     sfx('e_shot',0.16);return;
   }
   if(e.type===4&&Math.random()<0.42){
-    ebullets.push({x:e.x,y:e.y+10,vx:Math.cos(ra)*55,vy:Math.sin(ra)*55,rad:9,type:2,bomb:true,fuse:1.25});
+    var btx=Math.max(30,Math.min(W-30,player.x+rand(-110,110)));
+    var bty=Math.max(70,Math.min(H-50,player.y+rand(-80,80)));
+    var bd=Math.hypot(btx-e.x,bty-e.y),bspd=180;
+    ebullets.push({x:e.x,y:e.y+10,vx:Math.cos(ra)*bspd,vy:Math.sin(ra)*bspd,rad:9,type:2,bomb:true,tx:btx,ty:bty,blastR:72,bombSpeed:bspd,fuse:Math.max(0.35,bd/bspd)});
     sfx('e_charge',0.20);return;
   }
   if(e.type===6){

@@ -78,6 +78,15 @@ function drawCrystalEB(e,p,pi){
 function drawEB(e){
   var pi=(e.bossPal!=null?e.bossPal:((stage===4&&boss&&boss.phase===0)?5:(stage|0)));
   pi=Math.max(0,Math.min(5,pi));var p=BOSS_PALETTES[pi],spr=ebSprite(pi,e.type);
+  if(e.bomb&&e.tx!=null&&e.blastR){
+    var bp0=0.5+0.5*Math.sin(time*10);
+    ctx.save();ctx.globalCompositeOperation='lighter';
+    ctx.globalAlpha=.20+bp0*.16;ctx.fillStyle='rgba(255,110,70,1)';ctx.beginPath();ctx.arc(e.tx,e.ty,e.blastR,0,TAU);ctx.fill();
+    ctx.globalAlpha=.62+bp0*.25;ctx.strokeStyle='#ffb36b';ctx.lineWidth=2;ctx.setLineDash([6,5]);
+    ctx.beginPath();ctx.arc(e.tx,e.ty,e.blastR,0,TAU);ctx.stroke();ctx.setLineDash([]);
+    ctx.globalAlpha=.32;ctx.strokeStyle='#fff0c0';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(e.tx,e.ty,e.blastR*.34,0,TAU);ctx.stroke();ctx.restore();ctx.globalAlpha=1;
+  }
   var a=Math.atan2(e.vy,e.vx)+Math.PI/2;
   ctx.save();ctx.translate(e.x,e.y);ctx.rotate(a);
   if(e.bomb){

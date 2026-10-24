@@ -235,3 +235,10 @@
 - A new missile launch stops the previous missile source before starting.
 - Big bosses HP ×1.5; phase-2 max now derives from the boosted total.
 - Mini bosses HP set to 75% of the boosted big-boss total.
+
+## 0.3.12 — targeted bombs and warning rings
+
+- Enemy/boss bombs now fly to a fixed target point instead of detonating in front of the shooter.
+- Target points can be any direction/distance around the player, clamped to the screen.
+- A dashed warning ring with exactly the real blast radius is drawn at each bomb target.
+- Bomb blast radius is carried on the projectile and reused by the explosion.

@@ -138,8 +138,10 @@ function bossBombBarrage(){
   if(!boss||boss.invuln>0) return;
   if(ebullets.length>250) return;
   for(var i=0;i<5;i++){
-    var tx=player.x+(i-2)*46;
-    ebullets.push({x:boss.x+(i-2)*54,y:boss.y+24,vx:(tx-boss.x)*0.28,vy:95,bomb:true,bossBomb:true,fuse:1.35,rad:12,type:2});
+    var tx=Math.max(30,Math.min(W-30,player.x+(i-2)*46));
+    var ty=Math.max(80,Math.min(H-50,player.y+rand(-30,45)));
+    var bd=Math.hypot(tx-(boss.x+(i-2)*54),ty-(boss.y+24)),bspd=250;
+    ebullets.push({x:boss.x+(i-2)*54,y:boss.y+24,vx:0,vy:bspd,bomb:true,bossBomb:true,tx:tx,ty:ty,blastR:118,bombSpeed:bspd,fuse:Math.max(0.45,bd/bspd),rad:12,type:2});
   }
   sfx('e_charge',0.22);
 }
