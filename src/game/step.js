@@ -203,6 +203,7 @@ function step(dt){
       if(jd>12){e.x=e.px+jx/jd*12;e.y=e.py+jy/jd*12;}
     }
     e.px=e.x;e.py=e.y;
+    if(e.miniSkillT>0)e.miniSkillT=Math.max(0,e.miniSkillT-dt);
     var vis=(e.x>14&&e.x<W-14&&e.y>14&&e.y<H-60);
     e.visT=vis?((e.visT||0)+dt):0;
     if(!e.transport&&!e.noFire&&!e.entering&&e.visT>0.22){
@@ -237,10 +238,10 @@ function step(dt){
   if(boss&&state==='boss'){
     var def=boss.def; boss.t+=dt;
     if(bossPhaseGlitchT>0) bossPhaseGlitchT=Math.max(0,bossPhaseGlitchT-dt);
-    if(boss.dropT==null)boss.dropT=5.0;
+    if(boss.dropT==null)boss.dropT=25.0;
     boss.dropT-=dt;
     if(boss.dropT<=0){
-      boss.dropT=7.5;
+      boss.dropT=25.0;
       var dropTypes=['P','A','W','B'];
       for(var di=0;di<2;di++){
         var dx=Math.max(36,Math.min(W-36,player.x+rand(-110,110)));

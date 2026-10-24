@@ -48,6 +48,13 @@ function prepareStageContent(s){
     list.push({t:ft,type:(fi%3===0?0:5),n:6+(fi%3)*2,form:forms[fi%forms.length],spd:90+(fi%4)*8,aggr:0.12,fodder:true});
     fi++;
   }
+  // sparse gap fillers outside the two mowing windows
+  var gi=0;
+  for(var gapT=2;gapT<lastT-2;gapT+=4.2){
+    if((gapT>=smStart&&gapT<=smEnd)||(gapT>=bgStart&&gapT<=bgEnd)) continue;
+    list.push({t:gapT,type:(gi%2?0:5),n:2+(gi%2),form:forms[gi%forms.length],spd:85+(gi%3)*7,aggr:0.08,fodder:true});
+    gi++;
+  }
   if(s<4){list.push({t:lastT*0.5,type:9+s,n:1,form:'mid',spd:70,mini:true});}
   else{
     var pairs=[[9,10,.55],[11,12,.70],[13,14,.85]];

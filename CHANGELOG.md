@@ -255,3 +255,11 @@
 - Mowing internal wave intervals widened: small 2.8s, large 3.2s.
 - Six mini bosses now use distinct attack geometries (lattice, fan+beam, fast arcs, gap ring, spiral, mirrored fans+beam).
 - Boss fights drop two upgrade pickups every 7.5 seconds.
+
+## 0.3.15 — bomb speed, OD, boss drops and mini labels
+
+- Enemy bomb speed halved (normal 180→90, boss 250→125).
+- OD grants full invincibility.
+- Boss supply drops every 25s (two pickups).
+- Mini boss health labels use per-type names and show their current skill name.
+- Sparse low-count filler waves added outside mowing windows.

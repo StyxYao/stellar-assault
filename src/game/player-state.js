@@ -13,6 +13,7 @@ function bomb(){
   if(boss){ boss.hp-=120; boss.flash=0.2; }
 }
 function hitPlayer(){
+  if(player.odT>0) return;
   if(player.invuln>0||state!=='play'&&state!=='boss') return;
   if(player.options>0){
     var wi=0,bestY=1e9;

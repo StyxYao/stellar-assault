@@ -14,7 +14,7 @@ function drawStage5Echo(e){
     var bw=e.mini?w*1.15:w*.8,bh=e.mini?6:3,bx=e.x-bw/2,by=e.mini?e.y-w*.72:e.y-w*.62;
     ctx.fillStyle='rgba(8,14,24,0.75)';ctx.fillRect(bx,by,bw,bh);
     ctx.fillStyle=(e.hp/e.max>0.5)?'#8dff9e':'#ffb36b';ctx.fillRect(bx,by,bw*Math.max(0,e.hp/e.max),bh);
-    if(e.mini){ctx.fillStyle='#ffd27a';ctx.font='8px monospace';ctx.textAlign='center';ctx.fillText('ECHO MINI BOSS',e.x,by-4);ctx.textAlign='left';}
+    if(e.mini){ctx.fillStyle='#ffd27a';ctx.font='8px monospace';ctx.textAlign='center';var mn=(typeof MINI_NAMES!=='undefined'&&MINI_NAMES[e.type])||'ECHO';ctx.fillText('MINI · '+mn,e.x,by-4);if(e.miniSkillName&&e.miniSkillT>0){ctx.globalAlpha=.55+.35*Math.min(1,e.miniSkillT);ctx.fillStyle='#9fe8ff';ctx.font='7px monospace';ctx.fillText(e.miniSkillName,e.x,by-14);ctx.globalAlpha=1;}ctx.textAlign='left';}
   }
 }
 

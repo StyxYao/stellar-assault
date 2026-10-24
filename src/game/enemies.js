@@ -96,9 +96,11 @@ function s5FireEnemy(e,ra){
   }
   sfx('e_shot',.16);
 }
+var MINI_NAMES={9:'COORDINATE',10:'TOPOLOGY TURRET',11:'MOBIUS HUNTER',12:'AXIS CORE',13:'RECURSIVE',14:'MIRROR DEFLECTION'};
+var MINI_SKILLS={9:'LATTICE',10:'FAN + LANCE',11:'ARC PAIR',12:'GAP RING',13:'TWIN SPIRAL',14:'MIRROR FAN'};
 function miniBossFire(e,ra){
   if(!e.miniAtk) e.miniAtk=0;
-  e.miniAtk++;
+  e.miniAtk++;e.miniSkillName=MINI_SKILLS[e.type]||'ECHO ATTACK';e.miniSkillT=1.0;
   // retain the original stage-5 enemy attack
   s5FireEnemy(e,ra);
   var rage=(e.hp<e.max*0.5)?1:0;
@@ -197,7 +199,7 @@ function fireEnemy(e){
   if(e.type===4&&Math.random()<0.42){
     var btx=Math.max(30,Math.min(W-30,player.x+rand(-110,110)));
     var bty=Math.max(70,Math.min(H-50,player.y+rand(-80,80)));
-    var bd=Math.hypot(btx-e.x,bty-e.y),bspd=180;
+    var bd=Math.hypot(btx-e.x,bty-e.y),bspd=90;
     ebullets.push({x:e.x,y:e.y+10,vx:Math.cos(ra)*bspd,vy:Math.sin(ra)*bspd,rad:9,type:2,bomb:true,tx:btx,ty:bty,blastR:48,bombSpeed:bspd,fuse:Math.max(0.35,bd/bspd)});
     sfx('e_charge',0.20);return;
   }

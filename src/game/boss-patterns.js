@@ -140,7 +140,7 @@ function bossBombBarrage(){
   for(var i=0;i<5;i++){
     var tx=Math.max(30,Math.min(W-30,player.x+(i-2)*46));
     var ty=Math.max(80,Math.min(H-50,player.y+rand(-30,45)));
-    var bd=Math.hypot(tx-(boss.x+(i-2)*54),ty-(boss.y+24)),bspd=250;
+    var bd=Math.hypot(tx-(boss.x+(i-2)*54),ty-(boss.y+24)),bspd=125;
     ebullets.push({x:boss.x+(i-2)*54,y:boss.y+24,vx:0,vy:bspd,bomb:true,bossBomb:true,tx:tx,ty:ty,blastR:78,bombSpeed:bspd,fuse:Math.max(0.45,bd/bspd),rad:12,type:2});
   }
   sfx('e_charge',0.22);
