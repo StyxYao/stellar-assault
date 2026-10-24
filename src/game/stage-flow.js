@@ -31,13 +31,13 @@ function prepareStageContent(s){
   var forms=['v','line','pincer','arc','orbit','fractal','ring','line','v','orbit'];
   // small early mowing segment
   var smStart=lastT*.07,smEnd=lastT*.17,mfi=0;
-  for(var mt=smStart;mt<smEnd;mt+=2.2){
+  for(var mt=smStart;mt<smEnd;mt+=2.8){
     list.push({t:mt,type:(mfi%2?5:0),n:Math.round(8*.8),form:forms[mfi%forms.length],spd:110+(mfi%4)*8,aggr:0.06,fodder:true});
     mfi++;
   }
   // large second-half mowing segment (25%+ of the stage)
   var bgStart=lastT*.52,bgEnd=lastT*.77,gfi=0;
-  for(var gt=bgStart;gt<bgEnd;gt+=2.375){
+  for(var gt=bgStart;gt<bgEnd;gt+=3.2){
     list.push({t:gt,type:(gfi%2?5:0),n:Math.round((12+(gfi%3)*2)*.8),form:forms[gfi%forms.length],spd:118+(gfi%4)*8,aggr:0.06,fodder:true});
     gfi++;
   }
@@ -100,7 +100,7 @@ function bossTotalHp(s){
 function spawnBossNow(){
   var def=BOSSES[stage];
   var bhp=bossTotalHp(stage);
-  boss={def:def,x:W/2,y:-130,hp:bhp,max:bhp,phase:0,invuln:1.2,entering:true,t:0,flash:0,patternIdx:0,patternT:0,aimT:0,ringT:0,laserT:0,hitFlash:0,hitX:W/2,hitY:180,ultT:def.ultRate-2.2,ultCharge:0,spiralT:0,spiralAng:0,broadT:0,blinkT:0,bossSigT:0};
+  boss={def:def,x:W/2,y:-130,hp:bhp,max:bhp,phase:0,invuln:1.2,entering:true,t:0,flash:0,patternIdx:0,patternT:0,aimT:0,ringT:0,laserT:0,hitFlash:0,hitX:W/2,hitY:180,ultT:def.ultRate-2.2,ultCharge:0,spiralT:0,spiralAng:0,broadT:0,blinkT:0,bossSigT:0,dropT:5.0};
   if(stage===4){boss.y=H*.44;boss.entering=false;boss.invuln=1.6;boss.totalHp=bhp;boss.max=Math.round(bhp*.36);boss.hp=boss.max;}
   if(stage===2) repairAudio();
   state='boss'; playBgm(['c','s2boss','s3boss','s4boss','s5boss'][stage]||'c'); setBossPattern(0);

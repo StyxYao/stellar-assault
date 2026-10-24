@@ -101,17 +101,57 @@ function miniBossFire(e,ra){
   e.miniAtk++;
   // retain the original stage-5 enemy attack
   s5FireEnemy(e,ra);
-  // boss-flavoured additions, intentionally lower density than the real boss
-  if(e.miniAtk%3===0){
-    var gap=Math.atan2(player.y-e.y,player.x-e.x);
-    for(var i=0;i<12;i++){
-      var a=i/12*TAU+time*.2,da=Math.atan2(Math.sin(a-gap),Math.cos(a-gap));
-      if(Math.abs(da)<0.72) continue;
-      s5Shot(e,e.x,e.y,Math.cos(a)*105,Math.sin(a)*105,4.8,2);
+  var rage=(e.hp<e.max*0.5)?1:0;
+  var beat=rage?2:3;
+  if(e.type===9){                       // COORDINATE: orthogonal lattice
+    if(e.miniAtk%beat===0){
+      for(var i=-1;i<=1;i++){
+        s5Shot(e,e.x+e.y*0+ i*20,e.y+10,Math.cos(ra+i*.12)*170,Math.sin(ra+i*.12)*170,4.2,1);
+      }
+      for(var j=-1;j<=1;j+=2){
+        s5Shot(e,e.x+j*26,e.y+6,Math.cos(ra)*125,Math.sin(ra)*125,4.0,2);
+      }
     }
-  }
-  if(e.miniAtk%4===0&&beams.length<4){
-    spawnBeam(e.x,e.y+8,ra,900,8,0.8,0.3,1,'#ff9a3a',false,e);
+  }else if(e.type===10){                // TOPOLOGY: fan + lance
+    if(e.miniAtk%beat===0){
+      for(var f=-2;f<=2;f++)s5Shot(e,e.x,e.y+8,Math.cos(ra+f*.14)*145,Math.sin(ra+f*.14)*145,4.8,2);
+    }
+    if(e.miniAtk%(beat*2)===0&&beams.length<3)spawnBeam(e.x,e.y+8,ra,900,8,.8,.28,1,'#ff9a3a',false,e);
+  }else if(e.type===11){                // MOBIUS: paired fast arcs
+    if(e.miniAtk%beat===0){
+      for(var side=-1;side<=1;side+=2){
+        var a=ra+side*.16;
+        s5Shot(e,e.x+side*10,e.y,Math.cos(a)*260,Math.sin(a)*260,4.2,1);
+      }
+    }
+  }else if(e.type===12){                // AXIS: gap ring + aimed core
+    if(e.miniAtk%beat===0){
+      var gap=Math.atan2(player.y-e.y,player.x-e.x);
+      for(var k=0;k<12;k++){
+        var a2=k/12*TAU+time*.2,da=Math.atan2(Math.sin(a2-gap),Math.cos(a2-gap));
+        if(Math.abs(da)<.78)continue;
+        s5Shot(e,e.x,e.y,Math.cos(a2)*110,Math.sin(a2)*110,4.7,2);
+      }
+      s5Shot(e,e.x,e.y+6,Math.cos(ra)*215,Math.sin(ra)*215,5.0,1);
+    }
+  }else if(e.type===13){                // RECURSIVE: two-arm spiral
+    if(e.miniAtk%beat===0){
+      e.miniAng=(e.miniAng||0)+.52;
+      for(var arm=0;arm<2;arm++){
+        for(var s2=0;s2<2;s2++){
+          var a3=e.miniAng+arm*Math.PI+s2*.18;
+          s5Shot(e,e.x,e.y,Math.cos(a3)*(105+s2*28),Math.sin(a3)*(105+s2*28),4.4,2);
+        }
+      }
+    }
+  }else{                                // MIRROR: reflected fans + beam
+    if(e.miniAtk%beat===0){
+      for(var m=0;m<3;m++){
+        s5Shot(e,e.x-12,e.y,Math.cos(ra-.30+m*.16)*165,Math.sin(ra-.30+m*.16)*165,4.3,1);
+        s5Shot(e,e.x+12,e.y,Math.cos(ra+.30-m*.16)*165,Math.sin(ra+.30-m*.16)*165,4.3,1);
+      }
+    }
+    if(e.miniAtk%(beat*2)===0&&beams.length<3)spawnBeam(e.x,e.y+8,ra,900,7,.8,.26,1,'#ff9ae6',false,e);
   }
 }
 function fireEnemy(e){
@@ -158,7 +198,7 @@ function fireEnemy(e){
     var btx=Math.max(30,Math.min(W-30,player.x+rand(-110,110)));
     var bty=Math.max(70,Math.min(H-50,player.y+rand(-80,80)));
     var bd=Math.hypot(btx-e.x,bty-e.y),bspd=180;
-    ebullets.push({x:e.x,y:e.y+10,vx:Math.cos(ra)*bspd,vy:Math.sin(ra)*bspd,rad:9,type:2,bomb:true,tx:btx,ty:bty,blastR:72,bombSpeed:bspd,fuse:Math.max(0.35,bd/bspd)});
+    ebullets.push({x:e.x,y:e.y+10,vx:Math.cos(ra)*bspd,vy:Math.sin(ra)*bspd,rad:9,type:2,bomb:true,tx:btx,ty:bty,blastR:48,bombSpeed:bspd,fuse:Math.max(0.35,bd/bspd)});
     sfx('e_charge',0.20);return;
   }
   if(e.type===6){

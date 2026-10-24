@@ -247,3 +247,11 @@
 
 - Stage 1-4 timeline extended another 20% (now 2.16x original).
 - Large mowing segment interval 1.9s -> 2.375s, reducing density 20%.
+
+## 0.3.14 — bomb radius, mini patterns and boss supplies
+
+- Bomb blast radii reduced: normal 72→48, boss 118→78.
+- Missile launch gain reduced 30% (0.90→0.63).
+- Mowing internal wave intervals widened: small 2.8s, large 3.2s.
+- Six mini bosses now use distinct attack geometries (lattice, fan+beam, fast arcs, gap ring, spiral, mirrored fans+beam).
+- Boss fights drop two upgrade pickups every 7.5 seconds.

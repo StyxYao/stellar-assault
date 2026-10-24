@@ -237,6 +237,16 @@ function step(dt){
   if(boss&&state==='boss'){
     var def=boss.def; boss.t+=dt;
     if(bossPhaseGlitchT>0) bossPhaseGlitchT=Math.max(0,bossPhaseGlitchT-dt);
+    if(boss.dropT==null)boss.dropT=5.0;
+    boss.dropT-=dt;
+    if(boss.dropT<=0){
+      boss.dropT=7.5;
+      var dropTypes=['P','A','W','B'];
+      for(var di=0;di<2;di++){
+        var dx=Math.max(36,Math.min(W-36,player.x+rand(-110,110)));
+        items.push({x:dx,y:-20,vy:65+di*12,type:dropTypes[(Math.floor(time*3)+di)%dropTypes.length],t:0});
+      }
+    }
     if(boss.hitFlash>0) boss.hitFlash-=dt;
     if(boss.flash>0) boss.flash-=dt;
     if(boss.invuln>0) boss.invuln=Math.max(0,boss.invuln-dt);

@@ -160,7 +160,7 @@ function playMissileLaunch(){
   var t=AC.currentTime,s=AC.createBufferSource();
   s.buffer=buf;
   s.playbackRate.value=1;
-  var g=AC.createGain();g.gain.value=0.9;
+  var g=AC.createGain();g.gain.value=0.63;
   s.connect(g);g.connect(master);
   missileSrc=s;missileGain=g;
   s.onended=function(){if(missileSrc===s){missileSrc=null;missileGain=null;}try{s.disconnect();g.disconnect();}catch(e){}};
