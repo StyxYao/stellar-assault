@@ -171,9 +171,8 @@ function bossCrossArms(){
   var cx=W/2,cy=H*0.48,len=Math.max(W,H)*0.9;
   var pal=(boss.crossOrb&&boss.crossOrb.pal!=null)?boss.crossOrb.pal:(SIG_BOSS>=0?SIG_BOSS:4);
   var col=(BOSS_PALETTES[pal]||BOSS_PALETTES[4]).beam;
-  var aim=Math.atan2(player.y-cy,player.x-cx);
   for(var k=0;k<4;k++){
-    spawnBeam(cx,cy,aim+k*Math.PI/2,len,12,0.28,0.82,1,col,false,null);
+    spawnBeam(cx,cy,k*Math.PI/2,len,12,0.28,0.82,1,col,false,null);
   }
   sfx('laser_fire',0.45);
 }

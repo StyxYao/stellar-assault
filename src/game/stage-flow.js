@@ -61,7 +61,7 @@ function prepareStageContent(s){
     for(var pi=0;pi<pairs.length;pi++){
       var pp=pairs[pi];
       list.push({t:lastT*pp[2],type:pp[0],n:1,form:'mid',spd:64,mini:true,x:W*.30});
-      list.push({t:lastT*pp[2]+0.35,type:pp[1],n:1,form:'mid',spd:64,mini:true,x:W*.70});
+      list.push({t:lastT*pp[2],type:pp[1],n:1,form:'mid',spd:64,mini:true,x:W*.70});
     }
   }
   list.sort(function(a,b){return a.t-b.t;});
@@ -69,7 +69,7 @@ function prepareStageContent(s){
 }
 function startStage(i){
   prepareStageContent(i);
-  stage=i; stageT=0; waveIndex=0; nextTransport=24+Math.random()*10;
+  stage=i; stageT=0; waveIndex=0; miniDropT=25; nextTransport=24+Math.random()*10;
   enemies.length=0; bullets.length=0; ebullets.length=0; shots.length=0; fx.length=0; items.length=0; missiles.length=0; wingBeams.length=0; beams.length=0; orbBullets.length=0; phaseFx.length=0; blastZones.length=0; odLaserFx.length=0; player.trail=[];
   boss=null; runner=null; phaseFx.length=0;
   setStageBg(STAGES[i].bg);bgScroll=0;bgEdgeScroll=0;

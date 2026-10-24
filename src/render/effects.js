@@ -1,5 +1,17 @@
 // Explosion, phase, item, OD and pickup visual effects.
+function hitSpark(x,y,spread,big){
+  if(fx.length>140) return;
+  fx.push({x:x,y:y,t:0,life:big?0.24:0.17,kind:'hitspark',sc:big?1.55:1,color:spread?'#ffb36b':'#9fe8ff'});
+}
 function drawExplosion(f){
+  if(f.kind==='hitspark'){
+    var hp=Math.max(0,Math.min(1,f.t/(f.life||0.17))),hr=(5+20*hp)*f.sc,ha=1-hp;
+    ctx.save();ctx.globalCompositeOperation='lighter';
+    ctx.globalAlpha=.9*ha;ctx.strokeStyle=f.color;ctx.lineWidth=2*f.sc;ctx.beginPath();ctx.arc(f.x,f.y,hr,0,TAU);ctx.stroke();
+    ctx.globalAlpha=.55*ha;ctx.strokeStyle='#ffffff';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(f.x,f.y,hr*.55,0,TAU);ctx.stroke();
+    for(var q=0;q<4;q++){var qa=q*Math.PI/2;ctx.globalAlpha=.75*ha;ctx.beginPath();ctx.moveTo(f.x+Math.cos(qa)*hr*.55,f.y+Math.sin(qa)*hr*.55);ctx.lineTo(f.x+Math.cos(qa)*(hr+5),f.y+Math.sin(qa)*(hr+5));ctx.stroke();}
+    ctx.globalAlpha=.8*ha;ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(f.x,f.y,2.2*f.sc,0,TAU);ctx.fill();ctx.restore();ctx.globalAlpha=1;return;
+  }
   var life=f.life||0.6;
   var p=Math.max(0,Math.min(1,f.t/life)),r=(12+64*p)*f.sc,a=Math.max(0,1-p);
   if(f.t<0) return;

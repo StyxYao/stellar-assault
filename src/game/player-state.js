@@ -1,7 +1,7 @@
 // Player damage, bombs, drops, weapon pickups and item collection.
 function bomb(){
   if((state!=='play'&&state!=='boss')||player.bombs<=0) return;
-  player.bombs--; shake=24; bombT=1.1; bombX=player.x; bombY=player.y; player.invuln=Math.max(player.invuln,0.8); sfx('b_charge',0.55); sfx('bomb_big',0.95);
+  player.bombs--; shake=24; bombT=1.1; bombX=player.x; bombY=player.y; player.invuln=Math.max(player.invuln,0.8); sfx('b_charge',0.55); sfx('bomb_big',0.95); sfx('heavy_missile',0.42);
   for(var bp=0;bp<42;bp++) part(bombX,bombY,bp%2?'#bff4ff':'#ffd28a',1,320);
   for(var i=0;i<bullets.length;i++) part(bullets[i].x,bullets[i].y,'#9fe8ff',1,150);
   for(var i=0;i<ebullets.length;i++) part(ebullets[i].x,ebullets[i].y,'#9fe8ff',1,110);

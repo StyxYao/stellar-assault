@@ -49,7 +49,7 @@ function makeDistCurve(){
 }
 function blasterShot(){
   if(!AC||muted||!master) return;
-  if(SFXBUF&&SFXBUF['p_normal']){playSample('p_normal',0.78,true);return;}
+  if(SFXBUF&&SFXBUF['p_normal']){playSample('p_normal',0.70,true);return;}
   var t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();
   o.type='square';o.frequency.setValueAtTime(1150,t);o.frequency.exponentialRampToValueAtTime(110,t+.19);
   g.gain.setValueAtTime(.52,t);g.gain.exponentialRampToValueAtTime(.001,t+.21);
@@ -99,7 +99,7 @@ function playSample(n,v,raw){
   var rate={p_normal:1.0,p_spread:1.08,pickup_real:1.06,jetfly:2.0,bomb_big:1.0,p_laser:1.0,p_missile:1.90,e_shot:0.9,e_hit:1.0,b_hit:0.80,boom:1.0,laser_fire:0.95,pickup:1.1,hurt:0.8,e_charge:1.0,b_charge:1.0}[n]||1;
   s.playbackRate.value=rate;
   var g=AC.createGain();g.gain.value=v;
-  var soft=(n==='e_charge'||n==='b_charge'||n==='pickup'||n==='pickup_real'||n==='siren'||n==='jetfly'||n==='bomb_big'||n==='e_hit'||n==='b_hit'||n==='boom');
+  var soft=(n==='e_charge'||n==='b_charge'||n==='pickup'||n==='pickup_real'||n==='siren'||n==='jetfly'||n==='bomb_big'||n==='heavy_missile'||n==='e_hit'||n==='b_hit'||n==='boom');
   if(soft){s.connect(g);}
   else{
     var sh=AC.createWaveShaper();sh.curve=makeDistCurve();sh.oversample='2x';
@@ -157,11 +157,14 @@ function playMissileLaunch(){
   var t=AC.currentTime,s=AC.createBufferSource();
   s.buffer=buf;
   s.playbackRate.value=1;
-  var g=AC.createGain();g.gain.value=0.63;
+  var g=AC.createGain();g.gain.setValueAtTime(0.63,t);
+  g.gain.exponentialRampToValueAtTime(0.22,t+0.55);
+  s.playbackRate.setValueAtTime(1.0,t);
+  s.playbackRate.linearRampToValueAtTime(0.70,t+0.55);
   s.connect(g);g.connect(master);
   missileSrc=s;missileGain=g;
   s.onended=function(){if(missileSrc===s){missileSrc=null;missileGain=null;}try{s.disconnect();g.disconnect();}catch(e){}};
-  s.start(t);
+  s.start(t);s.stop(t+0.58);
 }
 function synthSfx(n,v){
   if(!AC||!master||muted) return;

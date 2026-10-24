@@ -56,3 +56,8 @@ Boss/enemy/player art was supplied or generated for this project. No separate li
 - **Explosion Ultra Bass** by Mark DiAngelo, SoundBible #1807, CC BY 3.0.
   - Source: https://soundbible.com/1807-Explosion-Ultra-Bass.html
   - Used for boss and large explosions.
+
+## Heavy missile layer
+
+- **Missle Launch** by Kibblesbob, SoundBible #1794, Public Domain.
+  - Layered under the player bomb with the large explosion.

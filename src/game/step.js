@@ -83,7 +83,7 @@ function step(dt){
     }else if(player.weapon==='missile'){
       if(time-lastMissile>0.46){ lastMissile=time; launchMissiles(); }
     }else{
-      if(time-lastShot>(player.odT>0?0.033:0.10)){ lastShot=time; fireNormal(); if(Math.random()<0.8) blasterShot(); }
+      if(time-lastShot>(player.odT>0?0.033:0.10)){ lastShot=time; fireNormal(); blasterShot(); }
     }
   }
   if(bannerT>0) bannerT-=dt;
@@ -119,14 +119,14 @@ function step(dt){
     for(var j=enemies.length-1;j>=0;j--){
       var e=enemies[j],et=ET[e.type];
       if(Math.abs(s.x-e.x)<enemyW(e)*0.45&&Math.abs(s.y-e.y)<enemyW(e)*0.5){
-        e.hp-=s.dmg; e.flash=0.1; hit=true; weaponHitFx(0.20);
+        e.hp-=s.dmg; e.flash=0.1; hit=true; weaponHitFx(0.20); hitSpark(s.x,s.y,player.weapon==='spread',false);
         if(e.hp<=0){ score+=et.score; part(e.x,e.y,'#ffb066',9,160); enemyDeath(e); maybeDrop(e); removeEnemy(j); }
         break;
       }
     }
     if(!hit&&boss&&state==='boss'&&boss.invuln<=0){
       if(Math.abs(s.x-boss.x)<boss.def.w*0.30*1.15&&Math.abs(s.y-boss.y)<boss.def.h*0.34*1.15){
-        boss.hp-=s.dmg; boss.flash=0.1; boss.hitFlash=0.14; boss.hitX=s.x; boss.hitY=s.y; score+=5; hit=true; sfx('b_hit',0.30);
+        boss.hp-=s.dmg; boss.flash=0.1; boss.hitFlash=0.14; boss.hitX=s.x; boss.hitY=s.y; score+=5; hit=true; sfx('b_hit',0.30); hitSpark(s.x,s.y,false,true);
         part(s.x,s.y,'#ffd28a',2,70);
         if(time-lastHitSfx>0.06){lastHitSfx=time;sfx('b_hit',0.22);}
       }
@@ -406,6 +406,16 @@ function step(dt){
     if(boss&&bdx2*bdx2+bdy2*bdy2<(boss.def.w*0.28*1.15)*(boss.def.w*0.28*1.15)) hitPlayer();
   }
 
+  if(state==='play'&&enemies.some(function(e){return e.mini;})){
+    miniDropT-=dt;
+    if(miniDropT<=0){
+      miniDropT=25;
+      var mdrop=['P','A','W','B'];
+      for(var md=0;md<2;md++){
+        items.push({x:Math.max(36,Math.min(W-36,player.x+rand(-90,90))),y:-20,vy:65+md*10,type:mdrop[(Math.floor(time*3)+md)%4],t:0});
+      }
+    }
+  }else if(!enemies.some(function(e){return e.mini;})) miniDropT=25;
   for(var i=ebullets.length-1;i>=0;i--){
     var e=ebullets[i]; e.x+=e.vx*dt; e.y+=e.vy*dt;
     if(e.bomb){

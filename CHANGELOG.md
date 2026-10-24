@@ -271,3 +271,14 @@
 - Boss/large explosions use Explosion Ultra Bass (B).
 - Removed stacked synthesized hit/boom layers.
 - Added attribution to Cast and THIRD_PARTY_NOTICES.
+
+## 0.3.17 — hit sparks, boss laser, HP and audio
+
+- S/N hits spawn a small expanding impact ring at the hit point.
+- Fourth boss cross laser uses fixed cardinal angles; only the charging orb aims.
+- Stage-5 mini boss HP corrected from 75% of the boosted boss total to 22%; stages 1-4 remain 75%.
+- Stage-5 mini bosses spawn in pairs and drop supplies every 25s.
+- M missile count is specialPower+1.
+- Missile sample shortened to 0.58s with downward pitch and gain; previous instance cancelled.
+- N shot volume -10% and every shot plays (no random skipped sample).
+- Player bomb layers large explosion B with public-domain heavy missile A.

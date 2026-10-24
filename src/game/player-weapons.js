@@ -59,7 +59,7 @@ function launchMissiles(){
     }
     playMissileLaunch();return;
   }
-  var n=player.specialPower;
+  var n=player.specialPower+1;
   for(var i=0;i<n;i++){
     var x=player.x+(i-(n-1)/2)*14;
     spawnMissile(x,player.y-16,false,player.specialPower>=4?8:6,player.specialPower>=4);

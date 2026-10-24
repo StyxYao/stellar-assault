@@ -1,9 +1,9 @@
 // Enemy wave spawning, scaling and firing. Uses legacy world/projectile hooks.
 function spawnWave(w){
   if(w.form==='mid'){
-    var mhp=Math.round(w.mini?bossTotalHp(stage)*0.75:((320+stage*80)*0.85));
+    var mhp=Math.round(w.mini?bossTotalHp(stage)*(stage===4?0.22:0.75):((320+stage*80)*0.85));
     var mx=w.x||W/2;
-    enemies.push({type:w.type,x:mx,y:-60,baseX:mx,tx:mx,ty:250,mode:'turret',entering:true,t:0,phase:0,spd:80,hp:mhp,max:mhp,fireT:1.0,flash:0,elite:true,mini:!!w.mini,aggr:1.0,visT:0,first:true});
+    enemies.push({type:w.type,x:mx,y:-60,baseX:mx,tx:mx,ty:250,mode:'turret',entering:true,t:0,phase:0,spd:80,hp:mhp,max:mhp,fireT:1.0,flash:0,elite:true,mini:!!w.mini,aggr:(w.mini&&stage>=2?1.45:1.0),visT:0,first:true});
     return;
   }
   if(w.form==='escort'){
@@ -97,7 +97,7 @@ function s5FireEnemy(e,ra){
   sfx('e_shot',.16);
 }
 var MINI_NAMES={9:'COORDINATE',10:'TOPOLOGY TURRET',11:'MOBIUS HUNTER',12:'AXIS CORE',13:'RECURSIVE',14:'MIRROR DEFLECTION'};
-var MINI_SKILLS={9:'LATTICE',10:'FAN + LANCE',11:'ARC PAIR',12:'GAP RING',13:'TWIN SPIRAL',14:'MIRROR FAN'};
+var MINI_SKILLS={9:'LATTICE',10:'FAN + LANCE',11:'RING BARRAGE',12:'BOMB ARRAY',13:'TWIN SPIRAL',14:'MIRROR FAN'};
 function miniBossFire(e,ra){
   if(!e.miniAtk) e.miniAtk=0;
   e.miniAtk++;e.miniSkillName=MINI_SKILLS[e.type]||'ECHO ATTACK';e.miniSkillT=1.0;
@@ -119,14 +119,7 @@ function miniBossFire(e,ra){
       for(var f=-2;f<=2;f++)s5Shot(e,e.x,e.y+8,Math.cos(ra+f*.14)*145,Math.sin(ra+f*.14)*145,4.8,2);
     }
     if(e.miniAtk%(beat*2)===0&&beams.length<3)spawnBeam(e.x,e.y+8,ra,900,8,.8,.28,1,'#ff9a3a',false,e);
-  }else if(e.type===11){                // MOBIUS: paired fast arcs
-    if(e.miniAtk%beat===0){
-      for(var side=-1;side<=1;side+=2){
-        var a=ra+side*.16;
-        s5Shot(e,e.x+side*10,e.y,Math.cos(a)*260,Math.sin(a)*260,4.2,1);
-      }
-    }
-  }else if(e.type===12){                // AXIS: gap ring + aimed core
+  }else if(e.type===11){                // MOBIUS: ring barrage with fast arcs
     if(e.miniAtk%beat===0){
       var gap=Math.atan2(player.y-e.y,player.x-e.x);
       for(var k=0;k<12;k++){
@@ -134,7 +127,20 @@ function miniBossFire(e,ra){
         if(Math.abs(da)<.78)continue;
         s5Shot(e,e.x,e.y,Math.cos(a2)*110,Math.sin(a2)*110,4.7,2);
       }
-      s5Shot(e,e.x,e.y+6,Math.cos(ra)*215,Math.sin(ra)*215,5.0,1);
+      for(var side=-1;side<=1;side+=2){
+        var a4=ra+side*.18;
+        s5Shot(e,e.x+side*10,e.y,Math.cos(a4)*240,Math.sin(a4)*240,4.0,1);
+      }
+    }
+  }else if(e.type===12){                // AXIS: bomb array
+    if(e.miniAtk%beat===0){
+      for(var bi=-1;bi<=1;bi++){
+        var btx=Math.max(30,Math.min(W-30,player.x+bi*55+rand(-14,14)));
+        var bty=Math.max(90,Math.min(H-60,player.y+rand(-35,35)));
+        var bd2=Math.hypot(btx-e.x,bty-e.y),bs=92;
+        ebullets.push({x:e.x,y:e.y+8,vx:0,vy:bs,bomb:true,tx:btx,ty:bty,blastR:48,bombSpeed:bs,fuse:Math.max(.4,bd2/bs),rad:9,type:2});
+      }
+      s5Shot(e,e.x,e.y+6,Math.cos(ra)*210,Math.sin(ra)*210,5.0,1);
     }
   }else if(e.type===13){                // RECURSIVE: two-arm spiral
     if(e.miniAtk%beat===0){
