@@ -24,8 +24,14 @@ function onDown(e){
   if(e.pointerType==='mouse'&&(state==='play'||state==='boss')&&typeof desktopPrimaryFire==='function') desktopPrimaryFire();
   if(state==='menu'){
     if(!audioReady){ audioReady=true; playBgm('m'); }
+    if(typeof shipSelectOpen!=='undefined'&&shipSelectOpen){
+      var hit=shipSelectAt(p);
+      if(typeof hit==='number'){ shipSelectIndex=hit; if(hit<2) shipSelectChoose(hit); return; }
+      if(hit==='close'||hit==='outside') closeShipSelect();
+      return;
+    }
     var shb=menuShipButton();
-    if(p.x>=shb.x&&p.x<=shb.x+shb.w&&p.y>=shb.y&&p.y<=shb.y+shb.h){toggleSelectedShip();return;}
+    if(p.x>=shb.x&&p.x<=shb.x+shb.w&&p.y>=shb.y&&p.y<=shb.y+shb.h){openShipSelect();return;}
     var skb=menuSkinButton();
     if(p.x>=skb.x&&p.x<=skb.x+skb.w&&p.y>=skb.y&&p.y<=skb.y+skb.h){cycleSkin(1);return;}
     var sbs=stageSelectButtons();

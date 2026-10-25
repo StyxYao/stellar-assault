@@ -50,6 +50,10 @@ function desktopChangeStage(delta) {
 
 function desktopConfirm() {
   if (desktopPaused) { desktopSetPaused(false); return; }
+  if (state === 'menu' && typeof shipSelectOpen !== 'undefined' && shipSelectOpen) {
+    if (!shipSelectChoose(shipSelectIndex)) { /* Phantom is coming soon. */ }
+    return;
+  }
   if (state === 'menu') { desktopMenuStart(); return; }
   if (state === 'cast') { state = 'menu'; playBgm('m'); return; }
   if (state === 'win' || state === 'over') { startGame(); return; }
@@ -78,7 +82,14 @@ function desktopKeyDown(e) {
     if (k === 'enter' || k === ' ') { settingsActivate(); return; }
     return;
   }
-  if (k === 'v' && state === 'menu') { if (typeof toggleSelectedShip === 'function') toggleSelectedShip(); return; }
+  if (state === 'menu' && typeof shipSelectOpen !== 'undefined' && shipSelectOpen) {
+    if (k === 'arrowup' || k === 'w') { shipSelectIndex = (shipSelectIndex + 2) % 3; return; }
+    if (k === 'arrowdown' || k === 's') { shipSelectIndex = (shipSelectIndex + 1) % 3; return; }
+    if (k === 'enter' || k === ' ') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) desktopConfirm(); return; }
+    if (k === 'escape' || k === 'v') { closeShipSelect(); return; }
+    return;
+  }
+  if (k === 'v' && state === 'menu') { openShipSelect(); return; }
   if (k === 'b' && state === 'menu') { if (typeof cycleSkin === 'function') cycleSkin(1); return; }
   if (k === 'c' && player && player.ship === 'aegis') { e.preventDefault && e.preventDefault(); if (!e.repeat) aegisTapCharge(); return; }
   if (k === 'f' && player && player.ship === 'aegis') { e.preventDefault && e.preventDefault(); if (!e.repeat) aegisTapForce(); return; }
@@ -162,8 +173,16 @@ function desktopPoll() {
   desktopPadSeen.left = pad.axes[0] < -0.65;
   desktopPadSeen.right = pad.axes[0] > 0.65;
 
+  if (state === 'menu' && typeof shipSelectOpen !== 'undefined' && shipSelectOpen) {
+    if (desktopPadEdge(pad, 12)) shipSelectIndex = (shipSelectIndex + 2) % 3;
+    if (desktopPadEdge(pad, 13)) shipSelectIndex = (shipSelectIndex + 1) % 3;
+    if (desktopPadEdge(pad, 0)) desktopConfirm();
+    if (desktopPadEdge(pad, 1)) closeShipSelect();
+    if (desktopPadEdge(pad, 3)) closeShipSelect();
+    return;
+  }
   if (state === 'menu' && desktopPadEdge(pad, 3)) {
-    if (typeof toggleSelectedShip === 'function') toggleSelectedShip();
+    openShipSelect();
   }
   if (state === 'menu' && desktopPadEdge(pad, 5)) {
     if (typeof cycleSkin === 'function') cycleSkin(1);

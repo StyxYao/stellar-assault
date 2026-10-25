@@ -348,3 +348,10 @@
 
 - Stopped re-encoding every embedded image to WebP during CI externalization.
 - EdgeOne-compatible build now completes in about 25 seconds locally.
+
+## 0.5.3 — Ship select list
+
+- Removed the PHANTOM locked-preview badge from the main menu.
+- Added a SELECT SHIP overlay listing VECTOR, AEGIS, and PHANTOM.
+- PHANTOM is disabled and marked COMING SOON.
+- SHIP button now opens the ship list; V remains the keyboard shortcut.

@@ -46,6 +46,90 @@ function stageSelectButtons(){
 }
 function menuStartButton(){return {x:W/2-108,y:H*.688,w:216,h:42};}
 function menuShipButton(){return {x:W/2-118,y:H*.535,w:112,h:38};}
+
+var shipSelectOpen = false;
+var shipSelectIndex = 0;
+function shipSelectPanel(){ return {x:24,y:H*.14,w:W-48,h:H*.57}; }
+function shipSelectCloseButton(){ var p=shipSelectPanel(); return {x:p.x+p.w-36,y:p.y+12,w:24,h:24}; }
+function shipSelectRows(){
+  var p=shipSelectPanel(), rows=[], start=p.y+96, h=98, gap=10;
+  var defs=[
+    {id:'vector',name:'VECTOR',role:'BALANCED · WINGMAN',status:'AVAILABLE',color:'#9fe8ff',image:'sk_vector_void_lance'},
+    {id:'aegis',name:'AEGIS',role:'FORCE · CHARGE',status:'AVAILABLE',color:'#ffd36b',image:'sk_aegis_orbital'},
+    {id:'phantom',name:'PHANTOM',role:'STEALTH · IN DESIGN',status:'COMING SOON',color:'#c98bff',image:null}
+  ];
+  for(var i=0;i<defs.length;i++) rows.push({i:i,x:p.x+14,y:start+i*(h+gap),w:p.w-28,h:h,def:defs[i]});
+  return rows;
+}
+function openShipSelect(){
+  shipSelectOpen=true;
+  shipSelectIndex=selectedShip==='aegis'?1:0;
+}
+function closeShipSelect(){shipSelectOpen=false;}
+function shipSelectChoose(i){
+  if(i<0||i>2) return false;
+  if(i===2) return false;
+  setSelectedShip(i===0?'vector':'aegis');
+  shipSelectOpen=false;
+  return true;
+}
+function shipSelectAt(p){
+  var cb=shipSelectCloseButton();
+  if(p.x>=cb.x&&p.x<=cb.x+cb.w&&p.y>=cb.y&&p.y<=cb.y+cb.h) return 'close';
+  var rows=shipSelectRows();
+  for(var i=0;i<rows.length;i++){var r=rows[i];if(p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h)return i;}
+  var panel=shipSelectPanel();
+  if(p.x<panel.x||p.x>panel.x+panel.w||p.y<panel.y||p.y>panel.y+panel.h) return 'outside';
+  return 'panel';
+}
+function drawShipPreview(key,x,y,size,color){
+  var gi=key&&GIMG[key];
+  if(gi&&gi.complete){ctx.drawImage(gi,x-size/2,y-size/2,size,size);return;}
+  ctx.save();ctx.strokeStyle=color;ctx.lineWidth=2;ctx.globalAlpha=.8;
+  ctx.beginPath();ctx.moveTo(x,y-size*.4);ctx.lineTo(x+size*.34,y);ctx.lineTo(x,y+size*.4);ctx.lineTo(x-size*.34,y);ctx.closePath();ctx.stroke();
+  ctx.fillStyle=color;ctx.font='700 12px monospace';ctx.textAlign='center';ctx.fillText('?',x,y+4);ctx.restore();
+}
+function drawShipSelectOverlay(){
+  if(!shipSelectOpen) return;
+  ctx.save();
+  ctx.fillStyle='rgba(1,4,10,0.78)';ctx.fillRect(0,0,W,H);
+  var p=shipSelectPanel();
+  ctx.fillStyle='rgba(5,15,26,0.97)';ctx.fillRect(p.x,p.y,p.w,p.h);
+  ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1.5;ctx.strokeRect(p.x,p.y,p.w,p.h);
+  ctx.textAlign='left';
+  ctx.fillStyle='#eaf8ff';ctx.font='900 20px "Arial Black", Arial, sans-serif';
+  ctx.fillText('SELECT SHIP',p.x+20,p.y+36);
+  ctx.fillStyle='#7f9bb0';ctx.font='9px monospace';
+  ctx.fillText('CHOOSE YOUR FRAME · SKINS ARE COSMETIC',p.x+20,p.y+54);
+  var cb=shipSelectCloseButton();
+  ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(cb.x,cb.y,cb.w,cb.h);
+  ctx.fillStyle='#9fb6cf';ctx.font='700 14px Arial, sans-serif';ctx.textAlign='center';ctx.fillText('×',cb.x+cb.w/2,cb.y+17);
+  var rows=shipSelectRows();
+  for(var i=0;i<rows.length;i++){
+    var r=rows[i],d=r.def,disabled=d.id==='phantom',sel=shipSelectIndex===i;
+    ctx.fillStyle=disabled?'rgba(14,10,24,0.82)':'rgba(7,22,36,0.86)';ctx.fillRect(r.x,r.y,r.w,r.h);
+    ctx.strokeStyle=disabled?'rgba(120,90,150,0.55)':(sel?'#ffd36b':(selectedShip===d.id?'#9fe8ff':'#31536a'));
+    ctx.lineWidth=sel?2.4:1.2;ctx.strokeRect(r.x,r.y,r.w,r.h);
+    var ix=r.x+46,iy=r.y+r.h/2;
+    drawShipPreview(d.image,ix,iy,54,disabled?'#7a5a93':d.color);
+    ctx.textAlign='left';
+    ctx.fillStyle=disabled?'#9a8aa8':'#eaf8ff';ctx.font='900 17px "Arial Black", Arial, sans-serif';
+    ctx.fillText(d.name,r.x+82,r.y+35);
+    ctx.fillStyle=disabled?'#6f5c7e':d.color;ctx.font='9px monospace';
+    ctx.fillText(d.role,r.x+82,r.y+53);
+    var statusColor=disabled?'#a879c9':'#8dffb0';
+    ctx.fillStyle=statusColor;ctx.font='700 9px monospace';ctx.textAlign='right';
+    ctx.fillText(d.status,r.x+r.w-14,r.y+35);
+    if(!disabled){
+      var n=(typeof skinList==='function'?skinList(d.id).length:3);
+      ctx.fillStyle='#7893a8';ctx.font='8px monospace';ctx.textAlign='right';
+      ctx.fillText(n+' SKINS',r.x+r.w-14,r.y+54);
+    }
+  }
+  ctx.textAlign='center';ctx.fillStyle='#6d879b';ctx.font='8px monospace';
+  ctx.fillText('↑ ↓ SELECT · ENTER CONFIRM · ESC CLOSE',W/2,p.y+p.h-16);
+  ctx.restore();ctx.textAlign='left';
+}
 function menuSkinButton(){return {x:W/2+6,y:H*.535,w:112,h:38};}
 function drawMenu(){
   paintBg(BGMENU,1)||paintBg(BG1,1);
@@ -64,16 +148,13 @@ function drawMenu(){
   ctx.fillStyle='rgba(6,18,30,0.70)';ctx.fillRect(shb.x,shb.y,shb.w,shb.h);
   ctx.strokeStyle=selectedShip==='aegis'?'#ffd36b':'#5d8fa8';ctx.lineWidth=1.2;ctx.strokeRect(shb.x,shb.y,shb.w,shb.h);
   ctx.fillStyle='#eaf8ff';ctx.font='700 11px Arial, sans-serif';ctx.textAlign='center';
-  ctx.fillText('SHIP · '+(SHIP_DEFS[selectedShip]?SHIP_DEFS[selectedShip].label:selectedShip.toUpperCase()),shb.x+shb.w/2,shb.y+24);
+  ctx.fillText('SHIP · '+(SHIP_DEFS[selectedShip]?SHIP_DEFS[selectedShip].label:selectedShip.toUpperCase())+' ▾',shb.x+shb.w/2,shb.y+24);
   ctx.fillStyle='rgba(6,18,30,0.70)';ctx.fillRect(skb.x,skb.y,skb.w,skb.h);
   ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1.2;ctx.strokeRect(skb.x,skb.y,skb.w,skb.h);
   ctx.fillStyle='#eaf8ff';ctx.font='700 10px Arial, sans-serif';
   ctx.fillText('SKIN '+(typeof skinNumber==='function'?skinNumber():'1')+'/3',skb.x+skb.w/2,skb.y+18);
   ctx.fillStyle='#9fb6cf';ctx.font='8px monospace';
   ctx.fillText((typeof currentSkinDef==='function'?currentSkinDef().label:''),skb.x+skb.w/2,skb.y+30);
-  ctx.fillStyle='rgba(2,8,16,0.78)';ctx.fillRect(W/2-112,H*.49-10,224,20);
-  ctx.fillStyle='#b58cff';ctx.font='8px monospace';
-  ctx.fillText('PHANTOM · LOCKED PREVIEW',W/2,H*.49);
   ctx.fillStyle='#b8e8ff';ctx.font='900 10px "Arial Black", Arial, sans-serif';
   ctx.fillText('STAGE SELECT',W/2,H*.601);
   var sbs=stageSelectButtons();
@@ -106,6 +187,7 @@ function drawMenu(){
   ctx.fillText('PATTERNS © KENTA CHO · BSD-3   |   ART: USER',W/2,H*0.86);
   ctx.fillText('SFX: KENNEY SCI-FI SOUNDS (CC0)',W/2,H*0.89);
   ctx.textAlign='left';
+  drawShipSelectOverlay();
 }
 function drawBossOmen(){
   var t=bossOmenT;
