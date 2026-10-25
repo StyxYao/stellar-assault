@@ -338,3 +338,8 @@
 - Added AEGIS shield overlay and first-run tutorial.
 - Added PHANTOM locked preview slot.
 - Added R2 acceptance notes.
+
+## 0.5.1 — R2 alignment and AEGIS core color
+
+- Aligned skin sprite centers with the player hit core.
+- Changed AEGIS Force/core energy to orange-yellow.

@@ -7,14 +7,14 @@ var SHIP_DEFS = {
 var selectedShip = 'vector';
 var SHIP_SKINS = {
   vector: [
-    { id: 'void_lance', label: 'VOID LANCE', image: 'sk_vector_void_lance' },
-    { id: 'starfall', label: 'STARFALL WING', image: 'sk_vector_starfall' },
-    { id: 'abyss', label: 'ABYSS BLADE', image: 'sk_vector_abyss' }
+    { id: 'void_lance', label: 'VOID LANCE', image: 'sk_vector_void_lance', ox: 3.5, oy: 2 },
+    { id: 'starfall', label: 'STARFALL WING', image: 'sk_vector_starfall', ox: 0.5, oy: 1 },
+    { id: 'abyss', label: 'ABYSS BLADE', image: 'sk_vector_abyss', ox: 0.5, oy: 1 }
   ],
   aegis: [
-    { id: 'orbital', label: 'ORBITAL GUARDIAN', image: 'sk_aegis_orbital' },
-    { id: 'void_echo', label: 'VOID ECHO', image: 'sk_aegis_void_echo' },
-    { id: 'temporal', label: 'TEMPORAL WANDERER', image: 'sk_aegis_temporal' }
+    { id: 'orbital', label: 'ORBITAL GUARDIAN', image: 'sk_aegis_orbital', ox: 3.5, oy: 2.5 },
+    { id: 'void_echo', label: 'VOID ECHO', image: 'sk_aegis_void_echo', ox: 1, oy: 0.5 },
+    { id: 'temporal', label: 'TEMPORAL WANDERER', image: 'sk_aegis_temporal', ox: 0.5, oy: 1 }
   ],
   phantom: [
     { id: 'quantum', label: 'QUANTUM HUNTER' },

@@ -1,6 +1,8 @@
 // Player ship rendering. Uses legacy globals (player/GIMG/ctx/state/time).
 function drawPlayerEntity(){
   var skinKey=(typeof currentSkinImage==='function')?currentSkinImage():null;
+  var skinDef=(typeof currentSkinDef==='function')?currentSkinDef():null;
+  var ox=skinDef&&skinDef.ox?skinDef.ox:0, oy=skinDef&&skinDef.oy?skinDef.oy:0;
   var gi=(skinKey&&GIMG[skinKey])?GIMG[skinKey]:(player.bank>0.06?GIMG.p3:(player.bank<-0.06?GIMG.p4:GIMG.p2));
   var drawY=player.y;
   if(player.respawnT>0) drawY=player.y+(H+70-player.y)*(player.respawnT/1.3);
@@ -11,7 +13,7 @@ function drawPlayerEntity(){
     if(state==='warpIn') psc=0.42+0.58*Math.min(1,1-warpT/0.95);
     if(player.specialPower>=4){ctx.save();ctx.globalCompositeOperation='lighter';var ag=ctx.createRadialGradient(player.x,drawY,0,player.x,drawY,52);ag.addColorStop(0,'rgba(255,215,100,0.28)');ag.addColorStop(1,'rgba(255,180,40,0)');ctx.fillStyle=ag;ctx.beginPath();ctx.arc(player.x,drawY,52,0,TAU);ctx.fill();ctx.restore();}
     drawODAura(drawY);
-    ctx.drawImage(gi,player.x-40*psc,drawY-40*psc,80*psc,80*psc);ctx.globalAlpha=1;
+    ctx.drawImage(gi,player.x-40*psc+ox*psc,drawY-40*psc+oy*psc,80*psc,80*psc);ctx.globalAlpha=1;
   }
   drawPlayerHitbox(player.x,drawY,player.r,time);
   if(typeof drawAegisShipFx==='function') drawAegisShipFx();
