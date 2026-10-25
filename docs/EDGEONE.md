@@ -34,3 +34,7 @@ The direct-upload project must be a direct-upload type; GitHub-imported projects
 ## Current deployment note
 
 This project is imported from GitHub and builds `main`. Production deployments are created from the repository commit; the default Makers domain is token-protected until a public/custom domain or public access setting is applied.
+
+## R2 build timeout fix (2026-10-25)
+
+The GitHub-import build hit EdgeOne's 10-minute limit while re-encoding 90+ embedded images to WebP in `tools/externalize_assets.py`. That step is now a linear base64 extraction and keeps the original image bytes; local `bash tools/build_pages.sh` completes in about 25 seconds. `tools/optimize_delivery.py` remains responsible for delivery-size work.

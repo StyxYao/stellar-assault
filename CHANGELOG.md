@@ -343,3 +343,8 @@
 
 - Aligned skin sprite centers with the player hit core.
 - Changed AEGIS Force/core energy to orange-yellow.
+
+## 0.5.2 — EdgeOne build timeout fix
+
+- Stopped re-encoding every embedded image to WebP during CI externalization.
+- EdgeOne-compatible build now completes in about 25 seconds locally.

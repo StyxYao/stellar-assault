@@ -107,15 +107,9 @@ def extract_data_uris(html: str) -> tuple[str, int]:
             return m.group(0)
         raw = base64.b64decode(b64)
         digest = hashlib.sha1(raw).hexdigest()[:16]
-        # WebP keeps alpha and is much smaller than the source PNGs.
-        try:
-            img = Image.open(io.BytesIO(raw)).convert("RGBA")
-            buf = io.BytesIO()
-            img.save(buf, "WEBP", quality=86, method=6)
-            raw = buf.getvalue()
-            ext = "webp"
-        except Exception:
-            pass
+        # Keep the original image bytes during CI builds. Re-encoding 90+
+        # large images to WebP was the EdgeOne 10-minute build timeout.
+        # `tools/optimize_delivery.py` handles delivery-size optimization.
         name = f"{digest}.{ext}"
         path = img_dir / name
         if name not in seen:
