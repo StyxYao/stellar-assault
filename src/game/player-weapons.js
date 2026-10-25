@@ -8,7 +8,7 @@ function cycleWeapon(){
   sfx('pickup_real',0.28);
 }
 function powerDamageFactor(){ return (([1,0.96,0.94,0.60][Math.max(0,Math.min(3,player.specialPower-1))]||1)*1.10)*(player.odT>0?1.20:1); }
-function addShot(x,y,vx,vy,dmg,wing,laser,special,max){ var f=powerDamageFactor(); shots.push({x:x,y:y,vx:vx,vy:vy,dmg:dmg*f*(wing?0.6615:1),wing:!!wing,laser:!!laser,special:!!special,max:!!max}); }
+function addShot(x,y,vx,vy,dmg,wing,laser,special,max,range){ var f=powerDamageFactor(); shots.push({x:x,y:y,vx:vx,vy:vy,dmg:dmg*f*(wing?0.6615:1),wing:!!wing,laser:!!laser,special:!!special,max:!!max,travel:0,range:range||1200}); }
 function fireNormal(){
   var lv=player.specialPower;
   if(player.odT>0){
@@ -43,10 +43,10 @@ function fireSpread(){
     addShot(player.x,player.y-20,Math.sin(a)*sp,-Math.cos(a)*sp,player.specialPower>=4?2.6:1.8,false,false,true,player.specialPower>=4);
   }
 }
-function spawnMissile(x,y,wing,dmg,max,vx0,vy0){
+function spawnMissile(x,y,wing,dmg,max,vx0,vy0,range){
   dmg=(dmg||6)*powerDamageFactor();
   if(wing) dmg*=0.6615;
-  missiles.push({x:x,y:y,vx:vx0||0,vy:vy0!==undefined?vy0:52,t:0,ignite:0.2,life:2.8,dmg:dmg||6,wing:!!wing,max:!!max,ignited:false});
+  missiles.push({x:x,y:y,vx:vx0||0,vy:vy0!==undefined?vy0:52,t:0,ignite:0.2,life:2.8,dmg:dmg||6,wing:!!wing,max:!!max,ignited:false,travel:0,range:range||1000});
 }
 function launchMissiles(){
   if(player.odT>0){

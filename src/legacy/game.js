@@ -407,6 +407,7 @@ window.__beams=function(){return beams.map(function(b){return {t:Math.round(b.t*
 window.__killBoss=function(){if(boss)boss.hp=0;};
 window.__bossHp=function(f){if(boss)boss.hp=boss.max*f;};
 window.__drop=function(t){items.push({x:player.x,y:player.y-80,vy:20,type:t||'P',t:0});};
+window.__weapon=function(w){var list=['normal','spread','laser','missile'];player.weapon=list.indexOf(w)>=0?w:'normal';};
 window.__boom=function(){boom(W/2,H*0.45,1.4);};
 window.__beam=function(){spawnBeam(W/2,180,Math.PI/2,1500,16,0.8,0.45,1,'#ff6a5a');};
 window.__bossLaser=function(){if(boss)bossLaser();};

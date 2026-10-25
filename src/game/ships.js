@@ -38,10 +38,10 @@ var AEGIS_FORCE_DAMAGE = 240;
 var AEGIS_FORCE_LANE_HALF = 38;
 
 var AEGIS_CHARGE_PROFILES = {
-  normal:  { kind: 'lance', count: 1, color: '#9fe8ff' },
-  spread:  { kind: 'fan', count: 5, color: '#ffb36b' },
-  laser:   { kind: 'beam', count: 1, color: '#ff7ad5' },
-  missile: { kind: 'swarm', count: 2, color: '#ffd36b' }
+  normal:  { kind: 'lance', count: 1, color: '#9fe8ff', range: 560 },
+  spread:  { kind: 'fan', count: 5, color: '#ffb36b', range: 320 },
+  laser:   { kind: 'beam', count: 1, color: '#ff7ad5', range: 760 },
+  missile: { kind: 'swarm', count: 2, color: '#ffd36b', range: 620 }
 };
 
 var aegisState = {
@@ -59,7 +59,11 @@ var aegisState = {
   forceFireT: 0,
   forceHitT: 0,
   flashT: 0,
-  laneT: 0
+  laneT: 0,
+  castT: 0,
+  castKind: '',
+  castRange: 0,
+  castColor: ''
 };
 
 function skinList(ship) { return SHIP_SKINS[ship] || SHIP_SKINS.vector; }
@@ -129,6 +133,8 @@ function aegisReset() {
   aegisState.forceHitT = 0;
   aegisState.flashT = 0;
   aegisState.laneT = 0;
+  aegisState.castT = 0;
+  aegisState.castKind = '';
   if (typeof player !== 'undefined') {
     aegisState.forceX = player.x;
     aegisState.forceY = player.y - 42;
@@ -153,6 +159,7 @@ function aegisProfile() {
     kind: base.kind,
     count: base.kind === 'fan' ? 3 + power * 2 : (base.kind === 'swarm' ? power : base.count),
     color: base.color,
+    range: base.range,
     power: power
   };
 }
@@ -176,39 +183,57 @@ function aegisTapCharge() {
     aegisState.chargeT = aegisState.chargeBonus;
     aegisState.chargeBonus = 0;
     aegisState.autoT = 0;
+    try { laserHitY = 0; laserHitT = 0; } catch (e) {}
     try { sfx('e_charge', 0.18); } catch (e) {}
   }
+}
+
+function aegisNormalDps() {
+  var lv = Math.max(1, Math.min(4, player.specialPower || 1));
+  if (player.weapon === 'spread') {
+    var n = 3 + (lv - 1) * 2, d = lv >= 4 ? 2.6 : 1.8;
+    return n * d / 0.16;
+  }
+  if (player.weapon === 'laser') return (2 + lv * 2) / 0.08;
+  if (player.weapon === 'missile') return (lv + 1) * (lv >= 4 ? 8 : 6) / 0.46;
+  var per = lv <= 1 ? 6 : (lv === 2 ? 9 : (lv === 3 ? 10.4 : 25));
+  return per / 0.10;
 }
 
 function aegisReleaseCharge() {
   var level = aegisChargeLevel();
   if (level <= 0) return;
   var prof = aegisProfile();
-  var intensity = Math.max(0.55, Math.min(1, aegisState.chargeT / AEGIS_CHARGE_MAX));
-  // Charged shots are a burst, not a slightly larger normal shot.
-  var dmg = (42 + prof.power * 18) * intensity * powerDamageFactor() * (aegisState.force === 'attached' ? 1.10 : 1);
+  // Damage the stopped normal weapon would have dealt over this charge,
+  // then apply the requested 1.35x charge bonus.
+  var chargeTime = Math.max(0.35, aegisState.chargeT);
+  var totalDamage = aegisNormalDps() * chargeTime * 1.35;
   var px = player.x, py = player.y - 26;
   if (prof.kind === 'fan') {
+    var perFan = totalDamage / prof.count;
     for (var i = 0; i < prof.count; i++) {
       var a = (i - (prof.count - 1) / 2) * 0.095;
-      addShot(px, py, Math.sin(a) * 900, -Math.cos(a) * 900, dmg * 0.62, false, false, true, prof.power >= 4);
+      addShot(px, py, Math.sin(a) * 900, -Math.cos(a) * 900, perFan, false, false, true, prof.power >= 4, prof.range);
     }
   } else if (prof.kind === 'beam') {
-    addShot(px, py, 0, -1250, dmg * 1.25, false, true, true, true);
-    addShot(px - 12, py, 0, -1250, dmg * 0.65, false, true, true, true);
-    addShot(px + 12, py, 0, -1250, dmg * 0.65, false, true, true, true);
+    addShot(px, py, 0, -1250, totalDamage * 0.50, false, true, true, true, prof.range);
+    addShot(px - 12, py, 0, -1250, totalDamage * 0.25, false, true, true, true, prof.range);
+    addShot(px + 12, py, 0, -1250, totalDamage * 0.25, false, true, true, true, prof.range);
   } else if (prof.kind === 'swarm') {
+    var perMissile = totalDamage / prof.count;
     for (var m = 0; m < prof.count; m++) {
-      spawnMissile(px + (m - (prof.count - 1) / 2) * 16, py, false, prof.power >= 4 ? 8 : 6, prof.power >= 4, 0, -170);
+      spawnMissile(px + (m - (prof.count - 1) / 2) * 16, py, false, perMissile, prof.power >= 4, 0, -170, prof.range);
     }
   } else {
-    addShot(px, py, 0, -1150, dmg * 1.6, false, false, true, prof.power >= 4);
-    if (prof.power >= 3) addShot(px - 12, py, 0, -1050, dmg * 0.75, false, false, true, true);
-    if (prof.power >= 3) addShot(px + 12, py, 0, -1050, dmg * 0.75, false, false, true, true);
+    addShot(px, py, 0, -1150, totalDamage, false, false, true, prof.power >= 4, prof.range);
   }
   if (typeof fx !== 'undefined' && fx) fx.push({ x: px, y: py, t: 0, life: 0.32, kind: 'hitspark', sc: 3.4, color: prof.color });
   aegisState.flashT = Math.max(aegisState.flashT, 0.50);
-  aegisState.laneT = Math.max(aegisState.laneT, 0.50);
+  aegisState.laneT = 0;
+  aegisState.castT = 0.55;
+  aegisState.castKind = prof.kind;
+  aegisState.castRange = prof.range || 500;
+  aegisState.castColor = prof.color;
   try { shake = Math.max(shake, 9); } catch (e) {}
   try { if (typeof part === 'function') for (var pp = 0; pp < 18; pp++) part(px, py, prof.color, 1, 180); } catch (e) {}
   aegisState.charge = 'idle';
@@ -266,6 +291,10 @@ function aegisLaunchForce() {
   aegisState.forceY = player.y - 42;
   aegisState.flashT = 0.55;
   aegisState.laneT = 0.55;
+  aegisState.castT = 0.55;
+  aegisState.castKind = 'force';
+  aegisState.castRange = player.y;
+  aegisState.castColor = '#ffd36b';
   aegisLaneHit();
   try { shake = Math.max(shake, 12); } catch (e) {}
   try { sfx('aegis_force', 0.72); } catch (e) {}
@@ -290,6 +319,7 @@ function updateAegis(dt) {
   if (aegisState.forceHitT > 0) aegisState.forceHitT = Math.max(0, aegisState.forceHitT - dt);
   if (aegisState.flashT > 0) aegisState.flashT = Math.max(0, aegisState.flashT - dt);
   if (aegisState.laneT > 0) aegisState.laneT = Math.max(0, aegisState.laneT - dt);
+  if (aegisState.castT > 0) aegisState.castT = Math.max(0, aegisState.castT - dt);
 
   if (aegisState.charge === 'charging') {
     aegisState.chargeT = Math.min(AEGIS_CHARGE_MAX, aegisState.chargeT + dt);

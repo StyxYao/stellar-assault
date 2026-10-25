@@ -117,8 +117,8 @@ function step(dt){
   }
 
   for(var i=shots.length-1;i>=0;i--){
-    var s=shots[i]; s.x+=(s.vx||0)*dt; s.y+=s.vy*dt;
-    if(s.y<-20){shots.splice(i,1);continue;}
+    var s=shots[i]; s.x+=(s.vx||0)*dt; s.y+=s.vy*dt; s.travel=(s.travel||0)+Math.hypot(s.vx||0,s.vy||0)*dt;
+    if(s.y<-20||(s.range&&s.travel>s.range)){shots.splice(i,1);continue;}
     var hit=false;
     for(var j=enemies.length-1;j>=0;j--){
       var e=enemies[j],et=ET[e.type];

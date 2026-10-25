@@ -37,18 +37,69 @@ function drawAegisShipFx() {
   var shieldRatio = Math.max(0, Math.min(1, aegisState.shield / AEGIS_SHIELD_MAX));
   ctx.save();
 
-  // Forward lane flash: makes a charged shot / Force launch read instantly.
-  if (aegisState.laneT > 0) {
-    var la = aegisState.laneT / 0.55;
-    var lane = AEGIS_FORCE_LANE_HALF;
-    var lg = ctx.createLinearGradient(player.x - lane, 0, player.x + lane, 0);
-    lg.addColorStop(0, 'rgba(255,180,60,0)');
-    lg.addColorStop(0.5, 'rgba(255,240,190,' + (0.34 * la) + ')');
-    lg.addColorStop(1, 'rgba(255,180,60,0)');
+  // Distinct charge release shapes: lance / fan / beam / swarm / Force lane.
+  if (aegisState.castT > 0) {
+    var ca = aegisState.castT / 0.55;
+    var cr = Math.min(player.y, aegisState.castRange || 500);
+    var topY = Math.max(0, player.y - cr);
+    var cc = aegisState.castColor || col;
     ctx.globalCompositeOperation = 'lighter';
-    ctx.fillStyle = lg; ctx.fillRect(player.x - lane, 0, lane * 2, player.y);
-    ctx.globalAlpha = 0.8 * la; ctx.fillStyle = '#fff4d0';
-    ctx.fillRect(player.x - 3, 0, 6, player.y);
+    if (aegisState.castKind === 'fan') {
+      var half = 0.34, spreadW = Math.tan(half) * cr;
+      var fg = ctx.createLinearGradient(player.x, player.y, player.x, topY);
+      fg.addColorStop(0, 'rgba(255,190,90,' + (0.34 * ca) + ')');
+      fg.addColorStop(1, 'rgba(255,120,30,0)');
+      ctx.fillStyle = fg; ctx.beginPath();
+      ctx.moveTo(player.x, player.y); ctx.lineTo(player.x - spreadW, topY);
+      ctx.lineTo(player.x + spreadW, topY); ctx.closePath(); ctx.fill();
+      ctx.globalAlpha = 0.7 * ca; ctx.strokeStyle = cc; ctx.lineWidth = 2;
+      for (var fi = 0; fi < 7; fi++) {
+        var fa = (fi - 3) * 0.095;
+        ctx.beginPath(); ctx.moveTo(player.x, player.y - 10);
+        ctx.lineTo(player.x + Math.sin(fa) * cr, topY); ctx.stroke();
+      }
+    } else if (aegisState.castKind === 'beam') {
+      var bw = 18;
+      var bg = ctx.createLinearGradient(player.x - bw, 0, player.x + bw, 0);
+      bg.addColorStop(0, 'rgba(255,90,200,0)');
+      bg.addColorStop(0.35, 'rgba(255,110,220,' + (0.55 * ca) + ')');
+      bg.addColorStop(0.5, 'rgba(255,255,240,' + (0.95 * ca) + ')');
+      bg.addColorStop(0.65, 'rgba(255,110,220,' + (0.55 * ca) + ')');
+      bg.addColorStop(1, 'rgba(255,90,200,0)');
+      ctx.fillStyle = bg; ctx.fillRect(player.x - bw, topY, bw * 2, cr);
+      ctx.fillStyle = 'rgba(255,255,255,' + (0.85 * ca) + ')';
+      ctx.fillRect(player.x - 2.5, topY, 5, cr);
+    } else if (aegisState.castKind === 'swarm') {
+      for (var mi = 0; mi < 6; mi++) {
+        var phase = time * 7 + mi * 1.7;
+        var mx = player.x + Math.sin(phase) * (24 + mi * 4);
+        var my = player.y - 28 - (cr * ((mi + 1) / 7));
+        ctx.globalAlpha = 0.7 * ca; ctx.fillStyle = mi % 2 ? '#ffe08a' : '#ffb347';
+        ctx.beginPath(); ctx.arc(mx, my, 4.5, 0, TAU); ctx.fill();
+        ctx.strokeStyle = cc; ctx.lineWidth = 1.2; ctx.globalAlpha = 0.35 * ca;
+        ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(mx - Math.sin(phase) * 18, my + 24); ctx.stroke();
+      }
+    } else if (aegisState.castKind === 'force') {
+      var lane = AEGIS_FORCE_LANE_HALF;
+      var lg = ctx.createLinearGradient(player.x - lane, 0, player.x + lane, 0);
+      lg.addColorStop(0, 'rgba(255,180,60,0)');
+      lg.addColorStop(0.5, 'rgba(255,245,210,' + (0.55 * ca) + ')');
+      lg.addColorStop(1, 'rgba(255,180,60,0)');
+      ctx.fillStyle = lg; ctx.fillRect(player.x - lane, 0, lane * 2, player.y);
+      ctx.fillStyle = 'rgba(255,255,230,' + (0.9 * ca) + ')';
+      ctx.fillRect(player.x - 4, 0, 8, player.y);
+    } else {
+      var lw = 11;
+      var lineG = ctx.createLinearGradient(player.x - lw, 0, player.x + lw, 0);
+      lineG.addColorStop(0, 'rgba(120,240,255,0)');
+      lineG.addColorStop(0.45, 'rgba(160,250,255,' + (0.72 * ca) + ')');
+      lineG.addColorStop(0.5, 'rgba(255,255,255,' + (0.98 * ca) + ')');
+      lineG.addColorStop(0.55, 'rgba(160,250,255,' + (0.72 * ca) + ')');
+      lineG.addColorStop(1, 'rgba(120,240,255,0)');
+      ctx.fillStyle = lineG; ctx.fillRect(player.x - lw, topY, lw * 2, cr);
+      ctx.fillStyle = 'rgba(255,255,255,' + (0.9 * ca) + ')';
+      ctx.fillRect(player.x - 1.8, topY, 3.6, cr);
+    }
   }
 
   // Charging: a large, bright convergence ring around the ship.

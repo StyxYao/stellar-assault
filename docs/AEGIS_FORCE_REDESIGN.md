@@ -35,3 +35,19 @@
 - FORCE button is the old bomb position and size.
 - `F` / FORCE launches; `Z` / right-click also dispatches through `bomb()`.
 - Force button shows remaining charges and shield percentage.
+
+## Charge damage and ranges
+
+- Charged damage is based on the normal weapon DPS for the current weapon and power level, multiplied by the actual charge time and then by 1.35.
+- Normal fire is stopped while charging (including mouse manual fire and the laser beam render).
+- Ranges:
+  - N / lance: 560
+  - S / fan: 320
+  - L / beam: 760
+  - M / swarm: 620
+- Each profile has its own release visual:
+  - N: narrow cyan lance
+  - S: orange cone
+  - L: magenta beam
+  - M: golden homing swarm
+- Laser's normal beam is hidden while charging.

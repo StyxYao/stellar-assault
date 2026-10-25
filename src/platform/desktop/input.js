@@ -297,6 +297,7 @@ function desktopPrimaryFire() {
   if (state === 'cast') { state = 'menu'; playBgm('m'); return; }
   if (state === 'win' || state === 'over') { startGame(); return; }
   if (state !== 'play' && state !== 'boss') return;
+  if (player.ship === 'aegis' && typeof aegisState !== 'undefined' && aegisState.charge === 'charging') return;
   try {
     if (player.weapon === 'spread' && typeof fireSpread === 'function') fireSpread();
     else if (player.weapon === 'missile' && typeof launchMissiles === 'function') launchMissiles();

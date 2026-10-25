@@ -384,3 +384,10 @@
 - Charge damage and visuals increased; normal fire pauses while charging.
 - Shield max reduced 40%, break time 10s, rebuild at 20.
 - Added AI-generated amber force-field overlay.
+
+## 0.6.1 — Charge damage formula and per-weapon ranges
+
+- Charged damage = normal weapon DPS × charge time × 1.35.
+- N/S/L/M charge attacks now have distinct visuals and ranges.
+- Laser normal beam is hidden while charging.
+- Manual mouse fire is blocked while charging.

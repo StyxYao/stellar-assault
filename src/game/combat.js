@@ -151,6 +151,7 @@ function updateOptions(dt){
 function updateMissiles(dt){
   for(var i=missiles.length-1;i>=0;i--){
     var m=missiles[i];m.t+=dt;m.life-=dt;
+    m.travel=(m.travel||0)+Math.hypot(m.vx||0,m.vy||0)*dt;
     if(m.t<m.ignite){
       m.vy+=260*dt;m.vx*=0.96;m.x+=m.vx*dt;m.y+=m.vy*dt;
       if(m.life<=0||m.y>H+30) missiles.splice(i,1);
@@ -185,7 +186,7 @@ function updateMissiles(dt){
       boss.hp-=m.dmg;boss.hitFlash=0.14;boss.hitX=m.x;boss.hitY=m.y;hit=true;score+=5;sfx('b_hit',0.30);boom(m.x,m.y,0.6);
       part(m.x,m.y,'#ffd28a',3,80);
     }
-    if(hit||m.life<=0||m.x<-30||m.x>W+30||m.y<-40||m.y>H+40) missiles.splice(i,1);
+    if(hit||m.life<=0||(m.range&&m.travel>m.range)||m.x<-30||m.x>W+30||m.y<-40||m.y>H+40) missiles.splice(i,1);
   }
 }
 function updateBeams(dt){
