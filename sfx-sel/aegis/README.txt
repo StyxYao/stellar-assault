@@ -26,3 +26,18 @@ FORCE D: Rocket #1498, dobroride, Sampling Plus 1.0
 
 FORCE E: Bottle Rocket #709, Mike Koenig, CC BY 3.0
   https://soundbible.com/709-Bottle-Rocket.html
+
+FORCE F: Sonic Boom #1339, Grenagen, CC BY 3.0
+  https://soundbible.com/1339-Sonic-Boom.html
+  Real sonic boom, fighter-jet character.
+
+FORCE G: Breaking Sound Barrier #1644, AirMan, CC BY 3.0
+  https://soundbible.com/1644-Breaking-Sound-Barrier.html
+  F-14 pass over.
+
+FORCE H: Sonic Boom Massive #1648, AirMan, CC BY 3.0
+  https://soundbible.com/1648-Sonic-Boom-Massive.html
+  F-18 pass over.
+
+FORCE I: Jet Flyby (existing project sample), CC0
+  Source: Freesound / unfa, already used for warp jet in the project.
