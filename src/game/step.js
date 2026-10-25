@@ -78,7 +78,7 @@ function step(dt){
   player.trail.unshift({x:player.x,y:player.y}); if(player.trail.length>140) player.trail.pop();
 
   if((state==='play'||state==='boss')&&player.respawnT<=0){
-    if(player.ship==='aegis'&&aegisState.charge==='charging'){
+    if(player.ship==='aegis'&&(aegisState.charge==='charging'||player.odT>0)){
       // AEGIS holds normal fire while charging; the charged shot is the focus.
     }else if(player.weapon==='spread'){
       if(time-lastSpecial>(player.odT>0?0.080:0.16)){ lastSpecial=time; fireSpread(); sfx('p_spread',0.36); }

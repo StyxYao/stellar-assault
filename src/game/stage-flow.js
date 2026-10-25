@@ -7,6 +7,8 @@ function setBanner(txt,sub,t){ banner=txt; bannerSub=sub||''; bannerT=t; }
 
 function resetRun(){
   score=0; player.lives=3; player.hp=3; player.bombs=2; player.od=0; player.odT=0; player.powerXp=0; player.respawnT=0; player.respawnGift=false; player.noBlink=false; player.power=1; player.weapon='normal'; player.specialPower=1; player.options=0; player.wingPower=1; player.trail=[]; player.wingEntry=[]; items.length=0; missiles.length=0; wingBeams.length=0; beams.length=0; orbBullets.length=0;
+  if(typeof aegisState!=='undefined'){ aegisState.forceLevel=1; aegisState.odActive=false; aegisState.odShotT=0; aegisState.postOdT=0; }
+  player.normalBuff=1;
 }
 function startGame(){
   resetRun();
@@ -71,6 +73,7 @@ function startStage(i){
   stage=i; stageT=0; waveIndex=0; miniDropT=25; nextTransport=24+Math.random()*10;
   player.ship=selectedShip;
   player.skin=selectedSkins[player.ship]||(player.ship==='aegis'?'orbital':'void_lance');
+  if(typeof applyShipVariant==='function') applyShipVariant();
   if(player.ship==='aegis'){
     if(typeof aegisReset==='function') aegisReset();
     if(typeof startAegisTutorial==='function') startAegisTutorial();

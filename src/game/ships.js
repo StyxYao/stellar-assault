@@ -7,14 +7,14 @@ var SHIP_DEFS = {
 var selectedShip = 'vector';
 var SHIP_SKINS = {
   vector: [
-    { id: 'void_lance', label: 'VOID LANCE', image: 'sk_vector_void_lance', ox: 3.5, oy: 2 },
-    { id: 'starfall', label: 'STARFALL WING', image: 'sk_vector_starfall', ox: 0.5, oy: 1 },
-    { id: 'abyss', label: 'ABYSS BLADE', image: 'sk_vector_abyss', ox: 0.5, oy: 1 }
+    { id: 'void_lance', label: 'VOID LANCE', image: 'sk_vector_void_lance', ox: 3.5, oy: 2, maxHp: 3, extraBullets: 0, damageMult: 1, laserRate: [1, 1, 1, 1] },
+    { id: 'starfall', label: 'STARFALL WING', image: 'sk_vector_starfall', ox: 0.5, oy: 1, maxHp: 2, extraBullets: 1, damageMult: 1.2, laserRate: [1.5, 1.3333, 1.25, 1.2] },
+    { id: 'abyss', label: 'ABYSS BLADE', image: 'sk_vector_abyss', ox: 0.5, oy: 1, maxHp: 1, extraBullets: 2, damageMult: 1.4, laserRate: [2, 1.6667, 1.5, 1.4] }
   ],
   aegis: [
-    { id: 'orbital', label: 'ORBITAL GUARDIAN', image: 'sk_aegis_orbital', ox: 3.5, oy: 2.5 },
-    { id: 'void_echo', label: 'VOID ECHO', image: 'sk_aegis_void_echo', ox: 1, oy: 0.5 },
-    { id: 'temporal', label: 'TEMPORAL WANDERER', image: 'sk_aegis_temporal', ox: 0.5, oy: 1 }
+    { id: 'orbital', label: 'ORBITAL GUARDIAN', image: 'sk_aegis_orbital', ox: 3.5, oy: 2.5, shieldMult: 1, radiusMult: 1, chargeTimeMult: 1, chargeDamageMult: 1 },
+    { id: 'void_echo', label: 'VOID ECHO', image: 'sk_aegis_void_echo', ox: 1, oy: 0.5, shieldMult: 0.6, radiusMult: 0.6, chargeTimeMult: 1.2, chargeDamageMult: 1.6 },
+    { id: 'temporal', label: 'TEMPORAL WANDERER', image: 'sk_aegis_temporal', ox: 0.5, oy: 1, shieldMult: 1.15, radiusMult: 1.15, chargeTimeMult: 0.7, chargeDamageMult: 0.8, postOdBuff: 0.3 }
   ],
   phantom: [
     { id: 'quantum', label: 'QUANTUM HUNTER', image: 'sk_phantom_quantum' },
@@ -63,7 +63,11 @@ var aegisState = {
   castT: 0,
   castKind: '',
   castRange: 0,
-  castColor: ''
+  castColor: '',
+  forceLevel: 1,
+  odActive: false,
+  odShotT: 0,
+  postOdT: 0
 };
 
 function skinList(ship) { return SHIP_SKINS[ship] || SHIP_SKINS.vector; }
@@ -77,6 +81,52 @@ function currentSkinImage() { return currentSkinDef().image || null; }
 function aegisVisualX() {
   var def = (typeof currentSkinDef === 'function') ? currentSkinDef() : null;
   return player.x + (def && def.ox ? def.ox : 0);
+}
+function vectorLaserRate() {
+  var d = currentSkinDef();
+  if (!d || !d.laserRate) return 1;
+  return d.laserRate[Math.max(0, Math.min(3, (player.specialPower || 1) - 1))] || 1;
+}
+function applyShipVariant() {
+  var d = (typeof currentSkinDef === 'function') ? currentSkinDef() : null;
+  player.maxHp = (d && d.maxHp) ? d.maxHp : 3;
+  player.hp = player.maxHp;
+  player.extraBullets = (d && d.extraBullets) ? d.extraBullets : 0;
+  player.damageMult = (d && d.damageMult) ? d.damageMult : 1;
+  player.normalBuff = 1;
+}
+
+function aegisVariant() { return (typeof currentSkinDef === 'function') ? currentSkinDef() : null; }
+function aegisShieldMax() {
+  var d = aegisVariant();
+  return Math.round(AEGIS_SHIELD_MAX * (d && d.shieldMult ? d.shieldMult : 1));
+}
+function aegisChargeMax() {
+  var d = aegisVariant();
+  return AEGIS_CHARGE_MAX * (d && d.chargeTimeMult ? d.chargeTimeMult : 1);
+}
+function aegisChargeDamageMult() {
+  var d = aegisVariant();
+  return d && d.chargeDamageMult ? d.chargeDamageMult : 1;
+}
+function aegisForceRadius() {
+  var base = [38, 44, 50, 56][Math.max(0, Math.min(3, (aegisState.forceLevel || 1) - 1))];
+  var d = aegisVariant();
+  return base * (d && d.radiusMult ? d.radiusMult : 1);
+}
+function aegisForceColor() {
+  return ['#9fe8ff', '#ffd36b', '#c98bff', '#ff8a66'][Math.max(0, Math.min(3, (aegisState.forceLevel || 1) - 1))];
+}
+function aegisForcePickup() {
+  if (aegisState.forceLevel < 4) {
+    aegisState.forceLevel++;
+    score += 100;
+    pickupMsg = 'FORCE RADIUS ' + aegisState.forceLevel;
+  } else {
+    score += 150;
+    gainOD(20);
+    pickupMsg = 'FORCE OVERFLOW +150 / OD+20';
+  }
 }
 function skinNumber() { var list = skinList(selectedShip); for (var i = 0; i < list.length; i++) if (list[i].id === selectedSkins[selectedShip]) return i + 1; return 1; }
 function setSelectedSkin(ship, id, persist) {
@@ -130,7 +180,7 @@ function aegisReset() {
   aegisState.autoT = 0;
   aegisState.cooldown = 0;
   aegisState.force = 'attached';
-  aegisState.shield = AEGIS_SHIELD_MAX;
+  aegisState.shield = aegisShieldMax();
   aegisState.lastBlockAt = -999;
   aegisState.breakT = 0;
   aegisState.forceFireT = 0;
@@ -139,6 +189,9 @@ function aegisReset() {
   aegisState.laneT = 0;
   aegisState.castT = 0;
   aegisState.castKind = '';
+  aegisState.odActive = false;
+  aegisState.odShotT = 0;
+  aegisState.postOdT = 0;
   if (typeof player !== 'undefined') {
     aegisState.forceX = aegisVisualX();
     aegisState.forceY = player.y - 42;
@@ -150,10 +203,8 @@ function aegisOnDeath() {
 }
 
 function aegisChargeLevel() {
-  if (aegisState.chargeT >= 1.30) return 3;
-  if (aegisState.chargeT >= 0.80) return 2;
-  if (aegisState.chargeT >= 0.35) return 1;
-  return 0;
+  if (aegisState.chargeT < 0.35) return 0;
+  return Math.max(1, Math.min(4, player.specialPower || 1));
 }
 
 function aegisProfile() {
@@ -169,13 +220,14 @@ function aegisProfile() {
 }
 
 function aegisGainCharge(percent) {
-  var add = Math.max(0, Math.min(100, percent)) / 100 * AEGIS_CHARGE_MAX;
-  if (aegisState.charge === 'charging') aegisState.chargeT = Math.min(AEGIS_CHARGE_MAX, aegisState.chargeT + add);
-  else aegisState.chargeBonus = Math.min(AEGIS_CHARGE_MAX, aegisState.chargeBonus + add);
+  var add = Math.max(0, Math.min(100, percent)) / 100 * aegisChargeMax();
+  if (aegisState.charge === 'charging') aegisState.chargeT = Math.min(aegisChargeMax(), aegisState.chargeT + add);
+  else aegisState.chargeBonus = Math.min(aegisChargeMax(), aegisState.chargeBonus + add);
 }
 
 function aegisTapCharge() {
   if (state !== 'play' && state !== 'boss') return;
+  if (player.odT > 0) return;
   if (aegisState.cooldown > 0) return;
   if (aegisState.charge === 'charging') {
     if (aegisChargeLevel() > 0) aegisReleaseCharge();
@@ -211,7 +263,7 @@ function aegisReleaseCharge() {
   // Damage the stopped normal weapon would have dealt over this charge,
   // then apply the requested 1.35x charge bonus.
   var chargeTime = Math.max(0.35, aegisState.chargeT);
-  var totalDamage = aegisNormalDps() * chargeTime * 1.35;
+  var totalDamage = aegisNormalDps() * chargeTime * 1.35 * aegisChargeDamageMult() / (player.normalBuff || 1);
   var px = aegisVisualX(), py = player.y - 26;
   if (prof.kind === 'fan') {
     var perFan = totalDamage / prof.count;
@@ -315,6 +367,15 @@ function aegisTapForce() {
   }
 }
 
+function aegisAutoChargedAttack() {
+  var lv = Math.max(1, Math.min(4, player.specialPower || 1));
+  var baseT = lv <= 1 ? 0.35 : (lv === 2 ? 0.80 : 1.30);
+  var scale = aegisChargeMax() / AEGIS_CHARGE_MAX;
+  aegisState.chargeT = baseT * scale;
+  aegisReleaseCharge();
+  aegisState.cooldown = 0;
+}
+
 function updateAegis(dt) {
   if (player.ship !== 'aegis') return;
   if (state !== 'play' && state !== 'boss') return;
@@ -324,10 +385,30 @@ function updateAegis(dt) {
   if (aegisState.flashT > 0) aegisState.flashT = Math.max(0, aegisState.flashT - dt);
   if (aegisState.laneT > 0) aegisState.laneT = Math.max(0, aegisState.laneT - dt);
   if (aegisState.castT > 0) aegisState.castT = Math.max(0, aegisState.castT - dt);
+  // OD: auto-fire charged attacks at the current weapon level, 0.5s cadence.
+  if (player.odT > 0) {
+    if (!aegisState.odActive) { aegisState.odActive = true; aegisState.odShotT = 0; }
+    aegisState.odShotT -= dt;
+    if (aegisState.odShotT <= 0) {
+      aegisState.odShotT = 0.5;
+      aegisAutoChargedAttack();
+    }
+  } else if (aegisState.odActive) {
+    aegisState.odActive = false;
+    var av = aegisVariant();
+    if (av && av.postOdBuff) aegisState.postOdT = 2.0;
+  }
+  if (aegisState.postOdT > 0) {
+    aegisState.postOdT = Math.max(0, aegisState.postOdT - dt);
+    var av2 = aegisVariant();
+    player.normalBuff = 1 + ((av2 && av2.postOdBuff) ? av2.postOdBuff : 0);
+  } else {
+    player.normalBuff = 1;
+  }
 
   if (aegisState.charge === 'charging') {
-    aegisState.chargeT = Math.min(AEGIS_CHARGE_MAX, aegisState.chargeT + dt);
-    aegisState.autoT = aegisState.chargeT >= AEGIS_CHARGE_MAX ? aegisState.autoT + dt : 0;
+    aegisState.chargeT = Math.min(aegisChargeMax(), aegisState.chargeT + dt);
+    aegisState.autoT = aegisState.chargeT >= aegisChargeMax() ? aegisState.autoT + dt : 0;
     if (aegisState.autoT >= AEGIS_AUTO_RELEASE) aegisReleaseCharge();
   }
 
@@ -337,12 +418,12 @@ function updateAegis(dt) {
   } else if (aegisState.force === 'attached') {
     aegisState.forceX = aegisVisualX();
     aegisState.forceY = player.y - 42;
-    if (aegisState.shield < AEGIS_SHIELD_MAX && time - aegisState.lastBlockAt > AEGIS_SHIELD_DELAY) aegisState.shield = Math.min(AEGIS_SHIELD_MAX, aegisState.shield + AEGIS_SHIELD_REGEN * dt);
+    if (aegisState.shield < aegisShieldMax() && time - aegisState.lastBlockAt > AEGIS_SHIELD_DELAY) aegisState.shield = Math.min(aegisShieldMax(), aegisState.shield + AEGIS_SHIELD_REGEN * dt);
     if (ebullets) {
       for (var i = ebullets.length - 1; i >= 0; i--) {
         var b = ebullets[i];
         if (b.bomb) continue;
-        if (Math.hypot(b.x - aegisState.forceX, b.y - aegisState.forceY) < AEGIS_FORCE_RADIUS) {
+        if (Math.hypot(b.x - aegisState.forceX, b.y - aegisState.forceY) < aegisForceRadius()) {
           ebullets.splice(i, 1);
           aegisState.shield -= AEGIS_SHIELD_COST;
           aegisState.lastBlockAt = time;

@@ -123,7 +123,7 @@ function drawOptions(){
 }
 function drawPlayerLaser(){
   if(player.weapon!=='laser'||(state!=='play'&&state!=='boss')) return;
-  if(player.ship==='aegis'&&typeof aegisState!=='undefined'&&aegisState.charge==='charging') return;
+  if(player.ship==='aegis'&&typeof aegisState!=='undefined'&&(aegisState.charge==='charging'||player.odT>0)) return;
   if(player.odT>0){
     var w=26+Math.min(player.specialPower,3)*5;
     ctx.save();ctx.globalCompositeOperation='lighter';

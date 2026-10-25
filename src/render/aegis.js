@@ -34,7 +34,7 @@ function drawAegisShipFx() {
   if (player.ship !== 'aegis' || (state !== 'play' && state !== 'boss')) return;
   var fx0 = aegisState.forceX, fy0 = aegisState.forceY;
   var col = aegisWeaponColor();
-  var shieldRatio = Math.max(0, Math.min(1, aegisState.shield / AEGIS_SHIELD_MAX));
+  var shieldRatio = Math.max(0, Math.min(1, aegisState.shield / aegisShieldMax()));
   ctx.save();
 
   // Distinct charge release shapes: lance / fan / beam / swarm / Force lane.
@@ -104,7 +104,7 @@ function drawAegisShipFx() {
 
   // Charging: a large, bright convergence ring around the ship.
   if (aegisState.charge === 'charging') {
-    var ratio = Math.min(1, aegisState.chargeT / AEGIS_CHARGE_MAX);
+    var ratio = Math.min(1, aegisState.chargeT / aegisChargeMax());
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 0.52 + 0.22 * Math.sin(time * 14);
     ctx.strokeStyle = col; ctx.lineWidth = 3;
@@ -142,7 +142,7 @@ function drawAegisShipFx() {
 
   // Attached Force: a real field, not a small orb.
   if (aegisState.force === 'attached') {
-    drawForceField(fx0, fy0, 124, 0.34 + shieldRatio * 0.38, time * 0.25);
+    drawForceField(fx0, fy0, 94 + aegisForceRadius() * 0.9, 0.34 + shieldRatio * 0.38, time * 0.25);
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 0.85;
     var core = ctx.createRadialGradient(fx0, fy0, 0, fx0, fy0, 26);
@@ -151,17 +151,18 @@ function drawAegisShipFx() {
     core.addColorStop(1, 'rgba(255,130,20,0)');
     ctx.fillStyle = core; ctx.beginPath(); ctx.arc(fx0, fy0, 26, 0, TAU); ctx.fill();
     ctx.fillStyle = '#fff5cf'; ctx.beginPath(); ctx.arc(fx0, fy0, 4, 0, TAU); ctx.fill();
+    var fr = aegisForceRadius(), fc = aegisForceColor();
+    ctx.globalAlpha = 0.55 + 0.25 * Math.sin(time * 3);
+    ctx.strokeStyle = fc; ctx.lineWidth = 2.2;
+    for (var fi = 0; fi < 4; fi++) {
+      var fa0 = time * 0.35 + fi * Math.PI / 2;
+      ctx.beginPath(); ctx.arc(fx0, fy0, fr, fa0, fa0 + 0.50); ctx.stroke();
+    }
   } else if (aegisState.force === 'detached' || aegisState.force === 'returning') {
     drawForceField(fx0, fy0, 78, aegisState.force === 'detached' ? 0.9 : 0.55, time * 0.8);
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 0.7; ctx.fillStyle = '#ffd36b';
     ctx.beginPath(); ctx.arc(fx0, fy0, 7, 0, TAU); ctx.fill();
-  } else {
-    ctx.globalAlpha = 0.65;
-    ctx.strokeStyle = '#ff5a5a'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(fx0, fy0, 28, 0, TAU); ctx.stroke();
-    ctx.fillStyle = '#ff8a66'; ctx.font = '8px monospace'; ctx.textAlign = 'center';
-    ctx.fillText('REBUILD', fx0, fy0 + 3); ctx.textAlign = 'left';
   }
   ctx.restore();
   ctx.globalAlpha = 1;
@@ -174,7 +175,7 @@ function drawAegisControls() {
   var col = aegisWeaponColor();
   // CHARGE
   var c = b.charge;
-  var ratio = Math.min(1, aegisState.chargeT / AEGIS_CHARGE_MAX);
+  var ratio = Math.min(1, aegisState.chargeT / aegisChargeMax());
   var ready = aegisState.charge !== 'idle' || aegisState.chargeBonus > 0;
   ctx.save();
   ctx.globalAlpha = 0.92;
@@ -203,7 +204,7 @@ function drawAegisControls() {
   ctx.fillStyle = '#ffd36b'; ctx.font = '700 9px monospace';
   ctx.fillText('x' + player.bombs, f.x, f.y + 9);
   ctx.fillStyle = '#9fe8ff'; ctx.font = '7px monospace';
-  ctx.fillText(Math.round(aegisState.shield) + '%', f.x, f.y + 20);
+  ctx.fillText(Math.round(aegisState.shield / aegisShieldMax() * 100) + '%', f.x, f.y + 20);
   ctx.textAlign = 'left'; ctx.restore(); ctx.globalAlpha = 1;
   if (typeof aegisTutorialT !== 'undefined' && aegisTutorialT > 0) {
     ctx.save();

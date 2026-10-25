@@ -19,21 +19,7 @@ function bomb(){
 function hitPlayer(){
   if(player.odT>0) return;
   if(player.invuln>0||state!=='play'&&state!=='boss') return;
-  if(player.options>0){
-    var wi=0,bestY=1e9;
-    for(var oi=0;oi<player.options;oi++){
-      var op=optionPos(oi);
-      if(op.y<bestY){bestY=op.y;wi=oi;}
-    }
-    var wp=optionPos(wi);
-    player.options--; player.wingEntry.splice(wi,1);
-    player.invuln=1.0; shake=8; sfx('hurt',0.55);
-    part(wp.x,wp.y,'#7fe7ff',14,170); boom(wp.x,wp.y,0.45);
-    pickupT=0.9; pickupMsg='WINGMAN SHIELD';
-    for(var i=bullets.length-1;i>=0;i--){var dx=bullets[i].x-player.x,dy=bullets[i].y-player.y;if(dx*dx+dy*dy<110*110) bullets.splice(i,1);}
-    for(var i=ebullets.length-1;i>=0;i--){var dx=ebullets[i].x-player.x,dy=ebullets[i].y-player.y;if(dx*dx+dy*dy<110*110) ebullets.splice(i,1);}
-    return;
-  }
+  // VECTOR wingmen are now pure firepower; they no longer absorb hits.
   player.hp--;
   player.invuln=1.0; shake=10; sfx('hurt',0.75);
   for(var i=bullets.length-1;i>=0;i--){
@@ -48,8 +34,8 @@ function hitPlayer(){
   if(player.hp<=0){
     var atMin=player.specialPower<=1;
     var dX=player.x,dY=player.y;
-    player.lives--; player.hp=3; player.invuln=2.2; shake=18;
-    player.specialPower=Math.max(1,player.specialPower-1); player.power=player.specialPower; player.powerXp=0; player.od=0; player.odT=0; player.bombs=2; player.options=0; player.wingEntry=[];
+    player.lives--; player.hp=player.maxHp||3; player.invuln=2.2; shake=18;
+    player.specialPower=Math.max(1,player.specialPower-1); player.power=player.specialPower; player.powerXp=0; player.od=0; player.odT=0; player.bombs=2; player.options=Math.max(0,player.options-1); player.wingEntry=player.wingEntry.slice(0,player.options);
     rebuildSfxBus();
     player.respawnT=1.3; player.respawnGift=atMin;
     player.x=W/2; player.y=H-130; target.x=player.x; target.y=player.y;
@@ -127,8 +113,7 @@ function collectItem(it){
   }else if(t==='S'||t==='L'||t==='M'){ applySpecial(t); score+=80; pickupMsg=weaponName()+' LV'+player.specialPower+(player.specialPower>=4?' MAX':''); }
   else if(t==='W'){
     if(player.ship==='aegis'){
-      if(typeof aegisGainCharge==='function') aegisGainCharge(25);
-      score+=100;pickupMsg='W → CHARGE +25%';
+      if(typeof aegisForcePickup==='function') aegisForcePickup();
     }else if(player.options<4||player.wingPower<3){addWingman();pickupMsg='WING '+player.options+' P'+player.wingPower;}
     else{pickupMsg=gainOD(15)?'OVERDRIVE!':'WING MAX +15 OD';}
     score+=40;

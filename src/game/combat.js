@@ -74,7 +74,7 @@ function laserDamageOD(){
 }
 
 function laserDamage(dt){
-  laserTick-=dt; if(laserTick>0) return; laserTick=0.08;
+  laserTick-=dt; if(laserTick>0) return; laserTick=0.08/(player.laserRate||vectorLaserRate());
   if(player.odT>0){ laserDamageOD(); return; }
   var w=8+Math.min(player.specialPower,3)*5,dmg=(2+player.specialPower*2)*powerDamageFactor();
   var target=null,tIdx=-1,tY=0;

@@ -396,3 +396,13 @@
 
 - Force X now follows the current AEGIS skin's visual offset.
 - Shield field, lane attack and return target share the same centerline.
+
+## 0.7.0 — Ship variants, wingman economy and AEGIS OD
+
+- VECTOR wingmen no longer block damage; death removes one wingman.
+- Added VECTOR HP/bullet/damage/laser-rate variants.
+- AEGIS W levels now raise Force radius and no longer add charge.
+- AEGIS OD auto-fires charged attacks at the current weapon level every 0.5s.
+- Added AEGIS shield/radius/charge-time/charge-damage skin modifiers.
+- Temporal Wanderer gains its normal-bullet buff after OD ends.
+- Tests now launch Electron with --mute-audio.
