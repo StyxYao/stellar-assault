@@ -50,6 +50,10 @@ function desktopChangeStage(delta) {
 
 function desktopConfirm() {
   if (desktopPaused) { desktopSetPaused(false); return; }
+  if (state === 'menu' && typeof skinSelectOpen !== 'undefined' && skinSelectOpen) {
+    skinSelectChoose(skinSelectIndex);
+    return;
+  }
   if (state === 'menu' && typeof shipSelectOpen !== 'undefined' && shipSelectOpen) {
     if (!shipSelectChoose(shipSelectIndex)) { /* Phantom is coming soon. */ }
     return;
@@ -82,6 +86,14 @@ function desktopKeyDown(e) {
     if (k === 'enter' || k === ' ') { settingsActivate(); return; }
     return;
   }
+  if (state === 'menu' && typeof skinSelectOpen !== 'undefined' && skinSelectOpen) {
+    var skList = (typeof skinList === 'function') ? skinList(selectedShip) : [];
+    if (k === 'arrowup' || k === 'w') { skinSelectIndex = (skinSelectIndex + skList.length - 1) % skList.length; return; }
+    if (k === 'arrowdown' || k === 's') { skinSelectIndex = (skinSelectIndex + 1) % skList.length; return; }
+    if (k === 'enter' || k === ' ') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) desktopConfirm(); return; }
+    if (k === 'escape' || k === 'b') { closeSkinSelect(); return; }
+    return;
+  }
   if (state === 'menu' && typeof shipSelectOpen !== 'undefined' && shipSelectOpen) {
     if (k === 'arrowup' || k === 'w') { shipSelectIndex = (shipSelectIndex + 2) % 3; return; }
     if (k === 'arrowdown' || k === 's') { shipSelectIndex = (shipSelectIndex + 1) % 3; return; }
@@ -90,7 +102,7 @@ function desktopKeyDown(e) {
     return;
   }
   if (k === 'v' && state === 'menu') { openShipSelect(); return; }
-  if (k === 'b' && state === 'menu') { if (typeof cycleSkin === 'function') cycleSkin(1); return; }
+  if (k === 'b' && state === 'menu') { openSkinSelect(); return; }
   if (k === 'c' && player && player.ship === 'aegis') { e.preventDefault && e.preventDefault(); if (!e.repeat) aegisTapCharge(); return; }
   if (k === 'f' && player && player.ship === 'aegis') { e.preventDefault && e.preventDefault(); if (!e.repeat) aegisTapForce(); return; }
   if (k === 's' && desktopPaused) { openSettings(); return; }
@@ -173,6 +185,15 @@ function desktopPoll() {
   desktopPadSeen.left = pad.axes[0] < -0.65;
   desktopPadSeen.right = pad.axes[0] > 0.65;
 
+  if (state === 'menu' && typeof skinSelectOpen !== 'undefined' && skinSelectOpen) {
+    var padSkins = (typeof skinList === 'function') ? skinList(selectedShip) : [];
+    if (desktopPadEdge(pad, 12)) skinSelectIndex = (skinSelectIndex + padSkins.length - 1) % padSkins.length;
+    if (desktopPadEdge(pad, 13)) skinSelectIndex = (skinSelectIndex + 1) % padSkins.length;
+    if (desktopPadEdge(pad, 0)) desktopConfirm();
+    if (desktopPadEdge(pad, 1)) closeSkinSelect();
+    if (desktopPadEdge(pad, 3)) closeSkinSelect();
+    return;
+  }
   if (state === 'menu' && typeof shipSelectOpen !== 'undefined' && shipSelectOpen) {
     if (desktopPadEdge(pad, 12)) shipSelectIndex = (shipSelectIndex + 2) % 3;
     if (desktopPadEdge(pad, 13)) shipSelectIndex = (shipSelectIndex + 1) % 3;
@@ -185,7 +206,7 @@ function desktopPoll() {
     openShipSelect();
   }
   if (state === 'menu' && desktopPadEdge(pad, 5)) {
-    if (typeof cycleSkin === 'function') cycleSkin(1);
+    openSkinSelect();
   }
   if (player && player.ship === 'aegis' && (state === 'play' || state === 'boss')) {
     if (desktopPadEdge(pad, 3)) aegisTapCharge();

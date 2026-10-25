@@ -369,3 +369,9 @@
 
 - PHANTOM row now uses the Quantum Hunter concept silhouette.
 - Phantom preview brightness increased.
+
+## 0.5.7 — Skin previews
+
+- SKIN button now shows a thumbnail of the equipped skin.
+- Added SELECT SKIN overlay with image thumbnails, names, and equip state.
+- B / gamepad RB opens skin selection; click a row to equip.
