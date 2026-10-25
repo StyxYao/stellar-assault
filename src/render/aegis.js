@@ -60,7 +60,7 @@ function drawAegisShipFx() {
         ctx.lineTo(fx0 + Math.sin(fa) * cr, topY); ctx.stroke();
       }
     } else if (aegisState.castKind === 'beam') {
-      var bw = 24;
+      var bw = 34;
       var bg = ctx.createLinearGradient(fx0 - bw, 0, fx0 + bw, 0);
       bg.addColorStop(0, 'rgba(255,90,200,0)');
       bg.addColorStop(0.35, 'rgba(255,110,220,' + (0.55 * ca) + ')');
@@ -159,8 +159,11 @@ function drawAegisShipFx() {
       var fa0 = time * 0.35 + fi * Math.PI / 2;
       ctx.beginPath(); ctx.arc(fx0, fy0, fr, fa0, fa0 + 0.50); ctx.stroke();
     }
-    ctx.globalAlpha = 0.38; ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.72; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.arc(fx0, fy0, fr, 0, TAU); ctx.stroke();
+    var fglow = ctx.createRadialGradient(fx0, fy0, fr * 0.40, fx0, fy0, fr * 1.25);
+    fglow.addColorStop(0, 'rgba(0,0,0,0)'); fglow.addColorStop(0.72, 'rgba(255,255,255,0.05)'); fglow.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.globalAlpha = 0.30; ctx.fillStyle = fglow; ctx.beginPath(); ctx.arc(fx0, fy0, fr * 1.25, 0, TAU); ctx.fill();
   } else if (aegisState.force === 'detached' || aegisState.force === 'returning') {
     if (aegisState.force === 'detached') {
       var tg = ctx.createLinearGradient(fx0, fy0, fx0, fy0 + 110);

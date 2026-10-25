@@ -49,3 +49,12 @@ W overflow:
 - Shield break now has a burst flash, screen shake and existing explosion/hit SFX.
 - Broken state hides the Force field entirely.
 - Force level colors: L1 cyan, L2 gold, L3 purple, L4 red-orange.
+
+## Charge projectile polish
+
+- N charge: double the normal projectile count, 1.5x length and 1.2x width; total damage split.
+- S charge: double normal pellet count, 1.5x length and 1.2x width; per-pellet damage halved to keep total damage.
+- L charge: thick full-height piercing beam (collision half-width 28).
+- M charge: 10 missiles in a wide row; 1.5x length and 1.3x width.
+- Force radius tiers now jump visibly: 38 / 52 / 66 / 80 before skin multipliers.
+- Enemy `aggr` no longer reduces projectile speed below 70%; this fixes near-stationary fodder bullets.

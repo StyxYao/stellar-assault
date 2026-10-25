@@ -20,7 +20,7 @@ function drawShots(){
     var col=s.wing?'#7fe7ff':(s.special?'#8dff9e':'#ffe6a0');
     var glow=s.wing?'rgba(80,210,255,0.4)':(s.special?'rgba(80,255,140,0.35)':'rgba(255,170,60,0.35)');
     ctx.save();ctx.translate(s.x,s.y);ctx.rotate(ang);
-    var bh=s.laser?32:22,bw=2.4;
+    var bh=(s.laser?32:22)*(s.lenScale||1),bw=2.4*(s.widScale||1);
     if(s.max){ctx.fillStyle='rgba(255,215,100,0.16)';ctx.fillRect(-bw/2-1.1,-bh/2-1.1,bw+2.2,bh+2.2);}
     ctx.fillStyle=glow;ctx.fillRect(-(bw+2),-bh/2-2,(bw+2)*2,bh+4);
     ctx.fillStyle=col;ctx.fillRect(-bw/2,-bh/2,bw,bh);
@@ -31,7 +31,7 @@ function drawShots(){
 function drawMissiles(){
   for(var i=0;i<missiles.length;i++){
     var m=missiles[i],ang=Math.atan2(m.vy,m.vx)+Math.PI/2;
-    ctx.save();ctx.translate(m.x,m.y);ctx.rotate(ang);
+    ctx.save();ctx.translate(m.x,m.y);ctx.rotate(ang);ctx.scale(m.widScale||1,m.lenScale||1);
     if(m.max) ctx.scale(1,1.12);
     if(m.wing) ctx.scale(0.62,0.78);
     // smoke trail

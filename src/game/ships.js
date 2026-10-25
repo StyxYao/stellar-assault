@@ -113,7 +113,7 @@ function aegisChargeDamageMult() {
   return d && d.chargeDamageMult ? d.chargeDamageMult : 1;
 }
 function aegisForceRadius() {
-  var base = [38, 44, 50, 56][Math.max(0, Math.min(3, (aegisState.forceLevel || 1) - 1))];
+  var base = [38, 52, 66, 80][Math.max(0, Math.min(3, (aegisState.forceLevel || 1) - 1))];
   var d = aegisVariant();
   return base * (d && d.radiusMult ? d.radiusMult : 1);
 }
@@ -220,7 +220,7 @@ function aegisProfile() {
   var power = Math.max(1, Math.min(4, player.specialPower || 1));
   return {
     kind: base.kind,
-    count: base.kind === 'fan' ? 3 + power * 2 : (base.kind === 'swarm' ? 12 : base.count),
+    count: base.kind === 'fan' ? (3 + power * 2) * 2 : (base.kind === 'swarm' ? 10 : base.count),
     color: base.color,
     range: base.range,
     power: power
@@ -300,19 +300,25 @@ function aegisReleaseCharge() {
     for (var i = 0; i < prof.count; i++) {
       var a = (i - (prof.count - 1) / 2) * 0.095;
       addShot(px, py, Math.sin(a) * 900, -Math.cos(a) * 900, perFan, false, false, true, prof.power >= 4, prof.range);
+      var sf = shots[shots.length - 1]; if (sf) { sf.lenScale = 1.5; sf.widScale = 1.2; }
     }
   } else if (prof.kind === 'beam') {
-    aegisBeamCharge(px, totalDamage, 18);
+    aegisBeamCharge(px, totalDamage, 28);
   } else if (prof.kind === 'swarm') {
-    var perMissile = totalDamage / 12;
-    for (var m = 0; m < 12; m++) {
-      var mx = 40 + (W - 80) * (m / 11);
+    var perMissile = totalDamage / 10;
+    for (var m = 0; m < 10; m++) {
+      var mx = 40 + (W - 80) * (m / 9);
       spawnMissile(mx, player.y - 18, false, perMissile, true, 0, -190, prof.range);
+      var mm = missiles[missiles.length - 1]; if (mm) { mm.lenScale = 1.5; mm.widScale = 1.3; }
     }
   } else {
-    // N: wide three-lane lance; total damage is split across the three shots.
-    for (var n = 0; n < 3; n++) {
-      addShot(px + (n - 1) * 14, py, 0, -1150, totalDamage / 3, false, false, true, true, prof.range);
+    // N: double the normal projectile count, split total damage evenly.
+    var lvN = Math.max(1, Math.min(4, player.specialPower || 1));
+    var baseN = lvN <= 1 ? 2 : (lvN === 2 ? 3 : (lvN === 3 ? 4 : 5));
+    var countN = baseN * 2;
+    for (var n = 0; n < countN; n++) {
+      addShot(px + (n - (countN - 1) / 2) * 10, py, 0, -1150, totalDamage / countN, false, false, true, true, prof.range);
+      var sn = shots[shots.length - 1]; if (sn) { sn.lenScale = 1.5; sn.widScale = 1.2; }
     }
   }
   if (typeof fx !== 'undefined' && fx) fx.push({ x: px, y: py, t: 0, life: 0.32, kind: 'hitspark', sc: 3.4, color: prof.color });

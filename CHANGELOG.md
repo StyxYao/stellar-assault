@@ -425,3 +425,10 @@
 - W restores 20 shield charge.
 - L charge is a full-height piercing beam; M charge fires 12 missiles in a row.
 - Shield break flash/shake/SFX and Force level colors.
+
+## 0.7.3 — Charge sizes and stationary bullet fix
+
+- N/S charge projectile counts doubled with larger projectile visuals and same total damage.
+- L charge beam thickened; M charge changed to 10 wider missiles.
+- Force radius tiers have stronger size/color differences.
+- Fixed near-stationary enemy bullets by clamping the aggression speed multiplier.
