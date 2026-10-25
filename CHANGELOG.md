@@ -416,3 +416,12 @@
 - AEGIS W restores 20 shield charge.
 - Shield break has sound, burst flash and shake; broken state hides the field.
 - Force radius levels now have distinct colors and an R-level label.
+
+## 0.7.2 — Force collision and charge polish
+
+- Force now deals contact damage while flying instead of instantly damaging the lane.
+- Force clears bullets and hits each enemy/Boss once per launch.
+- Broken recovery reduced from 10s to 7.5s.
+- W restores 20 shield charge.
+- L charge is a full-height piercing beam; M charge fires 12 missiles in a row.
+- Shield break flash/shake/SFX and Force level colors.

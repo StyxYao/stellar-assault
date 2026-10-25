@@ -13,7 +13,7 @@ function aegisSkinAccent() {
   if (id === 'temporal') return '#ffe08a';
   return '#ffb347';
 }
-function drawForceField(x, y, size, alpha, spin) {
+function drawForceField(x, y, size, alpha, spin, color) {
   var img = (typeof GIMG !== 'undefined') ? GIMG.aegis_field : null;
   ctx.save();
   ctx.globalCompositeOperation = 'lighter';
@@ -27,6 +27,7 @@ function drawForceField(x, y, size, alpha, spin) {
     ctx.beginPath(); ctx.arc(x, y, size * 0.42, 0, TAU); ctx.stroke();
     ctx.beginPath(); ctx.arc(x, y, size * 0.30, 0, TAU); ctx.stroke();
   }
+  if (color) { ctx.globalAlpha = Math.min(1, alpha + 0.15); ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, size * 0.42, 0, TAU); ctx.stroke(); }
   ctx.restore();
 }
 
@@ -142,7 +143,7 @@ function drawAegisShipFx() {
 
   // Attached Force: a real field, not a small orb.
   if (aegisState.force === 'attached') {
-    drawForceField(fx0, fy0, 94 + aegisForceRadius() * 0.9, 0.34 + shieldRatio * 0.38, time * 0.25);
+    drawForceField(fx0, fy0, 94 + aegisForceRadius() * 0.9, 0.34 + shieldRatio * 0.38, time * 0.25, aegisForceColor());
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 0.85;
     var core = ctx.createRadialGradient(fx0, fy0, 0, fx0, fy0, 26);
@@ -161,7 +162,14 @@ function drawAegisShipFx() {
     ctx.globalAlpha = 0.38; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.arc(fx0, fy0, fr, 0, TAU); ctx.stroke();
   } else if (aegisState.force === 'detached' || aegisState.force === 'returning') {
-    drawForceField(fx0, fy0, 78, aegisState.force === 'detached' ? 0.9 : 0.55, time * 0.8);
+    if (aegisState.force === 'detached') {
+      var tg = ctx.createLinearGradient(fx0, fy0, fx0, fy0 + 110);
+      tg.addColorStop(0, 'rgba(255,211,107,0.42)');
+      tg.addColorStop(1, 'rgba(255,150,30,0)');
+      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 1; ctx.fillStyle = tg;
+      ctx.fillRect(fx0 - 9, fy0, 18, 110);
+    }
+    drawForceField(fx0, fy0, 70 + aegisForceRadius() * 0.6, aegisState.force === 'detached' ? 0.9 : 0.55, time * 0.8, aegisForceColor());
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 0.7; ctx.fillStyle = '#ffd36b';
     ctx.beginPath(); ctx.arc(fx0, fy0, 7, 0, TAU); ctx.fill();

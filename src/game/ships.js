@@ -33,7 +33,7 @@ var AEGIS_SHIELD_MAX = 60;
 var AEGIS_SHIELD_COST = 8;
 var AEGIS_SHIELD_REGEN = 14;
 var AEGIS_SHIELD_DELAY = 1.2;
-var AEGIS_BREAK_TIME = 10.0;
+var AEGIS_BREAK_TIME = 7.5;
 var AEGIS_FORCE_DAMAGE = 240;
 var AEGIS_FORCE_LANE_HALF = 38;
 
@@ -68,7 +68,9 @@ var aegisState = {
   odActive: false,
   odShotT: 0,
   postOdT: 0,
-  breakFlashT: 0
+  breakFlashT: 0,
+  forceHits: [],
+  forceBossHit: false
 };
 
 function skinList(ship) { return SHIP_SKINS[ship] || SHIP_SKINS.vector; }
@@ -196,6 +198,8 @@ function aegisReset() {
   aegisState.odShotT = 0;
   aegisState.postOdT = 0;
   aegisState.breakFlashT = 0;
+  aegisState.forceHits = [];
+  aegisState.forceBossHit = false;
   if (typeof player !== 'undefined') {
     aegisState.forceX = aegisVisualX();
     aegisState.forceY = player.y - 42;
@@ -374,12 +378,11 @@ function aegisLaunchForce() {
   aegisState.forceX = aegisVisualX();
   aegisState.forceY = player.y - 42;
   aegisState.flashT = 0.55;
-  aegisState.laneT = 0.55;
-  aegisState.castT = 0.55;
-  aegisState.castKind = 'force';
-  aegisState.castRange = player.y;
-  aegisState.castColor = '#ffd36b';
-  aegisLaneHit();
+  aegisState.laneT = 0;
+  aegisState.castT = 0;
+  aegisState.castKind = '';
+  aegisState.forceHits = [];
+  aegisState.forceBossHit = false;
   try { shake = Math.max(shake, 12); } catch (e) {}
   try { sfx('aegis_force', 0.72); } catch (e) {}
   return true;
@@ -411,6 +414,50 @@ function aegisShieldBreak() {
   try { sfx('e_hit', 0.9); } catch (e) {}
   try { if (typeof part === 'function') for (var i = 0; i < 26; i++) part(aegisState.forceX, aegisState.forceY, i % 2 ? '#ffd36b' : '#ff7a4d', 1, 240); } catch (e) {}
   try { if (typeof boom === 'function') boom(aegisState.forceX, aegisState.forceY, 0.75); } catch (e) {}
+}
+
+function aegisForceCollide(dt) {
+  if (aegisState.force !== 'detached') return;
+  var fx = aegisState.forceX, fy = aegisState.forceY, rad = aegisForceRadius();
+  // The Force clears bullets it physically passes through.
+  if (typeof ebullets !== 'undefined' && ebullets) {
+    for (var bi = ebullets.length - 1; bi >= 0; bi--) {
+      var b = ebullets[bi];
+      if (Math.hypot(b.x - fx, b.y - fy) < rad + 5) {
+        if (typeof part === 'function') part(b.x, b.y, aegisForceColor(), 1, 130);
+        ebullets.splice(bi, 1);
+      }
+    }
+  }
+  var hitAny = false;
+  if (typeof enemies !== 'undefined' && enemies) {
+    for (var i = 0; i < enemies.length; i++) {
+      var e = enemies[i];
+      if (aegisState.forceHits.indexOf(e) >= 0) continue;
+      if (Math.hypot(e.x - fx, e.y - fy) > rad + enemyW(e) * 0.35) continue;
+      aegisState.forceHits.push(e);
+      e.hp -= AEGIS_FORCE_DAMAGE; e.flash = 0.18;
+      hitAny = true;
+      if (typeof hitSpark === 'function') hitSpark(e.x, e.y, false, false);
+      if (typeof part === 'function') part(e.x, e.y, aegisForceColor(), 8, 180);
+      try { sfx('b_hit', 0.25); } catch (err) {}
+      if (e.hp <= 0) {
+        score += ET[e.type].score;
+        enemyDeath(e); maybeDrop(e); removeEnemy(i); i--;
+      }
+    }
+  }
+  if (!aegisState.forceBossHit && boss && state === 'boss' && Math.hypot(boss.x - fx, boss.y - fy) < rad + boss.def.w * 0.28) {
+    aegisState.forceBossHit = true;
+    boss.hp -= AEGIS_FORCE_DAMAGE; boss.hitFlash = 0.22; boss.hitX = fx; boss.hitY = fy;
+    hitAny = true;
+    try { sfx('b_hit', 0.35); } catch (err) {}
+    if (typeof hitSpark === 'function') hitSpark(boss.x, boss.y, false, true);
+  }
+  if (hitAny) {
+    try { shake = Math.max(shake, 8); } catch (err) {}
+    try { if (typeof boom === 'function') boom(fx, fy, 0.55); } catch (err) {}
+  }
 }
 
 function updateAegis(dt) {
@@ -472,6 +519,7 @@ function updateAegis(dt) {
     }
   } else if (aegisState.force === 'detached') {
     aegisState.forceY -= 420 * dt;
+    aegisForceCollide(dt);
     if (aegisState.forceY < -40) aegisState.force = 'returning';
   } else if (aegisState.force === 'returning') {
     var tx = aegisVisualX(), ty = player.y - 42;

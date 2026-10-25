@@ -55,3 +55,14 @@
 ## Visual center alignment
 
 AEGIS skins have per-skin sprite offsets (`ox`). Force now uses `player.x + skin.ox` for its X position, shield field, launch lane and return target, so it aligns with the visible ship center instead of the raw hitbox center.
+
+## Force collision pass
+
+- Launch no longer damages the whole column instantly.
+- Force travels upward and only damages enemies/Bosses it physically touches.
+- Each enemy is hit once per launch; Boss once per launch.
+- Force clears enemy bullets within its own radius as it travels.
+- The full-lane Force flash was removed; a moving trail and contact burst are used instead.
+- Broken recovery is now 7.5s (10s -25%).
+- W restores 20 shield charge in addition to raising Force radius.
+- Force radius colors: R1 cyan, R2 gold, R3 purple, R4 red-orange.
