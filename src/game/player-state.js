@@ -1,6 +1,10 @@
 // Player damage, bombs, drops, weapon pickups and item collection.
 function bomb(){
   if((state!=='play'&&state!=='boss')||player.bombs<=0) return;
+  if(player.ship==='aegis'){
+    if(typeof aegisLaunchForce==='function') aegisLaunchForce();
+    return;
+  }
   player.bombs--; shake=24; bombT=1.1; bombX=player.x; bombY=player.y; player.invuln=Math.max(player.invuln,0.8); sfx('b_charge',0.55); sfx('bomb_big',0.95); sfx('heavy_missile',0.42);
   for(var bp=0;bp<42;bp++) part(bombX,bombY,bp%2?'#bff4ff':'#ffd28a',1,320);
   for(var i=0;i<bullets.length;i++) part(bullets[i].x,bullets[i].y,'#9fe8ff',1,150);
@@ -133,7 +137,7 @@ function collectItem(it){
     else{pickupMsg=gainOD(25)?'OVERDRIVE!':'LIFE MAX +25 OD';}
     score+=250;
   }else{
-    if(player.bombs<5){player.bombs++;pickupMsg='BOMB +1';}
+    if(player.bombs<5){player.bombs++;pickupMsg=player.ship==='aegis'?'FORCE CHARGE +1':'BOMB +1';}
     else{pickupMsg=gainOD(15)?'OVERDRIVE!':'BOMB MAX +15 OD';}
     score+=30;
   }

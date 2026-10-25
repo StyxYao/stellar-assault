@@ -25,8 +25,8 @@ function drawHUD(){
   ctx.fillStyle='#8dff9e';ctx.fillText(hpx,16,H-78);ctx.fillStyle='#cfe0f0';
   if(player.ship==='aegis'){ctx.fillStyle='#9fe8ff';ctx.fillText('FORCE · SHIELD '+Math.round(aegisState.shield)+'%',16,H-60);ctx.fillStyle='#cfe0f0';}
   else ctx.fillText('WING '+player.options+'·P'+player.wingPower,16,H-60);
-  ctx.fillText('SHIPS '+player.lives,16,H-42);ctx.fillText('BOMB '+player.bombs,16,H-24);
-  drawBombBtn();
+  ctx.fillText('SHIPS '+player.lives,16,H-42);ctx.fillText((player.ship==='aegis'?'FORCE ':'BOMB ')+player.bombs,16,H-24);
+  if(player.ship!=='aegis') drawBombBtn();
   if(typeof drawAegisControls==='function') drawAegisControls();
 }
 function drawBanner(){

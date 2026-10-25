@@ -375,3 +375,12 @@
 - SKIN button now shows a thumbnail of the equipped skin.
 - Added SELECT SKIN overlay with image thumbnails, names, and equip state.
 - B / gamepad RB opens skin selection; click a row to equip.
+
+## 0.6.0 — AEGIS Force redesign
+
+- Force attached now only shields; no auto-fire.
+- Force launch is a forward lane clear and deals 2x bomb damage.
+- AEGIS bomb removed; Force launch consumes bomb charges.
+- Charge damage and visuals increased; normal fire pauses while charging.
+- Shield max reduced 40%, break time 10s, rebuild at 20.
+- Added AI-generated amber force-field overlay.

@@ -19,7 +19,6 @@ function onDown(e){
     var ab=aegisButtonAt(p);
     if(ab==='charge'){aegisTapCharge();return;}
     if(ab==='force'){aegisTapForce();return;}
-    if(ab==='bomb'){bomb();return;}
   }
   if(e.pointerType==='mouse'&&(state==='play'||state==='boss')&&typeof desktopPrimaryFire==='function') desktopPrimaryFire();
   if(state==='menu'){

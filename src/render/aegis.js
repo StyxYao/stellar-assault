@@ -13,66 +13,102 @@ function aegisSkinAccent() {
   if (id === 'temporal') return '#ffe08a';
   return '#ffb347';
 }
+function drawForceField(x, y, size, alpha, spin) {
+  var img = (typeof GIMG !== 'undefined') ? GIMG.aegis_field : null;
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  if (img && img.complete) {
+    ctx.globalAlpha = alpha;
+    ctx.translate(x, y); ctx.rotate(spin || 0);
+    ctx.drawImage(img, -size / 2, -size / 2, size, size);
+  } else {
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = '#ffcf6b'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(x, y, size * 0.42, 0, TAU); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x, y, size * 0.30, 0, TAU); ctx.stroke();
+  }
+  ctx.restore();
+}
+
 function drawAegisShipFx() {
   if (player.ship !== 'aegis' || (state !== 'play' && state !== 'boss')) return;
   var fx0 = aegisState.forceX, fy0 = aegisState.forceY;
   var col = aegisWeaponColor();
+  var shieldRatio = Math.max(0, Math.min(1, aegisState.shield / AEGIS_SHIELD_MAX));
   ctx.save();
-  // charge ring around the ship
+
+  // Forward lane flash: makes a charged shot / Force launch read instantly.
+  if (aegisState.laneT > 0) {
+    var la = aegisState.laneT / 0.55;
+    var lane = AEGIS_FORCE_LANE_HALF;
+    var lg = ctx.createLinearGradient(player.x - lane, 0, player.x + lane, 0);
+    lg.addColorStop(0, 'rgba(255,180,60,0)');
+    lg.addColorStop(0.5, 'rgba(255,240,190,' + (0.34 * la) + ')');
+    lg.addColorStop(1, 'rgba(255,180,60,0)');
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = lg; ctx.fillRect(player.x - lane, 0, lane * 2, player.y);
+    ctx.globalAlpha = 0.8 * la; ctx.fillStyle = '#fff4d0';
+    ctx.fillRect(player.x - 3, 0, 6, player.y);
+  }
+
+  // Charging: a large, bright convergence ring around the ship.
   if (aegisState.charge === 'charging') {
     var ratio = Math.min(1, aegisState.chargeT / AEGIS_CHARGE_MAX);
     ctx.globalCompositeOperation = 'lighter';
-    ctx.globalAlpha = 0.28 + 0.20 * Math.sin(time * 12);
-    ctx.strokeStyle = col;
-    ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(player.x, player.y - 4, 38 + ratio * 10, 0, TAU * ratio); ctx.stroke();
-    for (var i = 0; i < 3; i++) {
-      var a = -Math.PI / 2 + i * TAU / 3;
-      ctx.globalAlpha = ratio >= ((i + 1) / 3) ? 0.9 : 0.25;
-      ctx.fillStyle = i < aegisChargeLevel() ? col : '#6b7b8c';
-      ctx.beginPath(); ctx.arc(player.x + Math.cos(a) * 52, player.y - 4 + Math.sin(a) * 52, 3, 0, TAU); ctx.fill();
+    ctx.globalAlpha = 0.52 + 0.22 * Math.sin(time * 14);
+    ctx.strokeStyle = col; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(player.x, player.y - 4, 42 + ratio * 18, 0, TAU); ctx.stroke();
+    ctx.globalAlpha = 0.25 + ratio * 0.35;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(player.x, player.y - 4, 32 + ratio * 10, 0, TAU); ctx.stroke();
+    for (var i = 0; i < 6; i++) {
+      var a = -Math.PI / 2 + i * TAU / 6 + time * 0.5;
+      var rr = 48 + ratio * 10;
+      ctx.globalAlpha = 0.35 + ratio * 0.55;
+      ctx.fillStyle = i < Math.ceil(ratio * 6) ? col : '#6b7b8c';
+      ctx.beginPath(); ctx.arc(player.x + Math.cos(a) * rr, player.y - 4 + Math.sin(a) * rr, 2.8, 0, TAU); ctx.fill();
     }
+    var cg = ctx.createRadialGradient(player.x, player.y - 4, 0, player.x, player.y - 4, 46);
+    cg.addColorStop(0, 'rgba(255,246,210,' + (0.18 + ratio * 0.28) + ')');
+    cg.addColorStop(1, 'rgba(255,170,40,0)');
+    ctx.globalAlpha = 1; ctx.fillStyle = cg;
+    ctx.beginPath(); ctx.arc(player.x, player.y - 4, 46, 0, TAU); ctx.fill();
   }
-  // Shield overlay: one dynamic layer on top of the full ship image.
-  if (aegisState.force !== 'broken') {
-    var sa = Math.max(0, Math.min(1, aegisState.shield / AEGIS_SHIELD_MAX));
-    var accent = aegisSkinAccent();
+
+  // Release flash.
+  if (aegisState.flashT > 0) {
+    var fa = aegisState.flashT / 0.55;
     ctx.globalCompositeOperation = 'lighter';
-    ctx.globalAlpha = 0.22 + sa * 0.25;
-    ctx.strokeStyle = accent;
-    ctx.lineWidth = 2;
-    for (var si = 0; si < 4; si++) {
-      var a0 = time * 0.55 + si * Math.PI / 2;
-      ctx.beginPath(); ctx.arc(player.x, player.y - 4, 44 + (1 - sa) * 3, a0, a0 + 0.42); ctx.stroke();
-    }
-    ctx.globalAlpha = 0.4;
-    ctx.strokeStyle = sa > 0.35 ? accent : '#ff6a5a';
-    ctx.lineWidth = 1.2;
-    ctx.beginPath(); ctx.arc(player.x, player.y - 4, 48, -Math.PI / 2, -Math.PI / 2 + TAU * sa); ctx.stroke();
+    var fg = ctx.createRadialGradient(player.x, player.y - 12, 0, player.x, player.y - 12, 92);
+    fg.addColorStop(0, 'rgba(255,255,240,' + (0.5 * fa) + ')');
+    fg.addColorStop(0.4, 'rgba(255,200,80,' + (0.28 * fa) + ')');
+    fg.addColorStop(1, 'rgba(255,120,20,0)');
+    ctx.globalAlpha = 1; ctx.fillStyle = fg;
+    ctx.beginPath(); ctx.arc(player.x, player.y - 12, 92, 0, TAU); ctx.fill();
+    ctx.globalAlpha = 0.8 * fa; ctx.strokeStyle = '#fff2c4'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(player.x, player.y - 12, 35 + (1 - fa) * 55, 0, TAU); ctx.stroke();
   }
-  // Force body
-  if (aegisState.force !== 'broken') {
-    var shieldRatio = Math.max(0, Math.min(1, aegisState.shield / AEGIS_SHIELD_MAX));
+
+  // Attached Force: a real field, not a small orb.
+  if (aegisState.force === 'attached') {
+    drawForceField(fx0, fy0, 124, 0.34 + shieldRatio * 0.38, time * 0.25);
     ctx.globalCompositeOperation = 'lighter';
-    var g = ctx.createRadialGradient(fx0, fy0, 0, fx0, fy0, 34);
-    g.addColorStop(0, 'rgba(255,255,255,0.95)');
-    g.addColorStop(0.35, 'rgba(255,193,84,' + (0.48 + shieldRatio * 0.25) + ')');
-    g.addColorStop(1, 'rgba(255,132,24,0)');
-    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(fx0, fy0, 34, 0, TAU); ctx.fill();
-    ctx.globalAlpha = 0.9;
-    ctx.fillStyle = '#1a0d04'; ctx.beginPath(); ctx.arc(fx0, fy0, 17, 0, TAU); ctx.fill();
-    ctx.strokeStyle = aegisState.force === 'attached' ? '#ffd36b' : '#ffb347';
-    ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(fx0, fy0, 18, 0, TAU); ctx.stroke();
-    ctx.globalAlpha = 0.65;
-    ctx.strokeStyle = shieldRatio > 0.35 ? '#ffd36b' : '#ff6a5a';
-    ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(fx0, fy0, 25, -Math.PI / 2, -Math.PI / 2 + TAU * shieldRatio); ctx.stroke();
-    ctx.globalAlpha = 0.9; ctx.fillStyle = '#ffffff';
-    ctx.beginPath(); ctx.arc(fx0, fy0, 3, 0, TAU); ctx.fill();
+    ctx.globalAlpha = 0.85;
+    var core = ctx.createRadialGradient(fx0, fy0, 0, fx0, fy0, 26);
+    core.addColorStop(0, 'rgba(255,255,245,0.95)');
+    core.addColorStop(0.35, 'rgba(255,196,78,0.55)');
+    core.addColorStop(1, 'rgba(255,130,20,0)');
+    ctx.fillStyle = core; ctx.beginPath(); ctx.arc(fx0, fy0, 26, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#fff5cf'; ctx.beginPath(); ctx.arc(fx0, fy0, 4, 0, TAU); ctx.fill();
+  } else if (aegisState.force === 'detached' || aegisState.force === 'returning') {
+    drawForceField(fx0, fy0, 78, aegisState.force === 'detached' ? 0.9 : 0.55, time * 0.8);
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = 0.7; ctx.fillStyle = '#ffd36b';
+    ctx.beginPath(); ctx.arc(fx0, fy0, 7, 0, TAU); ctx.fill();
   } else {
-    ctx.globalAlpha = 0.55;
+    ctx.globalAlpha = 0.65;
     ctx.strokeStyle = '#ff5a5a'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(fx0, fy0, 20, 0, TAU); ctx.stroke();
+    ctx.beginPath(); ctx.arc(fx0, fy0, 28, 0, TAU); ctx.stroke();
     ctx.fillStyle = '#ff8a66'; ctx.font = '8px monospace'; ctx.textAlign = 'center';
     ctx.fillText('REBUILD', fx0, fy0 + 3); ctx.textAlign = 'left';
   }
@@ -103,16 +139,20 @@ function drawAegisControls() {
   ctx.fillText('CHG', c.x, c.y + 2);
   ctx.font = '7px monospace'; ctx.fillStyle = '#cfe8f5';
   ctx.fillText(aegisState.charge === 'charging' ? ('LV' + aegisChargeLevel()) : 'TAP', c.x, c.y + 14);
-  // FORCE
+  // FORCE = shield / bomb
   var f = b.force;
-  ctx.fillStyle = aegisState.force === 'broken' ? 'rgba(30,10,10,0.85)' : 'rgba(8,30,44,0.88)';
+  var forceReady = aegisState.force === 'attached' && player.bombs > 0;
+  ctx.fillStyle = aegisState.force === 'broken' ? 'rgba(30,10,10,0.9)' : 'rgba(8,30,44,0.9)';
   ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, TAU); ctx.fill();
-  ctx.strokeStyle = aegisState.force === 'broken' ? '#ff6a5a' : (aegisState.force === 'attached' ? '#9fe8ff' : '#ffd36b');
-  ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, TAU); ctx.stroke();
-  ctx.fillStyle = '#eaf8ff'; ctx.font = '700 8px monospace'; ctx.textAlign = 'center';
-  ctx.fillText(aegisState.force === 'attached' ? 'FORCE' : (aegisState.force === 'detached' ? 'RECALL' : (aegisState.force === 'returning' ? 'RETURN' : 'BROKEN')), f.x, f.y + 2);
+  ctx.strokeStyle = aegisState.force === 'broken' ? '#ff6a5a' : (forceReady ? '#ffd36b' : '#9fe8ff');
+  ctx.lineWidth = 2.2; ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, TAU); ctx.stroke();
+  ctx.fillStyle = '#eaf8ff'; ctx.font = '700 9px monospace'; ctx.textAlign = 'center';
+  var forceLabel = aegisState.force === 'attached' ? (forceReady ? 'FORCE' : 'EMPTY') : (aegisState.force === 'detached' ? 'RECALL' : (aegisState.force === 'returning' ? 'RETURN' : 'BROKEN'));
+  ctx.fillText(forceLabel, f.x, f.y - 3);
+  ctx.fillStyle = '#ffd36b'; ctx.font = '700 9px monospace';
+  ctx.fillText('x' + player.bombs, f.x, f.y + 9);
   ctx.fillStyle = '#9fe8ff'; ctx.font = '7px monospace';
-  ctx.fillText(Math.round(aegisState.shield) + '%', f.x, f.y + 12);
+  ctx.fillText(Math.round(aegisState.shield) + '%', f.x, f.y + 20);
   ctx.textAlign = 'left'; ctx.restore(); ctx.globalAlpha = 1;
   if (typeof aegisTutorialT !== 'undefined' && aegisTutorialT > 0) {
     ctx.save();
@@ -125,7 +165,7 @@ function drawAegisControls() {
     ctx.font = '600 13px Orbitron, Arial, sans-serif';
     ctx.fillText('AEGIS · TAP CHG TO CHARGE', W / 2, H - 238);
     ctx.fillStyle = '#9fe8ff'; ctx.font = '12px Rajdhani, Arial, sans-serif';
-    ctx.fillText('TAP FORCE · DETACH / RECALL', W / 2, H - 218);
+    ctx.fillText('TAP FORCE · LAUNCH / RECALL', W / 2, H - 218);
     ctx.textAlign = 'left'; ctx.restore(); ctx.globalAlpha = 1;
   }
 }

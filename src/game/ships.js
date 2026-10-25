@@ -28,12 +28,14 @@ var aegisTutorialT = 0;
 var AEGIS_CHARGE_MAX = 1.30;
 var AEGIS_AUTO_RELEASE = 0.35;
 var AEGIS_CHARGE_COOLDOWN = 0.20;
-var AEGIS_FORCE_RADIUS = 27;
-var AEGIS_SHIELD_MAX = 100;
+var AEGIS_FORCE_RADIUS = 38;
+var AEGIS_SHIELD_MAX = 60;
 var AEGIS_SHIELD_COST = 8;
 var AEGIS_SHIELD_REGEN = 14;
 var AEGIS_SHIELD_DELAY = 1.2;
-var AEGIS_BREAK_TIME = 2.5;
+var AEGIS_BREAK_TIME = 10.0;
+var AEGIS_FORCE_DAMAGE = 240;
+var AEGIS_FORCE_LANE_HALF = 38;
 
 var AEGIS_CHARGE_PROFILES = {
   normal:  { kind: 'lance', count: 1, color: '#9fe8ff' },
@@ -55,7 +57,9 @@ var aegisState = {
   lastBlockAt: -999,
   breakT: 0,
   forceFireT: 0,
-  forceHitT: 0
+  forceHitT: 0,
+  flashT: 0,
+  laneT: 0
 };
 
 function skinList(ship) { return SHIP_SKINS[ship] || SHIP_SKINS.vector; }
@@ -123,6 +127,8 @@ function aegisReset() {
   aegisState.breakT = 0;
   aegisState.forceFireT = 0;
   aegisState.forceHitT = 0;
+  aegisState.flashT = 0;
+  aegisState.laneT = 0;
   if (typeof player !== 'undefined') {
     aegisState.forceX = player.x;
     aegisState.forceY = player.y - 42;
@@ -179,7 +185,8 @@ function aegisReleaseCharge() {
   if (level <= 0) return;
   var prof = aegisProfile();
   var intensity = Math.max(0.55, Math.min(1, aegisState.chargeT / AEGIS_CHARGE_MAX));
-  var dmg = (1.8 + prof.power * 1.15) * intensity * powerDamageFactor() * (aegisState.force === 'attached' ? 1.10 : 1);
+  // Charged shots are a burst, not a slightly larger normal shot.
+  var dmg = (42 + prof.power * 18) * intensity * powerDamageFactor() * (aegisState.force === 'attached' ? 1.10 : 1);
   var px = player.x, py = player.y - 26;
   if (prof.kind === 'fan') {
     for (var i = 0; i < prof.count; i++) {
@@ -199,7 +206,11 @@ function aegisReleaseCharge() {
     if (prof.power >= 3) addShot(px - 12, py, 0, -1050, dmg * 0.75, false, false, true, true);
     if (prof.power >= 3) addShot(px + 12, py, 0, -1050, dmg * 0.75, false, false, true, true);
   }
-  if (typeof fx !== 'undefined' && fx) fx.push({ x: px, y: py, t: 0, life: 0.22, kind: 'hitspark', sc: 2.1, color: prof.color });
+  if (typeof fx !== 'undefined' && fx) fx.push({ x: px, y: py, t: 0, life: 0.32, kind: 'hitspark', sc: 3.4, color: prof.color });
+  aegisState.flashT = Math.max(aegisState.flashT, 0.50);
+  aegisState.laneT = Math.max(aegisState.laneT, 0.50);
+  try { shake = Math.max(shake, 9); } catch (e) {}
+  try { if (typeof part === 'function') for (var pp = 0; pp < 18; pp++) part(px, py, prof.color, 1, 180); } catch (e) {}
   aegisState.charge = 'idle';
   aegisState.chargeT = 0;
   aegisState.autoT = 0;
@@ -207,36 +218,68 @@ function aegisReleaseCharge() {
   try { sfx('aegis_cannon', 0.62); } catch (e) {}
 }
 
-function aegisTapForce() {
-  if (state !== 'play' && state !== 'boss') return;
-  if (aegisState.force === 'attached') {
-    aegisState.force = 'detached';
-    aegisState.forceX = player.x;
-    aegisState.forceY = player.y - 42;
-    try { sfx('aegis_force', 0.62); } catch (e) {}
-  } else if (aegisState.force === 'detached') {
-    aegisState.force = 'returning';
+function aegisLaneHit() {
+  var lane = AEGIS_FORCE_LANE_HALF;
+  var px = player.x;
+  // Clear enemy bullets in the forward lane.
+  if (typeof ebullets !== 'undefined' && ebullets) {
+    for (var bi = ebullets.length - 1; bi >= 0; bi--) {
+      var b = ebullets[bi];
+      if (b.y < player.y + 14 && b.y > -30 && Math.abs(b.x - px) < lane + 7) {
+        if (typeof part === 'function') part(b.x, b.y, '#ffd36b', 1, 130);
+        ebullets.splice(bi, 1);
+      }
+    }
+  }
+  // Damage enemies in the lane. 240 = 2x the old bomb's 120 boss damage.
+  if (typeof enemies !== 'undefined' && enemies) {
+    for (var i = enemies.length - 1; i >= 0; i--) {
+      var e = enemies[i];
+      if (e.y > player.y + 20) continue;
+      if (Math.abs(e.x - px) > lane + enemyW(e) * 0.45) continue;
+      e.hp -= AEGIS_FORCE_DAMAGE;
+      e.flash = 0.18;
+      if (typeof hitSpark === 'function') hitSpark(e.x, e.y, false, false);
+      if (e.hp <= 0) {
+        score += ET[e.type].score;
+        enemyDeath(e); maybeDrop(e); removeEnemy(i);
+      }
+    }
+  }
+  if (boss && state === 'boss' && boss.y < player.y + 20 && Math.abs(boss.x - px) < lane + boss.def.w * 0.30) {
+    boss.hp -= AEGIS_FORCE_DAMAGE;
+    boss.hitFlash = 0.24; boss.hitX = px; boss.hitY = Math.max(40, boss.y);
+    if (typeof hitSpark === 'function') hitSpark(boss.x, boss.y, false, true);
+  }
+  for (var k = 0; k < 14; k++) {
+    if (typeof part === 'function') part(px + (Math.random() - 0.5) * lane * 1.7, player.y - Math.random() * (player.y - 40), '#ffd36b', 1, 240);
   }
 }
 
-function aegisForceDamage(dt) {
-  if (aegisState.force === 'attached' || aegisState.force === 'broken') return;
-  if (aegisState.forceHitT > 0) return;
-  var hit = null;
-  for (var i = 0; i < enemies.length; i++) {
-    var e = enemies[i];
-    if (Math.hypot(e.x - aegisState.forceX, e.y - aegisState.forceY) < AEGIS_FORCE_RADIUS + enemyW(e) * 0.45) { hit = e; break; }
+function aegisLaunchForce() {
+  if (state !== 'play' && state !== 'boss') return false;
+  if (aegisState.force !== 'attached' || player.bombs <= 0) return false;
+  player.bombs--;
+  if (aegisState.charge === 'charging') { aegisState.charge = 'idle'; aegisState.chargeT = 0; }
+  aegisState.force = 'detached';
+  aegisState.forceX = player.x;
+  aegisState.forceY = player.y - 42;
+  aegisState.flashT = 0.55;
+  aegisState.laneT = 0.55;
+  aegisLaneHit();
+  try { shake = Math.max(shake, 12); } catch (e) {}
+  try { sfx('aegis_force', 0.72); } catch (e) {}
+  return true;
+}
+
+function aegisTapForce() {
+  if (state !== 'play' && state !== 'boss') return;
+  if (aegisState.force === 'attached') {
+    aegisLaunchForce();
+  } else if (aegisState.force === 'detached') {
+    aegisState.force = 'returning';
+    try { sfx('e_charge', 0.18); } catch (e) {}
   }
-  if (!hit && boss && state === 'boss' && Math.hypot(boss.x - aegisState.forceX, boss.y - aegisState.forceY) < AEGIS_FORCE_RADIUS + boss.def.w * 0.25) hit = boss;
-  if (!hit) return;
-  aegisState.forceHitT = 0.12;
-  var dmg = 3.0 * powerDamageFactor() * (aegisState.force === 'detached' ? 1.25 : 0.8);
-  if (hit === boss) { boss.hp -= dmg; boss.hitFlash = 0.1; boss.hitX = aegisState.forceX; boss.hitY = aegisState.forceY; }
-  else {
-    hit.hp -= dmg; hit.flash = 0.1;
-    if (hit.hp <= 0) { score += ET[hit.type].score; enemyDeath(hit); maybeDrop(hit); removeEnemy(enemies.indexOf(hit)); }
-  }
-  if (typeof hitSpark === 'function') hitSpark(aegisState.forceX, aegisState.forceY, false, false);
 }
 
 function updateAegis(dt) {
@@ -245,6 +288,8 @@ function updateAegis(dt) {
   if (aegisTutorialT > 0) aegisTutorialT = Math.max(0, aegisTutorialT - dt);
   if (aegisState.cooldown > 0) aegisState.cooldown = Math.max(0, aegisState.cooldown - dt);
   if (aegisState.forceHitT > 0) aegisState.forceHitT = Math.max(0, aegisState.forceHitT - dt);
+  if (aegisState.flashT > 0) aegisState.flashT = Math.max(0, aegisState.flashT - dt);
+  if (aegisState.laneT > 0) aegisState.laneT = Math.max(0, aegisState.laneT - dt);
 
   if (aegisState.charge === 'charging') {
     aegisState.chargeT = Math.min(AEGIS_CHARGE_MAX, aegisState.chargeT + dt);
@@ -254,7 +299,7 @@ function updateAegis(dt) {
 
   if (aegisState.force === 'broken') {
     aegisState.breakT -= dt;
-    if (aegisState.breakT <= 0) { aegisState.force = 'attached'; aegisState.shield = 40; }
+    if (aegisState.breakT <= 0) { aegisState.force = 'attached'; aegisState.shield = 20; }
   } else if (aegisState.force === 'attached') {
     aegisState.forceX = player.x;
     aegisState.forceY = player.y - 42;
@@ -272,20 +317,13 @@ function updateAegis(dt) {
         }
       }
     }
-    aegisState.forceFireT -= dt;
-    if (aegisState.forceFireT <= 0) {
-      aegisState.forceFireT = 0.18;
-      try { addShot(aegisState.forceX, aegisState.forceY - 8, 0, -930, 0.8 * powerDamageFactor(), false, false, false, false); } catch (e) {}
-    }
   } else if (aegisState.force === 'detached') {
     aegisState.forceY -= 420 * dt;
-    aegisForceDamage(dt);
     if (aegisState.forceY < -40) aegisState.force = 'returning';
   } else if (aegisState.force === 'returning') {
     var tx = player.x, ty = player.y - 42;
     aegisState.forceX += (tx - aegisState.forceX) * Math.min(1, dt * 12);
     aegisState.forceY += (ty - aegisState.forceY) * Math.min(1, dt * 12);
-    aegisForceDamage(dt);
     if (Math.hypot(tx - aegisState.forceX, ty - aegisState.forceY) < 8) aegisState.force = 'attached';
   }
 }
@@ -293,14 +331,13 @@ function updateAegis(dt) {
 function aegisButtons() {
   return {
     charge: { x: W - 138, y: H - 78, r: 32 },
-    bomb: { x: W - 64, y: H - 78, r: 38 },
-    force: { x: W - 64, y: H - 170, r: 30 }
+    force: { x: W - 64, y: H - 78, r: 38 }
   };
 }
 
 function aegisButtonAt(p) {
   var b = aegisButtons();
-  var list = ['charge', 'bomb', 'force'];
+  var list = ['charge', 'force'];
   for (var i = 0; i < list.length; i++) {
     var q = b[list[i]];
     if (Math.hypot(p.x - q.x, p.y - q.y) <= q.r) return list[i];
