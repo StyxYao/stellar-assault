@@ -39,8 +39,8 @@ var AEGIS_FORCE_LANE_HALF = 38;
 
 var AEGIS_CHARGE_PROFILES = {
   normal:  { kind: 'lance', count: 1, color: '#9fe8ff', range: 560 },
-  spread:  { kind: 'fan', count: 5, color: '#ffb36b', range: 320 },
-  laser:   { kind: 'beam', count: 1, color: '#ff7ad5', range: 760 },
+  spread:  { kind: 'fan', count: 5, color: '#ffb36b', range: 1200 },
+  laser:   { kind: 'beam', count: 1, color: '#ff7ad5', range: 900 },
   missile: { kind: 'swarm', count: 2, color: '#ffd36b', range: 620 }
 };
 
@@ -67,7 +67,8 @@ var aegisState = {
   forceLevel: 1,
   odActive: false,
   odShotT: 0,
-  postOdT: 0
+  postOdT: 0,
+  breakFlashT: 0
 };
 
 function skinList(ship) { return SHIP_SKINS[ship] || SHIP_SKINS.vector; }
@@ -118,10 +119,12 @@ function aegisForceColor() {
   return ['#9fe8ff', '#ffd36b', '#c98bff', '#ff8a66'][Math.max(0, Math.min(3, (aegisState.forceLevel || 1) - 1))];
 }
 function aegisForcePickup() {
+  var maxShield = aegisShieldMax();
+  aegisState.shield = Math.min(maxShield, aegisState.shield + 20);
   if (aegisState.forceLevel < 4) {
     aegisState.forceLevel++;
     score += 100;
-    pickupMsg = 'FORCE RADIUS ' + aegisState.forceLevel;
+    pickupMsg = 'FORCE RADIUS ' + aegisState.forceLevel + ' · SHIELD +20';
   } else {
     score += 150;
     gainOD(20);
@@ -192,6 +195,7 @@ function aegisReset() {
   aegisState.odActive = false;
   aegisState.odShotT = 0;
   aegisState.postOdT = 0;
+  aegisState.breakFlashT = 0;
   if (typeof player !== 'undefined') {
     aegisState.forceX = aegisVisualX();
     aegisState.forceY = player.y - 42;
@@ -212,7 +216,7 @@ function aegisProfile() {
   var power = Math.max(1, Math.min(4, player.specialPower || 1));
   return {
     kind: base.kind,
-    count: base.kind === 'fan' ? 3 + power * 2 : (base.kind === 'swarm' ? power : base.count),
+    count: base.kind === 'fan' ? 3 + power * 2 : (base.kind === 'swarm' ? 12 : base.count),
     color: base.color,
     range: base.range,
     power: power
@@ -256,6 +260,28 @@ function aegisNormalDps() {
   return per / 0.10;
 }
 
+function aegisBeamCharge(px, rawDamage, halfWidth) {
+  var dmg = rawDamage * powerDamageFactor();
+  if (typeof enemies !== 'undefined' && enemies) {
+    for (var i = enemies.length - 1; i >= 0; i--) {
+      var e = enemies[i];
+      if (e.y > player.y + 16) continue;
+      if (Math.abs(e.x - px) > halfWidth + enemyW(e) * 0.30) continue;
+      e.hp -= dmg; e.flash = 0.16;
+      if (typeof hitSpark === 'function') hitSpark(e.x, e.y, false, false);
+      if (e.hp <= 0) {
+        score += ET[e.type].score;
+        enemyDeath(e); maybeDrop(e); removeEnemy(i);
+      }
+    }
+  }
+  if (boss && state === 'boss' && boss.y < player.y + 16 && Math.abs(boss.x - px) < halfWidth + boss.def.w * 0.20) {
+    boss.hp -= dmg;
+    boss.hitFlash = 0.24; boss.hitX = px; boss.hitY = Math.max(40, boss.y);
+    if (typeof hitSpark === 'function') hitSpark(boss.x, boss.y, false, true);
+  }
+}
+
 function aegisReleaseCharge() {
   var level = aegisChargeLevel();
   if (level <= 0) return;
@@ -272,16 +298,18 @@ function aegisReleaseCharge() {
       addShot(px, py, Math.sin(a) * 900, -Math.cos(a) * 900, perFan, false, false, true, prof.power >= 4, prof.range);
     }
   } else if (prof.kind === 'beam') {
-    addShot(px, py, 0, -1250, totalDamage * 0.50, false, true, true, true, prof.range);
-    addShot(px - 12, py, 0, -1250, totalDamage * 0.25, false, true, true, true, prof.range);
-    addShot(px + 12, py, 0, -1250, totalDamage * 0.25, false, true, true, true, prof.range);
+    aegisBeamCharge(px, totalDamage, 18);
   } else if (prof.kind === 'swarm') {
-    var perMissile = totalDamage / prof.count;
-    for (var m = 0; m < prof.count; m++) {
-      spawnMissile(px + (m - (prof.count - 1) / 2) * 16, py, false, perMissile, prof.power >= 4, 0, -170, prof.range);
+    var perMissile = totalDamage / 12;
+    for (var m = 0; m < 12; m++) {
+      var mx = 40 + (W - 80) * (m / 11);
+      spawnMissile(mx, player.y - 18, false, perMissile, true, 0, -190, prof.range);
     }
   } else {
-    addShot(px, py, 0, -1150, totalDamage, false, false, true, prof.power >= 4, prof.range);
+    // N: wide three-lane lance; total damage is split across the three shots.
+    for (var n = 0; n < 3; n++) {
+      addShot(px + (n - 1) * 14, py, 0, -1150, totalDamage / 3, false, false, true, true, prof.range);
+    }
   }
   if (typeof fx !== 'undefined' && fx) fx.push({ x: px, y: py, t: 0, life: 0.32, kind: 'hitspark', sc: 3.4, color: prof.color });
   aegisState.flashT = Math.max(aegisState.flashT, 0.50);
@@ -376,6 +404,15 @@ function aegisAutoChargedAttack() {
   aegisState.cooldown = 0;
 }
 
+function aegisShieldBreak() {
+  aegisState.breakFlashT = 0.55;
+  try { shake = Math.max(shake, 18); } catch (e) {}
+  try { sfx('bomb_big', 0.58); } catch (e) {}
+  try { sfx('e_hit', 0.9); } catch (e) {}
+  try { if (typeof part === 'function') for (var i = 0; i < 26; i++) part(aegisState.forceX, aegisState.forceY, i % 2 ? '#ffd36b' : '#ff7a4d', 1, 240); } catch (e) {}
+  try { if (typeof boom === 'function') boom(aegisState.forceX, aegisState.forceY, 0.75); } catch (e) {}
+}
+
 function updateAegis(dt) {
   if (player.ship !== 'aegis') return;
   if (state !== 'play' && state !== 'boss') return;
@@ -398,6 +435,7 @@ function updateAegis(dt) {
     var av = aegisVariant();
     if (av && av.postOdBuff) aegisState.postOdT = 2.0;
   }
+  if (aegisState.breakFlashT > 0) aegisState.breakFlashT = Math.max(0, aegisState.breakFlashT - dt);
   if (aegisState.postOdT > 0) {
     aegisState.postOdT = Math.max(0, aegisState.postOdT - dt);
     var av2 = aegisVariant();
@@ -428,7 +466,7 @@ function updateAegis(dt) {
           aegisState.shield -= AEGIS_SHIELD_COST;
           aegisState.lastBlockAt = time;
           if (typeof part === 'function') part(aegisState.forceX, aegisState.forceY, '#9fe8ff', 2, 80);
-          if (aegisState.shield <= 0) { aegisState.shield = 0; aegisState.force = 'broken'; aegisState.breakT = AEGIS_BREAK_TIME; break; }
+          if (aegisState.shield <= 0) { aegisState.shield = 0; aegisState.force = 'broken'; aegisState.breakT = AEGIS_BREAK_TIME; aegisShieldBreak(); break; }
         }
       }
     }

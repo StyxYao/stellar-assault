@@ -406,3 +406,13 @@
 - Added AEGIS shield/radius/charge-time/charge-damage skin modifiers.
 - Temporal Wanderer gains its normal-bullet buff after OD ends.
 - Tests now launch Electron with --mute-audio.
+
+## 0.7.1 — Charge presentation and Force feedback
+
+- N charge is a wide three-lane lance; S has no range cap.
+- L charge is an instant full-height piercing beam.
+- M charge fires 12 missiles in a wide row.
+- Charge visuals follow the moving ship.
+- AEGIS W restores 20 shield charge.
+- Shield break has sound, burst flash and shake; broken state hides the field.
+- Force radius levels now have distinct colors and an R-level label.

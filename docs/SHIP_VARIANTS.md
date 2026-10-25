@@ -37,3 +37,15 @@ W overflow:
 
 - Level up: +100 score.
 - At max radius: +150 score and +20 OD.
+
+## Charge attack presentation (latest)
+
+- N: three parallel lance shots; total damage split; total width now wider than normal fire.
+- S: no distance cap.
+- L: instant full-height piercing beam; damage applied to every enemy/boss in the line.
+- M: 12 missiles fired at once in a wide row.
+- Charge ring follows the ship's visual center while moving.
+- AEGIS W adds 20 shield charge in addition to radius/overflow.
+- Shield break now has a burst flash, screen shake and existing explosion/hit SFX.
+- Broken state hides the Force field entirely.
+- Force level colors: L1 cyan, L2 gold, L3 purple, L4 red-orange.

@@ -32,7 +32,7 @@ function drawForceField(x, y, size, alpha, spin) {
 
 function drawAegisShipFx() {
   if (player.ship !== 'aegis' || (state !== 'play' && state !== 'boss')) return;
-  var fx0 = aegisState.forceX, fy0 = aegisState.forceY;
+  var fx0 = (aegisState.force === 'attached' && typeof aegisVisualX === 'function') ? aegisVisualX() : aegisState.forceX, fy0 = aegisState.forceY;
   var col = aegisWeaponColor();
   var shieldRatio = Math.max(0, Math.min(1, aegisState.shield / aegisShieldMax()));
   ctx.save();
@@ -59,7 +59,7 @@ function drawAegisShipFx() {
         ctx.lineTo(fx0 + Math.sin(fa) * cr, topY); ctx.stroke();
       }
     } else if (aegisState.castKind === 'beam') {
-      var bw = 18;
+      var bw = 24;
       var bg = ctx.createLinearGradient(fx0 - bw, 0, fx0 + bw, 0);
       bg.addColorStop(0, 'rgba(255,90,200,0)');
       bg.addColorStop(0.35, 'rgba(255,110,220,' + (0.55 * ca) + ')');
@@ -70,14 +70,14 @@ function drawAegisShipFx() {
       ctx.fillStyle = 'rgba(255,255,255,' + (0.85 * ca) + ')';
       ctx.fillRect(fx0 - 2.5, topY, 5, cr);
     } else if (aegisState.castKind === 'swarm') {
-      for (var mi = 0; mi < 6; mi++) {
-        var phase = time * 7 + mi * 1.7;
-        var mx = fx0 + Math.sin(phase) * (24 + mi * 4);
-        var my = player.y - 28 - (cr * ((mi + 1) / 7));
-        ctx.globalAlpha = 0.7 * ca; ctx.fillStyle = mi % 2 ? '#ffe08a' : '#ffb347';
-        ctx.beginPath(); ctx.arc(mx, my, 4.5, 0, TAU); ctx.fill();
+      for (var mi = 0; mi < 12; mi++) {
+        var phase = time * 7 + mi * 1.1;
+        var mx = 40 + (W - 80) * (mi / 11);
+        var my = player.y - 28 - (cr * ((mi % 4) + 1) / 5);
+        ctx.globalAlpha = 0.8 * ca; ctx.fillStyle = mi % 2 ? '#ffe08a' : '#ffb347';
+        ctx.beginPath(); ctx.arc(mx, my + Math.sin(phase) * 4, 4.5, 0, TAU); ctx.fill();
         ctx.strokeStyle = cc; ctx.lineWidth = 1.2; ctx.globalAlpha = 0.35 * ca;
-        ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(mx - Math.sin(phase) * 18, my + 24); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(mx, my + 28); ctx.stroke();
       }
     } else if (aegisState.castKind === 'force') {
       var lane = AEGIS_FORCE_LANE_HALF;
@@ -89,7 +89,7 @@ function drawAegisShipFx() {
       ctx.fillStyle = 'rgba(255,255,230,' + (0.9 * ca) + ')';
       ctx.fillRect(fx0 - 4, 0, 8, player.y);
     } else {
-      var lw = 11;
+      var lw = 18;
       var lineG = ctx.createLinearGradient(fx0 - lw, 0, fx0 + lw, 0);
       lineG.addColorStop(0, 'rgba(120,240,255,0)');
       lineG.addColorStop(0.45, 'rgba(160,250,255,' + (0.72 * ca) + ')');
@@ -158,11 +158,25 @@ function drawAegisShipFx() {
       var fa0 = time * 0.35 + fi * Math.PI / 2;
       ctx.beginPath(); ctx.arc(fx0, fy0, fr, fa0, fa0 + 0.50); ctx.stroke();
     }
+    ctx.globalAlpha = 0.38; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(fx0, fy0, fr, 0, TAU); ctx.stroke();
   } else if (aegisState.force === 'detached' || aegisState.force === 'returning') {
     drawForceField(fx0, fy0, 78, aegisState.force === 'detached' ? 0.9 : 0.55, time * 0.8);
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 0.7; ctx.fillStyle = '#ffd36b';
     ctx.beginPath(); ctx.arc(fx0, fy0, 7, 0, TAU); ctx.fill();
+  }
+  if (aegisState.breakFlashT > 0) {
+    var ba = aegisState.breakFlashT / 0.55;
+    ctx.globalCompositeOperation = 'lighter';
+    var bfg = ctx.createRadialGradient(fx0, fy0, 0, fx0, fy0, 90);
+    bfg.addColorStop(0, 'rgba(255,255,230,' + (0.5 * ba) + ')');
+    bfg.addColorStop(0.35, 'rgba(255,140,50,' + (0.35 * ba) + ')');
+    bfg.addColorStop(1, 'rgba(255,60,20,0)');
+    ctx.globalAlpha = 1; ctx.fillStyle = bfg;
+    ctx.beginPath(); ctx.arc(fx0, fy0, 90, 0, TAU); ctx.fill();
+    ctx.globalAlpha = 0.9 * ba; ctx.strokeStyle = '#ffb347'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.arc(fx0, fy0, 28 + (1 - ba) * 58, 0, TAU); ctx.stroke();
   }
   ctx.restore();
   ctx.globalAlpha = 1;
@@ -204,7 +218,7 @@ function drawAegisControls() {
   ctx.fillStyle = '#ffd36b'; ctx.font = '700 9px monospace';
   ctx.fillText('x' + player.bombs, f.x, f.y + 9);
   ctx.fillStyle = '#9fe8ff'; ctx.font = '7px monospace';
-  ctx.fillText(Math.round(aegisState.shield / aegisShieldMax() * 100) + '%', f.x, f.y + 20);
+  ctx.fillText(Math.round(aegisState.shield / aegisShieldMax() * 100) + '% · R' + (aegisState.forceLevel || 1), f.x, f.y + 20);
   ctx.textAlign = 'left'; ctx.restore(); ctx.globalAlpha = 1;
   if (typeof aegisTutorialT !== 'undefined' && aegisTutorialT > 0) {
     ctx.save();
