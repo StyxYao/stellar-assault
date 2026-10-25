@@ -364,3 +364,8 @@
 ## 0.5.5 — Phantom Raven preview
 
 - PHANTOM row now uses the Phantom Raven concept silhouette instead of the default VECTOR art.
+
+## 0.5.6 — Phantom Quantum Hunter preview
+
+- PHANTOM row now uses the Quantum Hunter concept silhouette.
+- Phantom preview brightness increased.

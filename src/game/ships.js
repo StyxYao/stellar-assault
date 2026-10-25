@@ -17,12 +17,12 @@ var SHIP_SKINS = {
     { id: 'temporal', label: 'TEMPORAL WANDERER', image: 'sk_aegis_temporal', ox: 0.5, oy: 1 }
   ],
   phantom: [
-    { id: 'quantum', label: 'QUANTUM HUNTER' },
+    { id: 'quantum', label: 'QUANTUM HUNTER', image: 'sk_phantom_quantum' },
     { id: 'raven', label: 'PHANTOM RAVEN', image: 'sk_phantom_raven' },
     { id: 'butterfly', label: 'PHANTOM BUTTERFLY' }
   ]
 };
-var selectedSkins = { vector: 'void_lance', aegis: 'orbital', phantom: 'raven' };
+var selectedSkins = { vector: 'void_lance', aegis: 'orbital', phantom: 'quantum' };
 var aegisTutorialT = 0;
 
 var AEGIS_CHARGE_MAX = 1.30;
