@@ -46,33 +46,33 @@ function drawAegisShipFx() {
     ctx.globalCompositeOperation = 'lighter';
     if (aegisState.castKind === 'fan') {
       var half = 0.34, spreadW = Math.tan(half) * cr;
-      var fg = ctx.createLinearGradient(player.x, player.y, player.x, topY);
+      var fg = ctx.createLinearGradient(fx0, player.y, fx0, topY);
       fg.addColorStop(0, 'rgba(255,190,90,' + (0.34 * ca) + ')');
       fg.addColorStop(1, 'rgba(255,120,30,0)');
       ctx.fillStyle = fg; ctx.beginPath();
-      ctx.moveTo(player.x, player.y); ctx.lineTo(player.x - spreadW, topY);
-      ctx.lineTo(player.x + spreadW, topY); ctx.closePath(); ctx.fill();
+      ctx.moveTo(fx0, player.y); ctx.lineTo(fx0 - spreadW, topY);
+      ctx.lineTo(fx0 + spreadW, topY); ctx.closePath(); ctx.fill();
       ctx.globalAlpha = 0.7 * ca; ctx.strokeStyle = cc; ctx.lineWidth = 2;
       for (var fi = 0; fi < 7; fi++) {
         var fa = (fi - 3) * 0.095;
-        ctx.beginPath(); ctx.moveTo(player.x, player.y - 10);
-        ctx.lineTo(player.x + Math.sin(fa) * cr, topY); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(fx0, player.y - 10);
+        ctx.lineTo(fx0 + Math.sin(fa) * cr, topY); ctx.stroke();
       }
     } else if (aegisState.castKind === 'beam') {
       var bw = 18;
-      var bg = ctx.createLinearGradient(player.x - bw, 0, player.x + bw, 0);
+      var bg = ctx.createLinearGradient(fx0 - bw, 0, fx0 + bw, 0);
       bg.addColorStop(0, 'rgba(255,90,200,0)');
       bg.addColorStop(0.35, 'rgba(255,110,220,' + (0.55 * ca) + ')');
       bg.addColorStop(0.5, 'rgba(255,255,240,' + (0.95 * ca) + ')');
       bg.addColorStop(0.65, 'rgba(255,110,220,' + (0.55 * ca) + ')');
       bg.addColorStop(1, 'rgba(255,90,200,0)');
-      ctx.fillStyle = bg; ctx.fillRect(player.x - bw, topY, bw * 2, cr);
+      ctx.fillStyle = bg; ctx.fillRect(fx0 - bw, topY, bw * 2, cr);
       ctx.fillStyle = 'rgba(255,255,255,' + (0.85 * ca) + ')';
-      ctx.fillRect(player.x - 2.5, topY, 5, cr);
+      ctx.fillRect(fx0 - 2.5, topY, 5, cr);
     } else if (aegisState.castKind === 'swarm') {
       for (var mi = 0; mi < 6; mi++) {
         var phase = time * 7 + mi * 1.7;
-        var mx = player.x + Math.sin(phase) * (24 + mi * 4);
+        var mx = fx0 + Math.sin(phase) * (24 + mi * 4);
         var my = player.y - 28 - (cr * ((mi + 1) / 7));
         ctx.globalAlpha = 0.7 * ca; ctx.fillStyle = mi % 2 ? '#ffe08a' : '#ffb347';
         ctx.beginPath(); ctx.arc(mx, my, 4.5, 0, TAU); ctx.fill();
@@ -81,24 +81,24 @@ function drawAegisShipFx() {
       }
     } else if (aegisState.castKind === 'force') {
       var lane = AEGIS_FORCE_LANE_HALF;
-      var lg = ctx.createLinearGradient(player.x - lane, 0, player.x + lane, 0);
+      var lg = ctx.createLinearGradient(fx0 - lane, 0, fx0 + lane, 0);
       lg.addColorStop(0, 'rgba(255,180,60,0)');
       lg.addColorStop(0.5, 'rgba(255,245,210,' + (0.55 * ca) + ')');
       lg.addColorStop(1, 'rgba(255,180,60,0)');
-      ctx.fillStyle = lg; ctx.fillRect(player.x - lane, 0, lane * 2, player.y);
+      ctx.fillStyle = lg; ctx.fillRect(fx0 - lane, 0, lane * 2, player.y);
       ctx.fillStyle = 'rgba(255,255,230,' + (0.9 * ca) + ')';
-      ctx.fillRect(player.x - 4, 0, 8, player.y);
+      ctx.fillRect(fx0 - 4, 0, 8, player.y);
     } else {
       var lw = 11;
-      var lineG = ctx.createLinearGradient(player.x - lw, 0, player.x + lw, 0);
+      var lineG = ctx.createLinearGradient(fx0 - lw, 0, fx0 + lw, 0);
       lineG.addColorStop(0, 'rgba(120,240,255,0)');
       lineG.addColorStop(0.45, 'rgba(160,250,255,' + (0.72 * ca) + ')');
       lineG.addColorStop(0.5, 'rgba(255,255,255,' + (0.98 * ca) + ')');
       lineG.addColorStop(0.55, 'rgba(160,250,255,' + (0.72 * ca) + ')');
       lineG.addColorStop(1, 'rgba(120,240,255,0)');
-      ctx.fillStyle = lineG; ctx.fillRect(player.x - lw, topY, lw * 2, cr);
+      ctx.fillStyle = lineG; ctx.fillRect(fx0 - lw, topY, lw * 2, cr);
       ctx.fillStyle = 'rgba(255,255,255,' + (0.9 * ca) + ')';
-      ctx.fillRect(player.x - 1.8, topY, 3.6, cr);
+      ctx.fillRect(fx0 - 1.8, topY, 3.6, cr);
     }
   }
 
@@ -108,36 +108,36 @@ function drawAegisShipFx() {
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 0.52 + 0.22 * Math.sin(time * 14);
     ctx.strokeStyle = col; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.arc(player.x, player.y - 4, 42 + ratio * 18, 0, TAU); ctx.stroke();
+    ctx.beginPath(); ctx.arc(fx0, player.y - 4, 42 + ratio * 18, 0, TAU); ctx.stroke();
     ctx.globalAlpha = 0.25 + ratio * 0.35;
     ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.arc(player.x, player.y - 4, 32 + ratio * 10, 0, TAU); ctx.stroke();
+    ctx.beginPath(); ctx.arc(fx0, player.y - 4, 32 + ratio * 10, 0, TAU); ctx.stroke();
     for (var i = 0; i < 6; i++) {
       var a = -Math.PI / 2 + i * TAU / 6 + time * 0.5;
       var rr = 48 + ratio * 10;
       ctx.globalAlpha = 0.35 + ratio * 0.55;
       ctx.fillStyle = i < Math.ceil(ratio * 6) ? col : '#6b7b8c';
-      ctx.beginPath(); ctx.arc(player.x + Math.cos(a) * rr, player.y - 4 + Math.sin(a) * rr, 2.8, 0, TAU); ctx.fill();
+      ctx.beginPath(); ctx.arc(fx0 + Math.cos(a) * rr, player.y - 4 + Math.sin(a) * rr, 2.8, 0, TAU); ctx.fill();
     }
-    var cg = ctx.createRadialGradient(player.x, player.y - 4, 0, player.x, player.y - 4, 46);
+    var cg = ctx.createRadialGradient(fx0, player.y - 4, 0, fx0, player.y - 4, 46);
     cg.addColorStop(0, 'rgba(255,246,210,' + (0.18 + ratio * 0.28) + ')');
     cg.addColorStop(1, 'rgba(255,170,40,0)');
     ctx.globalAlpha = 1; ctx.fillStyle = cg;
-    ctx.beginPath(); ctx.arc(player.x, player.y - 4, 46, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.arc(fx0, player.y - 4, 46, 0, TAU); ctx.fill();
   }
 
   // Release flash.
   if (aegisState.flashT > 0) {
     var fa = aegisState.flashT / 0.55;
     ctx.globalCompositeOperation = 'lighter';
-    var fg = ctx.createRadialGradient(player.x, player.y - 12, 0, player.x, player.y - 12, 92);
+    var fg = ctx.createRadialGradient(fx0, player.y - 12, 0, fx0, player.y - 12, 92);
     fg.addColorStop(0, 'rgba(255,255,240,' + (0.5 * fa) + ')');
     fg.addColorStop(0.4, 'rgba(255,200,80,' + (0.28 * fa) + ')');
     fg.addColorStop(1, 'rgba(255,120,20,0)');
     ctx.globalAlpha = 1; ctx.fillStyle = fg;
-    ctx.beginPath(); ctx.arc(player.x, player.y - 12, 92, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.arc(fx0, player.y - 12, 92, 0, TAU); ctx.fill();
     ctx.globalAlpha = 0.8 * fa; ctx.strokeStyle = '#fff2c4'; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.arc(player.x, player.y - 12, 35 + (1 - fa) * 55, 0, TAU); ctx.stroke();
+    ctx.beginPath(); ctx.arc(fx0, player.y - 12, 35 + (1 - fa) * 55, 0, TAU); ctx.stroke();
   }
 
   // Attached Force: a real field, not a small orb.

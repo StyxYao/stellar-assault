@@ -391,3 +391,8 @@
 - N/S/L/M charge attacks now have distinct visuals and ranges.
 - Laser normal beam is hidden while charging.
 - Manual mouse fire is blocked while charging.
+
+## 0.6.2 — Force center alignment
+
+- Force X now follows the current AEGIS skin's visual offset.
+- Shield field, lane attack and return target share the same centerline.

@@ -51,3 +51,7 @@
   - L: magenta beam
   - M: golden homing swarm
 - Laser's normal beam is hidden while charging.
+
+## Visual center alignment
+
+AEGIS skins have per-skin sprite offsets (`ox`). Force now uses `player.x + skin.ox` for its X position, shield field, launch lane and return target, so it aligns with the visible ship center instead of the raw hitbox center.

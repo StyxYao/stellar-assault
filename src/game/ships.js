@@ -74,6 +74,10 @@ function selectedSkinDef(ship, id) {
 }
 function currentSkinDef() { return selectedSkinDef(selectedShip, selectedSkins[selectedShip]); }
 function currentSkinImage() { return currentSkinDef().image || null; }
+function aegisVisualX() {
+  var def = (typeof currentSkinDef === 'function') ? currentSkinDef() : null;
+  return player.x + (def && def.ox ? def.ox : 0);
+}
 function skinNumber() { var list = skinList(selectedShip); for (var i = 0; i < list.length; i++) if (list[i].id === selectedSkins[selectedShip]) return i + 1; return 1; }
 function setSelectedSkin(ship, id, persist) {
   var def = selectedSkinDef(ship, id);
@@ -136,7 +140,7 @@ function aegisReset() {
   aegisState.castT = 0;
   aegisState.castKind = '';
   if (typeof player !== 'undefined') {
-    aegisState.forceX = player.x;
+    aegisState.forceX = aegisVisualX();
     aegisState.forceY = player.y - 42;
   }
 }
@@ -208,7 +212,7 @@ function aegisReleaseCharge() {
   // then apply the requested 1.35x charge bonus.
   var chargeTime = Math.max(0.35, aegisState.chargeT);
   var totalDamage = aegisNormalDps() * chargeTime * 1.35;
-  var px = player.x, py = player.y - 26;
+  var px = aegisVisualX(), py = player.y - 26;
   if (prof.kind === 'fan') {
     var perFan = totalDamage / prof.count;
     for (var i = 0; i < prof.count; i++) {
@@ -245,7 +249,7 @@ function aegisReleaseCharge() {
 
 function aegisLaneHit() {
   var lane = AEGIS_FORCE_LANE_HALF;
-  var px = player.x;
+  var px = aegisState.forceX;
   // Clear enemy bullets in the forward lane.
   if (typeof ebullets !== 'undefined' && ebullets) {
     for (var bi = ebullets.length - 1; bi >= 0; bi--) {
@@ -287,7 +291,7 @@ function aegisLaunchForce() {
   player.bombs--;
   if (aegisState.charge === 'charging') { aegisState.charge = 'idle'; aegisState.chargeT = 0; }
   aegisState.force = 'detached';
-  aegisState.forceX = player.x;
+  aegisState.forceX = aegisVisualX();
   aegisState.forceY = player.y - 42;
   aegisState.flashT = 0.55;
   aegisState.laneT = 0.55;
@@ -331,7 +335,7 @@ function updateAegis(dt) {
     aegisState.breakT -= dt;
     if (aegisState.breakT <= 0) { aegisState.force = 'attached'; aegisState.shield = 20; }
   } else if (aegisState.force === 'attached') {
-    aegisState.forceX = player.x;
+    aegisState.forceX = aegisVisualX();
     aegisState.forceY = player.y - 42;
     if (aegisState.shield < AEGIS_SHIELD_MAX && time - aegisState.lastBlockAt > AEGIS_SHIELD_DELAY) aegisState.shield = Math.min(AEGIS_SHIELD_MAX, aegisState.shield + AEGIS_SHIELD_REGEN * dt);
     if (ebullets) {
@@ -351,7 +355,7 @@ function updateAegis(dt) {
     aegisState.forceY -= 420 * dt;
     if (aegisState.forceY < -40) aegisState.force = 'returning';
   } else if (aegisState.force === 'returning') {
-    var tx = player.x, ty = player.y - 42;
+    var tx = aegisVisualX(), ty = player.y - 42;
     aegisState.forceX += (tx - aegisState.forceX) * Math.min(1, dt * 12);
     aegisState.forceY += (ty - aegisState.forceY) * Math.min(1, dt * 12);
     if (Math.hypot(tx - aegisState.forceX, ty - aegisState.forceY) < 8) aegisState.force = 'attached';
