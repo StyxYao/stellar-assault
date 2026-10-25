@@ -70,6 +70,7 @@ function startStage(i){
   prepareStageContent(i);
   stage=i; stageT=0; waveIndex=0; miniDropT=25; nextTransport=24+Math.random()*10;
   player.ship=selectedShip;
+  player.skin=selectedSkins[player.ship]||(player.ship==='aegis'?'orbital':'void_lance');
   if(player.ship==='aegis'){
     if(typeof aegisReset==='function') aegisReset();
     if(typeof startAegisTutorial==='function') startAegisTutorial();

@@ -45,7 +45,8 @@ function stageSelectButtons(){
   return out;
 }
 function menuStartButton(){return {x:W/2-108,y:H*.688,w:216,h:42};}
-function menuShipButton(){return {x:W/2-110,y:H*.535,w:220,h:38};}
+function menuShipButton(){return {x:W/2-118,y:H*.535,w:112,h:38};}
+function menuSkinButton(){return {x:W/2+6,y:H*.535,w:112,h:38};}
 function drawMenu(){
   paintBg(BGMENU,1)||paintBg(BG1,1);
   ctx.fillStyle='rgba(2,4,12,0.05)';ctx.fillRect(0,0,W,H);
@@ -59,12 +60,22 @@ function drawMenu(){
   // key info: bold, technical, glowing
   // stage select
   ctx.font='900 10px "Arial Black", Arial, sans-serif';ctx.fillStyle='#b8e8ff';ctx.shadowColor='rgba(60,160,230,0.7)';ctx.shadowBlur=6;
-  var shb=menuShipButton();
+  var shb=menuShipButton(),skb=menuSkinButton();
   ctx.fillStyle='rgba(6,18,30,0.70)';ctx.fillRect(shb.x,shb.y,shb.w,shb.h);
   ctx.strokeStyle=selectedShip==='aegis'?'#ffd36b':'#5d8fa8';ctx.lineWidth=1.2;ctx.strokeRect(shb.x,shb.y,shb.w,shb.h);
   ctx.fillStyle='#eaf8ff';ctx.font='700 11px Arial, sans-serif';ctx.textAlign='center';
-  ctx.fillText('SHIP · '+(SHIP_DEFS[selectedShip]?SHIP_DEFS[selectedShip].label:selectedShip.toUpperCase()),W/2,shb.y+24);
-  ctx.fillText('STAGE SELECT',W/2,H*.592);
+  ctx.fillText('SHIP · '+(SHIP_DEFS[selectedShip]?SHIP_DEFS[selectedShip].label:selectedShip.toUpperCase()),shb.x+shb.w/2,shb.y+24);
+  ctx.fillStyle='rgba(6,18,30,0.70)';ctx.fillRect(skb.x,skb.y,skb.w,skb.h);
+  ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1.2;ctx.strokeRect(skb.x,skb.y,skb.w,skb.h);
+  ctx.fillStyle='#eaf8ff';ctx.font='700 10px Arial, sans-serif';
+  ctx.fillText('SKIN '+(typeof skinNumber==='function'?skinNumber():'1')+'/3',skb.x+skb.w/2,skb.y+18);
+  ctx.fillStyle='#9fb6cf';ctx.font='8px monospace';
+  ctx.fillText((typeof currentSkinDef==='function'?currentSkinDef().label:''),skb.x+skb.w/2,skb.y+30);
+  ctx.fillStyle='rgba(2,8,16,0.78)';ctx.fillRect(W/2-112,H*.49-10,224,20);
+  ctx.fillStyle='#b58cff';ctx.font='8px monospace';
+  ctx.fillText('PHANTOM · LOCKED PREVIEW',W/2,H*.49);
+  ctx.fillStyle='#b8e8ff';ctx.font='900 10px "Arial Black", Arial, sans-serif';
+  ctx.fillText('STAGE SELECT',W/2,H*.601);
   var sbs=stageSelectButtons();
   for(var si=0;si<sbs.length;si++){
     var sb=sbs[si];var sel=si===selectedStage;
@@ -82,7 +93,7 @@ function drawMenu(){
   try {
     var best=typeof aegisBestScore==='function'?aegisBestScore():(SaveStore&&SaveStore.data?SaveStore.data.campaign.bestScore:0);
     ctx.fillStyle='#8fb8ca';ctx.font='9px monospace';
-    ctx.fillText('BEST  '+String(best).padStart(7,'0'),W/2,H*.735);
+    ctx.fillText('BEST  '+String(best).padStart(7,'0'),W/2,H*.755);
   } catch(e) {}
   ctx.font=gf;ctx.fillStyle='#dff4ff';ctx.shadowColor='rgba(70,190,255,0.95)';ctx.shadowBlur=10;
   ctx.fillText('5 STAGES  ·  5 BOSSES',W/2,H*0.772);

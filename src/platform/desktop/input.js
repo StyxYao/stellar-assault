@@ -79,6 +79,7 @@ function desktopKeyDown(e) {
     return;
   }
   if (k === 'v' && state === 'menu') { if (typeof toggleSelectedShip === 'function') toggleSelectedShip(); return; }
+  if (k === 'b' && state === 'menu') { if (typeof cycleSkin === 'function') cycleSkin(1); return; }
   if (k === 'c' && player && player.ship === 'aegis') { e.preventDefault && e.preventDefault(); if (!e.repeat) aegisTapCharge(); return; }
   if (k === 'f' && player && player.ship === 'aegis') { e.preventDefault && e.preventDefault(); if (!e.repeat) aegisTapForce(); return; }
   if (k === 's' && desktopPaused) { openSettings(); return; }
@@ -163,6 +164,9 @@ function desktopPoll() {
 
   if (state === 'menu' && desktopPadEdge(pad, 3)) {
     if (typeof toggleSelectedShip === 'function') toggleSelectedShip();
+  }
+  if (state === 'menu' && desktopPadEdge(pad, 5)) {
+    if (typeof cycleSkin === 'function') cycleSkin(1);
   }
   if (player && player.ship === 'aegis' && (state === 'play' || state === 'boss')) {
     if (desktopPadEdge(pad, 3)) aegisTapCharge();

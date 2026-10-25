@@ -1,6 +1,7 @@
 // Player ship rendering. Uses legacy globals (player/GIMG/ctx/state/time).
 function drawPlayerEntity(){
-  var gi=player.bank>0.06?GIMG.p3:(player.bank<-0.06?GIMG.p4:GIMG.p2);
+  var skinKey=(typeof currentSkinImage==='function')?currentSkinImage():null;
+  var gi=(skinKey&&GIMG[skinKey])?GIMG[skinKey]:(player.bank>0.06?GIMG.p3:(player.bank<-0.06?GIMG.p4:GIMG.p2));
   var drawY=player.y;
   if(player.respawnT>0) drawY=player.y+(H+70-player.y)*(player.respawnT/1.3);
   if(gi&&gi.complete){

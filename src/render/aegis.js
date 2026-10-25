@@ -6,6 +6,13 @@ function aegisWeaponColor() {
   return '#9fe8ff';
 }
 
+function aegisSkinAccent() {
+  var def = (typeof currentSkinDef === 'function') ? currentSkinDef() : null;
+  var id = def ? def.id : 'orbital';
+  if (id === 'void_echo') return '#c98bff';
+  if (id === 'temporal') return '#ffe08a';
+  return '#ffb347';
+}
 function drawAegisShipFx() {
   if (player.ship !== 'aegis' || (state !== 'play' && state !== 'boss')) return;
   var fx0 = aegisState.forceX, fy0 = aegisState.forceY;
@@ -25,6 +32,23 @@ function drawAegisShipFx() {
       ctx.fillStyle = i < aegisChargeLevel() ? col : '#6b7b8c';
       ctx.beginPath(); ctx.arc(player.x + Math.cos(a) * 52, player.y - 4 + Math.sin(a) * 52, 3, 0, TAU); ctx.fill();
     }
+  }
+  // Shield overlay: one dynamic layer on top of the full ship image.
+  if (aegisState.force !== 'broken') {
+    var sa = Math.max(0, Math.min(1, aegisState.shield / AEGIS_SHIELD_MAX));
+    var accent = aegisSkinAccent();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = 0.22 + sa * 0.25;
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = 2;
+    for (var si = 0; si < 4; si++) {
+      var a0 = time * 0.55 + si * Math.PI / 2;
+      ctx.beginPath(); ctx.arc(player.x, player.y - 4, 44 + (1 - sa) * 3, a0, a0 + 0.42); ctx.stroke();
+    }
+    ctx.globalAlpha = 0.4;
+    ctx.strokeStyle = sa > 0.35 ? accent : '#ff6a5a';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.arc(player.x, player.y - 4, 48, -Math.PI / 2, -Math.PI / 2 + TAU * sa); ctx.stroke();
   }
   // Force body
   if (aegisState.force !== 'broken') {

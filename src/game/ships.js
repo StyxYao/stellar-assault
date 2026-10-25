@@ -5,6 +5,24 @@ var SHIP_DEFS = {
   aegis: { id: 'aegis', label: 'AEGIS', subtitle: 'FORCE · CHARGE' }
 };
 var selectedShip = 'vector';
+var SHIP_SKINS = {
+  vector: [
+    { id: 'void_lance', label: 'VOID LANCE', image: 'sk_vector_void_lance' },
+    { id: 'starfall', label: 'STARFALL WING', image: 'sk_vector_starfall' },
+    { id: 'abyss', label: 'ABYSS BLADE', image: 'sk_vector_abyss' }
+  ],
+  aegis: [
+    { id: 'orbital', label: 'ORBITAL GUARDIAN', image: 'sk_aegis_orbital' },
+    { id: 'void_echo', label: 'VOID ECHO', image: 'sk_aegis_void_echo' },
+    { id: 'temporal', label: 'TEMPORAL WANDERER', image: 'sk_aegis_temporal' }
+  ],
+  phantom: [
+    { id: 'quantum', label: 'QUANTUM HUNTER' },
+    { id: 'raven', label: 'PHANTOM RAVEN' },
+    { id: 'butterfly', label: 'PHANTOM BUTTERFLY' }
+  ]
+};
+var selectedSkins = { vector: 'void_lance', aegis: 'orbital', phantom: 'raven' };
 var aegisTutorialT = 0;
 
 var AEGIS_CHARGE_MAX = 1.30;
@@ -40,6 +58,37 @@ var aegisState = {
   forceHitT: 0
 };
 
+function skinList(ship) { return SHIP_SKINS[ship] || SHIP_SKINS.vector; }
+function selectedSkinDef(ship, id) {
+  var list = skinList(ship);
+  for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
+  return list[0];
+}
+function currentSkinDef() { return selectedSkinDef(selectedShip, selectedSkins[selectedShip]); }
+function currentSkinImage() { return currentSkinDef().image || null; }
+function skinNumber() { var list = skinList(selectedShip); for (var i = 0; i < list.length; i++) if (list[i].id === selectedSkins[selectedShip]) return i + 1; return 1; }
+function setSelectedSkin(ship, id, persist) {
+  var def = selectedSkinDef(ship, id);
+  selectedSkins[ship] = def.id;
+  if (persist !== false && typeof SaveStore !== 'undefined' && SaveStore.data && SaveStore.data.ships[ship]) {
+    SaveStore.data.ships[ship].skin = def.id;
+    if (typeof persistSave === 'function') persistSave();
+  }
+}
+function cycleSkin(delta) {
+  var list = skinList(selectedShip);
+  var idx = 0;
+  for (var i = 0; i < list.length; i++) if (list[i].id === selectedSkins[selectedShip]) idx = i;
+  idx = (idx + (delta || 1) + list.length) % list.length;
+  setSelectedSkin(selectedShip, list[idx].id);
+}
+function initSelectedSkins() {
+  try {
+    var d = SaveStore.data.ships;
+    if (d.vector && d.vector.skin) setSelectedSkin('vector', d.vector.skin, false);
+    if (d.aegis && d.aegis.skin) setSelectedSkin('aegis', d.aegis.skin, false);
+  } catch (e) {}
+}
 function setSelectedShip(id, persist) {
   id = id === 'aegis' ? 'aegis' : 'vector';
   selectedShip = id;

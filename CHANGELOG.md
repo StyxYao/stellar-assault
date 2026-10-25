@@ -330,3 +330,11 @@
 - AEGIS Force launch uses Jet Flyby (I).
 - F/G/H sonic boom samples reserved as explosion backup candidates.
 - Added first-run AEGIS control tutorial.
+
+## 0.5.0 — Steam R2 skins and integration
+
+- Added VECTOR/AEGIS full-image skins with menu SHIP/SKIN selection.
+- Added per-ship skin persistence and per-ship best score.
+- Added AEGIS shield overlay and first-run tutorial.
+- Added PHANTOM locked preview slot.
+- Added R2 acceptance notes.

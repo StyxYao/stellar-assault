@@ -26,6 +26,8 @@ function onDown(e){
     if(!audioReady){ audioReady=true; playBgm('m'); }
     var shb=menuShipButton();
     if(p.x>=shb.x&&p.x<=shb.x+shb.w&&p.y>=shb.y&&p.y<=shb.y+shb.h){toggleSelectedShip();return;}
+    var skb=menuSkinButton();
+    if(p.x>=skb.x&&p.x<=skb.x+skb.w&&p.y>=skb.y&&p.y<=skb.y+skb.h){cycleSkin(1);return;}
     var sbs=stageSelectButtons();
     for(var si=0;si<sbs.length;si++){
       var sb=sbs[si];
