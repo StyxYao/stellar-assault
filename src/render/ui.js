@@ -56,7 +56,7 @@ function shipSelectRows(){
   var defs=[
     {id:'vector',name:'VECTOR',role:'BALANCED · WINGMAN',status:'AVAILABLE',color:'#9fe8ff',image:'sk_vector_void_lance'},
     {id:'aegis',name:'AEGIS',role:'FORCE · CHARGE',status:'AVAILABLE',color:'#ffd36b',image:'sk_aegis_orbital'},
-    {id:'phantom',name:'PHANTOM',role:'',status:'COMING SOON',color:'#c98bff',image:'sk_vector_void_lance'}
+    {id:'phantom',name:'PHANTOM',role:'',status:'COMING SOON',color:'#c98bff',image:'sk_phantom_raven'}
   ];
   for(var i=0;i<defs.length;i++) rows.push({i:i,x:p.x+14,y:start+i*(h+gap),w:p.w-28,h:h,def:defs[i]});
   return rows;
@@ -111,7 +111,7 @@ function drawShipSelectOverlay(){
     ctx.strokeStyle=disabled?'rgba(120,90,150,0.55)':(sel?'#ffd36b':(selectedShip===d.id?'#9fe8ff':'#31536a'));
     ctx.lineWidth=sel?2.4:1.2;ctx.strokeRect(r.x,r.y,r.w,r.h);
     var ix=r.x+46,iy=r.y+r.h/2;
-    ctx.globalAlpha=disabled?0.38:1;
+    ctx.globalAlpha=disabled?0.62:1;
     drawShipPreview(d.image,ix,iy,54,disabled?'#7a5a93':d.color);
     ctx.globalAlpha=1;
     ctx.textAlign='left';

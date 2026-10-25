@@ -18,7 +18,7 @@ var SHIP_SKINS = {
   ],
   phantom: [
     { id: 'quantum', label: 'QUANTUM HUNTER' },
-    { id: 'raven', label: 'PHANTOM RAVEN' },
+    { id: 'raven', label: 'PHANTOM RAVEN', image: 'sk_phantom_raven' },
     { id: 'butterfly', label: 'PHANTOM BUTTERFLY' }
   ]
 };

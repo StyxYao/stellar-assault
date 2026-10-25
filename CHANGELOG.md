@@ -360,3 +360,7 @@
 
 - PHANTOM row uses a dimmed default ship image instead of a question mark.
 - Removed the "STEALTH · IN DESIGN" subtitle; COMING SOON remains.
+
+## 0.5.5 — Phantom Raven preview
+
+- PHANTOM row now uses the Phantom Raven concept silhouette instead of the default VECTOR art.
