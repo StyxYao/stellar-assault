@@ -61,3 +61,13 @@ Boss/enemy/player art was supplied or generated for this project. No separate li
 
 - **Missle Launch** by Kibblesbob, SoundBible #1794, Public Domain.
   - Layered under the player bomb with the large explosion.
+
+## AEGIS SFX
+
+- **Laser Cannon** by Mike Koenig, SoundBible #1771, CC BY 3.0.
+  - Source: https://soundbible.com/1771-Laser-Cannon.html
+  - Used for AEGIS charged cannon release.
+- **Jet Flyby** by unfa, Freesound, CC0.
+  - Existing project sample, used for AEGIS Force launch.
+- **Explosion backup candidates** (not currently played): Sonic Boom #1339, Breaking Sound Barrier #1644, Sonic Boom Massive #1648.
+  - SoundBible, CC BY 3.0.

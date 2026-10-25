@@ -90,4 +90,18 @@ function drawAegisControls() {
   ctx.fillStyle = '#9fe8ff'; ctx.font = '7px monospace';
   ctx.fillText(Math.round(aegisState.shield) + '%', f.x, f.y + 12);
   ctx.textAlign = 'left'; ctx.restore(); ctx.globalAlpha = 1;
+  if (typeof aegisTutorialT !== 'undefined' && aegisTutorialT > 0) {
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, aegisTutorialT / 1.2);
+    ctx.fillStyle = 'rgba(2,10,20,0.68)';
+    ctx.fillRect(30, H - 260, W - 60, 66);
+    ctx.strokeStyle = 'rgba(159,232,255,0.35)'; ctx.lineWidth = 1;
+    ctx.strokeRect(30, H - 260, W - 60, 66);
+    ctx.textAlign = 'center'; ctx.fillStyle = '#ffffff';
+    ctx.font = '600 13px Orbitron, Arial, sans-serif';
+    ctx.fillText('AEGIS · TAP CHG TO CHARGE', W / 2, H - 238);
+    ctx.fillStyle = '#9fe8ff'; ctx.font = '12px Rajdhani, Arial, sans-serif';
+    ctx.fillText('TAP FORCE · DETACH / RECALL', W / 2, H - 218);
+    ctx.textAlign = 'left'; ctx.restore(); ctx.globalAlpha = 1;
+  }
 }

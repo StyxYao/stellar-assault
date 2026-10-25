@@ -5,6 +5,7 @@ var SHIP_DEFS = {
   aegis: { id: 'aegis', label: 'AEGIS', subtitle: 'FORCE · CHARGE' }
 };
 var selectedShip = 'vector';
+var aegisTutorialT = 0;
 
 var AEGIS_CHARGE_MAX = 1.30;
 var AEGIS_AUTO_RELEASE = 0.35;
@@ -52,6 +53,15 @@ function toggleSelectedShip() {
   setSelectedShip(selectedShip === 'vector' ? 'aegis' : 'vector');
 }
 
+function startAegisTutorial() {
+  try {
+    if (!SaveStore.data.settings.aegisTutorialSeen) {
+      SaveStore.data.settings.aegisTutorialSeen = true;
+      aegisTutorialT = 6.0;
+      if (typeof persistSave === 'function') persistSave();
+    }
+  } catch (e) {}
+}
 function aegisReset() {
   aegisState.charge = 'idle';
   aegisState.chargeT = 0;
@@ -145,7 +155,7 @@ function aegisReleaseCharge() {
   aegisState.chargeT = 0;
   aegisState.autoT = 0;
   aegisState.cooldown = AEGIS_CHARGE_COOLDOWN;
-  try { sfx('b_charge', 0.30); } catch (e) {}
+  try { sfx('aegis_cannon', 0.62); } catch (e) {}
 }
 
 function aegisTapForce() {
@@ -154,7 +164,7 @@ function aegisTapForce() {
     aegisState.force = 'detached';
     aegisState.forceX = player.x;
     aegisState.forceY = player.y - 42;
-    try { sfx('e_charge', 0.20); } catch (e) {}
+    try { sfx('aegis_force', 0.62); } catch (e) {}
   } else if (aegisState.force === 'detached') {
     aegisState.force = 'returning';
   }
@@ -183,6 +193,7 @@ function aegisForceDamage(dt) {
 function updateAegis(dt) {
   if (player.ship !== 'aegis') return;
   if (state !== 'play' && state !== 'boss') return;
+  if (aegisTutorialT > 0) aegisTutorialT = Math.max(0, aegisTutorialT - dt);
   if (aegisState.cooldown > 0) aegisState.cooldown = Math.max(0, aegisState.cooldown - dt);
   if (aegisState.forceHitT > 0) aegisState.forceHitT = Math.max(0, aegisState.forceHitT - dt);
 

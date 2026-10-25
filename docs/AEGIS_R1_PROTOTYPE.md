@@ -41,6 +41,8 @@
 - W 拾取：
   - AEGIS 下转 25% 蓄力 +100 分
   - 不生成僚机
+- 音效：Laser Cannon 蓄力释放、Jet Flyby Force 弹出
+- 首次 AEGIS 教学提示
 - 独立分数：
   - `ships.aegis.bestScore`
   - `ships.vector.bestScore`

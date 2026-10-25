@@ -41,3 +41,12 @@ FORCE H: Sonic Boom Massive #1648, AirMan, CC BY 3.0
 
 FORCE I: Jet Flyby (existing project sample), CC0
   Source: Freesound / unfa, already used for warp jet in the project.
+
+
+SELECTED
+- AEGIS charge release: A Laser Cannon.
+- AEGIS Force launch: I Jet Flyby CC0.
+
+EXPLOSION BACKUP (not integrated)
+- F Sonic Boom, G F-14 Pass, H F-18 Pass.
+  Stored in explosion-backup/ for future large explosion variants.

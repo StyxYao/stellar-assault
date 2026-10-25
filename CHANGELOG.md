@@ -323,3 +323,10 @@
 - Added per-ship score persistence and menu ship selector.
 - Added W-to-charge conversion for AEGIS.
 - Added AEGIS prototype acceptance notes.
+
+## 0.4.4 — AEGIS audio and tutorial
+
+- AEGIS charge release uses Laser Cannon (A).
+- AEGIS Force launch uses Jet Flyby (I).
+- F/G/H sonic boom samples reserved as explosion backup candidates.
+- Added first-run AEGIS control tutorial.

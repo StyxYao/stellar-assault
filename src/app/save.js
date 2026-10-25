@@ -6,7 +6,7 @@ var DEFAULT_SAVE = {
   version: SAVE_VERSION,
   campaign: { unlockedStage: 4, bestScore: 0, clears: 0, lastStage: 0 },
   ships: { vector: { bestScore: 0 }, aegis: { bestScore: 0 }, selected: 'vector' },
-  settings: { master: 1, bgm: 1, sfx: 1, fullscreen: false, language: 'zh', difficulty: 'normal' },
+  settings: { master: 1, bgm: 1, sfx: 1, fullscreen: false, language: 'zh', difficulty: 'normal', aegisTutorialSeen: false },
   stats: { runs: 0, gameOvers: 0, wins: 0 },
   updatedAt: 0
 };
@@ -37,6 +37,7 @@ function normalizeSave(raw) {
     out.settings.fullscreen = !!raw.settings.fullscreen;
     out.settings.language = raw.settings.language === 'en' ? 'en' : 'zh';
     out.settings.difficulty = raw.settings.difficulty === 'expert' ? 'expert' : 'normal';
+    out.settings.aegisTutorialSeen = !!raw.settings.aegisTutorialSeen;
   }
   if (raw.ships && typeof raw.ships === 'object') {
     out.ships.vector.bestScore = Math.max(0, Number(raw.ships.vector && raw.ships.vector.bestScore) || 0);

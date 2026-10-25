@@ -113,7 +113,7 @@ function playSample(n,v,raw){
   var rate={p_normal:1.0,p_spread:1.08,pickup_real:1.06,jetfly:2.0,bomb_big:1.0,p_laser:1.0,p_missile:1.90,e_shot:0.9,e_hit:1.0,b_hit:0.80,boom:1.0,laser_fire:0.95,pickup:1.1,hurt:0.8,e_charge:1.0,b_charge:1.0}[n]||1;
   s.playbackRate.value=rate;
   var g=AC.createGain();g.gain.value=v;
-  var soft=(n==='e_charge'||n==='b_charge'||n==='pickup'||n==='pickup_real'||n==='siren'||n==='jetfly'||n==='bomb_big'||n==='heavy_missile'||n==='e_hit'||n==='b_hit'||n==='boom');
+  var soft=(n==='e_charge'||n==='b_charge'||n==='pickup'||n==='pickup_real'||n==='siren'||n==='jetfly'||n==='bomb_big'||n==='heavy_missile'||n==='e_hit'||n==='b_hit'||n==='boom'||n==='aegis_force'||n==='aegis_cannon');
   if(soft){s.connect(g);}
   else{
     var sh=AC.createWaveShaper();sh.curve=makeDistCurve();sh.oversample='2x';
