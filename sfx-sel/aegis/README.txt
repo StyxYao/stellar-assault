@@ -17,3 +17,12 @@ FORCE B: Spaceship Takeoff #1957, Richard, CC BY 3.0
   Longer ship power-up; 2.2s audition.
 
 Clips trimmed/faded for audition only.
+
+FORCE C: Rocket Thrusters #1492, dobroride, Sampling Plus 1.0
+  https://soundbible.com/1492-Rocket-Thrusters.html
+
+FORCE D: Rocket #1498, dobroride, Sampling Plus 1.0
+  https://soundbible.com/1498-Rocket.html
+
+FORCE E: Bottle Rocket #709, Mike Koenig, CC BY 3.0
+  https://soundbible.com/709-Bottle-Rocket.html
