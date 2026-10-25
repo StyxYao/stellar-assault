@@ -355,3 +355,8 @@
 - Added a SELECT SHIP overlay listing VECTOR, AEGIS, and PHANTOM.
 - PHANTOM is disabled and marked COMING SOON.
 - SHIP button now opens the ship list; V remains the keyboard shortcut.
+
+## 0.5.4 — Phantom preview placeholder
+
+- PHANTOM row uses a dimmed default ship image instead of a question mark.
+- Removed the "STEALTH · IN DESIGN" subtitle; COMING SOON remains.
