@@ -97,7 +97,7 @@ function drawAegisShipFx() {
         ctx.lineTo(shipX + Math.sin(fa) * cr, topY); ctx.stroke();
       }
     } else if (aegisState.castKind === 'beam') {
-      var bw = 34;
+      var bw = aegisState.castWidth || 34;
       var bg = ctx.createLinearGradient(shipX - bw, 0, shipX + bw, 0);
       bg.addColorStop(0, 'rgba(255,90,200,0)');
       bg.addColorStop(0.35, 'rgba(255,110,220,' + (0.55 * ca) + ')');

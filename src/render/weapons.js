@@ -19,9 +19,9 @@ function drawShots(){
     var s=shots[i],ang=Math.atan2(s.vx||0,-s.vy);
     var chargeCols=['#9fe8ff','#ffd36b','#c98bff','#ff8a66'];
     var lvl=s.chargeLevel?Math.max(0,Math.min(3,s.chargeLevel-1)):0;
-    var col=s.aegisCyan?'#8fe9ff':(s.chargeLevel?chargeCols[lvl]:(s.wing?'#7fe7ff':(s.special?'#8dff9e':'#ffe6a0')));
+    var col=s.aegisBlue?'#5fa8ff':(s.chargeLevel?chargeCols[lvl]:(s.wing?'#7fe7ff':(s.special?'#8dff9e':'#ffe6a0')));
     var glow='rgba(255,170,60,0.35)';
-    if(s.aegisCyan) glow='rgba(90,220,255,0.5)';
+    if(s.aegisBlue) glow='rgba(70,150,255,0.55)';
     else if(s.chargeLevel) glow='rgba(255,220,120,0.45)';
     else if(s.wing) glow='rgba(80,210,255,0.4)';
     else if(s.special) glow='rgba(80,255,140,0.35)';

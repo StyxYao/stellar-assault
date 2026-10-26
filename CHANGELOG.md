@@ -514,3 +514,13 @@
 - N-charge muzzle flash shortened so it no longer covers the screen.
 - Menu info defaults to the bottom.
 - Force field circles recentered to the energy core.
+
+## 0.8.8 — AEGIS charge and laser polish
+
+- Removed all item magnetism; pickups now fall freely.
+- AEGIS baseline charge time/damage reduced another 25%.
+- Laser charge visual width now uses the same half-width as its hit test.
+- N charge no longer shows a laser; fires 3 sequential volleys with blue projectiles.
+- M charge preview lights removed; missiles only lengthen, never widen.
+- S charge angle gap reduced 50%.
+- Force rings remain centered on the energy core and below the ship.

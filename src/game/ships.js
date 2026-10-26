@@ -26,8 +26,8 @@ var selectedSkins = { vector: 'void_lance', aegis: 'orbital', phantom: 'quantum'
 var aegisTutorialT = 0;
 
 var AEGIS_CHARGE_MAX = 1.30;
-var AEGIS_CHARGE_BASE_TIME = 0.75;
-var AEGIS_CHARGE_BASE_DAMAGE = 0.75;
+var AEGIS_CHARGE_BASE_TIME = 0.5625;
+var AEGIS_CHARGE_BASE_DAMAGE = 0.5625;
 var AEGIS_AUTO_RELEASE = 0.35;
 var AEGIS_CHARGE_COOLDOWN = 0.20;
 var AEGIS_FORCE_RADIUS = 38;
@@ -66,6 +66,11 @@ var aegisState = {
   castKind: '',
   castRange: 0,
   castColor: '',
+  castWidth: 0,
+  nBurstLeft: 0,
+  nBurstT: 0,
+  nBurstDamage: 0,
+  nBurstCount: 0,
   forceLevel: 1,
   odActive: false,
   odShotT: 0,
@@ -199,6 +204,9 @@ function aegisReset() {
   aegisState.laneT = 0;
   aegisState.castT = 0;
   aegisState.castKind = '';
+  aegisState.castWidth = 0;
+  aegisState.nBurstLeft = 0;
+  aegisState.nBurstT = 0;
   aegisState.odActive = false;
   aegisState.odShotT = 0;
   aegisState.postOdT = 0;
@@ -308,7 +316,9 @@ function aegisReleaseCharge() {
       var sf = shots[shots.length - 1]; if (sf) { sf.lenScale = 1.5; sf.widScale = 1.2; sf.chargeLevel = player.specialPower; }
     }
   } else if (prof.kind === 'beam') {
-    aegisBeamCharge(px, totalDamage, 28 + (Math.max(1, player.specialPower) - 1) * 4);
+    var beamHalf = 28 + (Math.max(1, player.specialPower) - 1) * 4;
+    aegisState.castWidth = beamHalf;
+    aegisBeamCharge(px, totalDamage, beamHalf);
   } else if (prof.kind === 'swarm') {
     var perMissile = totalDamage / 10;
     for (var m = 0; m < 10; m++) {
@@ -317,20 +327,25 @@ function aegisReleaseCharge() {
       var mm = missiles[missiles.length - 1]; if (mm) { mm.lenScale = 1.5; mm.widScale = 1.0; mm.noWiden = true; mm.chargeLevel = player.specialPower; }
     }
   } else {
-    // N: double the normal projectile count, split total damage evenly.
+    // N: three sequential volleys; total charge damage is split across all bursts.
     var lvN = Math.max(1, Math.min(4, player.specialPower || 1));
     var baseN = lvN <= 1 ? 2 : (lvN === 2 ? 3 : (lvN === 3 ? 4 : 5));
-    var countN = baseN * 2;
-    for (var n = 0; n < countN; n++) {
-      addShot(px + (n - (countN - 1) / 2) * 10, py, 0, -1150, totalDamage / countN, false, false, true, true, prof.range);
-      var sn = shots[shots.length - 1]; if (sn) { sn.lenScale = 1.5; sn.widScale = 1.2; sn.chargeLevel = player.specialPower; sn.aegisCyan = true; }
-    }
+    aegisState.nBurstLeft = 3;
+    aegisState.nBurstT = 0;
+    aegisState.nBurstDamage = totalDamage / 3;
+    aegisState.nBurstCount = baseN * 2;
   }
   if (typeof fx !== 'undefined' && fx) fx.push({ x: px, y: py, t: 0, life: 0.32, kind: 'hitspark', sc: 3.4, color: prof.color });
   aegisState.flashT = Math.max(aegisState.flashT, 0.50);
   aegisState.laneT = 0;
-  aegisState.castT = 0.55;
-  aegisState.castKind = prof.kind;
+  if (aegisState.nBurstLeft > 0) {
+    aegisState.castT = 0.12;
+    aegisState.castKind = '';
+    aegisState.castWidth = 0;
+  } else {
+    aegisState.castT = 0.55;
+    aegisState.castKind = prof.kind;
+  }
   aegisState.castRange = prof.range || 500;
   aegisState.castColor = prof.color;
   try { shake = Math.max(shake, 9); } catch (e) {}
@@ -486,6 +501,18 @@ function aegisForceCollide(dt) {
   }
 }
 
+function aegisFireNBurst() {
+  var px = aegisVisualX(), py = player.y - 26;
+  var count = Math.max(2, aegisState.nBurstCount || 4);
+  var dmg = (aegisState.nBurstDamage || 0) / count;
+  for (var n = 0; n < count; n++) {
+    addShot(px + (n - (count - 1) / 2) * 10, py, 0, -1150, dmg, false, false, true, true, 760);
+    var sn = shots[shots.length - 1];
+    if (sn) { sn.lenScale = 1.5; sn.widScale = 1.2; sn.chargeLevel = player.specialPower; sn.aegisBlue = true; }
+  }
+  try { sfx('e_shot', 0.10); } catch (e) {}
+}
+
 function updateAegis(dt) {
   if (player.ship !== 'aegis') return;
   if (state !== 'play' && state !== 'boss') return;
@@ -521,6 +548,14 @@ function updateAegis(dt) {
     aegisState.chargeT = Math.min(aegisChargeMax(), aegisState.chargeT + dt);
     aegisState.autoT = aegisState.chargeT >= aegisChargeMax() ? aegisState.autoT + dt : 0;
     if (aegisState.autoT >= AEGIS_AUTO_RELEASE) aegisReleaseCharge();
+  }
+  if (aegisState.nBurstLeft > 0) {
+    aegisState.nBurstT -= dt;
+    if (aegisState.nBurstT <= 0) {
+      aegisState.nBurstLeft--;
+      aegisState.nBurstT = 0.11;
+      aegisFireNBurst();
+    }
   }
 
   if (aegisState.force === 'broken') {
