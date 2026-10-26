@@ -591,3 +591,10 @@
 - Raven right wing tip restored by moving the detail-card mask outward.
 - Butterfly upper-left wing restored by replacing the rectangular title mask with a title-only mask.
 - Phantom trio remains on the full 512px cell with original padding.
+
+## 0.9.8 — Standalone Butterfly source
+
+- Replaced Butterfly with the standalone 1024×1071 source art.
+- Removed only the black background and outer frame.
+- Preserved the full wingspan and all floating shards.
+- Output remains 80×80 with no redraw or mirroring.
