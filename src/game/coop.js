@@ -9,7 +9,7 @@ var aegisState2 = null;
 var phantomState2 = null;
 var target2 = { x: W / 2 - 70, y: H - 150 };
 var coopKeys = Object.create(null);
-var coopLastShot = 0, coopLastSpecial = 0, coopLastMissile = 0;
+var coopLastShot = 0, coopLastSpecial = 0, coopLastMissile = 0, coopLaserT = 0, coopLaserFx = null;
 var coopPadPrevB = false, coopPadPrevF = false;
 
 function coopModeLabel() {
@@ -164,6 +164,32 @@ function coopKey(e, down) {
   if (e.preventDefault) e.preventDefault();
 }
 
+function coopLaserDamage(dt) {
+  var p = player2;
+  if (!p) return;
+  coopLaserT -= dt; if (coopLaserT > 0) return; coopLaserT = 0.08;
+  var w = 8 + Math.min(p.specialPower, 3) * 5;
+  var dmg = (2 + p.specialPower * 2) * powerDamageFactor();
+  var target = null, tIdx = -1, tY = 0;
+  for (var i = 0; i < enemies.length; i++) {
+    var e = enemies[i];
+    if (Math.abs(e.x - p.x) < w / 2 + enemyW(e) * 0.32 && e.y < p.y && e.y > tY) { target = e; tIdx = i; tY = e.y; }
+  }
+  var isBoss = false;
+  if (boss && state === 'boss' && boss.invuln <= 0 && Math.abs(boss.x - p.x) < w / 2 + boss.def.w * 0.24 * 1.15 && boss.y < p.y && boss.y > tY) {
+    target = boss; isBoss = true; tY = boss.y;
+  }
+  coopLaserFx = { x: p.x, endY: target ? tY : 0, level: p.specialPower, t: 0.12 };
+  if (!target) return;
+  if (isBoss) {
+    boss.hp -= dmg * 0.7; boss.hitFlash = 0.12; boss.hitX = p.x; boss.hitY = boss.y + 20;
+  } else {
+    var et = ET[target.type];
+    target.hp -= dmg; target.flash = 0.1;
+    if (target.hp <= 0) { score += et.score; part(target.x, target.y, '#ffb066', 9, 160); enemyDeath(target); maybeDrop(target); removeEnemy(tIdx); }
+  }
+}
+
 function coopCollectItem(it) {
   if (!player2) return;
   var s = coopSwapEnter();
@@ -177,6 +203,7 @@ function coopUpdate(dt) {
   var p = player2;
   if (!p || (state !== 'play' && state !== 'boss')) return;
   if (p.invuln > 0) p.invuln = Math.max(0, p.invuln - dt);
+  if (coopLaserFx) { coopLaserFx.t -= dt; if (coopLaserFx.t <= 0) coopLaserFx = null; }
 
   var dx = 0, dy = 0;
   if (coopKeys.j) dx -= 1;
@@ -217,12 +244,15 @@ function coopUpdate(dt) {
     try {
       if (p.ship === 'aegis') updateAegis(dt);
       if (p.ship === 'phantom') phantomUpdate(dt);
+      if (p.options > 0) { updateWingEntries(dt); updateOptions(dt); }
       var hold = p.ship === 'aegis' && aegisState2 && (aegisState2.charge === 'charging' || p.odT > 0 || aegisState2.normalLockT > 0);
       if (!hold) {
         if (p.weapon === 'spread') {
           if (time - coopLastSpecial > 0.16) { coopLastSpecial = time; fireSpread(); }
         } else if (p.weapon === 'missile') {
           if (time - coopLastMissile > 0.46) { coopLastMissile = time; launchMissiles(); }
+        } else if (p.weapon === 'laser') {
+          coopLaserDamage(dt);
         } else if (time - coopLastShot > 0.10) {
           coopLastShot = time; fireNormal();
         }
@@ -236,8 +266,17 @@ function coopDrawP2() {
   if (!coopEnabled || !player2) return;
   var p = player2;
   var s = coopSwapEnter();
-  try { drawPlayerEntity(); } catch (e) {}
+  try { drawPlayerEntity(); if (p.options > 0) drawOptions(); } catch (e) {}
   coopSwapExit(s);
+  if (coopLaserFx) {
+    var lf = coopLaserFx, cols = ['80,190,255','120,240,255','255,120,220','255,215,100'], cc = cols[Math.max(0,Math.min(3,(lf.level||1)-1))];
+    var by = lf.endY > 0 ? lf.endY : 0, h = Math.max(0, p.y - 16 - by);
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    var lg = ctx.createLinearGradient(p.x - 18, 0, p.x + 18, 0);
+    lg.addColorStop(0, 'rgba(' + cc + ',0)'); lg.addColorStop(0.5, 'rgba(255,255,255,0.8)'); lg.addColorStop(1, 'rgba(' + cc + ',0)');
+    ctx.fillStyle = lg; ctx.fillRect(p.x - 18, by, 36, h);
+    ctx.restore();
+  }
   ctx.save(); ctx.fillStyle = '#8fe9ff'; ctx.font = '700 7px monospace'; ctx.textAlign = 'center';
   ctx.fillText('P2', p.x, p.y - 48); ctx.restore();
 }

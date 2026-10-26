@@ -754,3 +754,8 @@
 - P1 and P2 can use different ships and variants.
 - The same exact variant is blocked for both players; P2 auto-skips conflicts.
 - P2 AEGIS/PHANTOM state remains independent.
+
+## 0.9.31 — P2 wingmen and laser
+
+- P2 VECTOR wingmen now update, render and fire after D pickups.
+- P2 laser has independent cooldown, damage, beam and hit endpoint.
