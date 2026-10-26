@@ -353,7 +353,7 @@ function aegisReleaseCharge() {
   aegisState.chargeT = 0;
   aegisState.autoT = 0;
   aegisState.cooldown = AEGIS_CHARGE_COOLDOWN;
-  try { sfx('aegis_cannon', 0.62); } catch (e) {}
+  if (aegisState.nBurstLeft <= 0) try { sfx('aegis_cannon', 0.62); } catch (e) {}
 }
 
 function aegisLaneHit() {
@@ -510,7 +510,7 @@ function aegisFireNBurst() {
     var sn = shots[shots.length - 1];
     if (sn) { sn.lenScale = 1.5; sn.widScale = 1.2; sn.chargeLevel = player.specialPower; sn.aegisBlue = true; }
   }
-  try { sfx('e_shot', 0.10); } catch (e) {}
+  try { sfx('aegis_cannon', 0.62); } catch (e) {}
 }
 
 function updateAegis(dt) {
@@ -553,7 +553,7 @@ function updateAegis(dt) {
     aegisState.nBurstT -= dt;
     if (aegisState.nBurstT <= 0) {
       aegisState.nBurstLeft--;
-      aegisState.nBurstT = 0.11;
+      aegisState.nBurstT = 0.03;
       aegisFireNBurst();
     }
   }

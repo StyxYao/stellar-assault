@@ -534,3 +534,8 @@
 - N charge: no laser animation; 3 sequential blue volleys.
 - M charge: no preview lights; missiles lengthen only.
 - S charge angle gap reduced 50%.
+
+## 0.8.10 — N burst timing and SFX
+
+- N three-volley interval reduced from 0.11s to 0.03s.
+- Each N volley now plays the AEGIS charge-fire SFX, for 3 total.
