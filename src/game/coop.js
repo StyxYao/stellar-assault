@@ -4,6 +4,8 @@
 var coopEnabled = false;
 var coopInputMode = 'off'; // off | kb | mouse
 var coopShip2 = 'vector', coopSkin2 = 'void_lance';
+var coopRemote = false;
+var lanRemoteInput = { dx: 0, dy: 0, primary: false, secondary: false };
 var player2 = null;
 var aegisState2 = null;
 var phantomState2 = null;
@@ -206,6 +208,11 @@ function coopUpdate(dt) {
   if (coopLaserFx) { coopLaserFx.t -= dt; if (coopLaserFx.t <= 0) coopLaserFx = null; }
 
   var dx = 0, dy = 0;
+  if (coopRemote) {
+    dx = lanRemoteInput.dx || 0; dy = lanRemoteInput.dy || 0;
+    if (lanRemoteInput.primary) { coopSpecial('primary'); lanRemoteInput.primary = false; }
+    if (lanRemoteInput.secondary) { coopSpecial('secondary'); lanRemoteInput.secondary = false; }
+  } else {
   if (coopKeys.j) dx -= 1;
   if (coopKeys.l) dx += 1;
   if (coopKeys.i) dy -= 1;
@@ -224,6 +231,7 @@ function coopUpdate(dt) {
     if (pad.buttons[15] && pad.buttons[15].pressed) dx += 1;
     if (pad.buttons[12] && pad.buttons[12].pressed) dy -= 1;
     if (pad.buttons[13] && pad.buttons[13].pressed) dy += 1;
+  }
   }
   if (dx || dy) {
     var len = Math.hypot(dx, dy) || 1;

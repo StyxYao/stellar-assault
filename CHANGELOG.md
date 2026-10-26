@@ -770,3 +770,9 @@
 
 - P2 death/revive and single-player regression smoke pass.
 - Local co-op feature set is closed; remaining is full-stage balance and World/PlayerSlot refactor before LAN.
+
+## 0.9.34 — LAN co-op prototype
+
+- Added `tools/lan_server.py`: static dist + WebSocket room relay.
+- Added Host/Join room UI, host canvas JPEG stream and remote P2 input.
+- LAN client supports IJKL movement and U/O skills; no audio yet.

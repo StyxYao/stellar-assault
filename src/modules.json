@@ -21,6 +21,7 @@
     "src/render/player.js",
     "src/platform/web/input.js",
     "src/platform/desktop/input.js",
+    "src/platform/web/lan.js",
     "src/platform/web/video.js",
     "src/render/enemies.js",
     "src/render/bullets.js",
