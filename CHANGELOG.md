@@ -598,3 +598,10 @@
 - Removed only the black background and outer frame.
 - Preserved the full wingspan and all floating shards.
 - Output remains 80×80 with no redraw or mirroring.
+
+## 0.9.9 — Standalone Raven source
+
+- Replaced Raven with the standalone 368×443 source art.
+- Removed only the black background, outer frame and bottom caption remnants.
+- Preserved the full wings, talons and floating fragments.
+- Output remains 80×80 with no redraw or mirroring.
