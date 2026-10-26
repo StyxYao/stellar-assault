@@ -229,6 +229,7 @@ function coopUpdate(dt) {
   var p = player2;
   if (!p || (state !== 'play' && state !== 'boss')) return;
   if (p.invuln > 0) p.invuln = Math.max(0, p.invuln - dt);
+  if (p.odT > 0) p.odT = Math.max(0, p.odT - dt);
   if (coopLaserFx) { coopLaserFx.t -= dt; if (coopLaserFx.t <= 0) coopLaserFx = null; }
 
   var dx = 0, dy = 0;

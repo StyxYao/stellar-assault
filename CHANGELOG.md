@@ -808,3 +808,10 @@
 - Host-only room now auto-starts when P1 and P2 are both ready.
 - P1 selects stage and loadout; P2 selects loadout only.
 - 30s no-ready timeout randomizes base ships and starts stage 1.
+
+## 0.9.40 — LAN loadout visuals and fixes
+
+- LAN client lobby uses ship/variant/stage image cards.
+- AEGIS touch zones are now left CHG / right FORCE; non-AEGIS hides the secondary zone.
+- P2 OD timer now decrements correctly.
+- Ready lobby state resets per room.

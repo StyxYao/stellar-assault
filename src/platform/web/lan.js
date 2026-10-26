@@ -8,10 +8,11 @@ var lanDeadline = 0, lanLobbyTimer = null, lanStageRow = null, lanReadyBtn = nul
 var lanStarted = false;
 var lanLoadoutShip = 'vector', lanLoadoutSkin = 'void_lance';
 var lanShipBtn = null, lanSkinBtn = null;
+var lanShipCards = null, lanVariantCards = null, lanStageCards = null;
 var lanClientMode = false, lanClientKeys = Object.create(null);
 var lanClientPending = { primary: false, secondary: false };
 var lanTouch = { dx: 0, dy: 0, tx: 0, ty: 0, active: false };
-var lanTouchLayer = null;
+var lanTouchLayer = null, lanPrimaryZone = null, lanSecondaryZone = null;
 var lanPadPrev = { a: false, b: false };
 var lanOverlay = null, lanVideo = null, lanStatus = null, lanRoomLabel = null;
 var lanAudioBytes = 0, lanAudioRecv = 0;
@@ -57,7 +58,7 @@ function lanClientShipCycle() {
   lanLoadoutShip = ships[(i + 1) % ships.length];
   var list = (typeof skinList === 'function') ? skinList(lanLoadoutShip) : [];
   lanLoadoutSkin = list.length ? list[0].id : 'void_lance';
-  lanRefreshLoadoutButtons(); lanSendLoadout();
+  lanRefreshLoadoutButtons(); lanPositionTouchZones(); lanSendLoadout();
 }
 function lanClientSkinCycle() {
   var list = (typeof skinList === 'function') ? skinList(lanLoadoutShip) : [];
@@ -67,8 +68,15 @@ function lanClientSkinCycle() {
   lanRefreshLoadoutButtons(); lanSendLoadout();
 }
 function lanRefreshLoadoutButtons() {
-  if (lanShipBtn) lanShipBtn.textContent = 'SHIP · ' + lanLoadoutLabel(lanLoadoutShip, lanLoadoutSkin).split(' · ')[0];
-  if (lanSkinBtn) lanSkinBtn.textContent = 'VAR · ' + (lanLoadoutLabel(lanLoadoutShip, lanLoadoutSkin).split(' · ')[1] || '');
+  if (lanShipCards) {
+    for (var i = 0; i < lanShipCards.children.length; i++) {
+      var c = lanShipCards.children[i];
+      var active = c.getAttribute('data-ship') === lanLoadoutShip;
+      c.style.background = active ? '#123a4f' : '#081824';
+      c.style.borderColor = active ? '#9fe8ff' : '#31536a';
+    }
+  }
+  lanRefreshVariantCards();
 }
 function lanSendLoadout() {
   if (!lanSocket || lanSocket.readyState !== 1 || !lanJoined) return;
@@ -92,7 +100,9 @@ function lanRefreshStageButtons() {
 function lanSetLoadoutLocked(locked) {
   if (lanShipBtn) lanShipBtn.disabled = locked;
   if (lanSkinBtn) lanSkinBtn.disabled = locked;
-  if (lanStageRow) { for (var i = 0; i < lanStageRow.children.length; i++) lanStageRow.children[i].disabled = locked; }
+  if (lanShipCards) { for (var i = 0; i < lanShipCards.children.length; i++) lanShipCards.children[i].style.opacity = locked ? '0.45' : '1'; }
+  if (lanVariantCards) { for (var j = 0; j < lanVariantCards.children.length; j++) lanVariantCards.children[j].style.opacity = locked ? '0.45' : '1'; }
+  if (lanStageRow) { for (var k = 0; k < lanStageRow.children.length; k++) lanStageRow.children[k].disabled = locked; }
 }
 function lanSendReady() {
   if (!lanJoined || lanMyReady) return;
@@ -101,6 +111,59 @@ function lanSendReady() {
   lanSetLoadoutLocked(true);
   if (lanSocket && lanSocket.readyState === 1) lanSocket.send(JSON.stringify({ type: 'ready', ready: true, stage: lanStage }));
   if (lanStatus) lanStatus.textContent = 'READY · WAITING FOR OTHER PLAYER';
+}
+
+function lanImageSrc(key) { var im = (typeof GIMG !== 'undefined') ? GIMG[key] : null; return im && im.src ? im.src : ''; }
+function lanCardCss(active) {
+  return 'flex:1;min-width:0;padding:4px;background:' + (active ? '#123a4f' : '#081824') + ';border:1px solid ' + (active ? '#9fe8ff' : '#31536a') + ';cursor:pointer;text-align:center;';
+}
+function lanBuildLoadoutVisuals(box) {
+  lanShipCards = lanEl('div', 'display:flex;gap:5px;margin-bottom:6px;');
+  var ships = ['vector', 'aegis', 'phantom'];
+  for (var i = 0; i < ships.length; i++) {
+    (function (ship) {
+      var card = lanEl('div', lanCardCss(false));
+      var list = (typeof skinList === 'function') ? skinList(ship) : [];
+      var src = list.length ? lanImageSrc(list[0].image) : '';
+      if (src) { var im = lanEl('img', 'width:48px;height:48px;object-fit:contain;'); im.src = src; card.appendChild(im); }
+      card.appendChild(lanEl('div', 'font:700 7px monospace;color:#dff8ff;margin-top:2px;', (typeof SHIP_DEFS !== 'undefined' && SHIP_DEFS[ship] ? SHIP_DEFS[ship].label : ship.toUpperCase())));
+      card.onclick = function () { lanSelectShipVisual(ship); };
+      card.setAttribute('data-ship', ship);
+      lanShipCards.appendChild(card);
+    })(ships[i]);
+  }
+  box.appendChild(lanShipCards);
+  lanVariantCards = lanEl('div', 'display:flex;gap:5px;margin-bottom:8px;');
+  box.appendChild(lanVariantCards);
+  lanRefreshLoadoutButtons();
+}
+function lanSelectShipVisual(ship) {
+  if (lanMyReady) return;
+  lanLoadoutShip = ship;
+  var list = (typeof skinList === 'function') ? skinList(ship) : [];
+  lanLoadoutSkin = list.length ? list[0].id : 'void_lance';
+  lanRefreshLoadoutButtons(); lanPositionTouchZones(); lanSendLoadout();
+}
+function lanSelectSkinVisual(id) {
+  if (lanMyReady) return;
+  lanLoadoutSkin = id;
+  lanRefreshLoadoutButtons(); lanSendLoadout();
+}
+function lanRefreshVariantCards() {
+  if (!lanVariantCards) return;
+  lanVariantCards.innerHTML = '';
+  var list = (typeof skinList === 'function') ? skinList(lanLoadoutShip) : [];
+  for (var i = 0; i < list.length; i++) {
+    (function (def) {
+      var active = def.id === lanLoadoutSkin;
+      var card = lanEl('div', lanCardCss(active));
+      var src = lanImageSrc(def.image);
+      if (src) { var im = lanEl('img', 'width:38px;height:38px;object-fit:contain;'); im.src = src; card.appendChild(im); }
+      card.appendChild(lanEl('div', 'font:700 6px monospace;color:#dff8ff;margin-top:2px;', def.label || def.id));
+      card.onclick = function () { lanSelectSkinVisual(def.id); };
+      lanVariantCards.appendChild(card);
+    })(list[i]);
+  }
 }
 
 function lanMakeOverlay(client) {
@@ -113,15 +176,17 @@ function lanMakeOverlay(client) {
   box.appendChild(lanStatus);
   if (client) {
     lanShipBtn = lanEl('button', 'width:100%;padding:8px;background:#081824;border:1px solid #31536a;color:#b8d9e8;font:10px monospace;cursor:pointer;margin-bottom:5px;', 'SHIP · VECTOR');
-    lanShipBtn.onclick = lanClientShipCycle; box.appendChild(lanShipBtn);
-    lanSkinBtn = lanEl('button', 'width:100%;padding:8px;background:#081824;border:1px solid #31536a;color:#b8d9e8;font:10px monospace;cursor:pointer;margin-bottom:8px;', 'VAR · VOID LANCE');
-    lanSkinBtn.onclick = lanClientSkinCycle; box.appendChild(lanSkinBtn);
+    lanShipBtn.style.display = 'none';
+    lanSkinBtn = lanEl('button', 'display:none;', 'VAR');
+    box.appendChild(lanShipBtn); box.appendChild(lanSkinBtn);
+    lanBuildLoadoutVisuals(box);
     lanStageLabel = lanEl('div', 'font:10px monospace;color:#9fe8ff;margin:4px 0 4px;', 'STAGE · P1 SELECTS');
     box.appendChild(lanStageLabel);
     lanStageRow = lanEl('div', 'display:flex;gap:5px;margin-bottom:8px;');
     for (var si = 0; si < 5; si++) {
       (function (idx) {
-        var b = lanEl('button', 'flex:1;padding:6px 0;background:#081824;border:1px solid #31536a;color:#b8d9e8;font:10px monospace;cursor:pointer;', String(idx + 1));
+        var stName = (typeof STAGES !== 'undefined' && STAGES[idx]) ? STAGES[idx].name : '';
+        var b = lanEl('button', 'flex:1;padding:5px 1px;background:#081824;border:1px solid #31536a;color:#b8d9e8;font:7px monospace;cursor:pointer;white-space:pre-line;', (idx + 1) + '\n' + stName);
         b.onclick = function () { lanSelectStage(idx); };
         lanStageRow.appendChild(b);
       })(si);
@@ -163,6 +228,7 @@ function lanMakeOverlay(client) {
 function lanClose() {
   if (lanSocket) { try { lanSocket.send(JSON.stringify({ type: 'leave' })); lanSocket.close(); } catch (e) {} }
   lanSocket = null; lanRoom = ''; lanRole = ''; lanSlots = [false, false];
+  lanReady = [false, false]; lanLoadouts = [null, null]; lanStarted = false; lanStage = 0; lanMyReady = false;
   coopRemote = false; coopRemoteP1 = false;
   lanStopHostAudio();
   if (lanFrameTimer) { clearInterval(lanFrameTimer); lanFrameTimer = null; }
@@ -264,6 +330,7 @@ function lanConnectHost() {
       var m; try { m = JSON.parse(ev.data); } catch (e) { return; }
       if (m.type === 'created') {
         lanRoom = m.room; lanRole = 'host'; lanHostMode = m.mode || 'hostp1'; lanSlots = [false, false];
+        lanReady = [false, false]; lanLoadouts = [null, null]; lanStarted = false; lanStage = 0; lanMyReady = false;
         lanRoomLabel.textContent = m.room;
         lanLinkEl.textContent = lanInviteLink();
         lanSetStatus(lanHostMode === 'room' ? 'ROOM ONLY · SEND LINK TO P1 AND P2' : 'HOST IS P1 · SEND LINK TO P2');
@@ -407,7 +474,9 @@ function lanJoin() {
         lanRoom = m.room; lanRole = 'guest'; lanJoined = true; lanMySlot = Number(m.slot); lanHostMode = m.mode || lanHostMode;
         lanSetStatus('CONNECTED AS P' + (lanMySlot + 1) + ' · CHOOSE LOADOUT · WAITING FOR HOST');
         if (lanStartBtn) { lanStartBtn.disabled = true; lanStartBtn.textContent = 'WAITING FOR HOST'; }
-        lanSendLoadout(); lanEnsureClientAudio();
+        lanSendLoadout(); lanEnsureClientAudio(); lanRefreshLoadoutButtons();
+        if (lanCodeInput) lanCodeInput.style.display = 'none';
+        if (lanStartBtn) lanStartBtn.style.display = 'none';
         if (lanReadyBtn) { lanReadyBtn.style.display = 'block'; lanReadyBtn.disabled = false; lanReadyBtn.textContent = 'READY'; }
         lanSetLoadoutLocked(false);
         if (lanStageRow) lanStageRow.style.display = lanMySlot === 0 ? 'flex' : 'none';
@@ -466,15 +535,31 @@ function lanBuildTouchControls() {
   lanTouchLayer.addEventListener('pointercancel', end);
 
   // Semi-transparent skill hit zones, aligned to the game's bottom-right controls.
-  var primary = lanEl('div', 'position:absolute;right:16px;bottom:22px;width:78px;height:78px;border-radius:50%;border:none;background:transparent;pointer-events:auto;touch-action:none;z-index:10001;');
+  var primary = lanPrimaryZone = lanEl('div', 'position:absolute;right:16px;bottom:22px;width:78px;height:78px;border-radius:50%;border:none;background:transparent;pointer-events:auto;touch-action:none;z-index:10001;');
   primary.onpointerdown = function (e) { e.preventDefault(); e.stopPropagation(); lanClientPending.primary = true; primary.style.background = 'rgba(143,233,255,0.12)'; };
   primary.onpointerup = function (e) { e.preventDefault(); e.stopPropagation(); primary.style.background = 'transparent'; };
   lanTouchLayer.appendChild(primary);
-  var secondary = lanEl('div', 'position:absolute;right:104px;bottom:26px;width:58px;height:58px;border-radius:50%;border:none;background:transparent;pointer-events:auto;touch-action:none;z-index:10001;');
+  var secondary = lanSecondaryZone = lanEl('div', 'position:absolute;right:104px;bottom:26px;width:58px;height:58px;border-radius:50%;border:none;background:transparent;pointer-events:auto;touch-action:none;z-index:10001;');
   secondary.onpointerdown = function (e) { e.preventDefault(); e.stopPropagation(); lanClientPending.secondary = true; secondary.style.background = 'rgba(255,211,107,0.12)'; };
   secondary.onpointerup = function (e) { e.preventDefault(); e.stopPropagation(); secondary.style.background = 'transparent'; };
   lanTouchLayer.appendChild(secondary);
   document.body.appendChild(lanTouchLayer);
+  lanPositionTouchZones();
+}
+
+function lanPositionTouchZones() {
+  if (!lanPrimaryZone || !lanSecondaryZone) return;
+  if (lanLoadoutShip === 'aegis') {
+    // CHG is left of FORCE in the AEGIS HUD.
+    lanPrimaryZone.style.right = '25%'; lanPrimaryZone.style.width = '70px'; lanPrimaryZone.style.height = '70px'; lanPrimaryZone.style.bottom = '24px';
+    lanPrimaryZone.style.display = 'block';
+    lanSecondaryZone.style.right = '8%'; lanSecondaryZone.style.width = '72px'; lanSecondaryZone.style.height = '72px'; lanSecondaryZone.style.bottom = '22px';
+    lanSecondaryZone.style.display = 'block';
+  } else {
+    lanPrimaryZone.style.right = '16px'; lanPrimaryZone.style.width = '78px'; lanPrimaryZone.style.height = '78px'; lanPrimaryZone.style.bottom = '22px';
+    lanPrimaryZone.style.display = 'block';
+    lanSecondaryZone.style.display = 'none';
+  }
 }
 
 function lanSendClientInput() {
