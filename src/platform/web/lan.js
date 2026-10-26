@@ -7,6 +7,8 @@ var lanLoadoutShip = 'vector', lanLoadoutSkin = 'void_lance';
 var lanShipBtn = null, lanSkinBtn = null;
 var lanClientMode = false, lanClientKeys = Object.create(null);
 var lanClientPending = { primary: false, secondary: false };
+var lanTouch = { dx: 0, dy: 0 };
+var lanTouchLayer = null, lanTouchKnob = null;
 var lanPadPrev = { a: false, b: false };
 var lanOverlay = null, lanVideo = null, lanStatus = null, lanRoomLabel = null;
 var lanAudioBytes = 0, lanAudioRecv = 0;
@@ -123,6 +125,7 @@ function lanClose() {
   if (lanInputTimer) { clearInterval(lanInputTimer); lanInputTimer = null; }
   if (lanOverlay) { lanOverlay.remove(); lanOverlay = null; }
   if (lanVideo) { lanVideo.remove(); lanVideo = null; }
+  if (lanTouchLayer) { lanTouchLayer.style.display = 'none'; }
   if (lanClientMode && typeof cvs !== 'undefined') cvs.style.display = '';
 }
 
@@ -287,7 +290,7 @@ function lanJoin() {
       var m; try { m = JSON.parse(ev.data); } catch (e) { return; }
       if (m.type === 'error') { lanSetStatus(m.message || 'JOIN FAILED'); lanStartBtn.disabled = false; }
       else if (m.type === 'joined') {
-        lanRoom = m.room; lanRole = 'guest'; lanJoined = true; lanMySlot = Number(m.slot);
+        lanRoom = m.room; lanRole = 'guest'; lanJoined = true; lanMySlot = Number(m.slot); lanHostMode = m.mode || lanHostMode;
         lanSetStatus('CONNECTED AS P' + (lanMySlot + 1) + ' · CHOOSE LOADOUT · WAITING FOR HOST');
         if (lanStartBtn) { lanStartBtn.disabled = true; lanStartBtn.textContent = 'WAITING FOR HOST'; }
         lanSendLoadout(); lanEnsureClientAudio();
@@ -300,12 +303,43 @@ function lanJoin() {
         lanStartClientInput();
       } else if (m.type === 'frame') {
         if (lanOverlay) lanOverlay.style.display = 'none';
+        if (!lanTouchLayer) lanBuildTouchControls(); else lanTouchLayer.style.display = 'block';
         if (lanVideo) lanVideo.src = m.data;
       } else if (m.type === 'host-left') {
-        lanSetStatus('HOST LEFT'); if (lanVideo) lanVideo.remove(); lanVideo = null;
+        lanSetStatus('HOST LEFT'); if (lanVideo) lanVideo.remove(); lanVideo = null; if (lanTouchLayer) lanTouchLayer.style.display = 'none';
       }
     };
   } catch (e) { lanSetStatus('WS ERROR: ' + e.message); lanStartBtn.disabled = false; }
+}
+
+function lanBuildTouchControls() {
+  if (lanTouchLayer) { lanTouchLayer.style.display = 'block'; return; }
+  lanTouchLayer = lanEl('div', 'position:fixed;inset:0;z-index:10000;pointer-events:none;touch-action:none;');
+  var stick = lanEl('div', 'position:absolute;left:18px;bottom:20px;width:118px;height:118px;border-radius:50%;background:rgba(5,20,32,0.52);border:1px solid rgba(143,233,255,0.55);pointer-events:auto;touch-action:none;');
+  lanTouchKnob = lanEl('div', 'position:absolute;left:39px;top:39px;width:40px;height:40px;border-radius:50%;background:rgba(143,233,255,0.45);border:1px solid #bff4ff;');
+  stick.appendChild(lanTouchKnob); lanTouchLayer.appendChild(stick);
+  var b1 = lanEl('div', 'position:absolute;right:18px;bottom:92px;width:66px;height:66px;border-radius:50%;background:rgba(8,30,46,0.78);border:1px solid #9fe8ff;color:#eaf8ff;font:700 9px monospace;display:flex;align-items:center;justify-content:center;pointer-events:auto;touch-action:none;', 'SKILL');
+  var b2 = lanEl('div', 'position:absolute;right:18px;bottom:20px;width:66px;height:66px;border-radius:50%;background:rgba(35,24,8,0.78);border:1px solid #ffd36b;color:#ffe7b0;font:700 9px monospace;display:flex;align-items:center;justify-content:center;pointer-events:auto;touch-action:none;', 'FORCE');
+  b1.onpointerdown = function (e) { e.preventDefault(); e.stopPropagation(); lanClientPending.primary = true; b1.style.background = 'rgba(143,233,255,0.4)'; };
+  b1.onpointerup = function (e) { e.preventDefault(); e.stopPropagation(); b1.style.background = 'rgba(8,30,46,0.78)'; };
+  b2.onpointerdown = function (e) { e.preventDefault(); e.stopPropagation(); lanClientPending.secondary = true; b2.style.background = 'rgba(255,211,107,0.38)'; };
+  b2.onpointerup = function (e) { e.preventDefault(); e.stopPropagation(); b2.style.background = 'rgba(35,24,8,0.78)'; };
+  lanTouchLayer.appendChild(b1); lanTouchLayer.appendChild(b2);
+  var pid = null, cx = 0, cy = 0, r = 52;
+  stick.addEventListener('pointerdown', function (e) {
+    e.preventDefault(); e.stopPropagation(); pid = e.pointerId; try { stick.setPointerCapture(pid); } catch (err) {}
+    var rect = stick.getBoundingClientRect(); cx = rect.left + rect.width / 2; cy = rect.top + rect.height / 2;
+  });
+  stick.addEventListener('pointermove', function (e) {
+    if (pid !== e.pointerId) return; e.preventDefault(); e.stopPropagation();
+    var dx = e.clientX - cx, dy = e.clientY - cy, d = Math.hypot(dx, dy) || 1;
+    if (d > r) { dx = dx / d * r; dy = dy / d * r; }
+    lanTouch.dx = dx / r; lanTouch.dy = dy / r;
+    if (lanTouchKnob) { lanTouchKnob.style.left = (39 + dx) + 'px'; lanTouchKnob.style.top = (39 + dy) + 'px'; }
+  });
+  function endStick(e) { if (pid !== e.pointerId) return; pid = null; lanTouch.dx = 0; lanTouch.dy = 0; if (lanTouchKnob) { lanTouchKnob.style.left = '39px'; lanTouchKnob.style.top = '39px'; } }
+  stick.addEventListener('pointerup', endStick); stick.addEventListener('pointercancel', endStick);
+  document.body.appendChild(lanTouchLayer);
 }
 
 function lanSendClientInput() {
@@ -315,6 +349,8 @@ function lanSendClientInput() {
   if (lanClientKeys.l) dx += 1;
   if (lanClientKeys.i) dy -= 1;
   if (lanClientKeys.k) dy += 1;
+  dx += lanTouch.dx || 0; dy += lanTouch.dy || 0;
+  var len0 = Math.hypot(dx, dy); if (len0 > 1) { dx /= len0; dy /= len0; }
   var primary = !!lanClientPending.primary, secondary = !!lanClientPending.secondary;
   lanClientPending.primary = false; lanClientPending.secondary = false;
   var pads = navigator.getGamepads ? navigator.getGamepads() : [];

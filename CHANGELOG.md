@@ -790,3 +790,9 @@
 - Host streams PCM audio to both clients.
 - Frame stream moved to ~30fps, input to ~40Hz.
 - Host-only room supports two client slots; host-as-P1 retained.
+
+## 0.9.37 — LAN touch clients
+
+- Added virtual joystick and SKILL/FORCE buttons to LAN clients.
+- Both P1/P2 clients can use touch-only devices.
+- Client host mode display corrected.
