@@ -396,6 +396,9 @@ window.__g=function(){return {stageT:+stageT.toFixed(1),waveIndex:waveIndex,wave
 window.__god=function(){player.invuln=99999;player.noBlink=true;};
 window.__stage=function(n){startStage(n);};
   window.__runStage=function(n){startAtStage(n);};
+  window.__coopHit=function(){if(typeof coopHitP2==='function'){if(player2)player2.invuln=0;coopHitP2();}};
+  window.__coopGod=function(){player.invuln=99999;player.noBlink=true;if(player2){player2.invuln=99999;player2.noBlink=true;}};
+  window.__p2Item=function(t){if(player2)items.push({x:player2.x,y:player2.y,vy:0,type:t||'P',t:0});};
   window.__coop=function(){return {enabled:coopEnabled,mode:coopInputMode,p2:player2?{ship:player2.ship,x:+player2.x.toFixed(0),y:+player2.y.toFixed(0),hp:player2.hp,lives:player2.lives,invuln:+player2.invuln.toFixed(1),bombs:player2.bombs,cloak:phantomState2?+phantomState2.cloakT.toFixed(1):null,charge:aegisState2?aegisState2.charge:null,force:aegisState2?aegisState2.force:null}:null};};
   window.__selectShip=function(id){setSelectedShip(id,false);var sl=skinList(id);setSelectedSkin(id,sl[0].id,false);};
   window.__power=function(n){player.specialPower=Math.max(1,Math.min(4,n|0));player.power=player.specialPower;};

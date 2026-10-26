@@ -759,3 +759,14 @@
 
 - P2 VECTOR wingmen now update, render and fire after D pickups.
 - P2 laser has independent cooldown, damage, beam and hit endpoint.
+
+## 0.9.32 — Local co-op close-out
+
+- P2 skill HUD (AEGIS Force/Shield, PHANTOM cloak/clones, VECTOR wing).
+- P2 wingmen and laser verified, P2 E/D pickups verified.
+- Co-op boss-flow smoke passes for independent P1/P2 loadouts.
+
+## 0.9.33 — Local co-op acceptance
+
+- P2 death/revive and single-player regression smoke pass.
+- Local co-op feature set is closed; remaining is full-stage balance and World/PlayerSlot refactor before LAN.

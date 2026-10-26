@@ -285,12 +285,18 @@ function coopDrawHUD() {
   if (!coopEnabled || !player2) return;
   var p = player2;
   ctx.save();
-  ctx.fillStyle = 'rgba(4,12,22,0.72)'; ctx.fillRect(W - 152, 70, 136, 34);
-  ctx.strokeStyle = 'rgba(143,233,255,0.4)'; ctx.lineWidth = 1; ctx.strokeRect(W - 152, 70, 136, 34);
+  ctx.fillStyle = 'rgba(4,12,22,0.72)'; ctx.fillRect(W - 160, 70, 144, 50);
+  ctx.strokeStyle = 'rgba(143,233,255,0.4)'; ctx.lineWidth = 1; ctx.strokeRect(W - 160, 70, 144, 50);
   ctx.fillStyle = '#8fe9ff'; ctx.font = '700 7px monospace'; ctx.textAlign = 'left';
-  var pd = coopSkinDef(p.ship, p.skin); ctx.fillText('P2 · ' + String(p.ship || 'vector').toUpperCase() + (pd ? ' · ' + pd.label : ''), W - 144, 84);
-  ctx.fillStyle = '#dff8ff'; ctx.fillText('HP ' + '●'.repeat(Math.max(0, p.hp)) + '○'.repeat(Math.max(0, p.maxHp - p.hp)), W - 144, 96);
-  ctx.textAlign = 'right'; ctx.fillStyle = '#7893a8'; ctx.fillText('LIFE ' + p.lives + ' · B' + p.bombs, W - 22, 96);
+  var pd = coopSkinDef(p.ship, p.skin); ctx.fillText('P2 · ' + String(p.ship || 'vector').toUpperCase() + (pd ? ' · ' + pd.label : ''), W - 152, 82);
+  ctx.fillStyle = '#dff8ff'; ctx.fillText('HP ' + '●'.repeat(Math.max(0, p.hp)) + '○'.repeat(Math.max(0, p.maxHp - p.hp)), W - 152, 94);
+  ctx.textAlign = 'right'; ctx.fillStyle = '#7893a8'; ctx.fillText('LIFE ' + p.lives + ' · B' + p.bombs, W - 22, 94);
+  ctx.textAlign = 'left'; ctx.fillStyle = '#a8d8e8';
+  var st = '';
+  if (p.ship === 'aegis' && aegisState2) st = 'FORCE ' + String(aegisState2.force).toUpperCase() + ' · SHD ' + Math.round(aegisState2.shield / aegisShieldMax() * 100) + '%';
+  else if (p.ship === 'phantom' && phantomState2) st = 'CLOAK ' + phantomState2.cloakT.toFixed(1) + ' · CLONES ' + phantomState2.clones.length + '/' + phantomState2.cap;
+  else st = 'WING ' + p.options + ' · P' + p.wingPower;
+  ctx.fillText(st, W - 152, 110);
   ctx.restore();
 }
 
