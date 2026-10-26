@@ -56,9 +56,9 @@ function shipSelectCloseButton(){ var p=shipSelectPanel(); return {x:p.x+p.w-36,
 function shipSelectRows(){
   var p=shipSelectPanel(), rows=[], start=p.y+96, h=98, gap=10;
   var defs=[
-    {id:'vector',name:'VECTOR',role:'BALANCED · WINGMAN',trait:'FIREPOWER WINGMEN · FULL-SCREEN BOMB',status:'AVAILABLE',color:'#9fe8ff',image:'sk_vector_void_lance'},
-    {id:'aegis',name:'AEGIS',role:'FORCE · CHARGE',trait:'FORCE SHIELD · CHARGE CANNON',status:'AVAILABLE',color:'#ffd36b',image:'sk_aegis_orbital'},
-    {id:'phantom',name:'PHANTOM',role:'CLOAK · CLONE',trait:'STEALTH · DECOY CLONES',status:'AVAILABLE',color:'#c98bff',image:'sk_phantom_quantum'}
+    {id:'vector',name:'VECTOR',role:'BALANCED · WINGMAN',trait:'FIREPOWER WINGMEN · FULL-SCREEN BOMB',stats:'HP 3 · WINGMEN MAX 4 · BOMB 200',status:'AVAILABLE',color:'#9fe8ff',image:'sk_vector_void_lance'},
+    {id:'aegis',name:'AEGIS',role:'FORCE · CHARGE',trait:'FORCE SHIELD · CHARGE CANNON',stats:'SHIELD 60 · FORCE 400 · CHARGE CANNON',status:'AVAILABLE',color:'#ffd36b',image:'sk_aegis_orbital'},
+    {id:'phantom',name:'PHANTOM',role:'CLOAK · CLONE',trait:'STEALTH · DECOY CLONES',stats:'CLOAK 3s · CLONE DMG 50% · CAP 1→2',status:'AVAILABLE',color:'#c98bff',image:'sk_phantom_quantum'}
   ];
   for(var i=0;i<defs.length;i++) rows.push({i:i,x:p.x+14,y:start+i*(h+gap),w:p.w-28,h:h,def:defs[i]});
   return rows;
@@ -255,6 +255,8 @@ function drawShipSelectOverlay(){
     ctx.fillText(d.role,r.x+82,r.y+53);
     ctx.fillStyle=disabled?'#6f5c7e':'#9fc8dc';ctx.font='7px monospace';
     ctx.fillText(d.trait||'',r.x+82,r.y+70);
+    ctx.fillStyle=disabled?'#6f5c7e':'#7fb0c6';ctx.font='6px monospace';
+    ctx.fillText(d.stats||'',r.x+82,r.y+84);
     var statusColor=disabled?'#a879c9':'#8dffb0';
     ctx.fillStyle=statusColor;ctx.font='700 9px monospace';ctx.textAlign='right';
     ctx.fillText(d.status,r.x+r.w-14,r.y+35);

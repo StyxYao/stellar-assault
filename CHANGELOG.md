@@ -654,3 +654,9 @@
 - Destroyed clones now trigger a real explosion, particles and boom SFX.
 - Expired clones fade with particles only.
 - Added four whoosh candidate sounds for the Phantom skill; not yet wired.
+
+## 0.9.17 — Phantom skill dash, B whoosh and menu stats
+
+- Phantom skill now plays the B low whoosh synthesis.
+- After spawning clones, the player snaps to the safest nearby candidate spot, away from bullets/beams, with a trail and afterimage.
+- Ship-select rows now include readable stat lines.

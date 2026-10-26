@@ -1,9 +1,9 @@
 // Ship definitions and the AEGIS prototype state.
 // R1 scope: sandbox mechanics only; no campaign rework.
 var SHIP_DEFS = {
-  vector: { id: 'vector', label: 'VECTOR', subtitle: 'BALANCED · WINGMAN', trait: 'FIREPOWER WINGMEN · FULL-SCREEN BOMB' },
-  aegis: { id: 'aegis', label: 'AEGIS', subtitle: 'FORCE · CHARGE', trait: 'FORCE SHIELD · CHARGE CANNON' },
-  phantom: { id: 'phantom', label: 'PHANTOM', subtitle: 'CLOAK · CLONE', trait: 'STEALTH · DECOY CLONES' }
+  vector: { id: 'vector', label: 'VECTOR', subtitle: 'BALANCED · WINGMAN', trait: 'FIREPOWER WINGMEN · FULL-SCREEN BOMB', stats: 'HP 3 · WINGMEN MAX 4 · BOMB DMG 200' },
+  aegis: { id: 'aegis', label: 'AEGIS', subtitle: 'FORCE · CHARGE', trait: 'FORCE SHIELD · CHARGE CANNON', stats: 'SHIELD 60 · FORCE DMG 400 · CHARGE CANNON' },
+  phantom: { id: 'phantom', label: 'PHANTOM', subtitle: 'CLOAK · CLONE', trait: 'STEALTH · DECOY CLONES', stats: 'CLOAK 3s · CLONE DMG 50% · CAP 1→2' }
 };
 var selectedShip = 'vector';
 var SHIP_SKINS = {

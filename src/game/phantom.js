@@ -6,7 +6,10 @@ var phantomState = {
   cap: 1,
   clones: [],
   beams: [],
-  flashT: 0
+  flashT: 0,
+  dashT: 0,
+  dashFromX: 0,
+  dashFromY: 0
 };
 
 function phantomSkinId() { return (selectedSkins && selectedSkins.phantom) || 'quantum'; }
@@ -59,6 +62,66 @@ function phantomSpawnClone(offset) {
   return c;
 }
 
+function phantomWhooshB() {
+  if (typeof AC === 'undefined' || !AC || typeof master === 'undefined' || !master) return;
+  try {
+    if (typeof noiseBurst === 'function') noiseBurst(0.44, 0.30, 1100);
+    if (typeof tone === 'function') {
+      tone(70, 185, 0.40, 0.34, 'sine');
+      tone(145, 430, 0.18, 0.10, 'triangle', 0.015);
+    }
+  } catch (e) {}
+}
+
+function phantomBulletDistance(px, py) {
+  var best = 1e9;
+  if (typeof ebullets !== 'undefined') {
+    for (var i = 0; i < ebullets.length; i++) {
+      var b = ebullets[i];
+      if (b.y < 0 || b.y > H + 20) continue;
+      best = Math.min(best, Math.hypot(px - b.x, py - b.y));
+    }
+  }
+  if (typeof beams !== 'undefined') {
+    for (var j = 0; j < beams.length; j++) {
+      var bm = beams[j];
+      if (bm.t < bm.charge) continue;
+      var ex = bm.x + Math.cos(bm.ang) * bm.len;
+      var ey = bm.y + Math.sin(bm.ang) * bm.len;
+      var vx = ex - bm.x, vy = ey - bm.y, L = vx * vx + vy * vy || 1;
+      var tt = Math.max(0, Math.min(1, ((px - bm.x) * vx + (py - bm.y) * vy) / L));
+      best = Math.min(best, Math.hypot(px - (bm.x + vx * tt), py - (bm.y + vy * tt)) - (bm.w || 8) * 0.5);
+    }
+  }
+  return best;
+}
+
+function phantomDashAway() {
+  var cx = player.x, cy = player.y;
+  var candidates = [
+    { x: cx - 96, y: cy }, { x: cx + 96, y: cy },
+    { x: cx - 76, y: cy - 54 }, { x: cx + 76, y: cy - 54 },
+    { x: cx - 72, y: cy + 46 }, { x: cx + 72, y: cy + 46 },
+    { x: cx, y: cy - 82 }
+  ];
+  var best = null, bestScore = -1;
+  for (var i = 0; i < candidates.length; i++) {
+    var c = candidates[i];
+    c.x = Math.max(32, Math.min(W - 32, c.x));
+    c.y = Math.max(100, Math.min(H - 100, c.y));
+    var score = phantomBulletDistance(c.x, c.y);
+    if (score > bestScore) { bestScore = score; best = c; }
+  }
+  if (!best) return;
+  phantomState.dashFromX = cx; phantomState.dashFromY = cy; phantomState.dashT = 0.24;
+  player.x = target.x = best.x;
+  player.y = target.y = best.y;
+  player.trail.unshift({ x: cx, y: cy });
+  if (player.trail.length > 140) player.trail.pop();
+  try { for (var k = 0; k < 16; k++) { var q = k / 15; part(cx + (best.x - cx) * q, cy + (best.y - cy) * q, k % 2 ? '#c98bff' : '#8fe9ff', 1, 90); } } catch (e) {}
+  try { shake = Math.max(shake, 5); } catch (e) {}
+}
+
 function phantomSkill() {
   if ((state !== 'play' && state !== 'boss') || player.ship !== 'phantom') return false;
   if (player.bombs <= 0) return false;
@@ -72,8 +135,8 @@ function phantomSkill() {
     var off = n === 1 ? 58 * side : (i === 0 ? -34 : 34);
     phantomSpawnClone(off);
   }
-  try { sfx('b_charge', 0.42); } catch (e) {}
-  try { sfx('aegis_force', 0.55); } catch (e) {}
+  phantomDashAway();
+  phantomWhooshB();
   try { if (typeof part === 'function') for (var k = 0; k < 20; k++) part(player.x, player.y, k % 2 ? '#c98bff' : '#8fe9ff', 1, 180); } catch (e) {}
   return true;
 }
@@ -184,6 +247,7 @@ function phantomUpdate(dt) {
   if (state !== 'play' && state !== 'boss') return;
   if (phantomState.cloakT > 0) phantomState.cloakT = Math.max(0, phantomState.cloakT - dt);
   if (phantomState.flashT > 0) phantomState.flashT = Math.max(0, phantomState.flashT - dt);
+  if (phantomState.dashT > 0) phantomState.dashT = Math.max(0, phantomState.dashT - dt);
   for (var i = phantomState.clones.length - 1; i >= 0; i--) {
     var c = phantomState.clones[i];
     c.age += dt;
@@ -237,6 +301,12 @@ function phantomButtonAt(p) {
 
 function drawPhantomClones() {
   if (player.ship !== 'phantom') return;
+  if (phantomState.dashT > 0) {
+    var dimg = GIMG[currentSkinImage()];
+    ctx.save(); ctx.globalAlpha = 0.28 * (phantomState.dashT / 0.24);
+    if (dimg && dimg.complete) ctx.drawImage(dimg, phantomState.dashFromX - 40, phantomState.dashFromY - 40, 80, 80);
+    ctx.restore(); ctx.globalAlpha = 1;
+  }
   for (var i = 0; i < phantomState.clones.length; i++) {
     var c = phantomState.clones[i];
     var img = GIMG[currentSkinImage()];
