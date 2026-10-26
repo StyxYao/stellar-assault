@@ -2,7 +2,8 @@
 function bomb(){
   if((state!=='play'&&state!=='boss')||player.bombs<=0) return;
   if(player.ship==='aegis'){
-    if(typeof aegisLaunchForce==='function') aegisLaunchForce();
+    if(typeof aegisRestoreForce==='function' && aegisState.force==='broken') aegisRestoreForce();
+    else if(typeof aegisLaunchForce==='function') aegisLaunchForce();
     return;
   }
   player.bombs--; shake=24; bombT=1.1; bombX=player.x; bombY=player.y; player.invuln=Math.max(player.invuln,0.8); sfx('b_charge',0.55); sfx('bomb_big',0.95); sfx('heavy_missile',0.42);

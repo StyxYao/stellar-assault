@@ -26,6 +26,8 @@ var selectedSkins = { vector: 'void_lance', aegis: 'orbital', phantom: 'quantum'
 var aegisTutorialT = 0;
 
 var AEGIS_CHARGE_MAX = 1.30;
+var AEGIS_CHARGE_BASE_TIME = 0.75;
+var AEGIS_CHARGE_BASE_DAMAGE = 0.75;
 var AEGIS_AUTO_RELEASE = 0.35;
 var AEGIS_CHARGE_COOLDOWN = 0.20;
 var AEGIS_FORCE_RADIUS = 38;
@@ -106,14 +108,17 @@ function aegisShieldMax() {
 }
 function aegisChargeMax() {
   var d = aegisVariant();
-  return AEGIS_CHARGE_MAX * (d && d.chargeTimeMult ? d.chargeTimeMult : 1);
+  return AEGIS_CHARGE_MAX * AEGIS_CHARGE_BASE_TIME * (d && d.chargeTimeMult ? d.chargeTimeMult : 1);
 }
 function aegisChargeDamageMult() {
   var d = aegisVariant();
   return d && d.chargeDamageMult ? d.chargeDamageMult : 1;
 }
 function aegisForceRadius() {
-  var base = [38, 52, 66, 80][Math.max(0, Math.min(3, (aegisState.forceLevel || 1) - 1))];
+  var lv = Math.max(1, Math.min(4, aegisState.forceLevel || 1));
+  // L1 is 40% smaller than before; L4 keeps the original max.
+  var l1 = 38 * 0.60, l4 = 80;
+  var base = l1 + (l4 - l1) * ((lv - 1) / 3);
   var d = aegisVariant();
   return base * (d && d.radiusMult ? d.radiusMult : 1);
 }
@@ -293,23 +298,23 @@ function aegisReleaseCharge() {
   // Damage the stopped normal weapon would have dealt over this charge,
   // then apply the requested 1.35x charge bonus.
   var chargeTime = Math.max(0.35, aegisState.chargeT);
-  var totalDamage = aegisNormalDps() * chargeTime * 1.35 * aegisChargeDamageMult() / (player.normalBuff || 1);
+  var totalDamage = aegisNormalDps() * chargeTime * 1.35 * AEGIS_CHARGE_BASE_DAMAGE * aegisChargeDamageMult() / (player.normalBuff || 1);
   var px = aegisVisualX(), py = player.y - 26;
   if (prof.kind === 'fan') {
     var perFan = totalDamage / prof.count;
     for (var i = 0; i < prof.count; i++) {
       var a = (i - (prof.count - 1) / 2) * 0.095;
       addShot(px, py, Math.sin(a) * 900, -Math.cos(a) * 900, perFan, false, false, true, prof.power >= 4, prof.range);
-      var sf = shots[shots.length - 1]; if (sf) { sf.lenScale = 1.5; sf.widScale = 1.2; }
+      var sf = shots[shots.length - 1]; if (sf) { sf.lenScale = 1.5; sf.widScale = 1.2; sf.chargeLevel = player.specialPower; }
     }
   } else if (prof.kind === 'beam') {
-    aegisBeamCharge(px, totalDamage, 28);
+    aegisBeamCharge(px, totalDamage, 28 + (Math.max(1, player.specialPower) - 1) * 4);
   } else if (prof.kind === 'swarm') {
     var perMissile = totalDamage / 10;
     for (var m = 0; m < 10; m++) {
       var mx = 40 + (W - 80) * (m / 9);
       spawnMissile(mx, player.y - 18, false, perMissile, true, 0, -190, prof.range);
-      var mm = missiles[missiles.length - 1]; if (mm) { mm.lenScale = 1.5; mm.widScale = 1.3; }
+      var mm = missiles[missiles.length - 1]; if (mm) { mm.lenScale = 1.5; mm.widScale = 1.3; mm.chargeLevel = player.specialPower; }
     }
   } else {
     // N: double the normal projectile count, split total damage evenly.
@@ -318,7 +323,7 @@ function aegisReleaseCharge() {
     var countN = baseN * 2;
     for (var n = 0; n < countN; n++) {
       addShot(px + (n - (countN - 1) / 2) * 10, py, 0, -1150, totalDamage / countN, false, false, true, true, prof.range);
-      var sn = shots[shots.length - 1]; if (sn) { sn.lenScale = 1.5; sn.widScale = 1.2; }
+      var sn = shots[shots.length - 1]; if (sn) { sn.lenScale = 1.5; sn.widScale = 1.2; sn.chargeLevel = player.specialPower; }
     }
   }
   if (typeof fx !== 'undefined' && fx) fx.push({ x: px, y: py, t: 0, life: 0.32, kind: 'hitspark', sc: 3.4, color: prof.color });
@@ -375,6 +380,21 @@ function aegisLaneHit() {
   }
 }
 
+function aegisRestoreForce() {
+  if (aegisState.force !== 'broken' || player.bombs <= 0) return false;
+  player.bombs--;
+  aegisState.force = 'attached';
+  aegisState.shield = aegisShieldMax();
+  aegisState.breakT = 0;
+  aegisState.breakFlashT = 0;
+  aegisState.forceX = aegisVisualX();
+  aegisState.forceY = player.y - 42;
+  try { sfx('aegis_force', 0.65); } catch (e) {}
+  try { sfx('b_charge', 0.35); } catch (e) {}
+  try { if (typeof part === 'function') for (var i = 0; i < 18; i++) part(aegisState.forceX, aegisState.forceY, i % 2 ? '#ffd36b' : '#9fe8ff', 1, 180); } catch (e) {}
+  return true;
+}
+
 function aegisLaunchForce() {
   if (state !== 'play' && state !== 'boss') return false;
   if (aegisState.force !== 'attached' || player.bombs <= 0) return false;
@@ -396,6 +416,7 @@ function aegisLaunchForce() {
 
 function aegisTapForce() {
   if (state !== 'play' && state !== 'boss') return;
+  if (aegisState.force === 'broken') { aegisRestoreForce(); return; }
   if (aegisState.force === 'attached') {
     aegisLaunchForce();
   } else if (aegisState.force === 'detached') {
@@ -417,7 +438,7 @@ function aegisShieldBreak() {
   aegisState.breakFlashT = 0.55;
   try { shake = Math.max(shake, 18); } catch (e) {}
   try { sfx('bomb_big', 0.58); } catch (e) {}
-  try { sfx('e_hit', 0.9); } catch (e) {}
+  try { sfx('aegis_force', 0.55); } catch (e) {}
   try { if (typeof part === 'function') for (var i = 0; i < 26; i++) part(aegisState.forceX, aegisState.forceY, i % 2 ? '#ffd36b' : '#ff7a4d', 1, 240); } catch (e) {}
   try { if (typeof boom === 'function') boom(aegisState.forceX, aegisState.forceY, 0.75); } catch (e) {}
 }

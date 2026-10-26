@@ -17,10 +17,12 @@ function drawWingBeams(){
 function drawShots(){
   for(var i=0;i<shots.length;i++){
     var s=shots[i],ang=Math.atan2(s.vx||0,-s.vy);
-    var col=s.wing?'#7fe7ff':(s.special?'#8dff9e':'#ffe6a0');
-    var glow=s.wing?'rgba(80,210,255,0.4)':(s.special?'rgba(80,255,140,0.35)':'rgba(255,170,60,0.35)');
+    var chargeCols=['#9fe8ff','#ffd36b','#c98bff','#ff8a66'];
+    var lvl=s.chargeLevel?Math.max(0,Math.min(3,s.chargeLevel-1)):0;
+    var col=s.chargeLevel?chargeCols[lvl]:(s.wing?'#7fe7ff':(s.special?'#8dff9e':'#ffe6a0'));
+    var glow=s.chargeLevel?'rgba(255,220,120,0.45)':(s.wing?'rgba(80,210,255,0.4)':(s.special?'rgba(80,255,140,0.35)':'rgba(255,170,60,0.35)'));
     ctx.save();ctx.translate(s.x,s.y);ctx.rotate(ang);
-    var bh=(s.laser?32:22)*(s.lenScale||1),bw=2.4*(s.widScale||1);
+    var bh=(s.laser?32:22)*(s.lenScale||1)*(1+0.08*lvl),bw=2.4*(s.widScale||1)*(1+0.06*lvl);
     if(s.max){ctx.fillStyle='rgba(255,215,100,0.16)';ctx.fillRect(-bw/2-1.1,-bh/2-1.1,bw+2.2,bh+2.2);}
     ctx.fillStyle=glow;ctx.fillRect(-(bw+2),-bh/2-2,(bw+2)*2,bh+4);
     ctx.fillStyle=col;ctx.fillRect(-bw/2,-bh/2,bw,bh);
@@ -31,7 +33,7 @@ function drawShots(){
 function drawMissiles(){
   for(var i=0;i<missiles.length;i++){
     var m=missiles[i],ang=Math.atan2(m.vy,m.vx)+Math.PI/2;
-    ctx.save();ctx.translate(m.x,m.y);ctx.rotate(ang);ctx.scale(m.widScale||1,m.lenScale||1);
+    ctx.save();ctx.translate(m.x,m.y);ctx.rotate(ang);ctx.scale((m.widScale||1)*(1+0.05*((m.chargeLevel||1)-1)),(m.lenScale||1)*(1+0.04*((m.chargeLevel||1)-1)));
     if(m.max) ctx.scale(1,1.12);
     if(m.wing) ctx.scale(0.62,0.78);
     // smoke trail
@@ -53,7 +55,7 @@ function drawMissiles(){
     // metallic body
     var mg=ctx.createLinearGradient(-3,0,3,0);
     mg.addColorStop(0,'#4e555e');mg.addColorStop(0.35,'#e9eef4');mg.addColorStop(0.6,'#9aa3ad');mg.addColorStop(1,'#3e444c');
-    ctx.fillStyle=m.max?'#ffe08a':(m.wing?'#bfefff':mg);
+    ctx.fillStyle=m.chargeLevel?(['#9fe8ff','#ffd36b','#c98bff','#ff8a66'][Math.max(0,Math.min(3,m.chargeLevel-1))]):(m.max?'#ffe08a':(m.wing?'#bfefff':mg));
     ctx.beginPath();ctx.moveTo(0,-14);ctx.lineTo(3,-3);ctx.lineTo(3,9);ctx.lineTo(-3,9);ctx.lineTo(-3,-3);ctx.closePath();ctx.fill();
     ctx.strokeStyle='#232930';ctx.lineWidth=0.8;ctx.stroke();
     ctx.fillStyle='rgba(255,255,255,0.55)';ctx.fillRect(-1.2,-9,1.2,13);

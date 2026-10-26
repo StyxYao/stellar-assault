@@ -438,3 +438,12 @@
 - VECTOR bomb base damage is now 200; it no longer applies a 999 instant-kill to enemies or mini-bosses.
 - AEGIS Force collision damage raised to 400 (2x bomb).
 - Bomb still clears enemy bullets and uses normal HP/death handling.
+
+## 0.7.5 — AEGIS charge baseline and Force repair
+
+- AEGIS base charge time and damage reduced 25%.
+- Break SFX changed to explosion/energy.
+- Force flight visual scales with its radius tier.
+- Broken Force can be restored to 100% with the bomb key/Force button.
+- Charged attacks stay anchored to the player after Force launch.
+- Force radius L1 -40%, L4 unchanged, smooth intermediates; stronger tier colors/opacity.

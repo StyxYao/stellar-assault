@@ -65,3 +65,14 @@ W overflow:
 - VECTOR bomb: 200 to every enemy/Boss in the blast; no 999 instant-kill.
 - AEGIS Force contact: 400 per enemy/Boss per launch (2x bomb).
 - Force remains collision-based, not instant lane damage.
+
+## Latest AEGIS tuning
+
+- Baseline AEGIS charge time and damage both -25%; skin multipliers apply after this baseline.
+- Force break now uses explosion + energy SFX, not the hit sound.
+- Charged attacks now anchor to the player even after Force is detached.
+- Broken Force: bomb key / Force button restores 100% shield if a bomb charge is available.
+- Force radius curve: L1 is 40% smaller than L2-old base; L4 stays at 80; L2/L3 interpolate.
+- Force tiers use stronger cyan/gold/purple/red-orange rings and +25% opacity.
+- Force flight visual scales with Force radius tier.
+- N/S/M charge projectiles inherit the current weapon level's color/size and are enlarged.
