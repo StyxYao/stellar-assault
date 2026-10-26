@@ -1,3 +1,5 @@
+> 历史验收快照，PHANTOM 已提前接入；当前进度见 `docs/R2_PROGRESS_AUDIT.md`。
+
 # Steam R2 — VECTOR / AEGIS Skins and Integration
 
 状态：代码与本地预览通过；真机触屏/Windows 仍待 M7  

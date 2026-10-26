@@ -674,3 +674,9 @@
 - Raven cloak duration increased to 4 seconds (others remain 3).
 - Raven cloak attack bonus increased to +70%.
 - Updated Raven variant text and mechanics notes.
+
+## 0.9.20 — R2 audit and menu sound routing
+
+- Menu navigation now uses F (data chirp); confirm uses H+C layered.
+- Preserved PHANTOM best score through save normalization.
+- Added `docs/R2_PROGRESS_AUDIT.md` with R2 gaps, early PHANTOM scope and R3–R9 next steps.

@@ -44,7 +44,7 @@ function normalizeSave(raw) {
     out.ships.aegis.bestScore = Math.max(0, Number(raw.ships.aegis && raw.ships.aegis.bestScore) || 0);
     out.ships.vector.skin = raw.ships.vector && raw.ships.vector.skin || 'void_lance';
     out.ships.aegis.skin = raw.ships.aegis && raw.ships.aegis.skin || 'orbital';
-    out.ships.phantom = { bestScore: 0, skin: (raw.ships.phantom && raw.ships.phantom.skin) || 'quantum', locked: false };
+    out.ships.phantom = { bestScore: Math.max(0, Number(raw.ships.phantom && raw.ships.phantom.bestScore) || 0), skin: (raw.ships.phantom && raw.ships.phantom.skin) || 'quantum', locked: false };
     out.ships.selected = raw.ships.selected === 'aegis' ? 'aegis' : 'vector';
   } else {
     // v1 migration: the old campaign best belongs to VECTOR.
