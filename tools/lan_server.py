@@ -111,7 +111,7 @@ async def handler(ws):
                 room_code = code
                 await send(ws, {"type": "joined", "room": code, "slot": slot, "mode": room["mode"]})
                 await send(room["host"], {"type": "player-joined", "room": code, "slot": slot})
-            elif typ in ("input", "signal", "frame", "loadout"):
+            elif typ in ("input", "signal", "frame", "loadout", "ready", "stage", "broadcast"):
                 room = ROOMS.get(room_code or msg.get("room", ""))
                 if not room:
                     continue
@@ -120,9 +120,13 @@ async def handler(ws):
                 elif typ == "input":
                     msg["slot"] = slot if slot is not None else 1
                     await send(room["host"], msg)
-                elif typ == "loadout":
+                elif typ in ("loadout", "ready", "stage"):
                     msg["slot"] = slot if slot is not None else 1
                     await send(room["host"], msg)
+                elif typ == "broadcast":
+                    for p in room.get("players", []):
+                        if p:
+                            await send(p, msg)
                 else:
                     # signaling is kept for future use; relay to host
                     await send(room["host"], msg)

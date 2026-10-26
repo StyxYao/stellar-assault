@@ -802,3 +802,9 @@
 - Removed the virtual joystick from LAN clients.
 - Touch clients now use full-screen drag with absolute game-coordinate targets.
 - Bottom-right skill zones map to the game's primary/secondary buttons.
+
+## 0.9.39 — LAN ready lobby
+
+- Host-only room now auto-starts when P1 and P2 are both ready.
+- P1 selects stage and loadout; P2 selects loadout only.
+- 30s no-ready timeout randomizes base ships and starts stage 1.

@@ -60,7 +60,14 @@ Host 控制 P1；P2 是远程玩家。
 3. **CREATE 2P ROOM (HOST ONLY)**
 4. 复制 **COPY CLIENT LINK**，分别发给 P1 和 P2
 5. 第一个加入的是 P1，第二个加入的是 P2
-6. 两个槽位都 CONNECTED 后点 **START LAN RUN**
+6. P1 选关卡和机体；P2 只能选机体
+7. P1/P2 各自点 **READY**
+8. 两人都 READY 后 Host 自动开始
+
+如果双方没有在 30 秒内都 READY：
+
+- Host 自动随机分配基准机体
+- 从第一关开始
 
 Host 只做权威模拟和画面转发，不控制玩家。
 
