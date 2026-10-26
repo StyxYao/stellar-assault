@@ -295,6 +295,10 @@ function phantomHitClone(x, y, r) {
 }
 
 function phantomAimTarget() {
+  if (typeof coopEnabled !== 'undefined' && coopEnabled && player2) {
+    var a = { x: player.x, y: player.y }, b = { x: player2.x, y: player2.y };
+    return Math.hypot(a.x - 195, a.y - 500) <= Math.hypot(b.x - 195, b.y - 500) ? a : b;
+  }
   if (player.ship !== 'phantom') return { x: player.x, y: player.y };
   if (phantomState.clones.length) return { x: phantomState.clones[0].x, y: phantomState.clones[0].y };
   if (phantomState.cloakT > 0) return { x: player.x, y: -240 };

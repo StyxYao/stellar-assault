@@ -16,6 +16,7 @@
     "src/app/cloud-save.js",
     "src/game/ships.js",
     "src/game/phantom.js",
+    "src/game/coop.js",
     "src/render/player-hitbox.js",
     "src/render/player.js",
     "src/platform/web/input.js",

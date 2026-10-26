@@ -39,6 +39,7 @@ function drawHUD(){
   if(player.ship!=='aegis'&&player.ship!=='phantom') drawBombBtn();
   if(typeof drawAegisControls==='function') drawAegisControls();
   if(typeof drawPhantomControls==='function') drawPhantomControls();
+  if(typeof coopDrawHUD==='function') coopDrawHUD();
 }
 function drawBanner(){
   if(bannerT<=0||!banner) return;
@@ -152,7 +153,8 @@ function startConfirmPanel(){ return {x:30,y:H*.225,w:W-60,h:H*.50}; }
 function startConfirmButtons(){
   var p=startConfirmPanel();
   return {
-    start:{x:p.x+30,y:p.y+p.h-100,w:p.w-60,h:44},
+    start:{x:p.x+30,y:p.y+p.h-124,w:p.w-60,h:44},
+    coop:{x:p.x+30,y:p.y+p.h-72,w:150,h:20},
     change:{x:p.x+30,y:p.y+p.h-44,w:130,h:30},
     cancel:{x:p.x+p.w-160,y:p.y+p.h-44,w:130,h:30}
   };
@@ -162,6 +164,7 @@ function closeStartConfirm(){ startConfirmOpen=false; }
 function startConfirmAt(p){
   var b=startConfirmButtons();
   if(p.x>=b.start.x&&p.x<=b.start.x+b.start.w&&p.y>=b.start.y&&p.y<=b.start.y+b.start.h) return 'start';
+  if(p.x>=b.coop.x&&p.x<=b.coop.x+b.coop.w&&p.y>=b.coop.y&&p.y<=b.coop.y+b.coop.h) return 'coop';
   if(p.x>=b.change.x&&p.x<=b.change.x+b.change.w&&p.y>=b.change.y&&p.y<=b.change.y+b.change.h) return 'change';
   if(p.x>=b.cancel.x&&p.x<=b.cancel.x+b.cancel.w&&p.y>=b.cancel.y&&p.y<=b.cancel.y+b.cancel.h) return 'cancel';
   var panel=startConfirmPanel();
@@ -195,6 +198,12 @@ function drawStartConfirmOverlay(){
   ctx.fillStyle='#8fb8ca';ctx.font='7px monospace';
   ctx.fillText(sd.trait||'',W/2,p.y+276);
   var b=startConfirmButtons();
+  ctx.fillStyle=(typeof coopEnabled!=='undefined'&&coopEnabled)?'rgba(18,52,42,0.95)':'rgba(6,18,30,0.9)';
+  ctx.fillRect(b.coop.x,b.coop.y,b.coop.w,b.coop.h);
+  ctx.strokeStyle=(typeof coopEnabled!=='undefined'&&coopEnabled)?'#8dffb0':'#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(b.coop.x,b.coop.y,b.coop.w,b.coop.h);
+  ctx.fillStyle=(typeof coopEnabled!=='undefined'&&coopEnabled)?'#baffd0':'#9fb6cf';ctx.font='700 8px monospace';ctx.textAlign='left';
+  ctx.fillText('CO-OP '+(typeof coopEnabled!=='undefined'&&coopEnabled?'ON':'OFF')+' · P2 IJKL / PAD2',b.coop.x+8,b.coop.y+14);
+  ctx.textAlign='center';
   ctx.fillStyle='rgba(50,32,10,0.94)';ctx.fillRect(b.start.x,b.start.y,b.start.w,b.start.h);
   ctx.strokeStyle='#ffd27a';ctx.lineWidth=2;ctx.strokeRect(b.start.x,b.start.y,b.start.w,b.start.h);
   ctx.fillStyle='#ffe7b0';ctx.font='900 15px "Arial Black", Arial, sans-serif';

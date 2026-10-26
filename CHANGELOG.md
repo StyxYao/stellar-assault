@@ -727,3 +727,10 @@
 - Added `docs/WINDOWS_VM_TEST.md`.
 - Added `docs/R3_KICKOFF.md`; R3.0 starts with local two-player vertical slice.
 - Windows VM test is blocked by missing VM/Windows image on the current macOS host.
+
+## 0.9.27 — R3.0 local co-op first slice
+
+- Added CO-OP toggle to the start confirmation.
+- Added P2 VECTOR slot: IJKL / second gamepad, auto-fire, independent HP/lives and U bomb.
+- Added P2 HUD, collisions, respawn and nearest-player enemy aiming.
+- Single-player paths remain active when CO-OP is off.

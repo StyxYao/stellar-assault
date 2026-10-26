@@ -91,6 +91,7 @@ function step(dt){
       if(time-lastShot>(player.odT>0?0.033:0.10)){ lastShot=time; fireNormal(); blasterShot(); }
     }
   }
+  if(typeof coopUpdate==='function') coopUpdate(dt);
   if(bannerT>0) bannerT-=dt;
   if(state==='intro'){
     if(bannerT<=0){ state='play'; stageT=0; }
@@ -225,6 +226,7 @@ function step(dt){
     var edx=e.x-player.x,edy=e.y-player.y;
     var er=ET[e.type].r*(e.transport?1.45:(e.elite?1.6:1.5));
     if(circleOverlap(e.x,e.y,er,player.x,player.y,player.r)) hitPlayer();
+    if(typeof coopEnabled!=='undefined'&&coopEnabled&&player2&&circleOverlap(e.x,e.y,er,player2.x,player2.y,player2.r)) coopHitP2();
     if(e.y>H+70||e.x<-90||e.x>W+90) removeEnemy(i);
   }
 
@@ -240,6 +242,7 @@ function step(dt){
     var ob=orbBullets[oi];if(!ob.owner||ob.owner.hp<=0||enemies.indexOf(ob.owner)<0){orbBullets.splice(oi,1);continue;}
     ob.ang+=ob.spin*dt;ob.x=ob.owner.x+Math.cos(ob.ang)*ob.r;ob.y=ob.owner.y+Math.sin(ob.ang)*ob.r;
     if(circleOverlap(ob.x,ob.y,ob.rad,player.x,player.y,player.r)) hitPlayer();
+    if(typeof coopEnabled!=='undefined'&&coopEnabled&&player2&&circleOverlap(ob.x,ob.y,ob.rad,player2.x,player2.y,player2.r)) coopHitP2();
   }
   updateBlastZones(dt);
   updateODLaserFx(dt);
@@ -396,6 +399,7 @@ function step(dt){
       if(wingmanBlock(b.x,b.y,b.rad)){bullets.splice(i,1);continue;}
       var bdx=b.x-player.x,bdy=b.y-player.y;
       if(circleOverlap(b.x,b.y,b.rad,player.x,player.y,player.r)) hitPlayer();
+      if(typeof coopEnabled!=='undefined'&&coopEnabled&&player2&&circleOverlap(b.x,b.y,b.rad,player2.x,player2.y,player2.r)) coopHitP2();
     }
     if(stage===4&&boss&&boss.phase===0&&boss.hp<=0){ boss.hp=0; startBossPhase1Death(); }
     else if(boss.hp<=0){

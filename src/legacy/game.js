@@ -378,6 +378,7 @@ function drawScene(){
 
   drawBombFx();
   drawPlayerEntity();
+  if(typeof coopDrawP2==='function') coopDrawP2();
   drawPickupMsg();
   drawHUD();
   drawBanner();
@@ -391,10 +392,11 @@ function drawScene(){
 
 window.__beams=function(){return beams.map(function(b){return {ang:+(b.ang*180/Math.PI).toFixed(0),t:+b.t.toFixed(2),charge:b.charge,fire:b.fire,owner:!!b.owner,sweep:b.sweepSpeed||0};});};
 window.__orb=function(){return boss&&boss.crossOrb?{x:Math.round(boss.crossOrb.x),y:Math.round(boss.crossOrb.y),t:+boss.crossOrb.t.toFixed(2)}:null;};
-window.__g=function(){return {state:state,stage:stage,score:score,enemies:enemies.length,bullets:bullets.length,ebullets:ebullets.length,hp:boss?Math.round(boss.hp):0,inv:boss?+(boss.invuln||0).toFixed(2):0,phase:boss?boss.phase:-1,bx:boss?Math.round(boss.x):0,lt:boss?+(boss.laserT.toFixed(1)):0,ut:boss?+(boss.ultT.toFixed(1)):0,uc:boss?+(boss.ultCharge.toFixed(1)):0,style:boss?boss.def.style:'',power:player.specialPower,items:items.length,shots:shots.length,weapon:player.weapon,options:player.options,lives:player.lives,php:player.hp,bombs:player.bombs};};
+window.__g=function(){return {stageT:+stageT.toFixed(1),waveIndex:waveIndex,waveLen:STAGES[stage]?STAGES[stage].waves.length:0,mini:enemies.some(function(e){return !!e.mini;}),state:state,stage:stage,score:score,enemies:enemies.length,bullets:bullets.length,ebullets:ebullets.length,hp:boss?Math.round(boss.hp):0,inv:boss?+(boss.invuln||0).toFixed(2):0,phase:boss?boss.phase:-1,bx:boss?Math.round(boss.x):0,lt:boss?+(boss.laserT.toFixed(1)):0,ut:boss?+(boss.ultT.toFixed(1)):0,uc:boss?+(boss.ultCharge.toFixed(1)):0,style:boss?boss.def.style:'',power:player.specialPower,items:items.length,shots:shots.length,weapon:player.weapon,options:player.options,lives:player.lives,php:player.hp,bombs:player.bombs};};
 window.__god=function(){player.invuln=99999;player.noBlink=true;};
 window.__stage=function(n){startStage(n);};
   window.__runStage=function(n){startAtStage(n);};
+  window.__coop=function(){return {enabled:coopEnabled,p2:player2?{x:+player2.x.toFixed(0),y:+player2.y.toFixed(0),hp:player2.hp,lives:player2.lives,invuln:+player2.invuln.toFixed(1)}:null};};
   window.__selectShip=function(id){setSelectedShip(id,false);var sl=skinList(id);setSelectedSkin(id,sl[0].id,false);};
   window.__power=function(n){player.specialPower=Math.max(1,Math.min(4,n|0));player.power=player.specialPower;};
   window.__enemyHp=function(){return enemies.length?enemies[0].hp:null;};

@@ -112,6 +112,7 @@ function desktopKeyDown(e) {
     if (k === 'escape') { closeStartConfirm(); return; }
     if (k === 'enter' || k === ' ') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) desktopConfirm(); return; }
     if (k === 'v') { closeStartConfirm(); openShipSelect(); return; }
+    if (k === 'p') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); if (typeof coopToggle === 'function') coopToggle(); return; }
     return;
   }
   if (state === 'menu' && typeof skinSelectOpen !== 'undefined' && skinSelectOpen) {

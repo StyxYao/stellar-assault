@@ -84,6 +84,7 @@ function startStage(i){
   setStageBg(STAGES[i].bg);bgScroll=0;bgEdgeScroll=0;
   state='warpIn'; warpT=0.95; glowWarp=1.5; bombT=0; pickupT=0; pickupMsg='';
   player.x=target.x=W/2; player.y=H+90; target.y=H-130; player.invuln=2.0; player.bank=0;
+  if(typeof coopSpawn==='function') coopSpawn();
   stopBgm();bgmPending='';playBgm(STAGES[i].bgm);
   playWarpJet(0.8);
 }

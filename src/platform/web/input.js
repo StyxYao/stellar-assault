@@ -33,6 +33,7 @@ function onDown(e){
     if(typeof startConfirmOpen!=='undefined'&&startConfirmOpen){
       var sch=startConfirmAt(p);
       if(sch==='start'){if(typeof menuConfirmSfx==='function')menuConfirmSfx();closeStartConfirm();startAtStage(selectedStage);}
+      else if(sch==='coop'){if(typeof menuMoveSfx==='function')menuMoveSfx();if(typeof coopToggle==='function')coopToggle();}
       else if(sch==='change'){if(typeof menuMoveSfx==='function')menuMoveSfx();closeStartConfirm();openShipSelect();}
       else if(sch==='cancel'||sch==='outside'){if(typeof menuMoveSfx==='function')menuMoveSfx();closeStartConfirm();}
       return;
