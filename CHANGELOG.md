@@ -641,3 +641,10 @@
 - Each clone selects the nearest enemy/Boss and rotates its copied weapon pattern toward that target.
 - Normal/spread/missile projectiles are rotated after spawning; laser clones use an aimed beam.
 - Clone hitbox remains player-sized.
+
+## 0.9.15 — Forward-firing clone aim
+
+- Clones fire forward only, like the player.
+- Aiming is done by horizontal movement under the target; clones no longer rotate projectile patterns.
+- Clones keep a safe vertical formation near the player.
+- Clone laser visual now matches the player laser palette, width, gradient and endpoint glow.

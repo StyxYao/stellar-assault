@@ -17,9 +17,10 @@
 - HP: 3, except Raven 1.
 - Copy weapon, level and extra bullets at activation.
 - Damage multiplier: 0.5.
-- Autonomous targeting: selects the nearest enemy/Boss and aims the copied weapon at it.
-- Clones stay in a 32px lateral formation around the player instead of flying into enemies.
-- All newly spawned clone projectiles are rotated toward the selected target.
+- Autonomous targeting: selects the nearest enemy/Boss and slides horizontally to align with it.
+- Clones stay near the player vertically and only move sideways to aim; they never charge into enemies.
+- Clones fire forward only, exactly like the player. Projectile patterns are not rotated.
+- Clone laser uses the same palette, width, gradient and endpoint glow as the player laser.
 - Lifetime 25 seconds.
 - Cannot collect items.
 - Base cap: Quantum/Raven 1, Butterfly 2.
