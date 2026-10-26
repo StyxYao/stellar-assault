@@ -210,14 +210,24 @@ function menuSkinButton(){return {x:W/2+6,y:H*.395,w:112,h:38};}
 function drawMenu(){
   paintBg(BGMENU,1)||paintBg(BG1,1);
   ctx.fillStyle='rgba(2,4,12,0.05)';ctx.fillRect(0,0,W,H);
-  var topShade=ctx.createLinearGradient(0,0,0,H*.085);
-  topShade.addColorStop(0,'rgba(1,3,9,0.62)');topShade.addColorStop(1,'rgba(1,3,9,0)');
-  ctx.fillStyle=topShade;ctx.fillRect(0,0,W,H*.085);
+  var menuInfoBottom=false;
+  try { menuInfoBottom=/menuinfo=bottom|#bottom/.test((location.search||'')+' '+(location.hash||'')); } catch(e) {}
+  var infoShade;
+  if(menuInfoBottom){
+    infoShade=ctx.createLinearGradient(0,H*.885,0,H);
+    infoShade.addColorStop(0,'rgba(1,3,9,0)');infoShade.addColorStop(1,'rgba(1,3,9,0.78)');
+    ctx.fillStyle=infoShade;ctx.fillRect(0,H*.885,W,H*.115);
+  }else{
+    infoShade=ctx.createLinearGradient(0,0,0,H*.085);
+    infoShade.addColorStop(0,'rgba(1,3,9,0.62)');infoShade.addColorStop(1,'rgba(1,3,9,0)');
+    ctx.fillStyle=infoShade;ctx.fillRect(0,0,W,H*.085);
+  }
   ctx.textAlign='center';
+  var infoY1=menuInfoBottom?H*.944:H*.031, infoY2=menuInfoBottom?H*.962:H*.049;
   ctx.font='700 9px monospace';ctx.fillStyle='#d8efff';ctx.shadowColor='rgba(70,190,255,0.8)';ctx.shadowBlur=5;
-  ctx.fillText('5 STAGES  ·  5 BOSSES',W/2,H*.031);
+  ctx.fillText('5 STAGES  ·  5 BOSSES',W/2,infoY1);
   ctx.font='7px monospace';ctx.fillStyle='#9fc3d8';ctx.shadowBlur=3;
-  ctx.fillText('DRAG · SHIP FOLLOWS ABOVE FINGER · AUTO-FIRE',W/2,H*.049);
+  ctx.fillText('DRAG · SHIP FOLLOWS ABOVE FINGER · AUTO-FIRE',W/2,infoY2);
   ctx.shadowBlur=0;
   // The poster already contains the STELLAR ASSAULT logo.
   var tg=ctx.createLinearGradient(0,H*0.34,0,H*0.70);
@@ -265,9 +275,11 @@ function drawMenu(){
   } catch(e) {}
 
   // credits: intentionally smaller and quieter
-  ctx.fillStyle='#7f93a8';ctx.font='9px monospace';
-  ctx.fillText('PATTERNS © KENTA CHO · BSD-3   |   ART: USER',W/2,H*0.965);
-  ctx.fillText('SFX: KENNEY SCI-FI SOUNDS (CC0)',W/2,H*0.985);
+  if(!menuInfoBottom){
+    ctx.fillStyle='#7f93a8';ctx.font='9px monospace';
+    ctx.fillText('PATTERNS © KENTA CHO · BSD-3   |   ART: USER',W/2,H*0.965);
+    ctx.fillText('SFX: KENNEY SCI-FI SOUNDS (CC0)',W/2,H*0.985);
+  }
   ctx.textAlign='left';
   drawShipSelectOverlay();
   drawSkinSelectOverlay();

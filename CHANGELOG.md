@@ -475,3 +475,8 @@
 - Moved `5 STAGES · 5 BOSSES` and control hint to the very top of the menu at 9px/7px.
 - Added a subtle top shade for readability.
 - Browser tab title updated to `STELLAR ASSAULT · 5 Stages`.
+
+## 0.8.3 — Bottom info comparison variant
+
+- Added `?menuinfo=bottom` to place `5 STAGES · 5 BOSSES` and the control hint at the very bottom.
+- Default remains the top placement.
