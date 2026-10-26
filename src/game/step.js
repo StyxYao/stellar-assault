@@ -401,7 +401,7 @@ function step(dt){
       for(var k=0;k<30;k++) part(boss.x+rand(-70,70),boss.y+rand(-40,40),'#ffb066',2,220);
       bossDeathBoom(boss);
       bullets.length=0; ebullets.length=0; beams.length=0;
-      score+=1000; player.bombs=Math.min(5,player.bombs+1);
+      score+=1000; player.bombs=Math.min(player.ship==='aegis'?9:5,player.bombs+1);
       if(stage===4){
         finaleT=0;state='finale';shake=48;
         for(var fk=0;fk<18;fk++) phaseFx.push({x:W/2+rand(-120,120),y:H*.44+rand(-100,100),t:-fk*.035,life:3.8,kind:'death'});

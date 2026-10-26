@@ -37,7 +37,7 @@ function hitPlayer(){
     var atMin=player.specialPower<=1;
     var dX=player.x,dY=player.y;
     player.lives--; player.hp=player.maxHp||3; player.invuln=2.2; shake=18;
-    player.specialPower=Math.max(1,player.specialPower-1); player.power=player.specialPower; player.powerXp=0; player.od=0; player.odT=0; player.bombs=2; player.options=Math.max(0,player.options-1); player.wingEntry=player.wingEntry.slice(0,player.options);
+    player.specialPower=Math.max(1,player.specialPower-1); player.power=player.specialPower; player.powerXp=0; player.od=0; player.odT=0; player.bombs=player.ship==='aegis'?3:2; player.options=Math.max(0,player.options-1); player.wingEntry=player.wingEntry.slice(0,player.options);
     rebuildSfxBus();
     player.respawnT=1.3; player.respawnGift=atMin;
     player.x=W/2; player.y=H-130; target.x=player.x; target.y=player.y;
@@ -124,7 +124,7 @@ function collectItem(it){
     else{pickupMsg=gainOD(25)?'OVERDRIVE!':'LIFE MAX +25 OD';}
     score+=250;
   }else{
-    if(player.bombs<5){player.bombs++;pickupMsg=player.ship==='aegis'?'FORCE CHARGE +1':'BOMB +1';}
+    if(player.bombs<(player.ship==='aegis'?9:5)){player.bombs++;pickupMsg=player.ship==='aegis'?'FORCE CHARGE +1':'BOMB +1';}
     else{pickupMsg=gainOD(15)?'OVERDRIVE!':'BOMB MAX +15 OD';}
     score+=30;
   }

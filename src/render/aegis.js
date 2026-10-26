@@ -14,7 +14,8 @@ function aegisSkinAccent() {
   return '#ffb347';
 }
 function drawForceField(x, y, size, alpha, spin, color) {
-  var img = (typeof GIMG !== 'undefined') ? GIMG.aegis_field : null;
+  var lvl = Math.max(1, Math.min(4, aegisState.forceLevel || 1));
+  var img = (typeof GIMG !== 'undefined') ? (GIMG['aegis_field' + lvl] || GIMG.aegis_field) : null;
   ctx.save();
   ctx.globalCompositeOperation = 'lighter';
   if (img && img.complete) {
@@ -154,18 +155,6 @@ function drawAegisShipFx() {
     ctx.fillStyle = core; ctx.beginPath(); ctx.arc(fx0, fy0, 26, 0, TAU); ctx.fill();
     ctx.fillStyle = aegisForceColor(); ctx.globalAlpha = 0.9; ctx.beginPath(); ctx.arc(fx0, fy0, 9, 0, TAU); ctx.fill();
     ctx.fillStyle = '#fff5cf'; ctx.beginPath(); ctx.arc(fx0, fy0, 4, 0, TAU); ctx.fill();
-    var fr = aegisForceRadius(), fc = aegisForceColor();
-    ctx.globalAlpha = 0.55 + 0.25 * Math.sin(time * 3);
-    ctx.strokeStyle = fc; ctx.lineWidth = 2.2;
-    for (var fi = 0; fi < 4; fi++) {
-      var fa0 = time * 0.35 + fi * Math.PI / 2;
-      ctx.beginPath(); ctx.arc(fx0, fy0, fr, fa0, fa0 + 0.50); ctx.stroke();
-    }
-    ctx.globalAlpha = 0.72; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.arc(fx0, fy0, fr, 0, TAU); ctx.stroke();
-    var fglow = ctx.createRadialGradient(fx0, fy0, fr * 0.40, fx0, fy0, fr * 1.25);
-    fglow.addColorStop(0, 'rgba(0,0,0,0)'); fglow.addColorStop(0.72, 'rgba(255,255,255,0.05)'); fglow.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.globalAlpha = 0.30; ctx.fillStyle = fglow; ctx.beginPath(); ctx.arc(fx0, fy0, fr * 1.25, 0, TAU); ctx.fill();
   } else if (aegisState.force === 'detached' || aegisState.force === 'returning') {
     if (aegisState.force === 'detached') {
       var tg = ctx.createLinearGradient(fx0, fy0, fx0, fy0 + 110);

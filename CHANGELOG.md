@@ -454,3 +454,11 @@
 - SKIN terminology changed to VARIANT in the menu and overlays.
 - Ship cards show a gameplay trait summary.
 - Variant cards show HP/shield/charge/damage/post-OD traits.
+
+## 0.7.6 — AEGIS Force fixes and bomb cap
+
+- AEGIS no longer gets wingmen when starting later stages.
+- AEGIS starts with 3 Force charges; max increased to 9.
+- Force field asset recentered; duplicate ring removed.
+- Force fields now use four level-tinted assets.
+- Added Force core candidate art for selection.
