@@ -605,3 +605,12 @@
 - Removed only the black background, outer frame and bottom caption remnants.
 - Preserved the full wings, talons and floating fragments.
 - Output remains 80×80 with no redraw or mirroring.
+
+## 0.9.10 — Phantom playable prototype
+
+- Unlocked Phantom and its three variants.
+- Added cloak + decoy clone skill with charge pickups.
+- Clones copy the current full weapon/level, deal 50% damage, auto-fire, take hits and expire.
+- Added clone caps, W upgrades, death reset and oldest-clone replacement.
+- Added Phantom HUD, skill button and selection traits.
+- Enemy/boss aiming now prefers clones and ignores a cloaked player without clones.

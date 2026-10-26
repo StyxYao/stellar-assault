@@ -2,7 +2,8 @@
 // R1 scope: sandbox mechanics only; no campaign rework.
 var SHIP_DEFS = {
   vector: { id: 'vector', label: 'VECTOR', subtitle: 'BALANCED · WINGMAN', trait: 'FIREPOWER WINGMEN · FULL-SCREEN BOMB' },
-  aegis: { id: 'aegis', label: 'AEGIS', subtitle: 'FORCE · CHARGE', trait: 'FORCE SHIELD · CHARGE CANNON' }
+  aegis: { id: 'aegis', label: 'AEGIS', subtitle: 'FORCE · CHARGE', trait: 'FORCE SHIELD · CHARGE CANNON' },
+  phantom: { id: 'phantom', label: 'PHANTOM', subtitle: 'CLOAK · CLONE', trait: 'STEALTH · DECOY CLONES' }
 };
 var selectedShip = 'vector';
 var SHIP_SKINS = {
@@ -17,9 +18,9 @@ var SHIP_SKINS = {
     { id: 'temporal', label: 'TEMPORAL WANDERER', image: 'sk_aegis_temporal', ox: 0.5, oy: 1, shieldMult: 1.15, radiusMult: 1.15, chargeTimeMult: 0.7, chargeDamageMult: 0.8, postOdBuff: 0.3, trait: 'SHD +15% · CHG -30% · DMG -20% · OD-END +30%' }
   ],
   phantom: [
-    { id: 'quantum', label: 'QUANTUM HUNTER', image: 'sk_phantom_quantum' },
-    { id: 'raven', label: 'PHANTOM RAVEN', image: 'sk_phantom_raven' },
-    { id: 'butterfly', label: 'PHANTOM BUTTERFLY', image: 'sk_phantom_butterfly', trait: 'CLONE SWARM · MULTI-HIT' }
+    { id: 'quantum', label: 'QUANTUM HUNTER', image: 'sk_phantom_quantum', maxHp: 3, cloakBuff: 0.3, cloneHp: 3, trait: 'CLOAK +30% · CLONE HP 3' },
+    { id: 'raven', label: 'PHANTOM RAVEN', image: 'sk_phantom_raven', maxHp: 3, cloakBuff: 0.6, cloneHp: 1, trait: 'CLOAK +60% · CLONE HP 1' },
+    { id: 'butterfly', label: 'PHANTOM BUTTERFLY', image: 'sk_phantom_butterfly', maxHp: 3, cloakBuff: 0, cloneHp: 3, trait: '2 CLONES · CAP 2→4' }
   ]
 };
 var selectedSkins = { vector: 'void_lance', aegis: 'orbital', phantom: 'quantum' };
@@ -166,10 +167,11 @@ function initSelectedSkins() {
     var d = SaveStore.data.ships;
     if (d.vector && d.vector.skin) setSelectedSkin('vector', d.vector.skin, false);
     if (d.aegis && d.aegis.skin) setSelectedSkin('aegis', d.aegis.skin, false);
+    if (d.phantom && d.phantom.skin) setSelectedSkin('phantom', d.phantom.skin, false);
   } catch (e) {}
 }
 function setSelectedShip(id, persist) {
-  id = id === 'aegis' ? 'aegis' : 'vector';
+  id = (id === 'aegis' || id === 'phantom') ? id : 'vector';
   selectedShip = id;
   if (persist !== false && typeof SaveStore !== 'undefined' && SaveStore.data) {
     SaveStore.data.ships.selected = id;

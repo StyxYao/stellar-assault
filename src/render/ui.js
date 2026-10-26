@@ -24,10 +24,12 @@ function drawHUD(){
   var hpx='HP ';for(var hi=0;hi<player.maxHp;hi++)hpx+=(hi<player.hp?'●':'○');
   ctx.fillStyle='#8dff9e';ctx.fillText(hpx,16,H-78);ctx.fillStyle='#cfe0f0';
   if(player.ship==='aegis'){ctx.fillStyle='#9fe8ff';ctx.fillText('FORCE · SHIELD '+Math.round(aegisState.shield/aegisShieldMax()*100)+'%',16,H-60);ctx.fillStyle='#cfe0f0';}
+  else if(player.ship==='phantom'){ctx.fillStyle='#c9a0ff';ctx.fillText('CLONES '+phantomState.clones.length+'/'+phantomState.cap+' · CLOAK '+phantomState.cloakT.toFixed(1),16,H-60);ctx.fillStyle='#cfe0f0';}
   else ctx.fillText('WING '+player.options+'·P'+player.wingPower,16,H-60);
-  ctx.fillText('SHIPS '+player.lives,16,H-42);ctx.fillText((player.ship==='aegis'?'FORCE ':'BOMB ')+player.bombs,16,H-24);
-  if(player.ship!=='aegis') drawBombBtn();
+  ctx.fillText('SHIPS '+player.lives,16,H-42);ctx.fillText((player.ship==='aegis'?'FORCE ':(player.ship==='phantom'?'PHASE ':'BOMB '))+player.bombs,16,H-24);
+  if(player.ship!=='aegis'&&player.ship!=='phantom') drawBombBtn();
   if(typeof drawAegisControls==='function') drawAegisControls();
+  if(typeof drawPhantomControls==='function') drawPhantomControls();
 }
 function drawBanner(){
   if(bannerT<=0||!banner) return;
@@ -56,7 +58,7 @@ function shipSelectRows(){
   var defs=[
     {id:'vector',name:'VECTOR',role:'BALANCED · WINGMAN',trait:'FIREPOWER WINGMEN · FULL-SCREEN BOMB',status:'AVAILABLE',color:'#9fe8ff',image:'sk_vector_void_lance'},
     {id:'aegis',name:'AEGIS',role:'FORCE · CHARGE',trait:'FORCE SHIELD · CHARGE CANNON',status:'AVAILABLE',color:'#ffd36b',image:'sk_aegis_orbital'},
-    {id:'phantom',name:'PHANTOM',role:'',trait:'FRAME PREVIEW ONLY',status:'COMING SOON',color:'#c98bff',image:'sk_phantom_quantum'}
+    {id:'phantom',name:'PHANTOM',role:'CLOAK · CLONE',trait:'STEALTH · DECOY CLONES',status:'AVAILABLE',color:'#c98bff',image:'sk_phantom_quantum'}
   ];
   for(var i=0;i<defs.length;i++) rows.push({i:i,x:p.x+14,y:start+i*(h+gap),w:p.w-28,h:h,def:defs[i]});
   return rows;
@@ -64,13 +66,12 @@ function shipSelectRows(){
 function openShipSelect(){
   skinSelectOpen=false;
   shipSelectOpen=true;
-  shipSelectIndex=selectedShip==='aegis'?1:0;
+  shipSelectIndex=selectedShip==='aegis'?1:(selectedShip==='phantom'?2:0);
 }
 function closeShipSelect(){shipSelectOpen=false;}
 function shipSelectChoose(i){
   if(i<0||i>2) return false;
-  if(i===2) return false;
-  setSelectedShip(i===0?'vector':'aegis');
+  setSelectedShip(i===0?'vector':(i===1?'aegis':'phantom'));
   shipSelectOpen=false;
   openSkinSelect();
   return true;
@@ -239,7 +240,7 @@ function drawShipSelectOverlay(){
   ctx.fillStyle='#9fb6cf';ctx.font='700 14px Arial, sans-serif';ctx.textAlign='center';ctx.fillText('×',cb.x+cb.w/2,cb.y+17);
   var rows=shipSelectRows();
   for(var i=0;i<rows.length;i++){
-    var r=rows[i],d=r.def,disabled=d.id==='phantom',sel=shipSelectIndex===i;
+    var r=rows[i],d=r.def,disabled=false,sel=shipSelectIndex===i;
     ctx.fillStyle=disabled?'rgba(14,10,24,0.82)':'rgba(7,22,36,0.86)';ctx.fillRect(r.x,r.y,r.w,r.h);
     ctx.strokeStyle=disabled?'rgba(120,90,150,0.55)':(sel?'#ffd36b':(selectedShip===d.id?'#9fe8ff':'#31536a'));
     ctx.lineWidth=sel?2.4:1.2;ctx.strokeRect(r.x,r.y,r.w,r.h);

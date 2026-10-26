@@ -55,7 +55,7 @@ function ultDread(){
 function ultHive(){
   var origins=[{x:boss.x-70,y:boss.y+18},{x:boss.x+70,y:boss.y+18},{x:boss.x,y:boss.y+8}];
   for(var o=0;o<origins.length;o++){
-    var ox=origins[o].x,oy=origins[o].y,base=Math.atan2(player.y-oy,player.x-ox);
+    var ox=origins[o].x,oy=origins[o].y,ptU=phantomAimTarget(),base=Math.atan2(ptU.y-oy,ptU.x-ox);
     for(var r=0;r<2;r++){
       var n=16,sp=92+r*34,gw=0.62,gapR=base+r*0.18;
       for(var i=0;i<n;i++){

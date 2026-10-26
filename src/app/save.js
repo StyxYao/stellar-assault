@@ -5,7 +5,7 @@ var SAVE_STORAGE_KEY = 'stellar-assault-save-v1';
 var DEFAULT_SAVE = {
   version: SAVE_VERSION,
   campaign: { unlockedStage: 4, bestScore: 0, clears: 0, lastStage: 0 },
-  ships: { vector: { bestScore: 0, skin: 'void_lance' }, aegis: { bestScore: 0, skin: 'orbital' }, phantom: { bestScore: 0, skin: 'quantum', locked: true }, selected: 'vector' },
+  ships: { vector: { bestScore: 0, skin: 'void_lance' }, aegis: { bestScore: 0, skin: 'orbital' }, phantom: { bestScore: 0, skin: 'quantum', locked: false }, selected: 'vector' },
   settings: { master: 1, bgm: 1, sfx: 1, fullscreen: false, language: 'zh', difficulty: 'normal', aegisTutorialSeen: false },
   stats: { runs: 0, gameOvers: 0, wins: 0 },
   updatedAt: 0
@@ -44,7 +44,7 @@ function normalizeSave(raw) {
     out.ships.aegis.bestScore = Math.max(0, Number(raw.ships.aegis && raw.ships.aegis.bestScore) || 0);
     out.ships.vector.skin = raw.ships.vector && raw.ships.vector.skin || 'void_lance';
     out.ships.aegis.skin = raw.ships.aegis && raw.ships.aegis.skin || 'orbital';
-    out.ships.phantom = { bestScore: 0, skin: (raw.ships.phantom && raw.ships.phantom.skin) || 'quantum', locked: true };
+    out.ships.phantom = { bestScore: 0, skin: (raw.ships.phantom && raw.ships.phantom.skin) || 'quantum', locked: false };
     out.ships.selected = raw.ships.selected === 'aegis' ? 'aegis' : 'vector';
   } else {
     // v1 migration: the old campaign best belongs to VECTOR.

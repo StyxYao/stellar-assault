@@ -6,6 +6,7 @@ function bomb(){
     else if(typeof aegisLaunchForce==='function') aegisLaunchForce();
     return;
   }
+  if(player.ship==='phantom'){ if(typeof phantomSkill==='function') phantomSkill(); return; }
   player.bombs--; shake=24; bombT=1.1; bombX=player.x; bombY=player.y; player.invuln=Math.max(player.invuln,0.8); sfx('b_charge',0.55); sfx('bomb_big',0.95); sfx('heavy_missile',0.42);
   for(var bp=0;bp<42;bp++) part(bombX,bombY,bp%2?'#bff4ff':'#ffd28a',1,320);
   for(var i=0;i<bullets.length;i++) part(bullets[i].x,bullets[i].y,'#9fe8ff',1,150);
@@ -37,12 +38,13 @@ function hitPlayer(){
     var atMin=player.specialPower<=1;
     var dX=player.x,dY=player.y;
     player.lives--; player.hp=player.maxHp||3; player.invuln=2.2; shake=18;
-    player.specialPower=Math.max(1,player.specialPower-1); player.power=player.specialPower; player.powerXp=0; player.od=0; player.odT=0; player.bombs=player.ship==='aegis'?3:2; player.options=Math.max(0,player.options-1); player.wingEntry=player.wingEntry.slice(0,player.options);
+    player.specialPower=Math.max(1,player.specialPower-1); player.power=player.specialPower; player.powerXp=0; player.od=0; player.odT=0; player.bombs=(player.ship==='aegis'||player.ship==='phantom')?3:2; player.options=Math.max(0,player.options-1); player.wingEntry=player.wingEntry.slice(0,player.options);
     rebuildSfxBus();
+    if(player.ship==='phantom'&&typeof phantomOnDeath==='function') phantomOnDeath();
     player.respawnT=1.3; player.respawnGift=atMin;
     player.x=W/2; player.y=H-130; target.x=player.x; target.y=player.y;
     boom(dX,dY,1.5,'player');
-    if(player.lives<=0){ player.respawnT=0; state='over'; if(player.ship==='aegis'&&typeof aegisOnDeath==='function') aegisOnDeath(); if(typeof recordRunEnd==='function') recordRunEnd(false); playBgm('m5'); }
+    if(player.lives<=0){ player.respawnT=0; state='over'; if(player.ship==='aegis'&&typeof aegisOnDeath==='function') aegisOnDeath(); if(player.ship==='phantom'&&typeof phantomOnDeath==='function') phantomOnDeath(); if(typeof recordRunEnd==='function') recordRunEnd(false); playBgm('m5'); }
   }
 }
 function removeEnemy(idx){
@@ -114,7 +116,8 @@ function collectItem(it){
     var at=ammoType(it);applySpecial(at);score+=70;pickupMsg='WEAPON · '+weaponName()+' LV'+player.specialPower+(player.specialPower>=4?' MAX':'');
   }else if(t==='S'||t==='L'||t==='M'){ applySpecial(t); score+=80; pickupMsg=weaponName()+' LV'+player.specialPower+(player.specialPower>=4?' MAX':''); }
   else if(t==='W'){
-    if(player.ship==='aegis'){
+    if(player.ship==='phantom'){ if(typeof phantomCollectW==='function') phantomCollectW(); }
+    else if(player.ship==='aegis'){
       if(typeof aegisForcePickup==='function') aegisForcePickup();
     }else if(player.options<4||player.wingPower<3){addWingman();pickupMsg='WING '+player.options+' P'+player.wingPower;}
     else{pickupMsg=gainOD(15)?'OVERDRIVE!':'WING MAX +15 OD';}
@@ -124,9 +127,10 @@ function collectItem(it){
     else{pickupMsg=gainOD(25)?'OVERDRIVE!':'LIFE MAX +25 OD';}
     score+=250;
   }else{
-    if(player.bombs<(player.ship==='aegis'?9:5)){player.bombs++;pickupMsg=player.ship==='aegis'?'FORCE CHARGE +1':'BOMB +1';}
+    if(player.ship==='phantom'){ if(typeof phantomCollectB==='function') phantomCollectB(); }
+    else if(player.bombs<(player.ship==='aegis'?9:5)){player.bombs++;pickupMsg=player.ship==='aegis'?'FORCE CHARGE +1':'BOMB +1';}
     else{pickupMsg=gainOD(15)?'OVERDRIVE!':'BOMB MAX +15 OD';}
-    score+=30;
+    if(player.ship!=='phantom') score+=30;
   }
   part(it.x,it.y,'#9fe8ff',10,120);
   sfx('pickup_real',0.48); if(t==='1UP') playOneUp();

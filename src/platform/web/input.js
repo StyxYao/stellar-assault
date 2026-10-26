@@ -20,6 +20,7 @@ function onDown(e){
     if(ab==='charge'){aegisTapCharge();return;}
     if(ab==='force'){aegisTapForce();return;}
   }
+  if(player&&player.ship==='phantom'&&(state==='play'||state==='boss')&&typeof phantomButtonAt==='function'&&phantomButtonAt(p)){phantomSkill();return;}
   if(e.pointerType==='mouse'&&(state==='play'||state==='boss')&&typeof desktopPrimaryFire==='function') desktopPrimaryFire();
   if(state==='menu'){
     if(!audioReady){ audioReady=true; playBgm('m'); }
@@ -38,7 +39,7 @@ function onDown(e){
     }
     if(typeof shipSelectOpen!=='undefined'&&shipSelectOpen){
       var hit=shipSelectAt(p);
-      if(typeof hit==='number'){ shipSelectIndex=hit; if(hit<2) shipSelectChoose(hit); return; }
+      if(typeof hit==='number'){ shipSelectIndex=hit; if(hit<3) shipSelectChoose(hit); return; }
       if(hit==='close'||hit==='outside') closeShipSelect();
       return;
     }

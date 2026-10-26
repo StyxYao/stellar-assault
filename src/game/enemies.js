@@ -46,7 +46,7 @@ function spawnWave(w){
     var ehp=Math.round(ET[w.type].hp*hpScale*((w.elite&&(n<=2||i===0))?0.85:1));
     var e={type:w.type,x:x,y:y,baseX:baseX,tx:tx,ty:ty,mode:mode,entering:(mode==='pincer'||mode==='turret'||mode==='orbitEnter'||mode==='ringEnter'||mode==='arc'),t:0,phase:i*0.7,spd:w.spd,hp:ehp,max:ehp,fireT:w.fodder?6.0+Math.random()*3.0:0.8+Math.random()*0.8,flash:0,noFire:!!w.noFire,aggr:w.aggr||1,role:w.role||'',visT:0,elite:!!w.elite&&(n<=2||i===0),first:(i===0&&waveIndex%2===0)};
     if(mode==='dive'){
-      var a=Math.atan2(player.y-y,player.x-x);
+      var ptDive=phantomAimTarget(),a=Math.atan2(ptDive.y-y,ptDive.x-x);
       e.vx=Math.cos(a)*w.spd; e.vy=Math.sin(a)*w.spd;
     }
     if(mode==='cross'){
@@ -127,7 +127,7 @@ function miniBossFire(e,ra){
     if(e.miniAtk%(beat*2)===0&&beams.length<3)spawnBeam(e.x,e.y+8,ra,900,8,.8,.28,1,'#ff9a3a',false,e);
   }else if(e.type===11){                // MOBIUS: ring barrage with fast arcs
     if(e.miniAtk%beat===0){
-      var gap=Math.atan2(player.y-e.y,player.x-e.x);
+      var ptGap=phantomAimTarget(),gap=Math.atan2(ptGap.y-e.y,ptGap.x-e.x);
       for(var k=0;k<12;k++){
         var a2=k/12*TAU+time*.2,da=Math.atan2(Math.sin(a2-gap),Math.cos(a2-gap));
         if(Math.abs(da)<.78)continue;
@@ -172,7 +172,7 @@ function fireEnemy(e){
   if(e.transport) return;
   if(e.visT!==undefined&&e.visT<0.22) return;
   if(bullets.length+ebullets.length>240) return;
-  var ra=Math.atan2(player.y-e.y,player.x-e.x);
+  var ptRa=phantomAimTarget(),ra=Math.atan2(ptRa.y-e.y,ptRa.x-e.x);
   if(e.mini){miniBossFire(e,ra);return;}
   if(e.type>=9){s5FireEnemy(e,ra);return;}
   if(e.type===9){
@@ -230,7 +230,7 @@ function fireEnemy(e){
     for(var ri=-1;ri<=1;ri++){var rA=ra+ri*0.13;ebullets.push({x:e.x,y:e.y,vx:Math.cos(rA)*175,vy:Math.sin(rA)*175,rad:5,type:1});}
     sfx('e_shot',0.2);return;
   }
-  var et=ET[e.type],a=Math.atan2(player.y-e.y,player.x-e.x),sp=(140+stage*10)*Math.max(0.7,e.aggr||1);
+  var ptFire=phantomAimTarget(),et=ET[e.type],a=Math.atan2(ptFire.y-e.y,ptFire.x-e.x),sp=(140+stage*10)*Math.max(0.7,e.aggr||1);
   if(e.elite){
     if(beams.length<4&&Math.random()<0.28) spawnBeam(e.x,e.y,a,1500,18,1.0,0.4,1,bossBeamColor(),false,e);
     for(var i=0;i<10;i++){var ang=i/10*TAU+time*0.2;ebullets.push({x:e.x,y:e.y,vx:Math.cos(ang)*95,vy:Math.sin(ang)*95,rad:5.5,type:2});}

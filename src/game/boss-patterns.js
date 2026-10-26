@@ -44,7 +44,7 @@ function bossWall(){
 }
 function bossBroadside(){
   if(!boss||boss.invuln>0) return;
-  var ba=Math.atan2(player.y-(boss.y+24),player.x-boss.x);
+  var ptBs=phantomAimTarget(),ba=Math.atan2(ptBs.y-(boss.y+24),ptBs.x-boss.x);
   spawnBeam(boss.x-78,boss.y+24,ba,1600,20,1.2,0.42,1,bossBeamColor(),true,boss);
   spawnBeam(boss.x+78,boss.y+24,ba,1600,20,1.2,0.42,1,bossBeamColor(),true,boss);
   shake=Math.max(shake,5);
@@ -149,7 +149,7 @@ function bossRotatingLaser(){
   if(!boss||boss.invuln>0) return;
   if(beams.length>4) return;
   var ey=boss.y+18;
-  var base=Math.atan2(player.y-ey,player.x-boss.x);
+  var ptBc=phantomAimTarget(),base=Math.atan2(ptBc.y-ey,ptBc.x-boss.x);
   // two side cannons converge toward the target, then reverse into a widening fan.
   var sides=[boss.x-78,boss.x+78];
   for(var k=0;k<2;k++){
@@ -197,7 +197,7 @@ function bossEchoCross(){
   for(var i=0;i<4;i++){
     var a=time*.35+i*Math.PI/2;
     var ex=boss.x+Math.cos(a)*110,ey=boss.y+Math.sin(a)*72;
-    var ta=Math.atan2(player.y-ey,player.x-ex)+(i-1.5)*0.035;
+    var ptTg=phantomAimTarget(),ta=Math.atan2(ptTg.y-ey,ptTg.x-ex)+(i-1.5)*0.035;
     spawnBeam(ex,ey,ta,1200,8,0.72,0.28,1,cols[i],false,null);
   }
   sfx('e_charge',0.22);
