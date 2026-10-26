@@ -559,3 +559,10 @@
 - Pickup magnet radius increased 50% (40 → 60).
 - Attached shield only checks a 12px core radius; Force radius applies to launch only.
 - N triple burst now locks normal fire for 0.2s after the final volley; OD charge shots are unaffected.
+
+## 0.9.3 — OD laser alignment, Force return speed, boss clear
+
+- AEGIS OD auto-charged attacks always reach release threshold, so OD laser uses the same color/width as normal charge.
+- Force return speed is now 420 px/s, matching launch speed.
+- Launched Force clears enemy bullets, beams and orbiting orbs; clear radius increased.
+- Covers large boss projectiles and rotating boss attacks across all stages.

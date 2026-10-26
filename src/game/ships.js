@@ -446,7 +446,7 @@ function aegisAutoChargedAttack() {
   var lv = Math.max(1, Math.min(4, player.specialPower || 1));
   var baseT = lv <= 1 ? 0.35 : (lv === 2 ? 0.80 : 1.30);
   var scale = aegisChargeMax() / AEGIS_CHARGE_MAX;
-  aegisState.chargeT = baseT * scale;
+  aegisState.chargeT = Math.max(0.36, baseT * scale);
   aegisReleaseCharge();
   aegisState.cooldown = 0;
 }
@@ -462,7 +462,7 @@ function aegisShieldBreak() {
 
 function aegisForceCollide(dt) {
   if (aegisState.force !== 'detached') return;
-  var fx = aegisState.forceX, fy = aegisState.forceY, rad = aegisForceRadius() + 18;
+  var fx = aegisState.forceX, fy = aegisState.forceY, rad = aegisForceRadius() + 30;
   // The Force clears bullets it physically passes through.
   if (typeof ebullets !== 'undefined' && ebullets) {
     for (var bi = ebullets.length - 1; bi >= 0; bi--) {
@@ -470,6 +470,17 @@ function aegisForceCollide(dt) {
       if (Math.hypot(b.x - fx, b.y - fy) < rad + 5) {
         if (typeof part === 'function') part(b.x, b.y, aegisForceColor(), 1, 130);
         ebullets.splice(bi, 1);
+      }
+    }
+  }
+  if (typeof orbBullets !== 'undefined' && orbBullets) {
+    for (var oi = orbBullets.length - 1; oi >= 0; oi--) {
+      var ob = orbBullets[oi];
+      var ox = ob.owner ? ob.owner.x + Math.cos(ob.ang) * ob.r : 0;
+      var oy = ob.owner ? ob.owner.y + Math.sin(ob.ang) * ob.r : 0;
+      if (Math.hypot(ox - fx, oy - fy) < rad + (ob.rad || 6)) {
+        if (typeof part === 'function') part(ox, oy, aegisForceColor(), 4, 150);
+        orbBullets.splice(oi, 1);
       }
     }
   }
@@ -606,9 +617,14 @@ function updateAegis(dt) {
     if (aegisState.forceY < -40) aegisState.force = 'returning';
   } else if (aegisState.force === 'returning') {
     var tx = aegisVisualX(), ty = player.y;
-    aegisState.forceX += (tx - aegisState.forceX) * Math.min(1, dt * 12);
-    aegisState.forceY += (ty - aegisState.forceY) * Math.min(1, dt * 12);
-    if (Math.hypot(tx - aegisState.forceX, ty - aegisState.forceY) < 8) aegisState.force = 'attached';
+    var rdx = tx - aegisState.forceX, rdy = ty - aegisState.forceY;
+    var rd = Math.hypot(rdx, rdy);
+    if (rd > 0.01) {
+      var rstep = Math.min(rd, 420 * dt);
+      aegisState.forceX += rdx / rd * rstep;
+      aegisState.forceY += rdy / rd * rstep;
+    }
+    if (rd < 8) aegisState.force = 'attached';
   }
 }
 
