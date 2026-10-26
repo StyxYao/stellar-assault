@@ -10,13 +10,15 @@
 - Invulnerable.
 - Body is semi-transparent.
 - Enemies prefer clones; with no clone, targeted attacks receive an off-screen aim point.
-- Damage buff: Quantum +30%, Raven +60%, Butterfly +0%.
+- Damage buff: Quantum +30%, Raven +70%, Butterfly +0%.
+- Cloak duration: 3s, except Raven 4s.
+- Clones always deal 50% of the body's base weapon damage and never inherit the cloak damage buff.
 
 ## Clones
 - Spawn at the activation position (offset to the side so they are visible).
 - HP: 3, except Raven 1.
 - Copy weapon, level and extra bullets at activation.
-- Damage multiplier: 0.5.
+- Damage multiplier: exactly 0.5 of the body's base damage; cloak buff is excluded.
 - Autonomous targeting: selects the nearest enemy/Boss and slides horizontally to align with it.
 - Clones stay near the player vertically and only move sideways to aim; they never charge into enemies.
 - Clones fire forward only, exactly like the player. Projectile patterns are not rotated.

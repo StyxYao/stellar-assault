@@ -9,7 +9,8 @@ var phantomState = {
   flashT: 0,
   dashT: 0,
   dashFromX: 0,
-  dashFromY: 0
+  dashFromY: 0,
+  cloneFiring: false
 };
 
 function phantomSkinId() { return (selectedSkins && selectedSkins.phantom) || 'quantum'; }
@@ -32,8 +33,8 @@ function phantomReset() {
 function phantomOnDeath() { phantomReset(); }
 
 function phantomDamageMult() {
-  if (player.ship !== 'phantom' || phantomState.cloakT <= 0) return 1;
-  if (phantomIsRaven()) return 1.6;
+  if (player.ship !== 'phantom' || phantomState.cloakT <= 0 || phantomState.cloneFiring) return 1;
+  if (phantomIsRaven()) return 1.7;
   if (phantomIsButterfly()) return 1;
   return 1.3;
 }
@@ -126,9 +127,10 @@ function phantomSkill() {
   if ((state !== 'play' && state !== 'boss') || player.ship !== 'phantom') return false;
   if (player.bombs <= 0) return false;
   player.bombs--;
-  phantomState.cloakT = 3.0;
+  var cloakDur = phantomIsRaven() ? 4.0 : 3.0;
+  phantomState.cloakT = cloakDur;
   phantomState.flashT = 0.55;
-  player.invuln = Math.max(player.invuln, 3.2);
+  player.invuln = Math.max(player.invuln, cloakDur + 0.2);
   var n = phantomIsButterfly() ? 2 : 1;
   var side = phantomState.clones.length ? -1 : 1;
   for (var i = 0; i < n; i++) {
@@ -199,10 +201,12 @@ function phantomCloneFire(c) {
   player.weapon = c.weapon; player.specialPower = c.power;
   player.extraBullets = c.extra; player.damageMult = (c.damageMult || 1) * 0.5;
   player.normalBuff = 1; player.odT = 0;
+  phantomState.cloneFiring = true;
   if (c.weapon === 'spread') fireSpread();
   else if (c.weapon === 'missile') launchMissiles();
   else if (c.weapon === 'laser') phantomFireLaser(c);
   else fireNormal();
+  phantomState.cloneFiring = false;
   player.x = save.x; player.y = save.y; player.weapon = save.weapon;
   player.specialPower = save.specialPower; player.extraBullets = save.extraBullets;
   player.damageMult = save.damageMult; player.normalBuff = save.normalBuff;

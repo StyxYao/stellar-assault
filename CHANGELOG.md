@@ -667,3 +667,10 @@
 - H plays on navigation/selection; C plus a soft H layer plays on confirm.
 - Wired into ship select, variant select, start confirmation, stage select and menu buttons.
 - Added electronic UI click candidates E–I to the asset lab.
+
+## 0.9.19 — Clone base damage and Raven cloak tuning
+
+- Clone base damage fixed at 50% and excluded from the cloak damage buff.
+- Raven cloak duration increased to 4 seconds (others remain 3).
+- Raven cloak attack bonus increased to +70%.
+- Updated Raven variant text and mechanics notes.
