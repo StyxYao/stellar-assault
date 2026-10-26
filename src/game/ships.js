@@ -19,7 +19,7 @@ var SHIP_SKINS = {
   ],
   phantom: [
     { id: 'quantum', label: 'QUANTUM HUNTER', image: 'sk_phantom_quantum', maxHp: 3, cloakBuff: 0.3, cloneHp: 3, trait: 'CLOAK +30% · CLONE HP 3' },
-    { id: 'raven', label: 'PHANTOM RAVEN', image: 'sk_phantom_raven', maxHp: 3, cloakBuff: 0.7, cloneHp: 1, trait: '4s CLOAK +70% · CLONE HP 1' },
+    { id: 'raven', label: 'PHANTOM RAVEN', image: 'sk_phantom_raven', maxHp: 3, cloakBuff: 1.0, cloneHp: 1, trait: '4s CLOAK +100% · CLONE HP 1' },
     { id: 'butterfly', label: 'PHANTOM BUTTERFLY', image: 'sk_phantom_butterfly', maxHp: 3, cloakBuff: 0, cloneHp: 3, trait: '2 CLONES · CAP 2→4' }
   ]
 };

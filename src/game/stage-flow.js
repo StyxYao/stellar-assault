@@ -6,7 +6,7 @@ function startCast(){
 function setBanner(txt,sub,t){ banner=txt; bannerSub=sub||''; bannerT=t; }
 
 function resetRun(){
-  score=0; player.lives=3; player.hp=3; player.bombs=(selectedShip==='aegis'||selectedShip==='phantom')?3:2; player.od=0; player.odT=0; player.powerXp=0; player.respawnT=0; player.respawnGift=false; player.noBlink=false; player.power=1; player.weapon='normal'; player.specialPower=1; player.options=0; player.wingPower=1; player.trail=[]; player.wingEntry=[]; items.length=0; missiles.length=0; wingBeams.length=0; beams.length=0; orbBullets.length=0;
+  score=0; player.lives=3; player.hp=3; player.bombs=3; player.od=0; player.odT=0; player.powerXp=0; player.respawnT=0; player.respawnGift=false; player.noBlink=false; player.power=1; player.weapon='normal'; player.specialPower=1; player.options=0; player.wingPower=1; player.trail=[]; player.wingEntry=[]; items.length=0; missiles.length=0; wingBeams.length=0; beams.length=0; orbBullets.length=0;
   if(typeof aegisState!=='undefined'){ aegisState.forceLevel=1; aegisState.odActive=false; aegisState.odShotT=0; aegisState.postOdT=0; }
   player.normalBuff=1;
 }
@@ -22,7 +22,7 @@ function startAtStage(i){
   player.specialPower=Math.min(4,1+i);
   player.wingPower=Math.min(4,1+i);
   player.options=(selectedShip==='aegis'||selectedShip==='phantom')?0:Math.min(3,i);
-  player.bombs=(selectedShip==='aegis'||selectedShip==='phantom')?3:(i>=4?3:2);
+  player.bombs=3;
   startStage(i);
 }
 function prepareStageContent(s){

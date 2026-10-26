@@ -34,7 +34,7 @@ function phantomOnDeath() { phantomReset(); }
 
 function phantomDamageMult() {
   if (player.ship !== 'phantom' || phantomState.cloakT <= 0 || phantomState.cloneFiring) return 1;
-  if (phantomIsRaven()) return 1.7;
+  if (phantomIsRaven()) return 2.0;
   if (phantomIsButterfly()) return 1;
   return 1.3;
 }
@@ -45,7 +45,7 @@ function phantomSpawnClone(offset) {
   var c = {
     x: Math.max(26, Math.min(W - 26, player.x + (offset || 0))),
     y: player.y - 12,
-    hp: hp, maxHp: hp,
+    hp: hp, maxHp: hp, invulnT: 0,
     weapon: player.weapon,
     power: player.specialPower,
     extra: player.extraBullets || 0,
@@ -255,6 +255,7 @@ function phantomUpdate(dt) {
   for (var i = phantomState.clones.length - 1; i >= 0; i--) {
     var c = phantomState.clones[i];
     c.age += dt;
+    if (c.invulnT > 0) c.invulnT = Math.max(0, c.invulnT - dt);
     if (c.hp <= 0 || c.age > c.life) {
       if (c.hp <= 0) {
         // Destroyed clone: full explosion + destruction sound.
@@ -282,8 +283,10 @@ function phantomUpdate(dt) {
 function phantomHitClone(x, y, r) {
   for (var i = phantomState.clones.length - 1; i >= 0; i--) {
     var c = phantomState.clones[i];
+    if (c.invulnT > 0) continue;
     if (Math.hypot(x - c.x, y - c.y) < player.r + (r || 4)) {
       c.hp--;
+      c.invulnT = 1.0;
       try { if (typeof part === 'function') for (var p = 0; p < 6; p++) part(c.x, c.y, '#c98bff', 1, 120); } catch (e) {}
       return true;
     }
@@ -322,6 +325,10 @@ function drawPhantomClones() {
       ctx.beginPath(); ctx.moveTo(c.x, c.y - 24); ctx.lineTo(c.x + 20, c.y); ctx.lineTo(c.x, c.y + 24); ctx.lineTo(c.x - 20, c.y); ctx.closePath(); ctx.stroke();
     }
     ctx.globalAlpha = 1;
+    if (c.invulnT > 0) {
+      ctx.strokeStyle = 'rgba(143,233,255,0.75)'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(c.x, c.y, 26, 0, TAU); ctx.stroke();
+    }
     ctx.fillStyle = 'rgba(6,12,24,0.8)'; ctx.fillRect(c.x - 22, c.y + 27, 44, 4);
     ctx.fillStyle = '#c98bff'; ctx.fillRect(c.x - 22, c.y + 27, 44 * (c.hp / c.maxHp), 4);
     ctx.restore();
@@ -370,4 +377,4 @@ function drawPhantomControls() {
   ctx.textAlign = 'left'; ctx.restore(); ctx.globalAlpha = 1;
 }
 
-try { window.__phantomSelect=function(id){ setSelectedShip('phantom', false); setSelectedSkin('phantom', id||'quantum', false); phantomReset(); }; window.__phantom=function(){return {ship:player.ship,bombs:player.bombs,cloakT:phantomState.cloakT,clones:phantomState.clones.map(function(c){return {x:c.x,y:c.y,hp:c.hp,weapon:c.weapon,power:c.power};}),cap:phantomState.cap,wCount:phantomState.wCount,cloakDamage:phantomDamageMult()};}; } catch(e) {}
+try { window.__phantomSelect=function(id){ setSelectedShip('phantom', false); setSelectedSkin('phantom', id||'quantum', false); phantomReset(); }; window.__phantom=function(){return {ship:player.ship,bombs:player.bombs,cloakT:phantomState.cloakT,clones:phantomState.clones.map(function(c){return {x:c.x,y:c.y,hp:c.hp,invulnT:c.invulnT,weapon:c.weapon,power:c.power};}),cap:phantomState.cap,wCount:phantomState.wCount,cloakDamage:phantomDamageMult()};}; } catch(e) {}

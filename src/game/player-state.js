@@ -38,7 +38,7 @@ function hitPlayer(){
     var atMin=player.specialPower<=1;
     var dX=player.x,dY=player.y;
     player.lives--; player.hp=player.maxHp||3; player.invuln=2.2; shake=18;
-    player.specialPower=Math.max(1,player.specialPower-1); player.power=player.specialPower; player.powerXp=0; player.od=0; player.odT=0; player.bombs=(player.ship==='aegis'||player.ship==='phantom')?3:2; player.options=Math.max(0,player.options-1); player.wingEntry=player.wingEntry.slice(0,player.options);
+    player.specialPower=Math.max(1,player.specialPower-1); player.power=player.specialPower; player.powerXp=0; player.od=0; player.odT=0; player.bombs=3; player.options=Math.max(0,player.options-1); player.wingEntry=player.wingEntry.slice(0,player.options);
     rebuildSfxBus();
     if(player.ship==='phantom'&&typeof phantomOnDeath==='function') phantomOnDeath();
     player.respawnT=1.3; player.respawnGift=atMin;

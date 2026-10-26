@@ -680,3 +680,15 @@
 - Menu navigation now uses F (data chirp); confirm uses H+C layered.
 - Preserved PHANTOM best score through save normalization.
 - Added `docs/R2_PROGRESS_AUDIT.md` with R2 gaps, early PHANTOM scope and R3–R9 next steps.
+
+## 0.9.21 — Clone invulnerability, Raven +100%, default charges
+
+- Clone takes one hit, then gains 1 second of invulnerability and a shield ring.
+- Raven cloak attack bonus increased to +100% (still 4 seconds).
+- All ships now start and respawn with 3 ability charges.
+
+## 0.9.21 — Clone hit invulnerability and Raven tuning
+
+- Clone takes one hit, gains 1s invulnerability and shows a shield ring.
+- Raven cloak attack bonus raised to +100%, duration remains 4s.
+- Initial and post-death ability charges are 3 for every ship.
