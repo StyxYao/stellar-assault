@@ -708,3 +708,10 @@
 - Menu movement uses F+C; confirm uses H+C.
 - Added default-variant DPS baseline and smoke notes.
 - R3 is now two-player co-op; old R3–R9 shifted to R4–R10.
+
+## 0.9.24 — R2 acceptance close-out
+
+- Added per-ship tutorial entry and two-page tutorials.
+- Confirmed session-only ship selection, 3 default charges, stage-flow clear for all three ships.
+- Added touch emulation and 1280×800 Deck viewport smoke.
+- Rewrote `STEAM_R2_ACCEPTANCE.md`; remaining items are hardware/manual QA.
