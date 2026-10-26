@@ -495,3 +495,12 @@
 - Force field opacity/brightness reduced to stop it covering the ship.
 - Charge release no longer emits the 18-particle light burst.
 - M-charge visual row now matches its 10 missiles.
+
+## 0.8.6 — Align Force circles to core
+
+- Recentered all Force field textures so the bright ring is exactly at (64,64).
+- Outer ring, field texture and energy core now share one anchor.
+- Removed field rotation and centered the field on the ship.
+- Moved the Force field beneath the ship layer with reduced brightness/opacity.
+- Removed the charge-release particle burst.
+- Menu info now defaults to the bottom placement.
