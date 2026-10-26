@@ -169,7 +169,7 @@ function phantomUpdate(dt) {
 function phantomHitClone(x, y, r) {
   for (var i = phantomState.clones.length - 1; i >= 0; i--) {
     var c = phantomState.clones[i];
-    if (Math.hypot(x - c.x, y - c.y) < 20 + (r || 4)) {
+    if (Math.hypot(x - c.x, y - c.y) < player.r + (r || 4)) {
       c.hp--;
       try { if (typeof part === 'function') for (var p = 0; p < 6; p++) part(c.x, c.y, '#c98bff', 1, 120); } catch (e) {}
       return true;

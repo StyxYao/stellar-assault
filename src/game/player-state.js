@@ -57,14 +57,14 @@ function maybeDrop(e){
   if(e.transport){
     items.push({x:e.x-24,y:e.y,vy:45,type:'P',t:0});
     items.push({x:e.x,y:e.y,vy:45,type:'P',t:0});
-    items.push({x:e.x+24,y:e.y,vy:45,type:'W',t:0});
-    items.push({x:e.x,y:e.y+16,vy:45,type:'B',t:0});
+    items.push({x:e.x+24,y:e.y,vy:45,type:'D',t:0});
+    items.push({x:e.x,y:e.y+16,vy:45,type:'E',t:0});
     if(Math.random()<0.21) items.push({x:e.x+12,y:e.y+24,vy:40,type:'1UP',t:0});
     return;
   }
   if(e.transport) return;
   if(e.elite){
-    items.push({x:e.x-20,y:e.y,vy:50,type:'W',t:0});
+    items.push({x:e.x-20,y:e.y,vy:50,type:'D',t:0});
     items.push({x:e.x+20,y:e.y,vy:50,type:'P',t:0});
     if(Math.random()<0.165) items.push({x:e.x,y:e.y+20,vy:45,type:'1UP',t:0});
     return;
@@ -73,11 +73,11 @@ function maybeDrop(e){
   if(!e.first && Math.random()>=chance) return;
   var r=Math.random(),type;
   if(r<0.40) type='P';
-  else if(r<0.52) type='W';
-  else if(r<0.66) type='B';
+  else if(r<0.52) type='D';
+  else if(r<0.66) type='E';
   else if(r<0.96) type='A';
   else type='1UP';
-  if(e.first && type==='B') type='P';
+  if(e.first && type==='E') type='P';
   items.push({x:e.x,y:e.y,vy:55,type:type,t:0});
 }
 function playOneUp(){
@@ -105,6 +105,8 @@ function gainOD(n){
 }
 function collectItem(it){
   var t=it.type;
+  if(t==='W') t='D';
+  if(t==='B') t='E';
   if(t==='P'){
     if(player.specialPower<4){
       player.powerXp++;
@@ -115,12 +117,12 @@ function collectItem(it){
   }else if(t==='A'){
     var at=ammoType(it);applySpecial(at);score+=70;pickupMsg='WEAPON · '+weaponName()+' LV'+player.specialPower+(player.specialPower>=4?' MAX':'');
   }else if(t==='S'||t==='L'||t==='M'){ applySpecial(t); score+=80; pickupMsg=weaponName()+' LV'+player.specialPower+(player.specialPower>=4?' MAX':''); }
-  else if(t==='W'){
+  else if(t==='D'){
     if(player.ship==='phantom'){ if(typeof phantomCollectW==='function') phantomCollectW(); }
     else if(player.ship==='aegis'){
       if(typeof aegisForcePickup==='function') aegisForcePickup();
-    }else if(player.options<4||player.wingPower<3){addWingman();pickupMsg='WING '+player.options+' P'+player.wingPower;}
-    else{pickupMsg=gainOD(15)?'OVERDRIVE!':'WING MAX +15 OD';}
+    }else if(player.options<4||player.wingPower<3){addWingman();pickupMsg='DRONE '+player.options+' P'+player.wingPower;}
+    else{pickupMsg=gainOD(15)?'OVERDRIVE!':'DRONE MAX +15 OD';}
     score+=40;
   }else if(t==='1UP'){
     if(player.lives<7){player.lives++;pickupMsg='1UP  LIFE +1';}
@@ -128,8 +130,8 @@ function collectItem(it){
     score+=250;
   }else{
     if(player.ship==='phantom'){ if(typeof phantomCollectB==='function') phantomCollectB(); }
-    else if(player.bombs<(player.ship==='aegis'?9:5)){player.bombs++;pickupMsg=player.ship==='aegis'?'FORCE CHARGE +1':'BOMB +1';}
-    else{pickupMsg=gainOD(15)?'OVERDRIVE!':'BOMB MAX +15 OD';}
+    else if(player.bombs<(player.ship==='aegis'?9:5)){player.bombs++;pickupMsg=player.ship==='aegis'?'FORCE CHARGE +1':'ENERGY +1';}
+    else{pickupMsg=gainOD(15)?'OVERDRIVE!':'ENERGY MAX +15 OD';}
     if(player.ship!=='phantom') score+=30;
   }
   part(it.x,it.y,'#9fe8ff',10,120);

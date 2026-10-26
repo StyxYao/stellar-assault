@@ -255,7 +255,7 @@ function step(dt){
     boss.dropT-=dt;
     if(boss.dropT<=0){
       boss.dropT=25.0;
-      var dropTypes=['P','A','W','B'];
+      var dropTypes=['P','A','D','E'];
       for(var di=0;di<2;di++){
         var dx=Math.max(36,Math.min(W-36,player.x+rand(-110,110)));
         items.push({x:dx,y:-20,vy:65+di*12,type:dropTypes[(Math.floor(time*3)+di)%dropTypes.length],t:0});
@@ -423,7 +423,7 @@ function step(dt){
     miniDropT-=dt;
     if(miniDropT<=0){
       miniDropT=25;
-      var mdrop=['P','A','W','B'];
+      var mdrop=['P','A','D','E'];
       for(var md=0;md<2;md++){
         items.push({x:Math.max(36,Math.min(W-36,player.x+rand(-90,90))),y:-20,vy:65+md*10,type:mdrop[(Math.floor(time*3)+md)%4],t:0});
       }

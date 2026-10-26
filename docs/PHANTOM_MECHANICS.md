@@ -21,13 +21,13 @@
 - Lifetime 25 seconds.
 - Cannot collect items.
 - Base cap: Quantum/Raven 1, Butterfly 2.
-- After 3 D/W pickups: cap doubles to 2/4.
+- After 3 D pickups: cap doubles to 2/4.
 - Death resets cap and W count.
 - At cap, the oldest clone is removed.
 
 ## Pickups
-- B/E: restore one phase charge, max 6, overflow to OD.
-- W/D: clone-limit progress; after 3, +1 cap; at max, score + OD.
+- E: restore one phase charge, max 6, overflow to OD.
+- D: clone-limit progress; after 3, +1 cap; at max, score + OD.
 
 ## Known prototype limits
 - Clone target selection is aimed at the first clone; enemy aim sites are patched for enemy fire, boss aimed/ring/broadside and boss ultimate origins. Some non-aimed attack patterns still use the player origin but cannot damage a cloaked player.

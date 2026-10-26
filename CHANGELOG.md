@@ -620,3 +620,10 @@
 - Adopted Qwen Image 2.1 transparent versions for Quantum, Raven and Butterfly.
 - Cropped each to its visible alpha bounds and normalized to a 70px max dimension on the common 80×80 canvas.
 - No further redraw, recolor or mirroring.
+
+## 0.9.12 — Clone hitbox and E/D pickups
+
+- Clone bullet hitbox now matches the player body radius instead of a large 20px circle.
+- Renamed pickup letters: B → E (Energy/ability charge), W → D (Drone/clone upgrade).
+- Updated drop tables, item icons, collection logic and messages.
+- Old W/B debug items are still accepted as aliases.
