@@ -715,3 +715,9 @@
 - Confirmed session-only ship selection, 3 default charges, stage-flow clear for all three ships.
 - Added touch emulation and 1280×800 Deck viewport smoke.
 - Rewrote `STEAM_R2_ACCEPTANCE.md`; remaining items are hardware/manual QA.
+
+## 0.9.25 — Switch port feasibility and R11
+
+- Added `docs/SWITCH_PORT.md` with engine, layout, certification and cost boundaries.
+- Added R11 Switch port as a gated platform track after R10.
+- Downgraded Steam Deck from a standalone milestone to R10 best-effort verification.
