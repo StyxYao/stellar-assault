@@ -207,7 +207,7 @@ function aegisReset() {
   aegisState.forceBossHit = false;
   if (typeof player !== 'undefined') {
     aegisState.forceX = aegisVisualX();
-    aegisState.forceY = player.y - 42;
+    aegisState.forceY = player.y;
   }
 }
 
@@ -334,7 +334,6 @@ function aegisReleaseCharge() {
   aegisState.castRange = prof.range || 500;
   aegisState.castColor = prof.color;
   try { shake = Math.max(shake, 9); } catch (e) {}
-  try { if (typeof part === 'function') for (var pp = 0; pp < 18; pp++) part(px, py, prof.color, 1, 180); } catch (e) {}
   aegisState.charge = 'idle';
   aegisState.chargeT = 0;
   aegisState.autoT = 0;
@@ -388,7 +387,7 @@ function aegisRestoreForce() {
   aegisState.breakT = 0;
   aegisState.breakFlashT = 0;
   aegisState.forceX = aegisVisualX();
-  aegisState.forceY = player.y - 42;
+  aegisState.forceY = player.y;
   try { sfx('aegis_force', 0.65); } catch (e) {}
   try { sfx('b_charge', 0.35); } catch (e) {}
   try { if (typeof part === 'function') for (var i = 0; i < 18; i++) part(aegisState.forceX, aegisState.forceY, i % 2 ? '#ffd36b' : '#9fe8ff', 1, 180); } catch (e) {}
@@ -402,7 +401,7 @@ function aegisLaunchForce() {
   if (aegisState.charge === 'charging') { aegisState.charge = 'idle'; aegisState.chargeT = 0; }
   aegisState.force = 'detached';
   aegisState.forceX = aegisVisualX();
-  aegisState.forceY = player.y - 42;
+  aegisState.forceY = player.y;
   aegisState.flashT = 0.55;
   aegisState.laneT = 0;
   aegisState.castT = 0;
@@ -529,7 +528,7 @@ function updateAegis(dt) {
     if (aegisState.breakT <= 0) { aegisState.force = 'attached'; aegisState.shield = 20; }
   } else if (aegisState.force === 'attached') {
     aegisState.forceX = aegisVisualX();
-    aegisState.forceY = player.y - 42;
+    aegisState.forceY = player.y;
     if (aegisState.shield < aegisShieldMax() && time - aegisState.lastBlockAt > AEGIS_SHIELD_DELAY) aegisState.shield = Math.min(aegisShieldMax(), aegisState.shield + AEGIS_SHIELD_REGEN * dt);
     if (ebullets) {
       for (var i = ebullets.length - 1; i >= 0; i--) {
@@ -549,7 +548,7 @@ function updateAegis(dt) {
     aegisForceCollide(dt);
     if (aegisState.forceY < -40) aegisState.force = 'returning';
   } else if (aegisState.force === 'returning') {
-    var tx = aegisVisualX(), ty = player.y - 42;
+    var tx = aegisVisualX(), ty = player.y;
     aegisState.forceX += (tx - aegisState.forceX) * Math.min(1, dt * 12);
     aegisState.forceY += (ty - aegisState.forceY) * Math.min(1, dt * 12);
     if (Math.hypot(tx - aegisState.forceX, ty - aegisState.forceY) < 8) aegisState.force = 'attached';

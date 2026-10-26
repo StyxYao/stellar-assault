@@ -210,8 +210,8 @@ function menuSkinButton(){return {x:W/2+6,y:H*.395,w:112,h:38};}
 function drawMenu(){
   paintBg(BGMENU,1)||paintBg(BG1,1);
   ctx.fillStyle='rgba(2,4,12,0.05)';ctx.fillRect(0,0,W,H);
-  var menuInfoBottom=false;
-  try { menuInfoBottom=/menuinfo=bottom|#bottom/.test((location.search||'')+' '+(location.hash||'')); } catch(e) {}
+  var menuInfoBottom=true;
+  try { if(/menuinfo=top|#top/.test((location.search||'')+' '+(location.hash||''))) menuInfoBottom=false; } catch(e) {}
   var infoShade;
   if(menuInfoBottom){
     infoShade=ctx.createLinearGradient(0,H*.885,0,H);

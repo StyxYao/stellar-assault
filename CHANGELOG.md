@@ -486,3 +486,12 @@
 - Shortened the central menu shade to cover only SHIP/stage/START/BEST controls.
 - Removed the leftover dark band under the old lower text position.
 - Top and bottom info bands remain tied to their respective placements.
+
+## 0.8.5 — Force underlay and bottom menu default
+
+- Menu info now defaults to bottom; `?menuinfo=top` keeps the top variant.
+- Force field no longer rotates, eliminating the wandering ring.
+- Force field is centered on the ship, dimmed and moved below the ship layer.
+- Force field opacity/brightness reduced to stop it covering the ship.
+- Charge release no longer emits the 18-particle light burst.
+- M-charge visual row now matches its 10 missiles.

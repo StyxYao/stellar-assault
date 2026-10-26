@@ -19,7 +19,7 @@ function drawForceField(x, y, size, alpha, spin, color) {
   ctx.save();
   ctx.globalCompositeOperation = 'lighter';
   if (img && img.complete) {
-    ctx.globalAlpha = alpha;
+    ctx.globalAlpha = alpha * 0.64;
     ctx.translate(x, y); ctx.rotate(spin || 0);
     ctx.drawImage(img, -size / 2, -size / 2, size, size);
   } else {
@@ -28,8 +28,43 @@ function drawForceField(x, y, size, alpha, spin, color) {
     ctx.beginPath(); ctx.arc(x, y, size * 0.42, 0, TAU); ctx.stroke();
     ctx.beginPath(); ctx.arc(x, y, size * 0.30, 0, TAU); ctx.stroke();
   }
-  if (color) { ctx.globalAlpha = Math.min(1, alpha + 0.15); ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, size * 0.42, 0, TAU); ctx.stroke(); }
+  if (color) { ctx.globalAlpha = Math.min(1, alpha + 0.15) * 0.64; ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, size * 0.42, 0, TAU); ctx.stroke(); }
   ctx.restore();
+}
+
+function drawAegisForceUnderlay() {
+  if (player.ship !== 'aegis' || (state !== 'play' && state !== 'boss')) return;
+  var fx0 = (aegisState.force === 'attached' && typeof aegisVisualX === 'function') ? aegisVisualX() : aegisState.forceX;
+  var fy0 = aegisState.forceY;
+  var shieldRatio = Math.max(0, Math.min(1, aegisState.shield / aegisShieldMax()));
+  ctx.save();
+  if (aegisState.force === 'attached') {
+    drawForceField(fx0, fy0, 94 + aegisForceRadius() * 0.9, 0.34 + shieldRatio * 0.38, 0, aegisForceColor());
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = 0.52;
+    var core = ctx.createRadialGradient(fx0, fy0, 0, fx0, fy0, 22);
+    core.addColorStop(0, 'rgba(255,255,245,0.82)');
+    core.addColorStop(0.35, 'rgba(255,196,78,0.42)');
+    core.addColorStop(1, 'rgba(255,130,20,0)');
+    ctx.fillStyle = core; ctx.beginPath(); ctx.arc(fx0, fy0, 22, 0, TAU); ctx.fill();
+    ctx.fillStyle = aegisForceColor(); ctx.globalAlpha = 0.58; ctx.beginPath(); ctx.arc(fx0, fy0, 7, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#fff5cf'; ctx.globalAlpha = 0.72; ctx.beginPath(); ctx.arc(fx0, fy0, 3, 0, TAU); ctx.fill();
+  } else if (aegisState.force === 'detached' || aegisState.force === 'returning') {
+    if (aegisState.force === 'detached') {
+      var tg = ctx.createLinearGradient(fx0, fy0, fx0, fy0 + 110);
+      tg.addColorStop(0, 'rgba(255,211,107,0.26)');
+      tg.addColorStop(1, 'rgba(255,150,30,0)');
+      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.78; ctx.fillStyle = tg;
+      ctx.fillRect(fx0 - 8, fy0, 16, 110);
+    }
+    drawForceField(fx0, fy0, 80 + aegisForceRadius() * 1.1, aegisState.force === 'detached' ? 0.9 : 0.6, 0, aegisForceColor());
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = 0.5; ctx.fillStyle = '#ffd36b';
+    ctx.beginPath(); ctx.arc(fx0, fy0, 6, 0, TAU); ctx.fill();
+  }
+  ctx.restore();
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
 }
 
 function drawAegisShipFx() {
@@ -73,9 +108,9 @@ function drawAegisShipFx() {
       ctx.fillStyle = 'rgba(255,255,255,' + (0.85 * ca) + ')';
       ctx.fillRect(shipX - 2.5, topY, 5, cr);
     } else if (aegisState.castKind === 'swarm') {
-      for (var mi = 0; mi < 12; mi++) {
+      for (var mi = 0; mi < 10; mi++) {
         var phase = time * 7 + mi * 1.1;
-        var mx = 40 + (W - 80) * (mi / 11);
+        var mx = 40 + (W - 80) * (mi / 9);
         var my = player.y - 28 - (cr * ((mi % 4) + 1) / 5);
         ctx.globalAlpha = 0.8 * ca; ctx.fillStyle = mi % 2 ? '#ffe08a' : '#ffb347';
         ctx.beginPath(); ctx.arc(mx, my + Math.sin(phase) * 4, 4.5, 0, TAU); ctx.fill();
@@ -143,31 +178,6 @@ function drawAegisShipFx() {
     ctx.beginPath(); ctx.arc(shipX, player.y - 12, 35 + (1 - fa) * 55, 0, TAU); ctx.stroke();
   }
 
-  // Attached Force: a real field, not a small orb.
-  if (aegisState.force === 'attached') {
-    drawForceField(fx0, fy0, 94 + aegisForceRadius() * 0.9, Math.min(1, (0.34 + shieldRatio * 0.38) * 1.25), time * 0.25, aegisForceColor());
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.globalAlpha = 0.85;
-    var core = ctx.createRadialGradient(fx0, fy0, 0, fx0, fy0, 26);
-    core.addColorStop(0, 'rgba(255,255,245,0.95)');
-    core.addColorStop(0.35, 'rgba(255,196,78,0.55)');
-    core.addColorStop(1, 'rgba(255,130,20,0)');
-    ctx.fillStyle = core; ctx.beginPath(); ctx.arc(fx0, fy0, 26, 0, TAU); ctx.fill();
-    ctx.fillStyle = aegisForceColor(); ctx.globalAlpha = 0.9; ctx.beginPath(); ctx.arc(fx0, fy0, 9, 0, TAU); ctx.fill();
-    ctx.fillStyle = '#fff5cf'; ctx.beginPath(); ctx.arc(fx0, fy0, 4, 0, TAU); ctx.fill();
-  } else if (aegisState.force === 'detached' || aegisState.force === 'returning') {
-    if (aegisState.force === 'detached') {
-      var tg = ctx.createLinearGradient(fx0, fy0, fx0, fy0 + 110);
-      tg.addColorStop(0, 'rgba(255,211,107,0.42)');
-      tg.addColorStop(1, 'rgba(255,150,30,0)');
-      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 1; ctx.fillStyle = tg;
-      ctx.fillRect(fx0 - 9, fy0, 18, 110);
-    }
-    drawForceField(fx0, fy0, 80 + aegisForceRadius() * 1.1, aegisState.force === 'detached' ? 1 : 0.69, time * 0.8, aegisForceColor());
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.globalAlpha = 0.7; ctx.fillStyle = '#ffd36b';
-    ctx.beginPath(); ctx.arc(fx0, fy0, 7, 0, TAU); ctx.fill();
-  }
   if (aegisState.breakFlashT > 0) {
     var ba = aegisState.breakFlashT / 0.55;
     ctx.globalCompositeOperation = 'lighter';
