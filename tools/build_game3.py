@@ -19,7 +19,7 @@ for k,p in assets.items():
     js+="GIMG.%s=new Image();GIMG.%s.src='data:image/png;base64,%s';\n"%(k,k,base64.b64encode(open(p,'rb').read()).decode())
 a=prefix.index('var GIMG={};'); b=prefix.index('var BG1=')
 prefix=prefix[:a]+js+prefix[b:]
-prefix=prefix.replace('<title>BOSS RUSH · rRootage Tribute</title>','<title>STELLAR ASSAULT · 4 Stages</title>')
+prefix=prefix.replace('<title>BOSS RUSH · rRootage Tribute</title>','<title>STELLAR ASSAULT · 5 Stages</title>')
 specs="var specs=null;\ntry{ specs=XMLS.map(function(x){ return bulletml.buildXML(x); }); }catch(e){ console.error(e); }\n"
 manifest=json.load(open('src/modules.json',encoding='utf-8'))
 module_parts=[]

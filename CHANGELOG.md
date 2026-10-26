@@ -469,3 +469,9 @@
 - Replaced the main-menu background with the new key art.
 - Moved menu controls above the poster logo so the title and emblem stay fully visible.
 - Added branding asset keys for future menus/capsules.
+
+## 0.8.2 — Menu top info and tab title
+
+- Moved `5 STAGES · 5 BOSSES` and control hint to the very top of the menu at 9px/7px.
+- Added a subtle top shade for readability.
+- Browser tab title updated to `STELLAR ASSAULT · 5 Stages`.
