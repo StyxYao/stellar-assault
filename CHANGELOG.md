@@ -566,3 +566,9 @@
 - Force return speed is now 420 px/s, matching launch speed.
 - Launched Force clears enemy bullets, beams and orbiting orbs; clear radius increased.
 - Covers large boss projectiles and rotating boss attacks across all stages.
+
+## 0.9.4 — Force blocks lasers
+
+- Force no longer deletes enemy beams; it truncates them at the Force surface.
+- Blocked beams cannot damage the player until Force moves away.
+- Added a bright impact cap at the blocked beam endpoint.

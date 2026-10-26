@@ -73,7 +73,7 @@ function drawMissiles(){
 }
 function drawBeams(){
   for(var i=0;i<beams.length;i++){
-    var b=beams[i],ex=b.x+Math.cos(b.ang)*b.len,ey=b.y+Math.sin(b.ang)*b.len;
+    var b=beams[i],blen=(b.blockedLen!=null?b.blockedLen:b.len),ex=b.x+Math.cos(b.ang)*blen,ey=b.y+Math.sin(b.ang)*blen;
     if(b.t<b.charge){
       var p=Math.min(1,b.t/b.charge);
       ctx.save();ctx.globalCompositeOperation='lighter';
@@ -91,7 +91,7 @@ function drawBeams(){
       g.addColorStop(0.4,b.color);
       g.addColorStop(1,'rgba(255,50,50,0)');
       ctx.fillStyle=g;ctx.beginPath();ctx.arc(b.x,b.y,gr,0,TAU);ctx.fill();
-      var tx=b.x+Math.cos(b.ang)*b.len*0.72,ty=b.y+Math.sin(b.ang)*b.len*0.72;
+      var tx=b.x+Math.cos(b.ang)*blen*0.72,ty=b.y+Math.sin(b.ang)*blen*0.72;
       ctx.globalAlpha=0.7;ctx.strokeStyle='rgba(255,100,100,0.9)';ctx.lineWidth=2;
       ctx.beginPath();ctx.arc(tx,ty,10+4*Math.sin(time*14),0,TAU);ctx.stroke();
       ctx.beginPath();ctx.moveTo(tx-16,ty);ctx.lineTo(tx+16,ty);ctx.moveTo(tx,ty-16);ctx.lineTo(tx,ty+16);ctx.stroke();
@@ -103,6 +103,7 @@ function drawBeams(){
       ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(ex,ey);ctx.stroke();
       ctx.globalAlpha=0.95*fa;ctx.strokeStyle='#fff';ctx.lineWidth=b.w*0.28*(0.6+0.4*fa);
       ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(ex,ey);ctx.stroke();
+      if(b.blockedLen!=null){ctx.globalAlpha=0.95;ctx.fillStyle='#fff8e8';ctx.beginPath();ctx.arc(ex,ey,5+b.w*0.15,0,TAU);ctx.fill();ctx.strokeStyle=b.color;ctx.lineWidth=2;ctx.beginPath();ctx.arc(ex,ey,9+b.w*0.2,0,TAU);ctx.stroke();}
       ctx.restore();ctx.globalAlpha=1;
     }
   }

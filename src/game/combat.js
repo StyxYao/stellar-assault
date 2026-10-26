@@ -189,9 +189,25 @@ function updateMissiles(dt){
     if(hit||m.life<=0||(m.range&&m.travel>m.range)||m.x<-30||m.x>W+30||m.y<-40||m.y>H+40) missiles.splice(i,1);
   }
 }
+function aegisBlockedBeamLen(b) {
+  if (typeof player === 'undefined' || player.ship !== 'aegis') return null;
+  if (typeof aegisState === 'undefined' || aegisState.force === 'broken') return null;
+  var attached = aegisState.force === 'attached';
+  var fx = attached ? aegisVisualX() : aegisState.forceX;
+  var fy = attached ? player.y : aegisState.forceY;
+  var br = attached ? AEGIS_SHIELD_HIT_RADIUS + 8 : aegisForceRadius() + 30;
+  var dx = fx - b.x, dy = fy - b.y;
+  var proj = dx * Math.cos(b.ang) + dy * Math.sin(b.ang);
+  var perp = Math.abs(-dx * Math.sin(b.ang) + dy * Math.cos(b.ang));
+  if (proj > 0 && proj < b.len && perp < br + b.w * 0.5) {
+    return Math.max(0, proj - br);
+  }
+  return null;
+}
+
 function updateBeams(dt){
   for(var i=beams.length-1;i>=0;i--){
-    var b=beams[i];b.t+=dt;
+    var b=beams[i];b.t+=dt;b.blockedLen=aegisBlockedBeamLen(b);
     if(b.owner){var alive=(b.owner===boss)?!!(boss&&boss.hp>0):(enemies.indexOf(b.owner)>=0&&b.owner.hp>0);if(!alive){beams.splice(i,1);continue;}
       if(b.t<b.charge+b.fire){var oo=b.owner;b.x=oo.x+b.offX;b.y=oo.y+b.offY;}
     }
@@ -206,7 +222,8 @@ function updateBeams(dt){
       var dx=player.x-b.x,dy=player.y-b.y;
       var proj=dx*Math.cos(b.ang)+dy*Math.sin(b.ang);
       var perp=Math.abs(-dx*Math.sin(b.ang)+dy*Math.cos(b.ang));
-      if(proj>0&&proj<b.len&&perp<b.w/2+player.r) hitPlayer();
+      var beamLen=(b.blockedLen!=null?b.blockedLen:b.len);
+      if(proj>0&&proj<beamLen&&perp<b.w/2+player.r) hitPlayer();
     }
     if(b.t>b.charge+b.fire+(b.fade||0.15)) beams.splice(i,1);
   }

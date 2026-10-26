@@ -484,23 +484,6 @@ function aegisForceCollide(dt) {
       }
     }
   }
-  // Enemy beam attacks (including the first boss's blue laser) are also cut.
-  if (typeof beams !== 'undefined' && beams) {
-    for (var bi2 = beams.length - 1; bi2 >= 0; bi2--) {
-      var bm = beams[bi2];
-      if (!bm || !bm.owner) continue;
-      var x2 = bm.x + Math.cos(bm.ang) * bm.len;
-      var y2 = bm.y + Math.sin(bm.ang) * bm.len;
-      var vx2 = x2 - bm.x, vy2 = y2 - bm.y;
-      var L2 = vx2 * vx2 + vy2 * vy2 || 1;
-      var tt = Math.max(0, Math.min(1, ((fx - bm.x) * vx2 + (fy - bm.y) * vy2) / L2));
-      var ddx = fx - (bm.x + vx2 * tt), ddy = fy - (bm.y + vy2 * tt);
-      if (Math.hypot(ddx, ddy) < rad + (bm.w || 8) * 0.5) {
-        if (typeof part === 'function') part(bm.x + vx2 * tt, bm.y + vy2 * tt, aegisForceColor(), 5, 160);
-        beams.splice(bi2, 1);
-      }
-    }
-  }
   var hitAny = false;
   if (typeof enemies !== 'undefined' && enemies) {
     for (var i = 0; i < enemies.length; i++) {
