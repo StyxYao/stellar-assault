@@ -4,10 +4,12 @@
 var coopEnabled = false;
 var coopInputMode = 'off'; // off | kb | mouse
 var player2 = null;
+var aegisState2 = null;
+var phantomState2 = null;
 var target2 = { x: W / 2 - 70, y: H - 150 };
 var coopKeys = Object.create(null);
 var coopLastShot = 0, coopLastSpecial = 0, coopLastMissile = 0;
-var coopPadPrevB = false;
+var coopPadPrevB = false, coopPadPrevF = false;
 
 function coopModeLabel() {
   if (!coopEnabled) return 'CO-OP OFF';
@@ -21,17 +23,43 @@ function coopToggle() {
   pickupT = 1.6;
 }
 
+function coopClone(o) { return JSON.parse(JSON.stringify(o)); }
+function coopSwapEnter() {
+  var s = { player: player, target: target, aegis: aegisState, phantom: phantomState };
+  player = player2; target = target2;
+  if (player2.ship === 'aegis') aegisState = aegisState2;
+  if (player2.ship === 'phantom') phantomState = phantomState2;
+  return s;
+}
+function coopSwapExit(s) {
+  player = s.player; target = s.target; aegisState = s.aegis; phantomState = s.phantom;
+}
 function coopSpawn() {
   if (!coopEnabled) { player2 = null; return; }
-  var skin = (typeof selectedSkins !== 'undefined' && selectedSkins.vector) ? selectedSkins.vector : 'void_lance';
+  var ship = (typeof selectedShip !== 'undefined') ? selectedShip : 'vector';
+  var skin = (selectedSkins && selectedSkins[ship]) ? selectedSkins[ship] : (ship === 'aegis' ? 'orbital' : (ship === 'phantom' ? 'quantum' : 'void_lance'));
   player2 = {
     x: W / 2 - 72, y: H - 150, r: 6,
     lives: 3, hp: 3, maxHp: 3,
     bombs: 3, od: 0, odT: 0, powerXp: 0,
     respawnT: 0, respawnGift: false, invuln: 2.0, bank: 0, noBlink: false,
     power: 1, weapon: 'normal', specialPower: 1, options: 0, wingPower: 1,
-    ship: 'vector', skin: skin, trail: [], wingEntry: []
+    ship: ship, skin: skin, trail: [], wingEntry: []
   };
+  var d = (typeof currentSkinDef === 'function') ? currentSkinDef() : null;
+  player2.maxHp = (d && d.maxHp) ? d.maxHp : 3;
+  player2.hp = player2.maxHp;
+  player2.extraBullets = (d && d.extraBullets) ? d.extraBullets : 0;
+  player2.damageMult = (d && d.damageMult) ? d.damageMult : 1;
+  player2.normalBuff = 1;
+  if (ship === 'aegis') {
+    aegisState2 = JSON.parse(JSON.stringify(aegisState));
+    var sA = coopSwapEnter(); aegisReset(); coopSwapExit(sA);
+  }
+  if (ship === 'phantom') {
+    phantomState2 = JSON.parse(JSON.stringify(phantomState));
+    var sP = coopSwapEnter(); phantomReset(); coopSwapExit(sP);
+  }
   target2.x = player2.x; target2.y = player2.y;
 }
 
@@ -59,20 +87,36 @@ function coopHitP2() {
   }
 }
 
-function coopBomb() {
-  if (!player2 || player2.bombs <= 0 || (state !== 'play' && state !== 'boss')) return;
-  var save = player;
-  player = player2;
-  try { bomb(); } catch (e) {}
-  player = save;
+function coopSpecial(kind) {
+  if (!player2 || (state !== 'play' && state !== 'boss')) return;
+  var s = coopSwapEnter();
+  try {
+    if (player2.ship === 'phantom') {
+      if (kind !== 'secondary') phantomSkill();
+    } else if (player2.ship === 'aegis') {
+      if (kind === 'secondary') aegisTapForce(); else aegisTapCharge();
+    } else if (kind !== 'secondary') {
+      if (player2.bombs > 0) bomb();
+    }
+  } catch (e) {}
+  coopSwapExit(s);
 }
 
 function coopKey(e, down) {
   var k = String(e.key || '').toLowerCase();
-  if (['i','j','k','l','u'].indexOf(k) < 0) return;
+  if (['i','j','k','l','u','o'].indexOf(k) < 0) return;
   coopKeys[k] = !!down;
-  if (k === 'u' && down && !e.repeat) coopBomb();
+  if (down && !e.repeat) {
+    if (k === 'u' || k === 'o') coopSpecial(k === 'o' ? 'secondary' : 'primary');
+  }
   if (e.preventDefault) e.preventDefault();
+}
+
+function coopCollectItem(it) {
+  if (!player2) return;
+  var s = coopSwapEnter();
+  try { collectItem(it); } catch (e) {}
+  coopSwapExit(s);
 }
 
 function coopUpdate(dt) {
@@ -90,9 +134,11 @@ function coopUpdate(dt) {
   var pads = navigator.getGamepads ? navigator.getGamepads() : [];
   if (pads[1]) {
     var pad = pads[1], ax = pad.axes[0] || 0, ay = pad.axes[1] || 0;
-    var padB = !!(pad.buttons[1] && pad.buttons[1].pressed) || !!(pad.buttons[2] && pad.buttons[2].pressed);
-    if (padB && !coopPadPrevB) coopBomb();
-    coopPadPrevB = padB;
+    var padB = !!(pad.buttons[1] && pad.buttons[1].pressed);
+    var padF = !!(pad.buttons[5] && pad.buttons[5].pressed);
+    if (padB && !coopPadPrevB) coopSpecial('primary');
+    if (padF && !coopPadPrevF) coopSpecial('secondary');
+    coopPadPrevB = padB; coopPadPrevF = padF;
     if (Math.abs(ax) > 0.22) dx += ax;
     if (Math.abs(ay) > 0.22) dy += ay;
     if (pad.buttons[14] && pad.buttons[14].pressed) dx -= 1;
@@ -115,34 +161,32 @@ function coopUpdate(dt) {
   p.trail.unshift({ x: p.x, y: p.y }); if (p.trail.length > 80) p.trail.pop();
 
   if (state === 'play' || state === 'boss') {
-    var save = player;
-    player = p;
-    if (p.weapon === 'spread') {
-      if (time - coopLastSpecial > 0.16) { coopLastSpecial = time; fireSpread(); }
-    } else if (p.weapon === 'missile') {
-      if (time - coopLastMissile > 0.46) { coopLastMissile = time; launchMissiles(); }
-    } else if (p.weapon === 'laser') {
-      // P2 laser uses the normal shot path for this slice.
-      if (time - coopLastShot > 0.10) { coopLastShot = time; fireNormal(); }
-    } else if (time - coopLastShot > 0.10) {
-      coopLastShot = time; fireNormal();
-    }
-    player = save;
+    var s = coopSwapEnter();
+    try {
+      if (p.ship === 'aegis') updateAegis(dt);
+      if (p.ship === 'phantom') phantomUpdate(dt);
+      var hold = p.ship === 'aegis' && aegisState2 && (aegisState2.charge === 'charging' || p.odT > 0 || aegisState2.normalLockT > 0);
+      if (!hold) {
+        if (p.weapon === 'spread') {
+          if (time - coopLastSpecial > 0.16) { coopLastSpecial = time; fireSpread(); }
+        } else if (p.weapon === 'missile') {
+          if (time - coopLastMissile > 0.46) { coopLastMissile = time; launchMissiles(); }
+        } else if (time - coopLastShot > 0.10) {
+          coopLastShot = time; fireNormal();
+        }
+      }
+    } catch (e) {}
+    coopSwapExit(s);
   }
 }
 
 function coopDrawP2() {
   if (!coopEnabled || !player2) return;
   var p = player2;
-  var gi = (typeof GIMG !== 'undefined') ? GIMG[(typeof skinDefImage === 'function') ? skinDefImage('vector', p.skin) : 'sk_vector_void_lance'] : null;
-  if (!gi) gi = GIMG['sk_vector_void_lance'];
-  ctx.save();
-  ctx.globalAlpha = (p.invuln > 0 && Math.floor(p.invuln * 14) % 2 === 0) ? 0.35 : 1;
-  if (gi && gi.complete) ctx.drawImage(gi, p.x - 40, p.y - 40, 80, 80);
-  ctx.restore(); ctx.globalAlpha = 1;
-  ctx.save(); ctx.strokeStyle = 'rgba(143,233,255,0.7)'; ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, TAU); ctx.stroke();
-  ctx.fillStyle = '#8fe9ff'; ctx.font = '700 7px monospace'; ctx.textAlign = 'center';
+  var s = coopSwapEnter();
+  try { drawPlayerEntity(); } catch (e) {}
+  coopSwapExit(s);
+  ctx.save(); ctx.fillStyle = '#8fe9ff'; ctx.font = '700 7px monospace'; ctx.textAlign = 'center';
   ctx.fillText('P2', p.x, p.y - 48); ctx.restore();
 }
 
@@ -153,7 +197,7 @@ function coopDrawHUD() {
   ctx.fillStyle = 'rgba(4,12,22,0.72)'; ctx.fillRect(W - 152, 70, 136, 34);
   ctx.strokeStyle = 'rgba(143,233,255,0.4)'; ctx.lineWidth = 1; ctx.strokeRect(W - 152, 70, 136, 34);
   ctx.fillStyle = '#8fe9ff'; ctx.font = '700 7px monospace'; ctx.textAlign = 'left';
-  ctx.fillText('P2 · VECTOR', W - 144, 84);
+  ctx.fillText('P2 · ' + String(p.ship || 'vector').toUpperCase(), W - 144, 84);
   ctx.fillStyle = '#dff8ff'; ctx.fillText('HP ' + '●'.repeat(Math.max(0, p.hp)) + '○'.repeat(Math.max(0, p.maxHp - p.hp)), W - 144, 96);
   ctx.textAlign = 'right'; ctx.fillStyle = '#7893a8'; ctx.fillText('LIFE ' + p.lives + ' · B' + p.bombs, W - 22, 96);
   ctx.restore();

@@ -740,3 +740,10 @@
 - CO-OP cycles OFF → 2P KEYBOARD → P1 KEYBOARD + P2 MOUSE.
 - P2 mouse controls position and left-click bomb; P1 is keyboard-only in that mode.
 - P2 second gamepad remains available.
+
+## 0.9.29 — P2 full ship slice
+
+- P2 mirrors P1's selected ship/skin (VECTOR/AEGIS/PHANTOM).
+- P2 has independent AEGIS charge/Force and PHANTOM cloak/clone state.
+- P2 can collect pickups; primary U / secondary O, mouse left/right, gamepad B/X.
+- P2 draw uses the full player renderer for Force/cloak/clone effects.

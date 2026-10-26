@@ -236,6 +236,10 @@ function step(dt){
     // Small pickup magnet only within the ship sprite radius (~40px).
     if(id<60&&id>1){it.x+=idx/id*150*dt;it.y+=idy/id*150*dt;}
     if(id<20){collectItem(it);items.splice(i,1);continue;}
+    if(typeof coopEnabled!=='undefined'&&coopEnabled&&player2){
+      var i2x=player2.x-it.x,i2y=player2.y-it.y,i2d=Math.hypot(i2x,i2y);
+      if(i2d<20){ if(typeof coopCollectItem==='function') coopCollectItem(it); items.splice(i,1); continue; }
+    }
     if(it.y>H+30)items.splice(i,1);
   }
   for(var oi=orbBullets.length-1;oi>=0;oi--){

@@ -4,6 +4,9 @@ function pt(e){var r=cvs.getBoundingClientRect();return {x:(e.clientX-r.left)/r.
 function onDown(e){
   e.preventDefault();
   if(e.pointerType==='mouse'&&e.button===2){
+    if(typeof coopEnabled!=='undefined'&&coopEnabled&&coopInputMode==='mouse'&&(state==='play'||state==='boss')&&typeof coopSpecial==='function'){
+      e.preventDefault(); coopSpecial('secondary'); return;
+    }
     // contextmenu handles the single bomb call; do not fire twice here
     return;
   }
@@ -19,7 +22,7 @@ function onDown(e){
     if(coopInputMode==='mouse'){
       target2.x=Math.max(26,Math.min(W-26,p.x));
       target2.y=Math.max(110,Math.min(H-70,p.y));
-      if(e.pointerType==='mouse'&&e.button===0) coopBomb();
+      if(e.pointerType==='mouse'&&e.button===0&&typeof coopSpecial==='function') coopSpecial('primary');
       return;
     }
     if(coopInputMode==='kb') return;
