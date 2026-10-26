@@ -546,3 +546,8 @@
 - Pressing START now opens a loadout confirmation panel.
 - Confirm & Start launches; Change Ship opens ship selection; Cancel returns.
 - Keyboard Enter confirms, Escape cancels, V changes ship from the panel.
+
+## 0.9.1 — Restore explosion shock rings
+
+- Restored the normal enemy / elite / enemy-bomb explosion shockwave rings.
+- The earlier drifting ring was the Force double-coordinate bug, not these rings.
