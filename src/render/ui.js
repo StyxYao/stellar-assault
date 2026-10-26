@@ -39,13 +39,13 @@ function drawBanner(){
   ctx.globalAlpha=1;ctx.textAlign='left';
 }
 function stageSelectButtons(){
-  var bw=46,bh=38,gap=9,total=5*bw+4*gap,sx=W/2-total/2,sy=H*.625;
+  var bw=46,bh=38,gap=9,total=5*bw+4*gap,sx=W/2-total/2,sy=H*.468;
   var out=[];
   for(var i=0;i<5;i++)out.push({i:i,x:sx+i*(bw+gap),y:sy,w:bw,h:bh});
   return out;
 }
-function menuStartButton(){return {x:W/2-108,y:H*.688,w:216,h:42};}
-function menuShipButton(){return {x:W/2-118,y:H*.535,w:112,h:38};}
+function menuStartButton(){return {x:W/2-108,y:H*.55,w:216,h:42};}
+function menuShipButton(){return {x:W/2-118,y:H*.395,w:112,h:38};}
 
 var shipSelectOpen = false;
 var shipSelectIndex = 0;
@@ -206,14 +206,14 @@ function drawShipSelectOverlay(){
   ctx.fillText('↑ ↓ SELECT · ENTER CONFIRM · ESC CLOSE',W/2,p.y+p.h-16);
   ctx.restore();ctx.textAlign='left';
 }
-function menuSkinButton(){return {x:W/2+6,y:H*.535,w:112,h:38};}
+function menuSkinButton(){return {x:W/2+6,y:H*.395,w:112,h:38};}
 function drawMenu(){
   paintBg(BGMENU,1)||paintBg(BG1,1);
   ctx.fillStyle='rgba(2,4,12,0.05)';ctx.fillRect(0,0,W,H);
   // The poster already contains the STELLAR ASSAULT logo.
-  var tg=ctx.createLinearGradient(0,H*0.56,0,H*0.79);
-  tg.addColorStop(0,'rgba(0,0,0,0)');tg.addColorStop(0.45,'rgba(2,4,12,0.72)');tg.addColorStop(1,'rgba(2,4,12,0.88)');
-  ctx.fillStyle=tg;ctx.fillRect(0,H*0.56,W,H*0.25);
+  var tg=ctx.createLinearGradient(0,H*0.34,0,H*0.70);
+  tg.addColorStop(0,'rgba(0,0,0,0)');tg.addColorStop(0.45,'rgba(2,4,12,0.58)');tg.addColorStop(1,'rgba(2,4,12,0.74)');
+  ctx.fillStyle=tg;ctx.fillRect(0,H*0.34,W,H*0.36);
   ctx.textAlign='center';
   var gf='900 15px "Arial Black", "Helvetica Neue", Arial, sans-serif';
   var bf='900 21px "Arial Black", "Helvetica Neue", Arial, sans-serif';
@@ -234,7 +234,7 @@ function drawMenu(){
   ctx.fillStyle='#9fb6cf';ctx.font='7px monospace';
   ctx.fillText('CHANGE',skb.x+40,skb.y+29);
   ctx.fillStyle='#b8e8ff';ctx.font='900 10px "Arial Black", Arial, sans-serif';
-  ctx.fillText('STAGE SELECT',W/2,H*.601);
+  ctx.fillText('STAGE SELECT',W/2,H*.455);
   var sbs=stageSelectButtons();
   for(var si=0;si<sbs.length;si++){
     var sb=sbs[si];var sel=si===selectedStage;
@@ -252,18 +252,18 @@ function drawMenu(){
   try {
     var best=typeof aegisBestScore==='function'?aegisBestScore():(SaveStore&&SaveStore.data?SaveStore.data.campaign.bestScore:0);
     ctx.fillStyle='#8fb8ca';ctx.font='9px monospace';
-    ctx.fillText('BEST  '+String(best).padStart(7,'0'),W/2,H*.755);
+    ctx.fillText('BEST  '+String(best).padStart(7,'0'),W/2,H*.625);
   } catch(e) {}
   ctx.font=gf;ctx.fillStyle='#dff4ff';ctx.shadowColor='rgba(70,190,255,0.95)';ctx.shadowBlur=10;
-  ctx.fillText('5 STAGES  ·  5 BOSSES',W/2,H*0.772);
+  ctx.fillText('5 STAGES  ·  5 BOSSES',W/2,H*0.648);
   ctx.shadowBlur=0;
   ctx.font='900 12px "Arial Black", "Helvetica Neue", Arial, sans-serif';ctx.fillStyle='#b8e8ff';ctx.shadowColor='rgba(60,160,230,0.7)';ctx.shadowBlur=6;
-  ctx.fillText('DRAG · SHIP FOLLOWS ABOVE FINGER · AUTO-FIRE',W/2,H*0.82);
+  ctx.fillText('DRAG · SHIP FOLLOWS ABOVE FINGER · AUTO-FIRE',W/2,H*0.671);
   ctx.shadowBlur=0;
   // credits: intentionally smaller and quieter
   ctx.fillStyle='#7f93a8';ctx.font='9px monospace';
-  ctx.fillText('PATTERNS © KENTA CHO · BSD-3   |   ART: USER',W/2,H*0.86);
-  ctx.fillText('SFX: KENNEY SCI-FI SOUNDS (CC0)',W/2,H*0.89);
+  ctx.fillText('PATTERNS © KENTA CHO · BSD-3   |   ART: USER',W/2,H*0.965);
+  ctx.fillText('SFX: KENNEY SCI-FI SOUNDS (CC0)',W/2,H*0.985);
   ctx.textAlign='left';
   drawShipSelectOverlay();
   drawSkinSelectOverlay();

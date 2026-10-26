@@ -462,3 +462,10 @@
 - Force field asset recentered; duplicate ring removed.
 - Force fields now use four level-tinted assets.
 - Added Force core candidate art for selection.
+
+## 0.8.1 — New key art and menu background
+
+- Archived the new poster and extracted branding assets under `assets/branding/`.
+- Replaced the main-menu background with the new key art.
+- Moved menu controls above the poster logo so the title and emblem stay fully visible.
+- Added branding asset keys for future menus/capsules.
