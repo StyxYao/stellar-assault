@@ -1,7 +1,7 @@
 // Ship definitions and the AEGIS prototype state.
 // R1 scope: sandbox mechanics only; no campaign rework.
 var SHIP_DEFS = {
-  vector: { id: 'vector', label: 'VECTOR', subtitle: 'BALANCED · WINGMAN', trait: 'PURE-FIRE WINGMEN · NO HIT ABSORB' },
+  vector: { id: 'vector', label: 'VECTOR', subtitle: 'BALANCED · WINGMAN', trait: 'FIREPOWER WINGMEN · FULL-SCREEN BOMB' },
   aegis: { id: 'aegis', label: 'AEGIS', subtitle: 'FORCE · CHARGE', trait: 'FORCE SHIELD · CHARGE CANNON' }
 };
 var selectedShip = 'vector';

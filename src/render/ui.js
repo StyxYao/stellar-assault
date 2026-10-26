@@ -54,7 +54,7 @@ function shipSelectCloseButton(){ var p=shipSelectPanel(); return {x:p.x+p.w-36,
 function shipSelectRows(){
   var p=shipSelectPanel(), rows=[], start=p.y+96, h=98, gap=10;
   var defs=[
-    {id:'vector',name:'VECTOR',role:'BALANCED · WINGMAN',trait:'PURE-FIRE WINGMEN · NO HIT ABSORB',status:'AVAILABLE',color:'#9fe8ff',image:'sk_vector_void_lance'},
+    {id:'vector',name:'VECTOR',role:'BALANCED · WINGMAN',trait:'FIREPOWER WINGMEN · FULL-SCREEN BOMB',status:'AVAILABLE',color:'#9fe8ff',image:'sk_vector_void_lance'},
     {id:'aegis',name:'AEGIS',role:'FORCE · CHARGE',trait:'FORCE SHIELD · CHARGE CANNON',status:'AVAILABLE',color:'#ffd36b',image:'sk_aegis_orbital'},
     {id:'phantom',name:'PHANTOM',role:'',trait:'FRAME PREVIEW ONLY',status:'COMING SOON',color:'#c98bff',image:'sk_phantom_quantum'}
   ];
