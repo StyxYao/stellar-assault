@@ -614,3 +614,9 @@
 - Added clone caps, W upgrades, death reset and oldest-clone replacement.
 - Added Phantom HUD, skill button and selection traits.
 - Enemy/boss aiming now prefers clones and ignores a cloaked player without clones.
+
+## 0.9.11 — Qwen Phantom sprite set
+
+- Adopted Qwen Image 2.1 transparent versions for Quantum, Raven and Butterfly.
+- Cropped each to its visible alpha bounds and normalized to a 70px max dimension on the common 80×80 canvas.
+- No further redraw, recolor or mirroring.
