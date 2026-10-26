@@ -1,20 +1,20 @@
 // Ship definitions and the AEGIS prototype state.
 // R1 scope: sandbox mechanics only; no campaign rework.
 var SHIP_DEFS = {
-  vector: { id: 'vector', label: 'VECTOR', subtitle: 'BALANCED · WINGMAN' },
-  aegis: { id: 'aegis', label: 'AEGIS', subtitle: 'FORCE · CHARGE' }
+  vector: { id: 'vector', label: 'VECTOR', subtitle: 'BALANCED · WINGMAN', trait: 'PURE-FIRE WINGMEN · NO HIT ABSORB' },
+  aegis: { id: 'aegis', label: 'AEGIS', subtitle: 'FORCE · CHARGE', trait: 'FORCE SHIELD · CHARGE CANNON' }
 };
 var selectedShip = 'vector';
 var SHIP_SKINS = {
   vector: [
-    { id: 'void_lance', label: 'VOID LANCE', image: 'sk_vector_void_lance', ox: 3.5, oy: 2, maxHp: 3, extraBullets: 0, damageMult: 1, laserRate: [1, 1, 1, 1] },
-    { id: 'starfall', label: 'STARFALL WING', image: 'sk_vector_starfall', ox: 0.5, oy: 1, maxHp: 2, extraBullets: 1, damageMult: 1.2, laserRate: [1.5, 1.3333, 1.25, 1.2] },
-    { id: 'abyss', label: 'ABYSS BLADE', image: 'sk_vector_abyss', ox: 0.5, oy: 1, maxHp: 1, extraBullets: 2, damageMult: 1.4, laserRate: [2, 1.6667, 1.5, 1.4] }
+    { id: 'void_lance', label: 'VOID LANCE', image: 'sk_vector_void_lance', ox: 3.5, oy: 2, maxHp: 3, extraBullets: 0, damageMult: 1, laserRate: [1, 1, 1, 1], trait: 'HP 3 · BASE · STANDARD FIRE' },
+    { id: 'starfall', label: 'STARFALL WING', image: 'sk_vector_starfall', ox: 0.5, oy: 1, maxHp: 2, extraBullets: 1, damageMult: 1.2, laserRate: [1.5, 1.3333, 1.25, 1.2], trait: 'HP 2 · +1 SHOT · +20% DAMAGE' },
+    { id: 'abyss', label: 'ABYSS BLADE', image: 'sk_vector_abyss', ox: 0.5, oy: 1, maxHp: 1, extraBullets: 2, damageMult: 1.4, laserRate: [2, 1.6667, 1.5, 1.4], trait: 'HP 1 · +2 SHOTS · +40% DAMAGE' }
   ],
   aegis: [
-    { id: 'orbital', label: 'ORBITAL GUARDIAN', image: 'sk_aegis_orbital', ox: 3.5, oy: 2.5, shieldMult: 1, radiusMult: 1, chargeTimeMult: 1, chargeDamageMult: 1 },
-    { id: 'void_echo', label: 'VOID ECHO', image: 'sk_aegis_void_echo', ox: 1, oy: 0.5, shieldMult: 0.6, radiusMult: 0.6, chargeTimeMult: 1.2, chargeDamageMult: 1.6 },
-    { id: 'temporal', label: 'TEMPORAL WANDERER', image: 'sk_aegis_temporal', ox: 0.5, oy: 1, shieldMult: 1.15, radiusMult: 1.15, chargeTimeMult: 0.7, chargeDamageMult: 0.8, postOdBuff: 0.3 }
+    { id: 'orbital', label: 'ORBITAL GUARDIAN', image: 'sk_aegis_orbital', ox: 3.5, oy: 2.5, shieldMult: 1, radiusMult: 1, chargeTimeMult: 1, chargeDamageMult: 1, trait: 'SHIELD 60 · STANDARD CHARGE' },
+    { id: 'void_echo', label: 'VOID ECHO', image: 'sk_aegis_void_echo', ox: 1, oy: 0.5, shieldMult: 0.6, radiusMult: 0.6, chargeTimeMult: 1.2, chargeDamageMult: 1.6, trait: 'SHIELD -40% · CHARGE +20% · DMG +60%' },
+    { id: 'temporal', label: 'TEMPORAL WANDERER', image: 'sk_aegis_temporal', ox: 0.5, oy: 1, shieldMult: 1.15, radiusMult: 1.15, chargeTimeMult: 0.7, chargeDamageMult: 0.8, postOdBuff: 0.3, trait: 'SHD +15% · CHG -30% · DMG -20% · OD-END +30%' }
   ],
   phantom: [
     { id: 'quantum', label: 'QUANTUM HUNTER', image: 'sk_phantom_quantum' },

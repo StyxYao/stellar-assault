@@ -54,9 +54,9 @@ function shipSelectCloseButton(){ var p=shipSelectPanel(); return {x:p.x+p.w-36,
 function shipSelectRows(){
   var p=shipSelectPanel(), rows=[], start=p.y+96, h=98, gap=10;
   var defs=[
-    {id:'vector',name:'VECTOR',role:'BALANCED · WINGMAN',status:'AVAILABLE',color:'#9fe8ff',image:'sk_vector_void_lance'},
-    {id:'aegis',name:'AEGIS',role:'FORCE · CHARGE',status:'AVAILABLE',color:'#ffd36b',image:'sk_aegis_orbital'},
-    {id:'phantom',name:'PHANTOM',role:'',status:'COMING SOON',color:'#c98bff',image:'sk_phantom_quantum'}
+    {id:'vector',name:'VECTOR',role:'BALANCED · WINGMAN',trait:'PURE-FIRE WINGMEN · NO HIT ABSORB',status:'AVAILABLE',color:'#9fe8ff',image:'sk_vector_void_lance'},
+    {id:'aegis',name:'AEGIS',role:'FORCE · CHARGE',trait:'FORCE SHIELD · CHARGE CANNON',status:'AVAILABLE',color:'#ffd36b',image:'sk_aegis_orbital'},
+    {id:'phantom',name:'PHANTOM',role:'',trait:'FRAME PREVIEW ONLY',status:'COMING SOON',color:'#c98bff',image:'sk_phantom_quantum'}
   ];
   for(var i=0;i<defs.length;i++) rows.push({i:i,x:p.x+14,y:start+i*(h+gap),w:p.w-28,h:h,def:defs[i]});
   return rows;
@@ -72,6 +72,7 @@ function shipSelectChoose(i){
   if(i===2) return false;
   setSelectedShip(i===0?'vector':'aegis');
   shipSelectOpen=false;
+  openSkinSelect();
   return true;
 }
 function shipSelectAt(p){
@@ -134,9 +135,9 @@ function drawSkinSelectOverlay(){
   ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1.5;ctx.strokeRect(p.x,p.y,p.w,p.h);
   ctx.textAlign='left';
   ctx.fillStyle='#eaf8ff';ctx.font='900 20px "Arial Black", Arial, sans-serif';
-  ctx.fillText('SELECT SKIN',p.x+20,p.y+36);
+  ctx.fillText('SELECT VARIANT',p.x+20,p.y+36);
   ctx.fillStyle='#7f9bb0';ctx.font='9px monospace';
-  ctx.fillText((SHIP_DEFS[selectedShip]?SHIP_DEFS[selectedShip].label:selectedShip.toUpperCase())+' · COSMETIC LOADOUT',p.x+20,p.y+54);
+  ctx.fillText((SHIP_DEFS[selectedShip]?SHIP_DEFS[selectedShip].label:selectedShip.toUpperCase())+' · CHOOSE LOADOUT',p.x+20,p.y+54);
   var cb=skinSelectCloseButton();
   ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(cb.x,cb.y,cb.w,cb.h);
   ctx.fillStyle='#9fb6cf';ctx.font='700 14px Arial, sans-serif';ctx.textAlign='center';ctx.fillText('×',cb.x+cb.w/2,cb.y+17);
@@ -148,14 +149,16 @@ function drawSkinSelectOverlay(){
     ctx.globalAlpha=1;
     drawShipPreview(d.image,r.x+50,r.y+r.h/2,64,'#9fe8ff');
     ctx.textAlign='left';ctx.fillStyle='#eaf8ff';ctx.font='900 14px "Arial Black", Arial, sans-serif';
-    ctx.fillText(d.label,r.x+92,r.y+38);
+    ctx.fillText(d.label,r.x+92,r.y+32);
+    ctx.fillStyle='#9fc8dc';ctx.font='7px monospace';
+    ctx.fillText(d.trait||'NO SPECIAL TRAITS',r.x+92,r.y+50);
     ctx.fillStyle=cur?'#ffd36b':'#7893a8';ctx.font='8px monospace';
-    ctx.fillText(cur?'EQUIPPED':'TAP TO EQUIP',r.x+92,r.y+57);
+    ctx.fillText(cur?'EQUIPPED':'TAP TO EQUIP',r.x+92,r.y+66);
     ctx.textAlign='right';ctx.fillStyle='#6d879b';ctx.font='10px monospace';
     ctx.fillText('0'+(i+1),r.x+r.w-14,r.y+38);
   }
   ctx.textAlign='center';ctx.fillStyle='#6d879b';ctx.font='8px monospace';
-  ctx.fillText('↑ ↓ SELECT · ENTER EQUIP · ESC CLOSE',W/2,p.y+p.h-16);
+  ctx.fillText('↑ ↓ SELECT · ENTER EQUIP · ESC MENU',W/2,p.y+p.h-16);
   ctx.restore();ctx.textAlign='left';
 }
 function drawShipSelectOverlay(){
@@ -169,7 +172,7 @@ function drawShipSelectOverlay(){
   ctx.fillStyle='#eaf8ff';ctx.font='900 20px "Arial Black", Arial, sans-serif';
   ctx.fillText('SELECT SHIP',p.x+20,p.y+36);
   ctx.fillStyle='#7f9bb0';ctx.font='9px monospace';
-  ctx.fillText('CHOOSE YOUR FRAME · SKINS ARE COSMETIC',p.x+20,p.y+54);
+  ctx.fillText('CHOOSE YOUR FRAME · THEN ITS VARIANT',p.x+20,p.y+54);
   var cb=shipSelectCloseButton();
   ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(cb.x,cb.y,cb.w,cb.h);
   ctx.fillStyle='#9fb6cf';ctx.font='700 14px Arial, sans-serif';ctx.textAlign='center';ctx.fillText('×',cb.x+cb.w/2,cb.y+17);
@@ -188,13 +191,15 @@ function drawShipSelectOverlay(){
     ctx.fillText(d.name,r.x+82,r.y+35);
     ctx.fillStyle=disabled?'#6f5c7e':d.color;ctx.font='9px monospace';
     ctx.fillText(d.role,r.x+82,r.y+53);
+    ctx.fillStyle=disabled?'#6f5c7e':'#9fc8dc';ctx.font='7px monospace';
+    ctx.fillText(d.trait||'',r.x+82,r.y+70);
     var statusColor=disabled?'#a879c9':'#8dffb0';
     ctx.fillStyle=statusColor;ctx.font='700 9px monospace';ctx.textAlign='right';
     ctx.fillText(d.status,r.x+r.w-14,r.y+35);
     if(!disabled){
       var n=(typeof skinList==='function'?skinList(d.id).length:3);
       ctx.fillStyle='#7893a8';ctx.font='8px monospace';ctx.textAlign='right';
-      ctx.fillText(n+' SKINS',r.x+r.w-14,r.y+54);
+      ctx.fillText(n+' VARIANTS',r.x+r.w-14,r.y+54);
     }
   }
   ctx.textAlign='center';ctx.fillStyle='#6d879b';ctx.font='8px monospace';
@@ -225,9 +230,9 @@ function drawMenu(){
   var skinImg=(typeof currentSkinImage==='function')?currentSkinImage():null;
   if(skinImg&&GIMG[skinImg]&&GIMG[skinImg].complete){ctx.globalAlpha=1;ctx.drawImage(GIMG[skinImg],skb.x+5,skb.y+4,30,30);}
   ctx.fillStyle='#eaf8ff';ctx.font='700 10px Arial, sans-serif';ctx.textAlign='left';
-  ctx.fillText('SKIN '+(typeof skinNumber==='function'?skinNumber():'1')+'/3',skb.x+40,skb.y+17);
+  ctx.fillText('VAR '+(typeof skinNumber==='function'?skinNumber():'1')+'/3',skb.x+40,skb.y+17);
   ctx.fillStyle='#9fb6cf';ctx.font='7px monospace';
-  ctx.fillText('TAP TO CHANGE',skb.x+40,skb.y+29);
+  ctx.fillText('CHANGE',skb.x+40,skb.y+29);
   ctx.fillStyle='#b8e8ff';ctx.font='900 10px "Arial Black", Arial, sans-serif';
   ctx.fillText('STAGE SELECT',W/2,H*.601);
   var sbs=stageSelectButtons();

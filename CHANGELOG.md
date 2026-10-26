@@ -447,3 +447,10 @@
 - Broken Force can be restored to 100% with the bomb key/Force button.
 - Charged attacks stay anchored to the player after Force launch.
 - Force radius L1 -40%, L4 unchanged, smooth intermediates; stronger tier colors/opacity.
+
+## 0.8.0 — Two-step ship/variant selection
+
+- Selecting a main ship now opens its variant/loadout screen directly.
+- SKIN terminology changed to VARIANT in the menu and overlays.
+- Ship cards show a gameplay trait summary.
+- Variant cards show HP/shield/charge/damage/post-OD traits.
