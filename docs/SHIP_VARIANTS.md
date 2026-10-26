@@ -58,3 +58,10 @@ W overflow:
 - M charge: 10 missiles in a wide row; 1.5x length and 1.3x width.
 - Force radius tiers now jump visibly: 38 / 52 / 66 / 80 before skin multipliers.
 - Enemy `aggr` no longer reduces projectile speed below 70%; this fixes near-stationary fodder bullets.
+
+
+## Bomb / Force damage
+
+- VECTOR bomb: 200 to every enemy/Boss in the blast; no 999 instant-kill.
+- AEGIS Force contact: 400 per enemy/Boss per launch (2x bomb).
+- Force remains collision-based, not instant lane damage.

@@ -432,3 +432,9 @@
 - L charge beam thickened; M charge changed to 10 wider missiles.
 - Force radius tiers have stronger size/color differences.
 - Fixed near-stationary enemy bullets by clamping the aggression speed multiplier.
+
+## 0.7.4 — Bomb and Force damage baseline
+
+- VECTOR bomb base damage is now 200; it no longer applies a 999 instant-kill to enemies or mini-bosses.
+- AEGIS Force collision damage raised to 400 (2x bomb).
+- Bomb still clears enemy bullets and uses normal HP/death handling.

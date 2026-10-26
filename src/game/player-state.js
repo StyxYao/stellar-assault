@@ -11,10 +11,11 @@ function bomb(){
   for(var i=0;i<ebullets.length;i++) part(ebullets[i].x,ebullets[i].y,'#9fe8ff',1,110);
   bullets.length=0; ebullets.length=0; beams.length=0; orbBullets.length=0;
   for(var i=enemies.length-1;i>=0;i--){
-    enemies[i].hp-=999;
-    if(enemies[i].hp<=0){ part(enemies[i].x,enemies[i].y,'#ffb066',10,180); enemyDeath(enemies[i]); score+=ET[enemies[i].type].score; maybeDrop(enemies[i]); removeEnemy(i); }
+    var eb=enemies[i];
+    eb.hp-=200;
+    if(eb.hp<=0){ part(eb.x,eb.y,'#ffb066',10,180); enemyDeath(eb); score+=ET[eb.type].score; maybeDrop(eb); removeEnemy(i); }
   }
-  if(boss){ boss.hp-=120; boss.flash=0.2; }
+  if(boss){ boss.hp-=200; boss.flash=0.2; }
 }
 function hitPlayer(){
   if(player.odT>0) return;
