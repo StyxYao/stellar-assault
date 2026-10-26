@@ -26,10 +26,10 @@ R2 的**可玩集成**已经基本完成：VECTOR、AEGIS、PHANTOM 都能选、
 | 机体/变体选择 UI | PASS | 含数值说明行 |
 | 皮肤写入存档 | PASS | 分机体 `skin` |
 | 分机体最高分 | PASS | 含 PHANTOM（本次修复读档重置） |
-| 选择跨重启恢复 | FAIL / 待决策 | `initSaveStore` 启动强制 VECTOR；Phantom 值也会被归一化成 VECTOR |
+| 选择跨重启恢复 | PASS（按新策略） | 每次启动固定 VECTOR；外观/最高分仍持久化 |
 | 第一关完整可玩 | PASS | 三机体均可进入 |
-| AEGIS 教学 | PASS | 首局 6 秒提示 |
-| PHANTOM 教学 | MISSING | 没有首局隐身/分身/E/D 提示 |
+| AEGIS 教学 | PASS | 首局提示 + 选机菜单教程 |
+| PHANTOM 教学 | PASS | 选机菜单教程（隐身/分身/E/D） |
 | 键鼠操作 | PASS | 含 Phantom 技能键 |
 | 手柄操作 | 代码通过 / 未专测 | 技能走 `bomb()` 映射 |
 | 触屏技能按钮 | 代码通过 / 未真机测 | `phantomButtonAt()` |
@@ -83,18 +83,11 @@ R3 / 1.1：PHANTOM 机制、3 套外观、第三套排行榜
 
 ### P0 — 签收前必须
 
-1. 决定选机持久化策略
-   - 方案 A：跨重启记住上次机体（R2 原文要求）
-   - 方案 B：每次启动固定 VECTOR（当前行为）
-2. 补 PHANTOM 首局教学
-   - 隐身 3 秒 / Raven 4 秒
-   - E 充能，D 提升分身上限
-   - 分身为 50% 伤害
-3. 三机体平衡冒烟
+1. 三机体平衡冒烟
    - 第一关同路线通关时间
    - 无伤/受伤次数
    - 分身覆盖率、技能空窗
-4. 真机矩阵
+2. 真机矩阵
    - Windows 键鼠
    - 触屏技能按钮
    - 手柄技能键
@@ -102,30 +95,37 @@ R3 / 1.1：PHANTOM 机制、3 套外观、第三套排行榜
 
 ### P1 — 文档与验收
 
-5. 更新 `STEAM_R2_ACCEPTANCE.md`
-6. 补 PHANTOM 验收截图和操作表
-7. 记录已知例外：PHANTOM 无僚机/炸弹，死亡重置分身
+3. 更新 `STEAM_R2_ACCEPTANCE.md`
+4. 补 PHANTOM 验收截图和操作表
+5. 记录已知例外：PHANTOM 无僚机/炸弹，死亡重置分身
 
 ## 后续里程碑
 
-### R3 — 内容审计（下一步）
+### R3 — 双人联机（提前为下一阶段）
+
+- 同设备双人
+- 局域网双设备
+- 不同网络在线
+- 详见 `docs/MULTIPLAYER_R3.md`
+
+### R4 — 内容审计
 
 产出两张表：
 
 - 5 关：现有机制 / 是否只是换背景 / 建议机制
 - 5 Boss：阶段机制 / 是否只是换弹幕 / 建议核心交互
 
-现有 `STAGE4.md`、`STAGE5.md`、`ENEMY_DESIGN.md` 可作为输入，但还没有合并成 R3 审计表。
+现有 `STAGE4.md`、`STAGE5.md`、`ENEMY_DESIGN.md` 可作为输入，但还没有合并成 R4 审计表。
 
-### R4 — 关卡机制
+### R5 — 关卡机制
 
 每关一个主机制，带预警、音效、视觉反馈，不新增不可躲弹幕。
 
-### R5 — Boss 机制
+### R6 — Boss 机制
 
 每个 Boss 一个必须改变走位/输出窗口的核心交互，验证安全缺口和阶段预兆。
 
-### R6 — Rank / Medal / Score
+### R7 — Rank / Medal / Score
 
 - Rank 0–5
 - Medal / Chain
@@ -135,21 +135,20 @@ R3 / 1.1：PHANTOM 机制、3 套外观、第三套排行榜
 
 当前只有最高分，没有 Rank/Medal/完整榜。
 
-### R7 / R8 / R9
+### R8 / R9 / R10
 
-- R7 Boss Rush：目前只有 `modes.js` 契约和 `bossrush.html` 实验页，未进菜单
-- R8 Tower：同上，仅契约
-- R9 Steam QA：Steamworks、成就、云存档、安装包仍未开始
+- R8 Boss Rush：目前只有 `modes.js` 契约和 `bossrush.html` 实验页，未进菜单
+- R9 Tower：同上，仅契约
+- R10 Steam QA：Steamworks、成就、云存档、安装包仍未开始
 
 ## 建议下一动作
 
 先做 **R2 P0 签收包**：
 
 ```text
-选机持久化决策
-+ PHANTOM 首局教学
-+ 三机体第一关平衡冒烟
+三机体第一关平衡冒烟
 + Windows/触屏/Deck 冒烟
++ 重写 R2 验收
 ```
 
-然后再进入 **R3 内容审计**。不要直接开 R4/R5，否则会在未审计的关卡结构上做二次返工。
+R2 签收包之后进入 **R3 双人联机**；R4 才做内容审计。不要直接开 R5/R6，否则会在未审计的关卡结构上做二次返工。

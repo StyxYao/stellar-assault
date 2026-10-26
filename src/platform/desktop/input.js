@@ -53,6 +53,11 @@ function desktopChangeStage(delta) {
 
 function desktopConfirm() {
   if (desktopPaused) { desktopSetPaused(false); return; }
+  if (state === 'menu' && typeof tutorialOpen !== 'undefined' && tutorialOpen) {
+    if (typeof menuConfirmSfx === 'function') menuConfirmSfx();
+    tutorialNext();
+    return;
+  }
   if (state === 'menu' && typeof startConfirmOpen !== 'undefined' && startConfirmOpen) {
     if (typeof menuConfirmSfx === 'function') menuConfirmSfx();
     closeStartConfirm();
@@ -97,6 +102,12 @@ function desktopKeyDown(e) {
     if (k === 'enter' || k === ' ') { settingsActivate(); return; }
     return;
   }
+  if (state === 'menu' && typeof tutorialOpen !== 'undefined' && tutorialOpen) {
+    if (k === 'escape') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); closeTutorial(); return; }
+    if (k === 'enter' || k === ' ' || k === 'arrowright' || k === 'd') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) desktopConfirm(); return; }
+    if (k === 'arrowleft' || k === 'a') { if (!e.repeat) tutorialPrev(); return; }
+    return;
+  }
   if (state === 'menu' && typeof startConfirmOpen !== 'undefined' && startConfirmOpen) {
     if (k === 'escape') { closeStartConfirm(); return; }
     if (k === 'enter' || k === ' ') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) desktopConfirm(); return; }
@@ -115,6 +126,7 @@ function desktopKeyDown(e) {
     if (k === 'arrowup' || k === 'w') { shipSelectIndex = (shipSelectIndex + 2) % 3; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
     if (k === 'arrowdown' || k === 's') { shipSelectIndex = (shipSelectIndex + 1) % 3; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
     if (k === 'enter' || k === ' ') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) desktopConfirm(); return; }
+    if (k === 't') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); var trows=shipSelectRows(); openTutorial(trows[shipSelectIndex]?trows[shipSelectIndex].def.id:selectedShip); return; }
     if (k === 'escape' || k === 'v') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); closeShipSelect(); return; }
     return;
   }

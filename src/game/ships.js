@@ -173,10 +173,9 @@ function initSelectedSkins() {
 function setSelectedShip(id, persist) {
   id = (id === 'aegis' || id === 'phantom') ? id : 'vector';
   selectedShip = id;
-  if (persist !== false && typeof SaveStore !== 'undefined' && SaveStore.data) {
-    SaveStore.data.ships.selected = id;
-    if (typeof persistSave === 'function') persistSave();
-  }
+  // Ship choice is intentionally session-only. Each launch starts at VECTOR;
+  // per-ship skins and best scores still persist.
+  void persist;
 }
 
 function toggleSelectedShip() {

@@ -1,8 +1,11 @@
-// Lightweight menu UI feedback: H = navigation, C + soft H = confirm.
-function menuMoveSfx(){ try{ if(typeof sfx==='function') sfx('ui_move',0.15); }catch(e){} }
+// Menu feedback: move = F+C, confirm = H+C.
+function menuMoveSfx(){
+  try{ if(typeof sfx==='function') sfx('ui_move',0.15); }catch(e){}
+  try{ if(typeof sfx==='function') sfx('ui_metal',0.10); }catch(e){}
+}
 function menuConfirmSfx(){
-  try{ if(typeof sfx==='function') sfx('ui_metal',0.20); }catch(e){}
   try{ if(typeof sfx==='function') sfx('ui_holo',0.13); }catch(e){}
+  try{ if(typeof sfx==='function') sfx('ui_metal',0.20); }catch(e){}
 }
 // HUD, menu, banners, cutscenes, finale and cast screens.
 function drawHUD(){
@@ -55,6 +58,49 @@ function stageSelectButtons(){
 function menuStartButton(){return {x:W/2-108,y:H*.55,w:216,h:42};}
 function menuShipButton(){return {x:W/2-118,y:H*.395,w:112,h:38};}
 
+var tutorialOpen = false, tutorialShip = 'vector', tutorialPage = 0;
+function tutorialPanel(){ return {x:26,y:H*.17,w:W-52,h:H*.60}; }
+function tutorialButton(){ var p=tutorialPanel(); return {x:p.x+p.w-118,y:p.y+p.h-72,w:96,h:26}; }
+function shipTutorialButton(){ var p=shipSelectPanel(); return {x:p.x+20,y:p.y+p.h-52,w:156,h:26}; }
+function tutorialPages(ship){
+  if(ship==='aegis') return [
+    {t:'AEGIS · 01 / CHARGE', lines:['MOVE with drag / arrows / left stick.','AUTO-FIRE is always on.','Tap C or the CHG button to charge.','Release to fire a wider, stronger beam.','Higher charge = larger cannon.']},
+    {t:'AEGIS · 02 / FORCE', lines:['Tap F or the FORCE button.','Attached: Force blocks bullets.','Detached: Force adds firepower.','Tap again to recall the Force.','E restores charge. D expands Force radius.']}
+  ];
+  if(ship==='phantom') return [
+    {t:'PHANTOM · 01 / CLOAK', lines:['Tap Z or the PHASE button.','3 seconds of invincibility.','Raven: 4 seconds.','Cloak damage: +30% / Raven +100%.','No wingmen and no bomb.']},
+    {t:'PHANTOM · 02 / CLONES', lines:['A 3 HP clone is left behind.','It copies your weapon and level.','Clone damage is 50% of base.','After a hit it is invulnerable for 1s.','E restores charge. D raises clone cap.']}
+  ];
+  return [
+    {t:'VECTOR · 01 / FIRE', lines:['MOVE with drag / arrows / left stick.','AUTO-FIRE is always on.','Tap Z or Space for a screen bomb.','The bomb clears bullets around you.']},
+    {t:'VECTOR · 02 / WINGMEN', lines:['D adds a wingman (maximum 4).','Wingmen add firepower, not shields.','E restores one bomb charge.','Death drops one wingman level.','Collect P for power, 1UP for life.']}
+  ];
+}
+function openTutorial(ship){ tutorialShip=ship||'vector'; tutorialPage=0; tutorialOpen=true; }
+function closeTutorial(){ tutorialOpen=false; }
+function tutorialNext(){ var pages=tutorialPages(tutorialShip); if(tutorialPage>=pages.length-1) closeTutorial(); else tutorialPage++; }
+function tutorialPrev(){ if(tutorialPage>0) tutorialPage--; }
+function tutorialAt(p){ var b=tutorialButton(); if(p.x>=b.x&&p.x<=b.x+b.w&&p.y>=b.y&&p.y<=b.y+b.h) return 'close'; var pp=tutorialPanel(); if(p.x<pp.x||p.x>pp.x+pp.w||p.y<pp.y||p.y>pp.y+pp.h) return 'outside'; return 'next'; }
+function drawTutorialOverlay(){
+  if(!tutorialOpen) return;
+  var p=tutorialPanel(), pages=tutorialPages(tutorialShip), pg=pages[Math.max(0,Math.min(pages.length-1,tutorialPage))];
+  ctx.save(); ctx.fillStyle='rgba(1,4,10,0.86)'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(5,15,26,0.98)'; ctx.fillRect(p.x,p.y,p.w,p.h);
+  ctx.strokeStyle='#5d8fa8'; ctx.lineWidth=1.5; ctx.strokeRect(p.x,p.y,p.w,p.h);
+  ctx.textAlign='left'; ctx.fillStyle='#eaf8ff'; ctx.font='900 17px "Arial Black", Arial, sans-serif';
+  ctx.fillText(pg.t,p.x+20,p.y+38);
+  ctx.fillStyle='#7f9bb0'; ctx.font='9px monospace';
+  ctx.fillText('SHIP TUTORIAL · '+(tutorialPage+1)+'/'+pages.length,p.x+20,p.y+56);
+  ctx.fillStyle='#b8d8e8'; ctx.font='12px Rajdhani, Arial, sans-serif';
+  for(var i=0;i<pg.lines.length;i++) ctx.fillText(pg.lines[i],p.x+26,p.y+100+i*27);
+  var b=tutorialButton(); ctx.fillStyle='rgba(8,24,38,0.9)'; ctx.fillRect(b.x,b.y,b.w,b.h);
+  ctx.strokeStyle='#9fe8ff'; ctx.lineWidth=1.2; ctx.strokeRect(b.x,b.y,b.w,b.h);
+  ctx.fillStyle='#eaf8ff'; ctx.font='700 10px monospace'; ctx.textAlign='center';
+  ctx.fillText(tutorialPage>=pages.length-1?'CLOSE':'NEXT',b.x+b.w/2,b.y+17);
+  ctx.fillStyle='#6d879b'; ctx.font='8px monospace'; ctx.textAlign='center';
+  ctx.fillText('ENTER NEXT · ESC CLOSE',W/2,p.y+p.h-14);
+  ctx.restore(); ctx.textAlign='left';
+}
 var shipSelectOpen = false;
 var shipSelectIndex = 0;
 function shipSelectPanel(){ return {x:24,y:H*.14,w:W-48,h:H*.57}; }
@@ -83,6 +129,8 @@ function shipSelectChoose(i){
   return true;
 }
 function shipSelectAt(p){
+  var tb=shipTutorialButton();
+  if(p.x>=tb.x&&p.x<=tb.x+tb.w&&p.y>=tb.y&&p.y<=tb.y+tb.h) return 'tutorial';
   var cb=shipSelectCloseButton();
   if(p.x>=cb.x&&p.x<=cb.x+cb.w&&p.y>=cb.y&&p.y<=cb.y+cb.h) return 'close';
   var rows=shipSelectRows();
@@ -272,6 +320,11 @@ function drawShipSelectOverlay(){
       ctx.fillText(n+' VARIANTS',r.x+r.w-14,r.y+54);
     }
   }
+  var tb=shipTutorialButton();
+  ctx.fillStyle='rgba(8,24,38,0.9)';ctx.fillRect(tb.x,tb.y,tb.w,tb.h);
+  ctx.strokeStyle='#9fe8ff';ctx.lineWidth=1;ctx.strokeRect(tb.x,tb.y,tb.w,tb.h);
+  ctx.fillStyle='#dff5ff';ctx.font='700 9px monospace';ctx.textAlign='center';
+  ctx.fillText('TUTORIAL · '+(rows[shipSelectIndex]?rows[shipSelectIndex].def.name:'SHIP'),tb.x+tb.w/2,tb.y+17);
   ctx.textAlign='center';ctx.fillStyle='#6d879b';ctx.font='8px monospace';
   ctx.fillText('↑ ↓ SELECT · ENTER CONFIRM · ESC CLOSE',W/2,p.y+p.h-16);
   ctx.restore();ctx.textAlign='left';
@@ -354,6 +407,7 @@ function drawMenu(){
   drawShipSelectOverlay();
   drawSkinSelectOverlay();
   drawStartConfirmOverlay();
+  drawTutorialOverlay();
 }
 function drawBossOmen(){
   var t=bossOmenT;

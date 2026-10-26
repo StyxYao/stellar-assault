@@ -692,3 +692,19 @@
 - Clone takes one hit, gains 1s invulnerability and shows a shield ring.
 - Raven cloak attack bonus raised to +100%, duration remains 4s.
 - Initial and post-death ability charges are 3 for every ship.
+
+## 0.9.22 — R2 tutorials, smoke data and R3 planning
+
+- Ship choice is session-only again; every launch starts at VECTOR.
+- Ship-select panel gains a TUTORIAL action for VECTOR, AEGIS and PHANTOM.
+- Menu feedback is F+C for movement and H+C for confirm.
+- Added `docs/BALANCE_BASELINE.md` with default-variant DPS smoke results.
+- Added `docs/MULTIPLAYER_R3.md`; R3 is now two-player co-op and the old R3–R9 plan shifts to R4–R10.
+
+## 0.9.23 — R2 tutorials, smoke data and R3 roadmap
+
+- Added tutorial action to ship select; VECTOR, AEGIS and PHANTOM each have two tutorial pages.
+- Ship choice is session-only; every launch starts at VECTOR.
+- Menu movement uses F+C; confirm uses H+C.
+- Added default-variant DPS baseline and smoke notes.
+- R3 is now two-player co-op; old R3–R9 shifted to R4–R10.

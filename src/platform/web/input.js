@@ -24,6 +24,12 @@ function onDown(e){
   if(e.pointerType==='mouse'&&(state==='play'||state==='boss')&&typeof desktopPrimaryFire==='function') desktopPrimaryFire();
   if(state==='menu'){
     if(!audioReady){ audioReady=true; playBgm('m'); }
+    if(typeof tutorialOpen!=='undefined'&&tutorialOpen){
+      var th=tutorialAt(p);
+      if(th==='next'){ if(typeof menuConfirmSfx==='function')menuConfirmSfx(); tutorialNext(); }
+      else if(th==='close'||th==='outside'){ if(typeof menuMoveSfx==='function')menuMoveSfx(); closeTutorial(); }
+      return;
+    }
     if(typeof startConfirmOpen!=='undefined'&&startConfirmOpen){
       var sch=startConfirmAt(p);
       if(sch==='start'){if(typeof menuConfirmSfx==='function')menuConfirmSfx();closeStartConfirm();startAtStage(selectedStage);}
@@ -40,6 +46,7 @@ function onDown(e){
     if(typeof shipSelectOpen!=='undefined'&&shipSelectOpen){
       var hit=shipSelectAt(p);
       if(typeof hit==='number'){ shipSelectIndex=hit; if(typeof menuMoveSfx==='function')menuMoveSfx(); if(hit<3) shipSelectChoose(hit); return; }
+      if(hit==='tutorial'){ if(typeof menuMoveSfx==='function')menuMoveSfx(); var trows=shipSelectRows(); openTutorial(trows[shipSelectIndex]?trows[shipSelectIndex].def.id:selectedShip); return; }
       if(hit==='close'||hit==='outside'){if(typeof menuMoveSfx==='function')menuMoveSfx();closeShipSelect();}
       return;
     }

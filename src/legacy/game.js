@@ -394,6 +394,12 @@ window.__orb=function(){return boss&&boss.crossOrb?{x:Math.round(boss.crossOrb.x
 window.__g=function(){return {state:state,stage:stage,score:score,enemies:enemies.length,bullets:bullets.length,ebullets:ebullets.length,hp:boss?Math.round(boss.hp):0,inv:boss?+(boss.invuln||0).toFixed(2):0,phase:boss?boss.phase:-1,bx:boss?Math.round(boss.x):0,lt:boss?+(boss.laserT.toFixed(1)):0,ut:boss?+(boss.ultT.toFixed(1)):0,uc:boss?+(boss.ultCharge.toFixed(1)):0,style:boss?boss.def.style:'',power:player.specialPower,items:items.length,shots:shots.length,weapon:player.weapon,options:player.options,lives:player.lives,php:player.hp,bombs:player.bombs};};
 window.__god=function(){player.invuln=99999;player.noBlink=true;};
 window.__stage=function(n){startStage(n);};
+  window.__runStage=function(n){startAtStage(n);};
+  window.__selectShip=function(id){setSelectedShip(id,false);var sl=skinList(id);setSelectedSkin(id,sl[0].id,false);};
+  window.__power=function(n){player.specialPower=Math.max(1,Math.min(4,n|0));player.power=player.specialPower;};
+  window.__enemyHp=function(){return enemies.length?enemies[0].hp:null;};
+  window.__setPlayer=function(x,y){player.x=target.x=x;player.y=target.y=y;};
+  window.__dummy=function(hp){enemies.length=0;ebullets.length=0;spawnWave({t:0,type:0,n:1,form:'line',spd:0,noFire:true,aggr:1});var e=enemies[enemies.length-1];if(e){e.x=W/2;e.y=300;e.entering=false;e.vx=0;e.vy=0;e.mode='hold';e.noFire=true;e.hp=hp||999999;e.max=e.hp;}player.x=target.x=W/2;player.y=target.y=H-130;};
 window.__boss=function(){if(!boss)spawnBoss();};
 window.__form=function(f){spawnWave({t:0,type:f==='escort'?4:2,n:5,form:f,spd:70,noFire:false,aggr:1});};
 window.__enemy=function(t){spawnWave({t:0,type:t==null?4:t,n:1,form:'line',spd:0,noFire:false,aggr:1});var e=enemies[enemies.length-1];if(e){e.y=280;e.entering=false;}};
