@@ -92,6 +92,67 @@ function drawShipPreview(key,x,y,size,color){
   ctx.fillStyle=color;ctx.font='700 12px monospace';ctx.textAlign='center';ctx.fillText('?',x,y+4);ctx.restore();
 }
 
+var startConfirmOpen = false;
+function startConfirmPanel(){ return {x:30,y:H*.225,w:W-60,h:H*.50}; }
+function startConfirmButtons(){
+  var p=startConfirmPanel();
+  return {
+    start:{x:p.x+30,y:p.y+p.h-100,w:p.w-60,h:44},
+    change:{x:p.x+30,y:p.y+p.h-44,w:130,h:30},
+    cancel:{x:p.x+p.w-160,y:p.y+p.h-44,w:130,h:30}
+  };
+}
+function openStartConfirm(){ startConfirmOpen=true; shipSelectOpen=false; skinSelectOpen=false; }
+function closeStartConfirm(){ startConfirmOpen=false; }
+function startConfirmAt(p){
+  var b=startConfirmButtons();
+  if(p.x>=b.start.x&&p.x<=b.start.x+b.start.w&&p.y>=b.start.y&&p.y<=b.start.y+b.start.h) return 'start';
+  if(p.x>=b.change.x&&p.x<=b.change.x+b.change.w&&p.y>=b.change.y&&p.y<=b.change.y+b.change.h) return 'change';
+  if(p.x>=b.cancel.x&&p.x<=b.cancel.x+b.cancel.w&&p.y>=b.cancel.y&&p.y<=b.cancel.y+b.cancel.h) return 'cancel';
+  var panel=startConfirmPanel();
+  if(p.x<panel.x||p.x>panel.x+panel.w||p.y<panel.y||p.y>panel.y+panel.h) return 'outside';
+  return 'panel';
+}
+function drawStartConfirmOverlay(){
+  if(!startConfirmOpen) return;
+  ctx.save();
+  ctx.fillStyle='rgba(1,4,10,0.84)';ctx.fillRect(0,0,W,H);
+  var p=startConfirmPanel();
+  ctx.fillStyle='rgba(5,15,26,0.98)';ctx.fillRect(p.x,p.y,p.w,p.h);
+  ctx.strokeStyle='#ffd36b';ctx.lineWidth=1.6;ctx.strokeRect(p.x,p.y,p.w,p.h);
+  ctx.textAlign='center';
+  ctx.fillStyle='#ffe7b0';ctx.font='900 15px "Arial Black", Arial, sans-serif';
+  ctx.fillText('CONFIRM LOADOUT',W/2,p.y+34);
+  ctx.fillStyle='#9fc8dc';ctx.font='8px monospace';
+  ctx.fillText('STAGE '+(selectedStage+1)+'  ·  CHECK YOUR SHIP BEFORE LAUNCH',W/2,p.y+52);
+  var imgKey=(typeof currentSkinImage==='function')?currentSkinImage():null;
+  var img=imgKey&&GIMG[imgKey];
+  if(img&&img.complete){ctx.drawImage(img,W/2-58,p.y+70,116,116);}
+  else drawShipPreview(imgKey,W/2,p.y+128,100,'#9fe8ff');
+  var sd=SHIP_DEFS[selectedShip]||{};
+  var vd=(typeof currentSkinDef==='function')?currentSkinDef():null;
+  ctx.fillStyle='#eaf8ff';ctx.font='900 20px "Arial Black", Arial, sans-serif';
+  ctx.fillText(sd.label||String(selectedShip).toUpperCase(),W/2,p.y+220);
+  ctx.fillStyle='#ffd36b';ctx.font='700 12px monospace';
+  ctx.fillText(vd?vd.label:'DEFAULT',W/2,p.y+242);
+  ctx.fillStyle='#9fc8dc';ctx.font='7px monospace';
+  ctx.fillText(vd&&vd.trait?vd.trait:'NO SPECIAL TRAITS',W/2,p.y+260);
+  ctx.fillStyle='#8fb8ca';ctx.font='7px monospace';
+  ctx.fillText(sd.trait||'',W/2,p.y+276);
+  var b=startConfirmButtons();
+  ctx.fillStyle='rgba(50,32,10,0.94)';ctx.fillRect(b.start.x,b.start.y,b.start.w,b.start.h);
+  ctx.strokeStyle='#ffd27a';ctx.lineWidth=2;ctx.strokeRect(b.start.x,b.start.y,b.start.w,b.start.h);
+  ctx.fillStyle='#ffe7b0';ctx.font='900 15px "Arial Black", Arial, sans-serif';
+  ctx.fillText('CONFIRM & START',W/2,b.start.y+28);
+  ctx.fillStyle='rgba(6,18,30,0.9)';ctx.fillRect(b.change.x,b.change.y,b.change.w,b.change.h);
+  ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(b.change.x,b.change.y,b.change.w,b.change.h);
+  ctx.fillStyle='#b8d9e8';ctx.font='700 9px monospace';ctx.fillText('CHANGE SHIP',b.change.x+b.change.w/2,b.change.y+20);
+  ctx.fillStyle='rgba(6,18,30,0.9)';ctx.fillRect(b.cancel.x,b.cancel.y,b.cancel.w,b.cancel.h);
+  ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(b.cancel.x,b.cancel.y,b.cancel.w,b.cancel.h);
+  ctx.fillStyle='#9fb6cf';ctx.font='700 9px monospace';ctx.fillText('CANCEL',b.cancel.x+b.cancel.w/2,b.cancel.y+20);
+  ctx.textAlign='left';ctx.restore();ctx.globalAlpha=1;
+}
+
 var skinSelectOpen = false;
 var skinSelectIndex = 0;
 function skinSelectPanel(){ return {x:24,y:H*.14,w:W-48,h:H*.57}; }
@@ -283,6 +344,7 @@ function drawMenu(){
   ctx.textAlign='left';
   drawShipSelectOverlay();
   drawSkinSelectOverlay();
+  drawStartConfirmOverlay();
 }
 function drawBossOmen(){
   var t=bossOmenT;

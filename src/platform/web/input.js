@@ -23,6 +23,13 @@ function onDown(e){
   if(e.pointerType==='mouse'&&(state==='play'||state==='boss')&&typeof desktopPrimaryFire==='function') desktopPrimaryFire();
   if(state==='menu'){
     if(!audioReady){ audioReady=true; playBgm('m'); }
+    if(typeof startConfirmOpen!=='undefined'&&startConfirmOpen){
+      var sch=startConfirmAt(p);
+      if(sch==='start'){closeStartConfirm();startAtStage(selectedStage);}
+      else if(sch==='change'){closeStartConfirm();openShipSelect();}
+      else if(sch==='cancel'||sch==='outside') closeStartConfirm();
+      return;
+    }
     if(typeof skinSelectOpen!=='undefined'&&skinSelectOpen){
       var skhit=skinSelectAt(p);
       if(typeof skhit==='number'){ skinSelectIndex=skhit; skinSelectChoose(skhit); return; }
@@ -45,7 +52,7 @@ function onDown(e){
       if(p.x>=sb.x&&p.x<=sb.x+sb.w&&p.y>=sb.y&&p.y<=sb.y+sb.h){ selectedStage=si; return; }
     }
     var stb=menuStartButton();
-    if(p.x>=stb.x&&p.x<=stb.x+stb.w&&p.y>=stb.y&&p.y<=stb.y+stb.h){ startAtStage(selectedStage); return; }
+    if(p.x>=stb.x&&p.x<=stb.x+stb.w&&p.y>=stb.y&&p.y<=stb.y+stb.h){ openStartConfirm(); return; }
     return;
   }
   if(state==='bossOmen'){ bossOmenT=6.5; return; }

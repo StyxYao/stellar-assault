@@ -539,3 +539,10 @@
 
 - N three-volley interval reduced from 0.11s to 0.03s.
 - Each N volley now plays the AEGIS charge-fire SFX, for 3 total.
+
+## 0.9.0 — Vector default and start loadout confirmation
+
+- New sessions default to VECTOR in the menu.
+- Pressing START now opens a loadout confirmation panel.
+- Confirm & Start launches; Change Ship opens ship selection; Cancel returns.
+- Keyboard Enter confirms, Escape cancels, V changes ship from the panel.

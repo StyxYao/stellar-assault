@@ -41,7 +41,7 @@ function desktopPrime() {
 
 function desktopMenuStart() {
   desktopPrime();
-  try { startAtStage(selectedStage); } catch (e) {}
+  if (typeof openStartConfirm === 'function') openStartConfirm();
 }
 
 function desktopChangeStage(delta) {
@@ -50,6 +50,11 @@ function desktopChangeStage(delta) {
 
 function desktopConfirm() {
   if (desktopPaused) { desktopSetPaused(false); return; }
+  if (state === 'menu' && typeof startConfirmOpen !== 'undefined' && startConfirmOpen) {
+    closeStartConfirm();
+    startAtStage(selectedStage);
+    return;
+  }
   if (state === 'menu' && typeof skinSelectOpen !== 'undefined' && skinSelectOpen) {
     skinSelectChoose(skinSelectIndex);
     return;
@@ -84,6 +89,12 @@ function desktopKeyDown(e) {
     if (k === 'arrowleft' || k === 'a') { settingsAdjust(-1); return; }
     if (k === 'arrowright' || k === 'd') { settingsAdjust(1); return; }
     if (k === 'enter' || k === ' ') { settingsActivate(); return; }
+    return;
+  }
+  if (state === 'menu' && typeof startConfirmOpen !== 'undefined' && startConfirmOpen) {
+    if (k === 'escape') { closeStartConfirm(); return; }
+    if (k === 'enter' || k === ' ') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) desktopConfirm(); return; }
+    if (k === 'v') { closeStartConfirm(); openShipSelect(); return; }
     return;
   }
   if (state === 'menu' && typeof skinSelectOpen !== 'undefined' && skinSelectOpen) {

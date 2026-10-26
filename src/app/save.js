@@ -77,7 +77,7 @@ function initSaveStore() {
   if (SaveStore.ready) return;
   SaveStore.data = normalizeSave(readLocalSave());
   SaveStore.ready = true;
-  if (typeof setSelectedShip === 'function') setSelectedShip(SaveStore.data.ships.selected, false);
+  if (typeof setSelectedShip === 'function') setSelectedShip('vector', false);
   if (typeof initSelectedSkins === 'function') initSelectedSkins();
   applyGameSettings();
   try {
