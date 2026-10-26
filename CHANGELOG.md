@@ -660,3 +660,10 @@
 - Phantom skill now plays the B low whoosh synthesis.
 - After spawning clones, the player snaps to the safest nearby candidate spot, away from bullets/beams, with a trail and afterimage.
 - Ship-select rows now include readable stat lines.
+
+## 0.9.18 — H/C menu sounds
+
+- Added H (holo) and C (metal) UI samples.
+- H plays on navigation/selection; C plus a soft H layer plays on confirm.
+- Wired into ship select, variant select, start confirmation, stage select and menu buttons.
+- Added electronic UI click candidates E–I to the asset lab.

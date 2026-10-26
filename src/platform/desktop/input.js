@@ -41,26 +41,31 @@ function desktopPrime() {
 
 function desktopMenuStart() {
   desktopPrime();
+  if (typeof menuMoveSfx === 'function') menuMoveSfx();
   if (typeof openStartConfirm === 'function') openStartConfirm();
 }
 
 function desktopChangeStage(delta) {
+  var before = selectedStage;
   selectedStage = Math.max(0, Math.min(STAGES.length - 1, selectedStage + delta));
+  if (selectedStage !== before && typeof menuMoveSfx === 'function') menuMoveSfx();
 }
 
 function desktopConfirm() {
   if (desktopPaused) { desktopSetPaused(false); return; }
   if (state === 'menu' && typeof startConfirmOpen !== 'undefined' && startConfirmOpen) {
+    if (typeof menuConfirmSfx === 'function') menuConfirmSfx();
     closeStartConfirm();
     startAtStage(selectedStage);
     return;
   }
   if (state === 'menu' && typeof skinSelectOpen !== 'undefined' && skinSelectOpen) {
+    if (typeof menuConfirmSfx === 'function') menuConfirmSfx();
     skinSelectChoose(skinSelectIndex);
     return;
   }
   if (state === 'menu' && typeof shipSelectOpen !== 'undefined' && shipSelectOpen) {
-    if (!shipSelectChoose(shipSelectIndex)) { /* Phantom is coming soon. */ }
+    if (shipSelectChoose(shipSelectIndex) && typeof menuMoveSfx === 'function') menuMoveSfx();
     return;
   }
   if (state === 'menu') { desktopMenuStart(); return; }
@@ -81,6 +86,7 @@ function desktopBomb() {
 }
 
 function desktopKeyDown(e) {
+  if (state === 'menu') desktopPrime();
   var k = String(e.key || '').toLowerCase();
   if (typeof settingsOpen !== 'undefined' && settingsOpen) {
     if (k === 'escape' || k === 'q') { closeSettings(); return; }
@@ -99,21 +105,21 @@ function desktopKeyDown(e) {
   }
   if (state === 'menu' && typeof skinSelectOpen !== 'undefined' && skinSelectOpen) {
     var skList = (typeof skinList === 'function') ? skinList(selectedShip) : [];
-    if (k === 'arrowup' || k === 'w') { skinSelectIndex = (skinSelectIndex + skList.length - 1) % skList.length; return; }
-    if (k === 'arrowdown' || k === 's') { skinSelectIndex = (skinSelectIndex + 1) % skList.length; return; }
+    if (k === 'arrowup' || k === 'w') { skinSelectIndex = (skinSelectIndex + skList.length - 1) % skList.length; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
+    if (k === 'arrowdown' || k === 's') { skinSelectIndex = (skinSelectIndex + 1) % skList.length; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
     if (k === 'enter' || k === ' ') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) desktopConfirm(); return; }
-    if (k === 'escape' || k === 'b') { closeSkinSelect(); return; }
+    if (k === 'escape' || k === 'b') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); closeSkinSelect(); return; }
     return;
   }
   if (state === 'menu' && typeof shipSelectOpen !== 'undefined' && shipSelectOpen) {
-    if (k === 'arrowup' || k === 'w') { shipSelectIndex = (shipSelectIndex + 2) % 3; return; }
-    if (k === 'arrowdown' || k === 's') { shipSelectIndex = (shipSelectIndex + 1) % 3; return; }
+    if (k === 'arrowup' || k === 'w') { shipSelectIndex = (shipSelectIndex + 2) % 3; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
+    if (k === 'arrowdown' || k === 's') { shipSelectIndex = (shipSelectIndex + 1) % 3; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
     if (k === 'enter' || k === ' ') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) desktopConfirm(); return; }
-    if (k === 'escape' || k === 'v') { closeShipSelect(); return; }
+    if (k === 'escape' || k === 'v') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); closeShipSelect(); return; }
     return;
   }
-  if (k === 'v' && state === 'menu') { openShipSelect(); return; }
-  if (k === 'b' && state === 'menu') { openSkinSelect(); return; }
+  if (k === 'v' && state === 'menu') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); openShipSelect(); return; }
+  if (k === 'b' && state === 'menu') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); openSkinSelect(); return; }
   if (k === 'c' && player && player.ship === 'aegis') { e.preventDefault && e.preventDefault(); if (!e.repeat) aegisTapCharge(); return; }
   if (k === 'f' && player && player.ship === 'aegis') { e.preventDefault && e.preventDefault(); if (!e.repeat) aegisTapForce(); return; }
   if (k === 's' && desktopPaused) { openSettings(); return; }

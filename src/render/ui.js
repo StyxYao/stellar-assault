@@ -1,3 +1,9 @@
+// Lightweight menu UI feedback: H = navigation, C + soft H = confirm.
+function menuMoveSfx(){ try{ if(typeof sfx==='function') sfx('ui_holo',0.16); }catch(e){} }
+function menuConfirmSfx(){
+  try{ if(typeof sfx==='function') sfx('ui_metal',0.22); }catch(e){}
+  try{ setTimeout(function(){ try{ if(typeof sfx==='function') sfx('ui_holo',0.10); }catch(e){} },28); }catch(e){}
+}
 // HUD, menu, banners, cutscenes, finale and cast screens.
 function drawHUD(){
   if(state==='menu') return;
