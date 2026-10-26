@@ -2,15 +2,22 @@
 // slot controlled by IJKL or the second gamepad. This module intentionally
 // keeps P2 self-contained so single-player paths are untouched.
 var coopEnabled = false;
+var coopInputMode = 'off'; // off | kb | mouse
 var player2 = null;
 var target2 = { x: W / 2 - 70, y: H - 150 };
 var coopKeys = Object.create(null);
 var coopLastShot = 0, coopLastSpecial = 0, coopLastMissile = 0;
 var coopPadPrevB = false;
 
+function coopModeLabel() {
+  if (!coopEnabled) return 'CO-OP OFF';
+  return coopInputMode === 'mouse' ? 'P1 KB + P2 MOUSE' : '2P KEYBOARD';
+}
+
 function coopToggle() {
-  coopEnabled = !coopEnabled;
-  pickupMsg = coopEnabled ? 'CO-OP ON · P2 IJKL / PAD 2' : 'CO-OP OFF';
+  if (!coopEnabled) { coopEnabled = true; coopInputMode = 'kb'; pickupMsg = 'CO-OP · 2P KEYBOARD'; }
+  else if (coopInputMode === 'kb') { coopInputMode = 'mouse'; pickupMsg = 'CO-OP · P1 KB + P2 MOUSE'; }
+  else { coopEnabled = false; coopInputMode = 'off'; player2 = null; pickupMsg = 'CO-OP OFF'; }
   pickupT = 1.6;
 }
 
@@ -155,5 +162,5 @@ function coopDrawHUD() {
 try {
   window.addEventListener('keydown', function (e) { coopKey(e, true); });
   window.addEventListener('keyup', function (e) { coopKey(e, false); });
-  if (typeof location !== 'undefined' && /(?:[?&])coop=1(?:&|$)/.test(location.search || '')) coopEnabled = true;
+  if (typeof location !== 'undefined' && /(?:[?&])coop=1(?:&|$)/.test(location.search || '')) { coopEnabled = true; coopInputMode = 'kb'; }
 } catch (e) {}

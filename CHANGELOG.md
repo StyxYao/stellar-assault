@@ -734,3 +734,9 @@
 - Added P2 VECTOR slot: IJKL / second gamepad, auto-fire, independent HP/lives and U bomb.
 - Added P2 HUD, collisions, respawn and nearest-player enemy aiming.
 - Single-player paths remain active when CO-OP is off.
+
+## 0.9.28 — Two co-op input modes
+
+- CO-OP cycles OFF → 2P KEYBOARD → P1 KEYBOARD + P2 MOUSE.
+- P2 mouse controls position and left-click bomb; P1 is keyboard-only in that mode.
+- P2 second gamepad remains available.

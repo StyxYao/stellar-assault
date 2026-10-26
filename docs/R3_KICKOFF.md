@@ -44,11 +44,12 @@
 
 已实现：
 
-- 菜单开始确认内 CO-OP 开关
+- 菜单开始确认内 CO-OP 三态：OFF / 2P KEYBOARD / P1 KB + P2 MOUSE
 - P2 = VECTOR（暂不可选机体）
-- P2 IJKL 移动 / 第二手柄左摇杆/D-Pad
+- 2P KEYBOARD：P2 IJKL；P1 键盘
+- P1 KB + P2 MOUSE：鼠标移动 P2，左键 P2 炸弹；P1 键盘
+- P2 第二手柄左摇杆/D-Pad + B/X 炸弹
 - P2 自动射击
-- P2 `U` 炸弹 / 第二手柄 B/X 尚未接
 - P2 独立 HP/LIFE HUD（右上）
 - P2 独立死亡/短暂无敌/复位
 - 敌人瞄准会在 P1/P2 中选最近目标

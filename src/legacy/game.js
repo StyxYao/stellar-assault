@@ -396,7 +396,7 @@ window.__g=function(){return {stageT:+stageT.toFixed(1),waveIndex:waveIndex,wave
 window.__god=function(){player.invuln=99999;player.noBlink=true;};
 window.__stage=function(n){startStage(n);};
   window.__runStage=function(n){startAtStage(n);};
-  window.__coop=function(){return {enabled:coopEnabled,p2:player2?{x:+player2.x.toFixed(0),y:+player2.y.toFixed(0),hp:player2.hp,lives:player2.lives,invuln:+player2.invuln.toFixed(1)}:null};};
+  window.__coop=function(){return {enabled:coopEnabled,mode:coopInputMode,p2:player2?{x:+player2.x.toFixed(0),y:+player2.y.toFixed(0),hp:player2.hp,lives:player2.lives,invuln:+player2.invuln.toFixed(1)}:null};};
   window.__selectShip=function(id){setSelectedShip(id,false);var sl=skinList(id);setSelectedSkin(id,sl[0].id,false);};
   window.__power=function(n){player.specialPower=Math.max(1,Math.min(4,n|0));player.power=player.specialPower;};
   window.__enemyHp=function(){return enemies.length?enemies[0].hp:null;};

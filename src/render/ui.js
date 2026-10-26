@@ -202,7 +202,7 @@ function drawStartConfirmOverlay(){
   ctx.fillRect(b.coop.x,b.coop.y,b.coop.w,b.coop.h);
   ctx.strokeStyle=(typeof coopEnabled!=='undefined'&&coopEnabled)?'#8dffb0':'#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(b.coop.x,b.coop.y,b.coop.w,b.coop.h);
   ctx.fillStyle=(typeof coopEnabled!=='undefined'&&coopEnabled)?'#baffd0':'#9fb6cf';ctx.font='700 8px monospace';ctx.textAlign='left';
-  ctx.fillText('CO-OP '+(typeof coopEnabled!=='undefined'&&coopEnabled?'ON':'OFF')+' · P2 IJKL / PAD2',b.coop.x+8,b.coop.y+14);
+  ctx.fillText((typeof coopModeLabel==='function'?coopModeLabel():('CO-OP '+(typeof coopEnabled!=='undefined'&&coopEnabled?'ON':'OFF')))+' · P',b.coop.x+8,b.coop.y+14);
   ctx.textAlign='center';
   ctx.fillStyle='rgba(50,32,10,0.94)';ctx.fillRect(b.start.x,b.start.y,b.start.w,b.start.h);
   ctx.strokeStyle='#ffd27a';ctx.lineWidth=2;ctx.strokeRect(b.start.x,b.start.y,b.start.w,b.start.h);

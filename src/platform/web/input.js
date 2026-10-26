@@ -15,6 +15,15 @@ function onDown(e){
   try{if(AC&&AC.state==='suspended')AC.resume();}catch(err){}
   if(state==='menu'&&bgmPending){var pk=bgmPending;bgmPending='';playBgm(pk);}
   var p=pt(e);
+  if(typeof coopEnabled!=='undefined'&&coopEnabled&&(state==='play'||state==='boss')){
+    if(coopInputMode==='mouse'){
+      target2.x=Math.max(26,Math.min(W-26,p.x));
+      target2.y=Math.max(110,Math.min(H-70,p.y));
+      if(e.pointerType==='mouse'&&e.button===0) coopBomb();
+      return;
+    }
+    if(coopInputMode==='kb') return;
+  }
   if(player&&player.ship==='aegis'&&(state==='play'||state==='boss')&&typeof aegisButtonAt==='function'){
     var ab=aegisButtonAt(p);
     if(ab==='charge'){aegisTapCharge();return;}
@@ -86,6 +95,9 @@ function onDown(e){
   target.y=Math.max(70,Math.min(dragMaxY,p.y-dragLift));
 }
 function onMove(e){
+  if(typeof coopEnabled!=='undefined'&&coopEnabled&&coopInputMode==='mouse'&&(state==='play'||state==='boss')){
+    var cp=pt(e); target2.x=Math.max(26,Math.min(W-26,cp.x)); target2.y=Math.max(110,Math.min(H-70,cp.y)); return;
+  }
   if(movePointerId!==null&&e.pointerId!==movePointerId&&e.pointerType!=='mouse') return;
   if(e.pointerType==='mouse'&&(state==='play'||state==='boss')&&!(typeof desktopPaused!=='undefined'&&desktopPaused)){
     e.preventDefault();
@@ -96,7 +108,7 @@ function onMove(e){
   e.preventDefault();
   var p=pt(e);target.x=Math.max(22,Math.min(W-22,p.x));target.y=Math.max(70,Math.min(dragMaxY,p.y-dragLift));
 }
-function onUp(e){if(movePointerId===null||(e&&e.pointerId===movePointerId)){movePointerId=null;dragging=false;}if(state==='bossFusion'){fusionHoldActive=false;fusionHoldT=0;}}
+function onUp(e){if(typeof coopEnabled!=='undefined'&&coopEnabled&&coopInputMode==='mouse'&&(state==='play'||state==='boss')) return;if(movePointerId===null||(e&&e.pointerId===movePointerId)){movePointerId=null;dragging=false;}if(state==='bossFusion'){fusionHoldActive=false;fusionHoldT=0;}}
 cvs.addEventListener('pointerdown',onDown,{passive:false});
 cvs.addEventListener('pointermove',onMove,{passive:false});
 cvs.addEventListener('pointerup',onUp);
