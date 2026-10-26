@@ -585,3 +585,9 @@
 - Preserved original padding and all floating shards; no tight-bbox scaling.
 - Removed title text and Raven detail cards only.
 - Kept all three on the same 80×80 canvas.
+
+## 0.9.7 — Phantom wing restoration
+
+- Raven right wing tip restored by moving the detail-card mask outward.
+- Butterfly upper-left wing restored by replacing the rectangular title mask with a title-only mask.
+- Phantom trio remains on the full 512px cell with original padding.
