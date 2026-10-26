@@ -578,3 +578,10 @@
 - Added `sk_phantom_butterfly` from the supplied character sheet.
 - Cropped and resized only; no redraw, recolor or mirroring.
 - Kept the same 80×80 sprite canvas as Quantum/Raven.
+
+## 0.9.6 — Unify Phantom sprite cells
+
+- Rebuilt Quantum, Raven and Butterfly from their full 512px design cells.
+- Preserved original padding and all floating shards; no tight-bbox scaling.
+- Removed title text and Raven detail cards only.
+- Kept all three on the same 80×80 canvas.
