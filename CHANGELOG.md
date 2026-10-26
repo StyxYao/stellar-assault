@@ -480,3 +480,9 @@
 
 - Added `?menuinfo=bottom` to place `5 STAGES · 5 BOSSES` and the control hint at the very bottom.
 - Default remains the top placement.
+
+## 0.8.4 — Match menu shade to relocated info
+
+- Shortened the central menu shade to cover only SHIP/stage/START/BEST controls.
+- Removed the leftover dark band under the old lower text position.
+- Top and bottom info bands remain tied to their respective placements.

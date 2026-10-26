@@ -230,9 +230,9 @@ function drawMenu(){
   ctx.fillText('DRAG · SHIP FOLLOWS ABOVE FINGER · AUTO-FIRE',W/2,infoY2);
   ctx.shadowBlur=0;
   // The poster already contains the STELLAR ASSAULT logo.
-  var tg=ctx.createLinearGradient(0,H*0.34,0,H*0.70);
-  tg.addColorStop(0,'rgba(0,0,0,0)');tg.addColorStop(0.45,'rgba(2,4,12,0.58)');tg.addColorStop(1,'rgba(2,4,12,0.74)');
-  ctx.fillStyle=tg;ctx.fillRect(0,H*0.34,W,H*0.36);
+  var tg=ctx.createLinearGradient(0,H*0.34,0,H*0.64);
+  tg.addColorStop(0,'rgba(0,0,0,0)');tg.addColorStop(0.45,'rgba(2,4,12,0.56)');tg.addColorStop(1,'rgba(2,4,12,0.70)');
+  ctx.fillStyle=tg;ctx.fillRect(0,H*0.34,W,H*0.30);
   ctx.textAlign='center';
   var gf='900 15px "Arial Black", "Helvetica Neue", Arial, sans-serif';
   var bf='900 21px "Arial Black", "Helvetica Neue", Arial, sans-serif';
