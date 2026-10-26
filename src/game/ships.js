@@ -19,7 +19,7 @@ var SHIP_SKINS = {
   phantom: [
     { id: 'quantum', label: 'QUANTUM HUNTER', image: 'sk_phantom_quantum' },
     { id: 'raven', label: 'PHANTOM RAVEN', image: 'sk_phantom_raven' },
-    { id: 'butterfly', label: 'PHANTOM BUTTERFLY' }
+    { id: 'butterfly', label: 'PHANTOM BUTTERFLY', image: 'sk_phantom_butterfly', trait: 'CLONE SWARM · MULTI-HIT' }
   ]
 };
 var selectedSkins = { vector: 'void_lance', aegis: 'orbital', phantom: 'quantum' };

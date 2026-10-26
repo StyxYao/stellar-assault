@@ -572,3 +572,9 @@
 - Force no longer deletes enemy beams; it truncates them at the Force surface.
 - Blocked beams cannot damage the player until Force moves away.
 - Added a bright impact cap at the blocked beam endpoint.
+
+## 0.9.5 — Phantom Butterfly source texture
+
+- Added `sk_phantom_butterfly` from the supplied character sheet.
+- Cropped and resized only; no redraw, recolor or mirroring.
+- Kept the same 80×80 sprite canvas as Quantum/Raven.
