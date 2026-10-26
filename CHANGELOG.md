@@ -796,3 +796,9 @@
 - Added virtual joystick and SKILL/FORCE buttons to LAN clients.
 - Both P1/P2 clients can use touch-only devices.
 - Client host mode display corrected.
+
+## 0.9.38 — LAN touch drag correction
+
+- Removed the virtual joystick from LAN clients.
+- Touch clients now use full-screen drag with absolute game-coordinate targets.
+- Bottom-right skill zones map to the game's primary/secondary buttons.

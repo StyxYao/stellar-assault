@@ -7,8 +7,8 @@ var lanLoadoutShip = 'vector', lanLoadoutSkin = 'void_lance';
 var lanShipBtn = null, lanSkinBtn = null;
 var lanClientMode = false, lanClientKeys = Object.create(null);
 var lanClientPending = { primary: false, secondary: false };
-var lanTouch = { dx: 0, dy: 0 };
-var lanTouchLayer = null, lanTouchKnob = null;
+var lanTouch = { dx: 0, dy: 0, tx: 0, ty: 0, active: false };
+var lanTouchLayer = null;
 var lanPadPrev = { a: false, b: false };
 var lanOverlay = null, lanVideo = null, lanStatus = null, lanRoomLabel = null;
 var lanAudioBytes = 0, lanAudioRecv = 0;
@@ -173,6 +173,7 @@ function lanConnectHost() {
       } else if (m.type === 'input') {
         var inp = m.slot === 0 ? lanRemoteInput1 : lanRemoteInput;
         inp.dx = Number(m.dx) || 0; inp.dy = Number(m.dy) || 0;
+        inp.tx = (m.tx == null) ? null : Number(m.tx); inp.ty = (m.ty == null) ? null : Number(m.ty);
         if (m.primary) inp.primary = true;
         if (m.secondary) inp.secondary = true;
       }
@@ -312,33 +313,44 @@ function lanJoin() {
   } catch (e) { lanSetStatus('WS ERROR: ' + e.message); lanStartBtn.disabled = false; }
 }
 
+function lanMapTouch(cx, cy) {
+  var vw = window.innerWidth, vh = window.innerHeight, ar = 390 / 844;
+  var dw, dh, ox, oy;
+  if (vw / vh > ar) { dh = vh; dw = dh * ar; ox = (vw - dw) / 2; oy = 0; }
+  else { dw = vw; dh = dw / ar; ox = 0; oy = 0; }
+  var x = (cx - ox) / dw * 390;
+  var y = (cy - oy) / dh * 844 - 86;
+  return { x: Math.max(22, Math.min(368, x)), y: Math.max(70, Math.min(704, y)) };
+}
+
 function lanBuildTouchControls() {
   if (lanTouchLayer) { lanTouchLayer.style.display = 'block'; return; }
-  lanTouchLayer = lanEl('div', 'position:fixed;inset:0;z-index:10000;pointer-events:none;touch-action:none;');
-  var stick = lanEl('div', 'position:absolute;left:18px;bottom:20px;width:118px;height:118px;border-radius:50%;background:rgba(5,20,32,0.52);border:1px solid rgba(143,233,255,0.55);pointer-events:auto;touch-action:none;');
-  lanTouchKnob = lanEl('div', 'position:absolute;left:39px;top:39px;width:40px;height:40px;border-radius:50%;background:rgba(143,233,255,0.45);border:1px solid #bff4ff;');
-  stick.appendChild(lanTouchKnob); lanTouchLayer.appendChild(stick);
-  var b1 = lanEl('div', 'position:absolute;right:18px;bottom:92px;width:66px;height:66px;border-radius:50%;background:rgba(8,30,46,0.78);border:1px solid #9fe8ff;color:#eaf8ff;font:700 9px monospace;display:flex;align-items:center;justify-content:center;pointer-events:auto;touch-action:none;', 'SKILL');
-  var b2 = lanEl('div', 'position:absolute;right:18px;bottom:20px;width:66px;height:66px;border-radius:50%;background:rgba(35,24,8,0.78);border:1px solid #ffd36b;color:#ffe7b0;font:700 9px monospace;display:flex;align-items:center;justify-content:center;pointer-events:auto;touch-action:none;', 'FORCE');
-  b1.onpointerdown = function (e) { e.preventDefault(); e.stopPropagation(); lanClientPending.primary = true; b1.style.background = 'rgba(143,233,255,0.4)'; };
-  b1.onpointerup = function (e) { e.preventDefault(); e.stopPropagation(); b1.style.background = 'rgba(8,30,46,0.78)'; };
-  b2.onpointerdown = function (e) { e.preventDefault(); e.stopPropagation(); lanClientPending.secondary = true; b2.style.background = 'rgba(255,211,107,0.38)'; };
-  b2.onpointerup = function (e) { e.preventDefault(); e.stopPropagation(); b2.style.background = 'rgba(35,24,8,0.78)'; };
-  lanTouchLayer.appendChild(b1); lanTouchLayer.appendChild(b2);
-  var pid = null, cx = 0, cy = 0, r = 52;
-  stick.addEventListener('pointerdown', function (e) {
-    e.preventDefault(); e.stopPropagation(); pid = e.pointerId; try { stick.setPointerCapture(pid); } catch (err) {}
-    var rect = stick.getBoundingClientRect(); cx = rect.left + rect.width / 2; cy = rect.top + rect.height / 2;
+  lanTouchLayer = lanEl('div', 'position:fixed;inset:0;z-index:10000;pointer-events:auto;touch-action:none;');
+  var pid = null;
+  lanTouchLayer.addEventListener('pointerdown', function (e) {
+    if (e.target !== lanTouchLayer) return;
+    pid = e.pointerId; try { lanTouchLayer.setPointerCapture(pid); } catch (err) {}
+    var p = lanMapTouch(e.clientX, e.clientY); lanTouch.tx = p.x; lanTouch.ty = p.y; lanTouch.active = true;
+    e.preventDefault();
   });
-  stick.addEventListener('pointermove', function (e) {
-    if (pid !== e.pointerId) return; e.preventDefault(); e.stopPropagation();
-    var dx = e.clientX - cx, dy = e.clientY - cy, d = Math.hypot(dx, dy) || 1;
-    if (d > r) { dx = dx / d * r; dy = dy / d * r; }
-    lanTouch.dx = dx / r; lanTouch.dy = dy / r;
-    if (lanTouchKnob) { lanTouchKnob.style.left = (39 + dx) + 'px'; lanTouchKnob.style.top = (39 + dy) + 'px'; }
+  lanTouchLayer.addEventListener('pointermove', function (e) {
+    if (pid !== e.pointerId) return;
+    var p = lanMapTouch(e.clientX, e.clientY); lanTouch.tx = p.x; lanTouch.ty = p.y;
+    e.preventDefault();
   });
-  function endStick(e) { if (pid !== e.pointerId) return; pid = null; lanTouch.dx = 0; lanTouch.dy = 0; if (lanTouchKnob) { lanTouchKnob.style.left = '39px'; lanTouchKnob.style.top = '39px'; } }
-  stick.addEventListener('pointerup', endStick); stick.addEventListener('pointercancel', endStick);
+  function end(e) { if (pid === e.pointerId) { pid = null; e.preventDefault(); } }
+  lanTouchLayer.addEventListener('pointerup', end);
+  lanTouchLayer.addEventListener('pointercancel', end);
+
+  // Semi-transparent skill hit zones, aligned to the game's bottom-right controls.
+  var primary = lanEl('div', 'position:absolute;right:16px;bottom:22px;width:78px;height:78px;border-radius:50%;border:1px dashed rgba(200,180,255,0.55);background:rgba(20,10,35,0.16);pointer-events:auto;touch-action:none;z-index:10001;');
+  primary.onpointerdown = function (e) { e.preventDefault(); e.stopPropagation(); lanClientPending.primary = true; primary.style.background = 'rgba(143,233,255,0.28)'; };
+  primary.onpointerup = function (e) { e.preventDefault(); e.stopPropagation(); primary.style.background = 'rgba(20,10,35,0.16)'; };
+  lanTouchLayer.appendChild(primary);
+  var secondary = lanEl('div', 'position:absolute;right:104px;bottom:26px;width:58px;height:58px;border-radius:50%;border:1px dashed rgba(255,211,107,0.5);background:rgba(35,24,8,0.14);pointer-events:auto;touch-action:none;z-index:10001;');
+  secondary.onpointerdown = function (e) { e.preventDefault(); e.stopPropagation(); lanClientPending.secondary = true; secondary.style.background = 'rgba(255,211,107,0.28)'; };
+  secondary.onpointerup = function (e) { e.preventDefault(); e.stopPropagation(); secondary.style.background = 'rgba(35,24,8,0.14)'; };
+  lanTouchLayer.appendChild(secondary);
   document.body.appendChild(lanTouchLayer);
 }
 
@@ -368,7 +380,7 @@ function lanSendClientInput() {
     if (bb && !lanPadPrev.b) secondary = true;
     lanPadPrev.a = ba; lanPadPrev.b = bb;
   }
-  lanSocket.send(JSON.stringify({ type: 'input', dx: dx, dy: dy, primary: primary, secondary: secondary }));
+  lanSocket.send(JSON.stringify({ type: 'input', dx: dx, dy: dy, primary: primary, secondary: secondary, tx: lanTouch.active ? lanTouch.tx : null, ty: lanTouch.active ? lanTouch.ty : null }));
 }
 
 function lanStartClientInput() { if (!lanInputTimer) lanInputTimer = setInterval(lanSendClientInput, 25); }

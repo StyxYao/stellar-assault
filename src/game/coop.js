@@ -204,8 +204,13 @@ function coopCollectItem(it) {
 function coopRemoteP1Update(dt) {
   if (!coopRemoteP1 || (state !== 'play' && state !== 'boss')) return;
   var inp = lanRemoteInput1;
-  target.x = Math.max(22, Math.min(W - 22, target.x + (inp.dx || 0) * 390 * dt));
-  target.y = Math.max(70, Math.min(H - 70, target.y + (inp.dy || 0) * 390 * dt));
+  if (inp.tx != null && inp.ty != null) {
+    target.x = Math.max(22, Math.min(W - 22, inp.tx));
+    target.y = Math.max(70, Math.min(H - 70, inp.ty));
+  } else {
+    target.x = Math.max(22, Math.min(W - 22, target.x + (inp.dx || 0) * 390 * dt));
+    target.y = Math.max(70, Math.min(H - 70, target.y + (inp.dy || 0) * 390 * dt));
+  }
   if (inp.primary) {
     inp.primary = false;
     if (player.ship === 'phantom') phantomSkill();
@@ -252,7 +257,10 @@ function coopUpdate(dt) {
     if (pad.buttons[13] && pad.buttons[13].pressed) dy += 1;
   }
   }
-  if (dx || dy) {
+  if (coopRemote && lanRemoteInput.tx != null && lanRemoteInput.ty != null) {
+    target2.x = Math.max(26, Math.min(W - 26, lanRemoteInput.tx));
+    target2.y = Math.max(110, Math.min(H - 70, lanRemoteInput.ty));
+  } else if (dx || dy) {
     var len = Math.hypot(dx, dy) || 1;
     target2.x += (dx / len) * 390 * dt;
     target2.y += (dy / len) * 390 * dt;
