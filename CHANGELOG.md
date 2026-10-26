@@ -524,3 +524,13 @@
 - M charge preview lights removed; missiles only lengthen, never widen.
 - S charge angle gap reduced 50%.
 - Force rings remain centered on the energy core and below the ship.
+
+## 0.8.9 — Force ring coordinate fix and charge details
+
+- Fixed Force color ring drawing at (2x,2y); it now draws at local (0,0).
+  This was the stray ring that drifted along the player's doubled drag path.
+- Restored pickup magnetism only within 40px (ship sprite radius).
+- Laser charge visual width now matches its hit half-width.
+- N charge: no laser animation; 3 sequential blue volleys.
+- M charge: no preview lights; missiles lengthen only.
+- S charge angle gap reduced 50%.

@@ -29,9 +29,12 @@ function drawExplosion(f){
   g.addColorStop(0.55,boss?'rgba(255,170,50,'+(0.7*a)+')':(elite?'rgba(80,170,255,'+(0.6*a)+')':'rgba(255,110,40,'+(0.65*a)+')'));
   g.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=g;ctx.beginPath();ctx.arc(f.x,f.y,r,0,TAU);ctx.fill();
-  // shock ring
-  ctx.globalAlpha=0.8*a;ctx.strokeStyle=boss?'#ffe6a0':(elite?'#c8f4ff':'#ffd28a');ctx.lineWidth=boss?5:3;
-  ctx.beginPath();ctx.arc(f.x,f.y,r*0.92,0,TAU);ctx.stroke();
+  // Large shock rings only for boss / player bomb events. Normal and elite
+  // kills used to leave a stray white circle that looked like a drifting ring.
+  if (boss || f.kind === 'player') {
+    ctx.globalAlpha=0.8*a;ctx.strokeStyle=boss?'#ffe6a0':'#c8f4ff';ctx.lineWidth=boss?5:3;
+    ctx.beginPath();ctx.arc(f.x,f.y,r*0.92,0,TAU);ctx.stroke();
+  }
   for(var i=0;i<(boss?12:7);i++){
     var ang=f.seed+i*0.9,rr=r*(0.45+0.5*((i*37)%10)/10);
     ctx.globalAlpha=(boss?0.95:0.8)*a;ctx.fillStyle=i%2?'#fff4cf':(elite?'#9fe8ff':'#ffb066');

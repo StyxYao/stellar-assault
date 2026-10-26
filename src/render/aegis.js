@@ -25,19 +25,21 @@ function drawForceField(x, y, size, alpha, spin, color) {
   } else {
     ctx.globalAlpha = alpha;
     ctx.strokeStyle = '#ffcf6b'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(x, y, size * 0.42, 0, TAU); ctx.stroke();
-    ctx.beginPath(); ctx.arc(x, y, size * 0.30, 0, TAU); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, 0, size * 0.42, 0, TAU); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, 0, size * 0.30, 0, TAU); ctx.stroke();
   }
-  if (color) { ctx.globalAlpha = Math.min(1, alpha + 0.15) * 0.64; ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, size * 0.42, 0, TAU); ctx.stroke(); }
+  if (color) { ctx.globalAlpha = Math.min(1, alpha + 0.15) * 0.64; ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(0, 0, size * 0.42, 0, TAU); ctx.stroke(); }
   ctx.restore();
 }
 
 function drawAegisForceUnderlay() {
   if (player.ship !== 'aegis' || (state !== 'play' && state !== 'boss')) return;
-  var fx0 = (aegisState.force === 'attached' && typeof aegisVisualX === 'function') ? aegisVisualX() : aegisState.forceX;
-  var fy0 = aegisState.forceY;
+  var attached = aegisState.force === 'attached';
+  var fx0 = (attached && typeof aegisVisualX === 'function') ? aegisVisualX() : aegisState.forceX;
+  var fy0 = attached ? player.y : aegisState.forceY;
   var shieldRatio = Math.max(0, Math.min(1, aegisState.shield / aegisShieldMax()));
   ctx.save();
+
   if (aegisState.force === 'attached') {
     drawForceField(fx0, fy0, 94 + aegisForceRadius() * 0.9, 0.34 + shieldRatio * 0.38, 0, aegisForceColor());
     ctx.globalCompositeOperation = 'lighter';
