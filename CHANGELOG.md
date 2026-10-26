@@ -721,3 +721,9 @@
 - Added `docs/SWITCH_PORT.md` with engine, layout, certification and cost boundaries.
 - Added R11 Switch port as a gated platform track after R10.
 - Downgraded Steam Deck from a standalone milestone to R10 best-effort verification.
+
+## 0.9.26 — R3 kickoff and Windows test checklist
+
+- Added `docs/WINDOWS_VM_TEST.md`.
+- Added `docs/R3_KICKOFF.md`; R3.0 starts with local two-player vertical slice.
+- Windows VM test is blocked by missing VM/Windows image on the current macOS host.
