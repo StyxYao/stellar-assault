@@ -3,6 +3,7 @@
 // keeps P2 self-contained so single-player paths are untouched.
 var coopEnabled = false;
 var coopInputMode = 'off'; // off | kb | mouse
+var coopShip2 = 'vector', coopSkin2 = 'void_lance';
 var player2 = null;
 var aegisState2 = null;
 var phantomState2 = null;
@@ -25,19 +26,70 @@ function coopToggle() {
 
 function coopClone(o) { return JSON.parse(JSON.stringify(o)); }
 function coopSwapEnter() {
-  var s = { player: player, target: target, aegis: aegisState, phantom: phantomState };
+  var s = { player: player, target: target, aegis: aegisState, phantom: phantomState, ship: selectedShip, skin: selectedSkins[player2.ship] };
   player = player2; target = target2;
+  selectedShip = player2.ship; selectedSkins[player2.ship] = player2.skin;
   if (player2.ship === 'aegis') aegisState = aegisState2;
   if (player2.ship === 'phantom') phantomState = phantomState2;
   return s;
 }
 function coopSwapExit(s) {
   player = s.player; target = s.target; aegisState = s.aegis; phantomState = s.phantom;
+  selectedShip = s.ship; selectedSkins[player2 ? player2.ship : selectedShip] = s.skin;
 }
+function coopSkinDef(ship, id) {
+  if (typeof skinList !== 'function') return null;
+  var list = skinList(ship), fallback = list[0];
+  for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
+  return fallback;
+}
+
+function coopPickSkin2(ship, preferred) {
+  var list = (typeof skinList === 'function' ? skinList(ship) : []);
+  if (!list.length) return 'void_lance';
+  for (var i = 0; i < list.length; i++) {
+    var id = list[i].id;
+    if (id === preferred && !(selectedShip === ship && selectedSkins[selectedShip] === id)) return id;
+    if (!(selectedShip === ship && selectedSkins[selectedShip] === id)) return id;
+  }
+  return list[0].id;
+}
+
+function coopShipLabel2() { return (typeof SHIP_DEFS !== 'undefined' && SHIP_DEFS[coopShip2]) ? SHIP_DEFS[coopShip2].label : String(coopShip2).toUpperCase(); }
+function coopSkinLabel2() { var d = coopSkinDef(coopShip2, coopSkin2); return d ? d.label : String(coopSkin2).toUpperCase(); }
+
+function coopCycleShip2() {
+  var ships = ['vector', 'aegis', 'phantom'];
+  var i = ships.indexOf(coopShip2);
+  coopShip2 = ships[(i + 1) % ships.length];
+  coopSkin2 = coopPickSkin2(coopShip2, coopSkin2);
+  if (selectedShip === coopShip2 && selectedSkins[selectedShip] === coopSkin2) coopSkin2 = coopPickSkin2(coopShip2, '');
+}
+
+function coopCycleSkin2() {
+  var list = (typeof skinList === 'function' ? skinList(coopShip2) : []);
+  if (!list.length) return;
+  var i = 0;
+  for (var k = 0; k < list.length; k++) if (list[k].id === coopSkin2) i = k;
+  for (var n = 0; n < list.length; n++) {
+    i = (i + 1) % list.length;
+    var id = list[i].id;
+    if (!(selectedShip === coopShip2 && selectedSkins[selectedShip] === id)) { coopSkin2 = id; break; }
+  }
+}
+
+function coopEnsureDistinct() {
+  if (!coopEnabled) return;
+  if (selectedShip === coopShip2 && selectedSkins[selectedShip] === coopSkin2) {
+    coopSkin2 = coopPickSkin2(coopShip2, '');
+  }
+}
+
 function coopSpawn() {
+  coopEnsureDistinct();
   if (!coopEnabled) { player2 = null; return; }
-  var ship = (typeof selectedShip !== 'undefined') ? selectedShip : 'vector';
-  var skin = (selectedSkins && selectedSkins[ship]) ? selectedSkins[ship] : (ship === 'aegis' ? 'orbital' : (ship === 'phantom' ? 'quantum' : 'void_lance'));
+  var ship = coopShip2;
+  var skin = coopSkin2;
   player2 = {
     x: W / 2 - 72, y: H - 150, r: 6,
     lives: 3, hp: 3, maxHp: 3,
@@ -46,7 +98,7 @@ function coopSpawn() {
     power: 1, weapon: 'normal', specialPower: 1, options: 0, wingPower: 1,
     ship: ship, skin: skin, trail: [], wingEntry: []
   };
-  var d = (typeof currentSkinDef === 'function') ? currentSkinDef() : null;
+  var d = coopSkinDef(ship, skin);
   player2.maxHp = (d && d.maxHp) ? d.maxHp : 3;
   player2.hp = player2.maxHp;
   player2.extraBullets = (d && d.extraBullets) ? d.extraBullets : 0;
@@ -197,7 +249,7 @@ function coopDrawHUD() {
   ctx.fillStyle = 'rgba(4,12,22,0.72)'; ctx.fillRect(W - 152, 70, 136, 34);
   ctx.strokeStyle = 'rgba(143,233,255,0.4)'; ctx.lineWidth = 1; ctx.strokeRect(W - 152, 70, 136, 34);
   ctx.fillStyle = '#8fe9ff'; ctx.font = '700 7px monospace'; ctx.textAlign = 'left';
-  ctx.fillText('P2 · ' + String(p.ship || 'vector').toUpperCase(), W - 144, 84);
+  var pd = coopSkinDef(p.ship, p.skin); ctx.fillText('P2 · ' + String(p.ship || 'vector').toUpperCase() + (pd ? ' · ' + pd.label : ''), W - 144, 84);
   ctx.fillStyle = '#dff8ff'; ctx.fillText('HP ' + '●'.repeat(Math.max(0, p.hp)) + '○'.repeat(Math.max(0, p.maxHp - p.hp)), W - 144, 96);
   ctx.textAlign = 'right'; ctx.fillStyle = '#7893a8'; ctx.fillText('LIFE ' + p.lives + ' · B' + p.bombs, W - 22, 96);
   ctx.restore();

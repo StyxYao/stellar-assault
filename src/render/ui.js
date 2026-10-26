@@ -149,12 +149,14 @@ function drawShipPreview(key,x,y,size,color){
 }
 
 var startConfirmOpen = false;
-function startConfirmPanel(){ return {x:30,y:H*.225,w:W-60,h:H*.50}; }
+function startConfirmPanel(){ return {x:30,y:H*.225,w:W-60,h:H*.56}; }
 function startConfirmButtons(){
   var p=startConfirmPanel();
   return {
     start:{x:p.x+30,y:p.y+p.h-124,w:p.w-60,h:44},
     coop:{x:p.x+30,y:p.y+p.h-72,w:150,h:20},
+    p2ship:{x:p.x+30,y:p.y+p.h-150,w:150,h:22},
+    p2skin:{x:p.x+190,y:p.y+p.h-150,w:135,h:22},
     change:{x:p.x+30,y:p.y+p.h-44,w:130,h:30},
     cancel:{x:p.x+p.w-160,y:p.y+p.h-44,w:130,h:30}
   };
@@ -165,6 +167,8 @@ function startConfirmAt(p){
   var b=startConfirmButtons();
   if(p.x>=b.start.x&&p.x<=b.start.x+b.start.w&&p.y>=b.start.y&&p.y<=b.start.y+b.start.h) return 'start';
   if(p.x>=b.coop.x&&p.x<=b.coop.x+b.coop.w&&p.y>=b.coop.y&&p.y<=b.coop.y+b.coop.h) return 'coop';
+  if(p.x>=b.p2ship.x&&p.x<=b.p2ship.x+b.p2ship.w&&p.y>=b.p2ship.y&&p.y<=b.p2ship.y+b.p2ship.h) return 'p2ship';
+  if(p.x>=b.p2skin.x&&p.x<=b.p2skin.x+b.p2skin.w&&p.y>=b.p2skin.y&&p.y<=b.p2skin.y+b.p2skin.h) return 'p2skin';
   if(p.x>=b.change.x&&p.x<=b.change.x+b.change.w&&p.y>=b.change.y&&p.y<=b.change.y+b.change.h) return 'change';
   if(p.x>=b.cancel.x&&p.x<=b.cancel.x+b.cancel.w&&p.y>=b.cancel.y&&p.y<=b.cancel.y+b.cancel.h) return 'cancel';
   var panel=startConfirmPanel();
@@ -198,6 +202,16 @@ function drawStartConfirmOverlay(){
   ctx.fillStyle='#8fb8ca';ctx.font='7px monospace';
   ctx.fillText(sd.trait||'',W/2,p.y+276);
   var b=startConfirmButtons();
+  ctx.fillStyle='rgba(6,18,30,0.9)';
+  ctx.fillRect(b.p2ship.x,b.p2ship.y,b.p2ship.w,b.p2ship.h);
+  ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(b.p2ship.x,b.p2ship.y,b.p2ship.w,b.p2ship.h);
+  ctx.fillStyle='#9fe8ff';ctx.font='700 8px monospace';ctx.textAlign='left';
+  ctx.fillText('P2 SHIP · '+(typeof coopShipLabel2==='function'?coopShipLabel2():'VECTOR'),b.p2ship.x+7,b.p2ship.y+14);
+  ctx.fillStyle='rgba(6,18,30,0.9)';
+  ctx.fillRect(b.p2skin.x,b.p2skin.y,b.p2skin.w,b.p2skin.h);
+  ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(b.p2skin.x,b.p2skin.y,b.p2skin.w,b.p2skin.h);
+  ctx.fillStyle='#c8eaff';ctx.font='700 8px monospace';ctx.textAlign='left';
+  ctx.fillText('P2 VAR · '+(typeof coopSkinLabel2==='function'?coopSkinLabel2():'DEFAULT'),b.p2skin.x+7,b.p2skin.y+14);
   ctx.fillStyle=(typeof coopEnabled!=='undefined'&&coopEnabled)?'rgba(18,52,42,0.95)':'rgba(6,18,30,0.9)';
   ctx.fillRect(b.coop.x,b.coop.y,b.coop.w,b.coop.h);
   ctx.strokeStyle=(typeof coopEnabled!=='undefined'&&coopEnabled)?'#8dffb0':'#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(b.coop.x,b.coop.y,b.coop.w,b.coop.h);
@@ -238,6 +252,7 @@ function closeSkinSelect(){skinSelectOpen=false;}
 function skinSelectChoose(i){
   var list=(typeof skinList==='function'?skinList(selectedShip):[]);
   if(i<0||i>=list.length) return false;
+  if(typeof coopEnabled!=='undefined'&&coopEnabled&&selectedShip===coopShip2&&list[i].id===coopSkin2){pickupMsg='P2 IS USING THIS VARIANT';pickupT=1.6;return false;}
   setSelectedSkin(selectedShip,list[i].id);
   skinSelectOpen=false;
   return true;

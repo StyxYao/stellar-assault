@@ -747,3 +747,10 @@
 - P2 has independent AEGIS charge/Force and PHANTOM cloak/clone state.
 - P2 can collect pickups; primary U / secondary O, mouse left/right, gamepad B/X.
 - P2 draw uses the full player renderer for Force/cloak/clone effects.
+
+## 0.9.30 — Independent P1/P2 loadouts
+
+- Added P2 SHIP / P2 VAR controls in the start confirmation.
+- P1 and P2 can use different ships and variants.
+- The same exact variant is blocked for both players; P2 auto-skips conflicts.
+- P2 AEGIS/PHANTOM state remains independent.

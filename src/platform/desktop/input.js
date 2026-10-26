@@ -113,6 +113,8 @@ function desktopKeyDown(e) {
     if (k === 'enter' || k === ' ') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) desktopConfirm(); return; }
     if (k === 'v') { closeStartConfirm(); openShipSelect(); return; }
     if (k === 'p') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); if (typeof coopToggle === 'function') coopToggle(); return; }
+    if (k === 'j') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); coopCycleShip2(); return; }
+    if (k === 'k') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); coopCycleSkin2(); return; }
     return;
   }
   if (state === 'menu' && typeof skinSelectOpen !== 'undefined' && skinSelectOpen) {

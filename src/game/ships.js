@@ -159,7 +159,11 @@ function cycleSkin(delta) {
   var list = skinList(selectedShip);
   var idx = 0;
   for (var i = 0; i < list.length; i++) if (list[i].id === selectedSkins[selectedShip]) idx = i;
-  idx = (idx + (delta || 1) + list.length) % list.length;
+  for (var pass = 0; pass < list.length; pass++) {
+    idx = (idx + (delta || 1) + list.length) % list.length;
+    if (typeof coopEnabled !== 'undefined' && coopEnabled && selectedShip === coopShip2 && list[idx].id === coopSkin2) continue;
+    break;
+  }
   setSelectedSkin(selectedShip, list[idx].id);
 }
 function initSelectedSkins() {

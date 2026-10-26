@@ -45,7 +45,8 @@
 已实现：
 
 - 菜单开始确认内 CO-OP 三态：OFF / 2P KEYBOARD / P1 KB + P2 MOUSE
-- P2 当前镜像 P1 的机体/变体（VECTOR/AEGIS/PHANTOM 都可玩）
+- P2 可独立选择 VECTOR/AEGIS/PHANTOM 和变体（开始确认内 P2 SHIP / P2 VAR）
+- P1/P2 不能使用同一个变体；冲突时 P2 自动跳到下一个可用变体
 - 2P KEYBOARD：P2 IJKL；P1 键盘
 - P1 KB + P2 MOUSE：鼠标移动 P2，左键 P2 炸弹；P1 键盘
 - P2 第二手柄左摇杆/D-Pad + B/X 炸弹
@@ -57,7 +58,7 @@
 
 仍未实现：
 
-- P2 独立机体/变体选择（当前镜像 P1）
+- P2 独立机体/变体选择已完成；后续补 P2 选机大图
 - VECTOR 僚机 P2 视觉/射击
 - P2 激光独立命中特效
 - LAN/在线
