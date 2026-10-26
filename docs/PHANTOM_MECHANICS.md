@@ -17,7 +17,9 @@
 - HP: 3, except Raven 1.
 - Copy weapon, level and extra bullets at activation.
 - Damage multiplier: 0.5.
-- Autonomous movement: selects the nearest enemy/Boss, moves to a point 118px below it, keeps a 30px lateral slot, and auto-fires.
+- Autonomous targeting: selects the nearest enemy/Boss and aims the copied weapon at it.
+- Clones stay in a 32px lateral formation around the player instead of flying into enemies.
+- All newly spawned clone projectiles are rotated toward the selected target.
 - Lifetime 25 seconds.
 - Cannot collect items.
 - Base cap: Quantum/Raven 1, Butterfly 2.

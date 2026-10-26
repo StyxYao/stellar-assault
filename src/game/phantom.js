@@ -104,23 +104,35 @@ function phantomCollectB() {
   score += 30;
 }
 
-function phantomFireLaser(c) {
+function phantomAimAngle(c) {
+  if (c.target) return Math.atan2(c.target.y - c.y, c.target.x - c.x);
+  return -Math.PI / 2;
+}
+
+function phantomFireLaser(c, aimAngle) {
   var w = 8 + Math.min(c.power, 3) * 5;
   var dmg = (2 + c.power * 2) * powerDamageFactor();
+  var sx = c.x, sy = c.y - 16;
+  var ex = sx + Math.cos(aimAngle) * 900, ey = sy + Math.sin(aimAngle) * 900;
+  var vx = ex - sx, vy = ey - sy, L = vx * vx + vy * vy || 1;
   var hit = false;
+  function nearBeam(px, py, pad) {
+    var t = Math.max(0, Math.min(1, ((px - sx) * vx + (py - sy) * vy) / L));
+    var dx = px - (sx + vx * t), dy = py - (sy + vy * t);
+    return Math.hypot(dx, dy) < w / 2 + pad;
+  }
   if (typeof enemies !== 'undefined') {
     for (var i = enemies.length - 1; i >= 0; i--) {
       var e = enemies[i];
-      if (e.y > c.y + 14) continue;
-      if (Math.abs(e.x - c.x) > w / 2 + enemyW(e) * 0.30) continue;
+      if (!nearBeam(e.x, e.y, enemyW(e) * 0.30)) continue;
       e.hp -= dmg; e.flash = 0.12; hit = true;
       if (e.hp <= 0) { score += ET[e.type].score; enemyDeath(e); maybeDrop(e); removeEnemy(i); }
     }
   }
-  if (boss && state === 'boss' && boss.y < c.y + 14 && Math.abs(boss.x - c.x) < w / 2 + boss.def.w * 0.20) {
+  if (boss && state === 'boss' && nearBeam(boss.x, boss.y, boss.def.w * 0.20)) {
     boss.hp -= dmg; boss.hitFlash = 0.18; boss.hitX = c.x; boss.hitY = boss.y; hit = true;
   }
-  phantomState.beams.push({ x: c.x, y: c.y - 20, w: w, t: 0, life: 0.12 });
+  phantomState.beams.push({ x1: sx, y1: sy, x2: ex, y2: ey, w: w, t: 0, life: 0.12 });
   if (hit) { try { sfx('p_laser', 0.08); } catch (e) {} }
 }
 
@@ -134,10 +146,26 @@ function phantomCloneFire(c) {
   player.weapon = c.weapon; player.specialPower = c.power;
   player.extraBullets = c.extra; player.damageMult = (c.damageMult || 1) * 0.5;
   player.normalBuff = 1; player.odT = 0;
+  var aim = phantomAimAngle(c);
+  var shotStart = shots.length, missileStart = missiles.length;
   if (c.weapon === 'spread') fireSpread();
   else if (c.weapon === 'missile') launchMissiles();
-  else if (c.weapon === 'laser') phantomFireLaser(c);
+  else if (c.weapon === 'laser') phantomFireLaser(c, aim);
   else fireNormal();
+  // Rotate only the projectiles created by this clone so the copied pattern
+  // points at the selected target instead of always firing straight up.
+  var rot = aim + Math.PI / 2;
+  if (Math.abs(rot) > 0.0001) {
+    var co = Math.cos(rot), si = Math.sin(rot);
+    for (var si2 = shotStart; si2 < shots.length; si2++) {
+      var sh = shots[si2], vx0 = sh.vx || 0, vy0 = sh.vy || 0;
+      sh.vx = vx0 * co - vy0 * si; sh.vy = vx0 * si + vy0 * co;
+    }
+    for (var mi2 = missileStart; mi2 < missiles.length; mi2++) {
+      var mi = missiles[mi2], mx0 = mi.vx || 0, my0 = mi.vy || 0;
+      mi.vx = mx0 * co - my0 * si; mi.vy = mx0 * si + my0 * co;
+    }
+  }
   player.x = save.x; player.y = save.y; player.weapon = save.weapon;
   player.specialPower = save.specialPower; player.extraBullets = save.extraBullets;
   player.damageMult = save.damageMult; player.normalBuff = save.normalBuff;
@@ -165,20 +193,14 @@ function phantomMoveClone(c, dt) {
   if (c.retargetT > 0) c.retargetT -= dt;
   var valid = c.target && c.target.hp > 0 && (c.target === boss || (typeof enemies !== 'undefined' && enemies.indexOf(c.target) >= 0));
   if (!valid) { c.target = phantomFindTarget(c); c.retargetT = 0.45; }
-  var offset = (c.slot - (phantomState.cap - 1) / 2) * 30;
-  var tx, ty;
-  if (c.target) {
-    tx = c.target.x + offset;
-    ty = c.target.y + 118;
-  } else {
-    tx = player.x + (c.slot === 0 ? -54 : 54);
-    ty = player.y - 28;
-  }
+  var offset = (c.slot - (phantomState.cap - 1) / 2) * 32;
+  var tx = player.x + offset;
+  var ty = player.y - 26;
   tx = Math.max(34, Math.min(W - 34, tx));
   ty = Math.max(92, Math.min(H - 96, ty));
   var dx = tx - c.x, dy = ty - c.y, d = Math.hypot(dx, dy);
   if (d > 12) {
-    var step = Math.min(d, 122 * dt);
+    var step = Math.min(d, 105 * dt);
     c.x += dx / d * step;
     c.y += dy / d * step;
   }
@@ -253,8 +275,10 @@ function drawPhantomClones() {
   for (var b = 0; b < phantomState.beams.length; b++) {
     var bm = phantomState.beams[b], a = 1 - bm.t / bm.life;
     ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.75 * a;
-    ctx.fillStyle = '#8fe9ff'; ctx.fillRect(bm.x - bm.w / 2, 0, bm.w, bm.y);
-    ctx.fillStyle = 'rgba(255,255,255,' + (0.7 * a) + ')'; ctx.fillRect(bm.x - 2, 0, 4, bm.y);
+    ctx.strokeStyle = '#8fe9ff'; ctx.lineWidth = bm.w; ctx.beginPath();
+    ctx.moveTo(bm.x1, bm.y1); ctx.lineTo(bm.x2, bm.y2); ctx.stroke();
+    ctx.globalAlpha = 0.7 * a; ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; ctx.beginPath();
+    ctx.moveTo(bm.x1, bm.y1); ctx.lineTo(bm.x2, bm.y2); ctx.stroke();
     ctx.restore();
   }
   ctx.globalAlpha = 1;

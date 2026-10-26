@@ -634,3 +634,10 @@
 - Each clone selects the nearest enemy/Boss, moves to a point below it, holds formation spacing and auto-fires.
 - Reacquires a target when the current enemy dies.
 - Formation spacing adapts to the current clone cap (2 or 4).
+
+## 0.9.14 — Clone aim instead of chase
+
+- Clones stay near the player in formation; they no longer fly up to enemies.
+- Each clone selects the nearest enemy/Boss and rotates its copied weapon pattern toward that target.
+- Normal/spread/missile projectiles are rotated after spawning; laser clones use an aimed beam.
+- Clone hitbox remains player-sized.
