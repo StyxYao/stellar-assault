@@ -648,3 +648,9 @@
 - Aiming is done by horizontal movement under the target; clones no longer rotate projectile patterns.
 - Clones keep a safe vertical formation near the player.
 - Clone laser visual now matches the player laser palette, width, gradient and endpoint glow.
+
+## 0.9.16 — Clone destruction FX and whoosh candidates
+
+- Destroyed clones now trigger a real explosion, particles and boom SFX.
+- Expired clones fade with particles only.
+- Added four whoosh candidate sounds for the Phantom skill; not yet wired.

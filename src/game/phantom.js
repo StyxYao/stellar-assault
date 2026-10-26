@@ -188,7 +188,13 @@ function phantomUpdate(dt) {
     var c = phantomState.clones[i];
     c.age += dt;
     if (c.hp <= 0 || c.age > c.life) {
-      try { if (typeof part === 'function') for (var p = 0; p < 8; p++) part(c.x, c.y, '#c98bff', 1, 130); } catch (e) {}
+      if (c.hp <= 0) {
+        // Destroyed clone: full explosion + destruction sound.
+        try { if (typeof boom === 'function') boom(c.x, c.y, 0.58, 'normal'); } catch (e) {}
+        try { if (typeof part === 'function') for (var p = 0; p < 16; p++) part(c.x, c.y, p % 2 ? '#c98bff' : '#8fe9ff', 1, 170); } catch (e) {}
+      } else {
+        try { if (typeof part === 'function') for (var p2 = 0; p2 < 8; p2++) part(c.x, c.y, '#c98bff', 1, 90); } catch (e) {}
+      }
       phantomState.clones.splice(i, 1);
       continue;
     }
