@@ -343,13 +343,13 @@ function lanBuildTouchControls() {
   lanTouchLayer.addEventListener('pointercancel', end);
 
   // Semi-transparent skill hit zones, aligned to the game's bottom-right controls.
-  var primary = lanEl('div', 'position:absolute;right:16px;bottom:22px;width:78px;height:78px;border-radius:50%;border:1px dashed rgba(200,180,255,0.55);background:rgba(20,10,35,0.16);pointer-events:auto;touch-action:none;z-index:10001;');
-  primary.onpointerdown = function (e) { e.preventDefault(); e.stopPropagation(); lanClientPending.primary = true; primary.style.background = 'rgba(143,233,255,0.28)'; };
-  primary.onpointerup = function (e) { e.preventDefault(); e.stopPropagation(); primary.style.background = 'rgba(20,10,35,0.16)'; };
+  var primary = lanEl('div', 'position:absolute;right:16px;bottom:22px;width:78px;height:78px;border-radius:50%;border:none;background:transparent;pointer-events:auto;touch-action:none;z-index:10001;');
+  primary.onpointerdown = function (e) { e.preventDefault(); e.stopPropagation(); lanClientPending.primary = true; primary.style.background = 'rgba(143,233,255,0.12)'; };
+  primary.onpointerup = function (e) { e.preventDefault(); e.stopPropagation(); primary.style.background = 'transparent'; };
   lanTouchLayer.appendChild(primary);
-  var secondary = lanEl('div', 'position:absolute;right:104px;bottom:26px;width:58px;height:58px;border-radius:50%;border:1px dashed rgba(255,211,107,0.5);background:rgba(35,24,8,0.14);pointer-events:auto;touch-action:none;z-index:10001;');
-  secondary.onpointerdown = function (e) { e.preventDefault(); e.stopPropagation(); lanClientPending.secondary = true; secondary.style.background = 'rgba(255,211,107,0.28)'; };
-  secondary.onpointerup = function (e) { e.preventDefault(); e.stopPropagation(); secondary.style.background = 'rgba(35,24,8,0.14)'; };
+  var secondary = lanEl('div', 'position:absolute;right:104px;bottom:26px;width:58px;height:58px;border-radius:50%;border:none;background:transparent;pointer-events:auto;touch-action:none;z-index:10001;');
+  secondary.onpointerdown = function (e) { e.preventDefault(); e.stopPropagation(); lanClientPending.secondary = true; secondary.style.background = 'rgba(255,211,107,0.12)'; };
+  secondary.onpointerup = function (e) { e.preventDefault(); e.stopPropagation(); secondary.style.background = 'transparent'; };
   lanTouchLayer.appendChild(secondary);
   document.body.appendChild(lanTouchLayer);
 }
