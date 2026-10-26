@@ -551,3 +551,11 @@
 
 - Restored the normal enemy / elite / enemy-bomb explosion shockwave rings.
 - The earlier drifting ring was the Force double-coordinate bug, not these rings.
+
+## 0.9.2 — Force clear, shield core and N lockout
+
+- Launched Force now clears enemy bullets and enemy beams (including boss blue lasers).
+- Launch clear radius increased relative to the shield core.
+- Pickup magnet radius increased 50% (40 → 60).
+- Attached shield only checks a 12px core radius; Force radius applies to launch only.
+- N triple burst now locks normal fire for 0.2s after the final volley; OD charge shots are unaffected.

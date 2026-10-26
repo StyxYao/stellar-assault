@@ -78,7 +78,7 @@ function step(dt){
   player.trail.unshift({x:player.x,y:player.y}); if(player.trail.length>140) player.trail.pop();
 
   if((state==='play'||state==='boss')&&player.respawnT<=0){
-    if(player.ship==='aegis'&&(aegisState.charge==='charging'||player.odT>0)){
+    if(player.ship==='aegis'&&(aegisState.charge==='charging'||player.odT>0||aegisState.normalLockT>0)){
       // AEGIS holds normal fire while charging; the charged shot is the focus.
     }else if(player.weapon==='spread'){
       if(time-lastSpecial>(player.odT>0?0.080:0.16)){ lastSpecial=time; fireSpread(); sfx('p_spread',0.36); }
@@ -231,7 +231,7 @@ function step(dt){
     var it=items[i];it.t+=dt;it.y+=it.vy*dt;
     var idx=player.x-it.x,idy=player.y-it.y,id=Math.hypot(idx,idy);
     // Small pickup magnet only within the ship sprite radius (~40px).
-    if(id<40&&id>1){it.x+=idx/id*150*dt;it.y+=idy/id*150*dt;}
+    if(id<60&&id>1){it.x+=idx/id*150*dt;it.y+=idy/id*150*dt;}
     if(id<20){collectItem(it);items.splice(i,1);continue;}
     if(it.y>H+30)items.splice(i,1);
   }

@@ -32,6 +32,7 @@ var AEGIS_AUTO_RELEASE = 0.35;
 var AEGIS_CHARGE_COOLDOWN = 0.20;
 var AEGIS_FORCE_RADIUS = 38;
 var AEGIS_SHIELD_MAX = 60;
+var AEGIS_SHIELD_HIT_RADIUS = 12;
 var AEGIS_SHIELD_COST = 8;
 var AEGIS_SHIELD_REGEN = 14;
 var AEGIS_SHIELD_DELAY = 1.2;
@@ -71,6 +72,7 @@ var aegisState = {
   nBurstT: 0,
   nBurstDamage: 0,
   nBurstCount: 0,
+  normalLockT: 0,
   forceLevel: 1,
   odActive: false,
   odShotT: 0,
@@ -207,6 +209,7 @@ function aegisReset() {
   aegisState.castWidth = 0;
   aegisState.nBurstLeft = 0;
   aegisState.nBurstT = 0;
+  aegisState.normalLockT = 0;
   aegisState.odActive = false;
   aegisState.odShotT = 0;
   aegisState.postOdT = 0;
@@ -459,7 +462,7 @@ function aegisShieldBreak() {
 
 function aegisForceCollide(dt) {
   if (aegisState.force !== 'detached') return;
-  var fx = aegisState.forceX, fy = aegisState.forceY, rad = aegisForceRadius();
+  var fx = aegisState.forceX, fy = aegisState.forceY, rad = aegisForceRadius() + 18;
   // The Force clears bullets it physically passes through.
   if (typeof ebullets !== 'undefined' && ebullets) {
     for (var bi = ebullets.length - 1; bi >= 0; bi--) {
@@ -467,6 +470,23 @@ function aegisForceCollide(dt) {
       if (Math.hypot(b.x - fx, b.y - fy) < rad + 5) {
         if (typeof part === 'function') part(b.x, b.y, aegisForceColor(), 1, 130);
         ebullets.splice(bi, 1);
+      }
+    }
+  }
+  // Enemy beam attacks (including the first boss's blue laser) are also cut.
+  if (typeof beams !== 'undefined' && beams) {
+    for (var bi2 = beams.length - 1; bi2 >= 0; bi2--) {
+      var bm = beams[bi2];
+      if (!bm || !bm.owner) continue;
+      var x2 = bm.x + Math.cos(bm.ang) * bm.len;
+      var y2 = bm.y + Math.sin(bm.ang) * bm.len;
+      var vx2 = x2 - bm.x, vy2 = y2 - bm.y;
+      var L2 = vx2 * vx2 + vy2 * vy2 || 1;
+      var tt = Math.max(0, Math.min(1, ((fx - bm.x) * vx2 + (fy - bm.y) * vy2) / L2));
+      var ddx = fx - (bm.x + vx2 * tt), ddy = fy - (bm.y + vy2 * tt);
+      if (Math.hypot(ddx, ddy) < rad + (bm.w || 8) * 0.5) {
+        if (typeof part === 'function') part(bm.x + vx2 * tt, bm.y + vy2 * tt, aegisForceColor(), 5, 160);
+        beams.splice(bi2, 1);
       }
     }
   }
@@ -519,6 +539,7 @@ function updateAegis(dt) {
   if (aegisTutorialT > 0) aegisTutorialT = Math.max(0, aegisTutorialT - dt);
   if (aegisState.cooldown > 0) aegisState.cooldown = Math.max(0, aegisState.cooldown - dt);
   if (aegisState.forceHitT > 0) aegisState.forceHitT = Math.max(0, aegisState.forceHitT - dt);
+  if (aegisState.normalLockT > 0) aegisState.normalLockT = Math.max(0, aegisState.normalLockT - dt);
   if (aegisState.flashT > 0) aegisState.flashT = Math.max(0, aegisState.flashT - dt);
   if (aegisState.laneT > 0) aegisState.laneT = Math.max(0, aegisState.laneT - dt);
   if (aegisState.castT > 0) aegisState.castT = Math.max(0, aegisState.castT - dt);
@@ -554,6 +575,7 @@ function updateAegis(dt) {
     if (aegisState.nBurstT <= 0) {
       aegisState.nBurstLeft--;
       aegisState.nBurstT = 0.03;
+      if (aegisState.nBurstLeft === 0) aegisState.normalLockT = 0.2;
       aegisFireNBurst();
     }
   }
@@ -569,7 +591,7 @@ function updateAegis(dt) {
       for (var i = ebullets.length - 1; i >= 0; i--) {
         var b = ebullets[i];
         if (b.bomb) continue;
-        if (Math.hypot(b.x - aegisState.forceX, b.y - aegisState.forceY) < aegisForceRadius()) {
+        if (Math.hypot(b.x - aegisState.forceX, b.y - aegisState.forceY) < AEGIS_SHIELD_HIT_RADIUS) {
           ebullets.splice(i, 1);
           aegisState.shield -= AEGIS_SHIELD_COST;
           aegisState.lastBlockAt = time;
