@@ -6,6 +6,7 @@ var player2 = null;
 var target2 = { x: W / 2 - 70, y: H - 150 };
 var coopKeys = Object.create(null);
 var coopLastShot = 0, coopLastSpecial = 0, coopLastMissile = 0;
+var coopPadPrevB = false;
 
 function coopToggle() {
   coopEnabled = !coopEnabled;
@@ -82,6 +83,9 @@ function coopUpdate(dt) {
   var pads = navigator.getGamepads ? navigator.getGamepads() : [];
   if (pads[1]) {
     var pad = pads[1], ax = pad.axes[0] || 0, ay = pad.axes[1] || 0;
+    var padB = !!(pad.buttons[1] && pad.buttons[1].pressed) || !!(pad.buttons[2] && pad.buttons[2].pressed);
+    if (padB && !coopPadPrevB) coopBomb();
+    coopPadPrevB = padB;
     if (Math.abs(ax) > 0.22) dx += ax;
     if (Math.abs(ay) > 0.22) dy += ay;
     if (pad.buttons[14] && pad.buttons[14].pressed) dx -= 1;
