@@ -627,3 +627,10 @@
 - Renamed pickup letters: B → E (Energy/ability charge), W → D (Drone/clone upgrade).
 - Updated drop tables, item icons, collection logic and messages.
 - Old W/B debug items are still accepted as aliases.
+
+## 0.9.13 — Autonomous clone seeking
+
+- Clones no longer stand still.
+- Each clone selects the nearest enemy/Boss, moves to a point below it, holds formation spacing and auto-fires.
+- Reacquires a target when the current enemy dies.
+- Formation spacing adapts to the current clone cap (2 or 4).

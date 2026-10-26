@@ -47,6 +47,9 @@ function phantomSpawnClone(offset) {
     extra: player.extraBullets || 0,
     damageMult: player.damageMult || 1,
     fireT: 0.12 + Math.random() * 0.06,
+    target: null,
+    retargetT: 0,
+    slot: phantomState.clones.length,
     age: 0,
     life: 25,
     skin: skin ? skin.id : 'quantum'
@@ -141,6 +144,45 @@ function phantomCloneFire(c) {
   player.odT = save.odT; player.invuln = save.invuln;
 }
 
+function phantomFindTarget(c) {
+  var best = null, bestD = 1e9;
+  if (typeof enemies !== 'undefined') {
+    for (var i = 0; i < enemies.length; i++) {
+      var e = enemies[i];
+      if (!e || e.hp <= 0 || e.entering) continue;
+      var d = Math.hypot(e.x - c.x, e.y - c.y);
+      if (d < bestD) { bestD = d; best = e; }
+    }
+  }
+  if (boss && state === 'boss' && boss.hp > 0) {
+    var bd = Math.hypot(boss.x - c.x, boss.y - c.y);
+    if (bd < bestD || !best) { bestD = bd; best = boss; }
+  }
+  return best;
+}
+
+function phantomMoveClone(c, dt) {
+  if (c.retargetT > 0) c.retargetT -= dt;
+  var valid = c.target && c.target.hp > 0 && (c.target === boss || (typeof enemies !== 'undefined' && enemies.indexOf(c.target) >= 0));
+  if (!valid) { c.target = phantomFindTarget(c); c.retargetT = 0.45; }
+  var offset = (c.slot - (phantomState.cap - 1) / 2) * 30;
+  var tx, ty;
+  if (c.target) {
+    tx = c.target.x + offset;
+    ty = c.target.y + 118;
+  } else {
+    tx = player.x + (c.slot === 0 ? -54 : 54);
+    ty = player.y - 28;
+  }
+  tx = Math.max(34, Math.min(W - 34, tx));
+  ty = Math.max(92, Math.min(H - 96, ty));
+  var dx = tx - c.x, dy = ty - c.y, d = Math.hypot(dx, dy);
+  if (d > 12) {
+    var step = Math.min(d, 122 * dt);
+    c.x += dx / d * step;
+    c.y += dy / d * step;
+  }
+}
 function phantomUpdate(dt) {
   if (player.ship !== 'phantom') return;
   if (state !== 'play' && state !== 'boss') return;
@@ -154,6 +196,7 @@ function phantomUpdate(dt) {
       phantomState.clones.splice(i, 1);
       continue;
     }
+    phantomMoveClone(c, dt);
     c.fireT -= dt;
     if (c.fireT <= 0) {
       c.fireT = c.weapon === 'spread' ? 0.16 : (c.weapon === 'laser' ? 0.08 : (c.weapon === 'missile' ? 0.46 : 0.10));

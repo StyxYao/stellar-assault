@@ -17,7 +17,7 @@
 - HP: 3, except Raven 1.
 - Copy weapon, level and extra bullets at activation.
 - Damage multiplier: 0.5.
-- Stationary, auto-fire.
+- Autonomous movement: selects the nearest enemy/Boss, moves to a point 118px below it, keeps a 30px lateral slot, and auto-fires.
 - Lifetime 25 seconds.
 - Cannot collect items.
 - Base cap: Quantum/Raven 1, Butterfly 2.
