@@ -97,11 +97,11 @@ O        副技能（AEGIS Force）
 ## 当前实现边界
 
 - Host 发送的是 canvas JPEG 流，不是状态同步
-- 帧率约 18fps，输入约 25Hz
-- Client 无音频
-- 模式 B 的 P1 使用 Host 当前选中机体，P2 固定 VECTOR
-- 模式 A 的 P2 固定 VECTOR
-- 只支持 1 个远程 P2（模式 A）或 P1+P2（模式 B）
+- 画面约 30fps，输入约 40Hz
+- Client 有 Host PCM 音频
+- 客户端 P1/P2 均可独立选机体/变体，自动避开同变体
+- 模式 A 只支持 1 个远程 P2；模式 B 支持 P1+P2 分别加入
+- 画面是 canvas JPEG 流，不是状态同步
 - 无重连、无 NAT 穿透、无公网
 - Host 关闭或掉线后 Client 需要重新加入
 - 仅局域网 HTTP，不适用 EdgeOne/公网 HTTPS

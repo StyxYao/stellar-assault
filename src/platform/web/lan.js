@@ -2,10 +2,16 @@
 // Host can either play P1 (hostp1) or be room-only (room, P1/P2 join separately).
 var lanSocket = null, lanRoom = '', lanRole = '', lanHostMode = 'hostp1';
 var lanSlots = [false, false], lanFrameTimer = null, lanInputTimer = null;
+var lanMySlot = -1, lanJoined = false, lanLoadouts = [null, null];
+var lanLoadoutShip = 'vector', lanLoadoutSkin = 'void_lance';
+var lanShipBtn = null, lanSkinBtn = null;
 var lanClientMode = false, lanClientKeys = Object.create(null);
 var lanClientPending = { primary: false, secondary: false };
 var lanPadPrev = { a: false, b: false };
 var lanOverlay = null, lanVideo = null, lanStatus = null, lanRoomLabel = null;
+var lanAudioBytes = 0, lanAudioRecv = 0;
+var lanAudioScript = null, lanAudioSink = null;
+var lanClientAC = null, lanNextAudio = 0;
 var lanStartBtn = null, lanCodeInput = null, lanLinkEl = null, lanSlotStatus = null;
 
 function lanWsUrl() {
@@ -29,6 +35,41 @@ function lanInviteLink() {
   return location.origin + location.pathname + q;
 }
 
+function lanLoadoutSkinDef(ship, skin) {
+  if (typeof skinList !== 'function') return null;
+  var list = skinList(ship);
+  for (var i = 0; i < list.length; i++) if (list[i].id === skin) return list[i];
+  return list[0] || null;
+}
+function lanLoadoutLabel(ship, skin) {
+  var sd = (typeof SHIP_DEFS !== 'undefined' && SHIP_DEFS[ship]) ? SHIP_DEFS[ship] : { label: String(ship || 'VECTOR').toUpperCase() };
+  var kd = lanLoadoutSkinDef(ship, skin);
+  return sd.label + ' · ' + (kd ? kd.label : String(skin || '').toUpperCase());
+}
+function lanClientShipCycle() {
+  var ships = ['vector', 'aegis', 'phantom'];
+  var i = ships.indexOf(lanLoadoutShip);
+  lanLoadoutShip = ships[(i + 1) % ships.length];
+  var list = (typeof skinList === 'function') ? skinList(lanLoadoutShip) : [];
+  lanLoadoutSkin = list.length ? list[0].id : 'void_lance';
+  lanRefreshLoadoutButtons(); lanSendLoadout();
+}
+function lanClientSkinCycle() {
+  var list = (typeof skinList === 'function') ? skinList(lanLoadoutShip) : [];
+  if (!list.length) return;
+  var i = 0; for (var k = 0; k < list.length; k++) if (list[k].id === lanLoadoutSkin) i = k;
+  lanLoadoutSkin = list[(i + 1) % list.length].id;
+  lanRefreshLoadoutButtons(); lanSendLoadout();
+}
+function lanRefreshLoadoutButtons() {
+  if (lanShipBtn) lanShipBtn.textContent = 'SHIP · ' + lanLoadoutLabel(lanLoadoutShip, lanLoadoutSkin).split(' · ')[0];
+  if (lanSkinBtn) lanSkinBtn.textContent = 'VAR · ' + (lanLoadoutLabel(lanLoadoutShip, lanLoadoutSkin).split(' · ')[1] || '');
+}
+function lanSendLoadout() {
+  if (!lanSocket || lanSocket.readyState !== 1 || !lanJoined) return;
+  lanSocket.send(JSON.stringify({ type: 'loadout', ship: lanLoadoutShip, skin: lanLoadoutSkin }));
+}
+
 function lanMakeOverlay(client) {
   if (lanOverlay) return;
   lanOverlay = lanEl('div', 'position:fixed;inset:0;z-index:9999;background:rgba(1,4,10,0.9);display:flex;align-items:center;justify-content:center;font-family:monospace;color:#dff8ff;');
@@ -38,6 +79,10 @@ function lanMakeOverlay(client) {
   lanStatus = lanEl('div', 'font:11px monospace;color:#9fe8ff;min-height:18px;margin-bottom:10px;', 'NOT CONNECTED');
   box.appendChild(lanStatus);
   if (client) {
+    lanShipBtn = lanEl('button', 'width:100%;padding:8px;background:#081824;border:1px solid #31536a;color:#b8d9e8;font:10px monospace;cursor:pointer;margin-bottom:5px;', 'SHIP · VECTOR');
+    lanShipBtn.onclick = lanClientShipCycle; box.appendChild(lanShipBtn);
+    lanSkinBtn = lanEl('button', 'width:100%;padding:8px;background:#081824;border:1px solid #31536a;color:#b8d9e8;font:10px monospace;cursor:pointer;margin-bottom:8px;', 'VAR · VOID LANCE');
+    lanSkinBtn.onclick = lanClientSkinCycle; box.appendChild(lanSkinBtn);
     lanCodeInput = lanEl('input', 'width:100%;box-sizing:border-box;padding:10px;background:#03111e;border:1px solid #31536a;color:#fff;font:16px monospace;letter-spacing:6px;text-align:center;margin-bottom:8px;');
     lanCodeInput.maxLength = 4; lanCodeInput.placeholder = 'ROOM CODE';
     box.appendChild(lanCodeInput);
@@ -73,6 +118,7 @@ function lanClose() {
   if (lanSocket) { try { lanSocket.send(JSON.stringify({ type: 'leave' })); lanSocket.close(); } catch (e) {} }
   lanSocket = null; lanRoom = ''; lanRole = ''; lanSlots = [false, false];
   coopRemote = false; coopRemoteP1 = false;
+  lanStopHostAudio();
   if (lanFrameTimer) { clearInterval(lanFrameTimer); lanFrameTimer = null; }
   if (lanInputTimer) { clearInterval(lanInputTimer); lanInputTimer = null; }
   if (lanOverlay) { lanOverlay.remove(); lanOverlay = null; }
@@ -82,7 +128,11 @@ function lanClose() {
 
 function lanSetStatus(t) { if (lanStatus) lanStatus.textContent = t; }
 function lanUpdateSlots() {
-  if (lanSlotStatus) lanSlotStatus.textContent = 'P1: ' + (lanSlots[0] ? 'CONNECTED' : '—') + '   P2: ' + (lanSlots[1] ? 'CONNECTED' : '—');
+  if (lanSlotStatus) {
+    var l0 = lanLoadouts[0] ? lanLoadoutLabel(lanLoadouts[0].ship, lanLoadouts[0].skin) : '—';
+    var l1 = lanLoadouts[1] ? lanLoadoutLabel(lanLoadouts[1].ship, lanLoadouts[1].skin) : '—';
+    lanSlotStatus.textContent = 'P1: ' + (lanSlots[0] ? l0 : '—') + '   P2: ' + (lanSlots[1] ? l1 : '—');
+  }
   var need = lanHostMode === 'room' ? (lanSlots[0] && lanSlots[1]) : lanSlots[1];
   if (lanStartBtn) {
     lanStartBtn.disabled = !need;
@@ -102,6 +152,7 @@ function lanConnectHost() {
     lanSocket.onerror = function () { lanSetStatus('SERVER OFFLINE · RUN tools/lan_server.py'); };
     lanSocket.onclose = function () { lanSetStatus('DISCONNECTED'); };
     lanSocket.onmessage = function (ev) {
+      if (typeof ev.data !== 'string') { lanHandleAudio(ev.data); return; }
       var m; try { m = JSON.parse(ev.data); } catch (e) { return; }
       if (m.type === 'created') {
         lanRoom = m.room; lanRole = 'host'; lanHostMode = m.mode || 'hostp1'; lanSlots = [false, false];
@@ -113,6 +164,9 @@ function lanConnectHost() {
         lanSlots[m.slot] = true; lanSetStatus('PLAYER JOINED · SLOT ' + (m.slot + 1)); lanUpdateSlots();
       } else if (m.type === 'player-left') {
         lanSlots[m.slot] = false; lanSetStatus('PLAYER LEFT · SLOT ' + (m.slot + 1)); lanUpdateSlots();
+      } else if (m.type === 'loadout') {
+        lanLoadouts[m.slot] = { ship: m.ship, skin: m.skin };
+        lanUpdateSlots();
       } else if (m.type === 'input') {
         var inp = m.slot === 0 ? lanRemoteInput1 : lanRemoteInput;
         inp.dx = Number(m.dx) || 0; inp.dy = Number(m.dy) || 0;
@@ -129,18 +183,91 @@ function lanCreate(mode) {
   lanSocket.send(JSON.stringify({ type: 'create', mode: lanHostMode }));
 }
 
+function lanEnsureClientAudio() {
+  if (!lanClientAC) {
+    try {
+      lanClientAC = new (window.AudioContext || window.webkitAudioContext)();
+      lanNextAudio = 0;
+    } catch (e) { return null; }
+  }
+  try { if (lanClientAC.state === 'suspended') lanClientAC.resume(); } catch (e) {}
+  return lanClientAC;
+}
+
+function lanHandleAudio(ab) {
+  lanAudioRecv += (ab.byteLength || 0);
+  var ac = lanEnsureClientAudio(); if (!ac) return;
+  var pcm = new Int16Array(ab); if (!pcm.length) return;
+  var buf = ac.createBuffer(1, pcm.length, 22050);
+  var ch = buf.getChannelData(0);
+  for (var i = 0; i < pcm.length; i++) ch[i] = pcm[i] / 32768;
+  var src = ac.createBufferSource(); src.buffer = buf; src.connect(ac.destination);
+  var now = ac.currentTime;
+  if (lanNextAudio < now + 0.02) lanNextAudio = now + 0.05;
+  if (lanNextAudio - now > 0.5) lanNextAudio = now + 0.05;
+  try { src.start(lanNextAudio); } catch (e) { return; }
+  lanNextAudio += buf.duration;
+}
+
+function lanStartHostAudio() {
+  if (typeof AC === 'undefined' || !AC || typeof master === 'undefined' || !master || typeof ScriptProcessorNode === 'undefined') return;
+  try {
+    if (lanAudioScript) return;
+    lanAudioScript = AC.createScriptProcessor(1024, 1, 1);
+    lanAudioSink = AC.createGain(); lanAudioSink.gain.value = 0;
+    master.connect(lanAudioScript);
+    lanAudioScript.connect(lanAudioSink);
+    lanAudioSink.connect(AC.destination);
+    var ratio = AC.sampleRate / 22050;
+    lanAudioScript.onaudioprocess = function (ev) {
+      if (!lanSocket || lanSocket.readyState !== 1) return;
+      var input = ev.inputBuffer.getChannelData(0);
+      var outLen = Math.max(1, Math.floor(input.length / ratio));
+      var out = new Int16Array(outLen);
+      for (var i = 0; i < outLen; i++) {
+        var pos = i * ratio, i0 = Math.floor(pos), i1 = Math.min(input.length - 1, i0 + 1), frac = pos - i0;
+        var s = input[i0] * (1 - frac) + input[i1] * frac;
+        out[i] = Math.max(-32768, Math.min(32767, s * 32767));
+      }
+      lanAudioBytes += out.byteLength;
+      try { lanSocket.send(out.buffer); } catch (e) {}
+    };
+  } catch (e) {}
+}
+
+function lanStopHostAudio() {
+  try { if (lanAudioScript && master) master.disconnect(lanAudioScript); } catch (e) {}
+  try { if (lanAudioSink) lanAudioSink.disconnect(); } catch (e) {}
+  lanAudioScript = null; lanAudioSink = null;
+}
+
 function lanStartHost() {
   if (lanStartBtn && lanStartBtn.disabled) return;
+  var l0 = lanLoadouts[0] || { ship: selectedShip, skin: selectedSkins[selectedShip] };
+  var l1 = lanLoadouts[1] || { ship: 'vector', skin: 'void_lance' };
+  if (lanHostMode === 'room') {
+    if (typeof skinList === 'function' && skinList(l0.ship).length) {
+      selectedShip = l0.ship; selectedSkins[selectedShip] = l0.skin;
+    }
+  } else {
+    l0 = { ship: selectedShip, skin: selectedSkins[selectedShip] };
+  }
   coopEnabled = true; coopInputMode = 'remote'; coopRemote = true;
   coopRemoteP1 = lanHostMode === 'room';
-  coopShip2 = 'vector'; coopSkin2 = coopPickSkin2('vector', '');
+  coopShip2 = l1.ship; coopSkin2 = l1.skin;
+  if (selectedShip === coopShip2 && selectedSkins[selectedShip] === coopSkin2) {
+    var sk = (typeof skinList === 'function') ? skinList(coopShip2) : [];
+    for (var i = 0; i < sk.length; i++) if (sk[i].id !== selectedSkins[selectedShip]) { coopSkin2 = sk[i].id; break; }
+  }
   if (lanOverlay) lanOverlay.style.display = 'none';
+  try { initAudio(); loadSfxExtras(); } catch (e) {}
+  lanStartHostAudio();
   startAtStage(selectedStage);
   if (!lanFrameTimer) {
     lanFrameTimer = setInterval(function () {
       if (!lanSocket || lanSocket.readyState !== 1) return;
       try { lanSocket.send(JSON.stringify({ type: 'frame', data: cvs.toDataURL('image/jpeg', 0.55) })); } catch (e) {}
-    }, 55);
+    }, 33);
   }
 }
 
@@ -151,16 +278,19 @@ function lanJoin() {
   lanStartBtn.disabled = true; lanSetStatus('CONNECTING...');
   try {
     lanSocket = new WebSocket(lanWsUrl());
+    lanSocket.binaryType = 'arraybuffer';
     lanSocket.onopen = function () { lanSocket.send(JSON.stringify({ type: 'join', room: code })); };
     lanSocket.onerror = function () { lanSetStatus('SERVER OFFLINE'); lanStartBtn.disabled = false; };
     lanSocket.onclose = function () { lanSetStatus('DISCONNECTED'); };
     lanSocket.onmessage = function (ev) {
+      if (typeof ev.data !== 'string') { lanHandleAudio(ev.data); return; }
       var m; try { m = JSON.parse(ev.data); } catch (e) { return; }
       if (m.type === 'error') { lanSetStatus(m.message || 'JOIN FAILED'); lanStartBtn.disabled = false; }
       else if (m.type === 'joined') {
-        lanRoom = m.room; lanRole = 'guest';
-        lanSetStatus('CONNECTED AS P' + (Number(m.slot) + 1) + ' · WAITING FOR HOST');
-        if (lanOverlay) lanOverlay.style.display = 'none';
+        lanRoom = m.room; lanRole = 'guest'; lanJoined = true; lanMySlot = Number(m.slot);
+        lanSetStatus('CONNECTED AS P' + (lanMySlot + 1) + ' · CHOOSE LOADOUT · WAITING FOR HOST');
+        if (lanStartBtn) { lanStartBtn.disabled = true; lanStartBtn.textContent = 'WAITING FOR HOST'; }
+        lanSendLoadout(); lanEnsureClientAudio();
         if (!lanVideo) {
           lanVideo = document.createElement('img');
           lanVideo.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;object-fit:contain;background:#000;z-index:9998;';
@@ -169,6 +299,7 @@ function lanJoin() {
         if (typeof cvs !== 'undefined') cvs.style.display = 'none';
         lanStartClientInput();
       } else if (m.type === 'frame') {
+        if (lanOverlay) lanOverlay.style.display = 'none';
         if (lanVideo) lanVideo.src = m.data;
       } else if (m.type === 'host-left') {
         lanSetStatus('HOST LEFT'); if (lanVideo) lanVideo.remove(); lanVideo = null;
@@ -204,7 +335,7 @@ function lanSendClientInput() {
   lanSocket.send(JSON.stringify({ type: 'input', dx: dx, dy: dy, primary: primary, secondary: secondary }));
 }
 
-function lanStartClientInput() { if (!lanInputTimer) lanInputTimer = setInterval(lanSendClientInput, 40); }
+function lanStartClientInput() { if (!lanInputTimer) lanInputTimer = setInterval(lanSendClientInput, 25); }
 
 function lanClientKey(e, down) {
   var k = String(e.key || '').toLowerCase();
@@ -217,12 +348,24 @@ function lanClientKey(e, down) {
   if (e.preventDefault) e.preventDefault();
 }
 
+window.__lanDebug = function () {
+  return {
+    role: lanRole, room: lanRoom, mode: lanHostMode, slots: lanSlots.slice(), mySlot: lanMySlot,
+    audioSend: lanAudioBytes, audioRecv: lanAudioRecv,
+    script: !!lanAudioScript,
+    clientAC: lanClientAC ? lanClientAC.state : null,
+    nextAudio: +lanNextAudio.toFixed(2),
+    ac: (typeof AC !== 'undefined' && AC) ? AC.state : null,
+    master: typeof master !== 'undefined' && !!master
+  };
+};
+
 try {
   var q = new URLSearchParams(location.search || '');
   lanClientMode = q.get('lanclient') === '1';
   if (lanClientMode) {
     function bootClient() {
-      lanMakeOverlay(true);
+      lanMakeOverlay(true); lanRefreshLoadoutButtons();
       var joinCode = q.get('lanjoin');
       if (joinCode && lanCodeInput) {
         lanCodeInput.value = String(joinCode).slice(0, 4);

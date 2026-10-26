@@ -76,7 +76,7 @@
 
 本机双人功能已收口；剩余是本机完整关平衡和 `World / PlayerSlot` 重构。
 
-- R3.1 LAN：Host/Join、房间码、画面流、远程输入（Host-as-P1 / Host-only 2P / 邀请链接已完成，见 `docs/LAN_R3.md`）
+- R3.1 LAN：Host/Join、房间码、画面流、远程输入（Host-as-P1 / Host-only 2P / 邀请链接 / 客户端选机 / PCM 音频已完成，见 `docs/LAN_R3.md`）
 - R3.2 在线：signaling + TURN/relay
 
 详见 `docs/MULTIPLAYER_R3.md`。

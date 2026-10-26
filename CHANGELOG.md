@@ -783,3 +783,10 @@
 - Added 2P host-only room where P1 and P2 join separately.
 - Added remote P1 input; host can be authority/spectator.
 - Kept host-as-P1 mode.
+
+## 0.9.36 — LAN client loadouts, audio, 30fps
+
+- P1/P2 LAN clients choose independent ships/variants; host enforces distinct variants.
+- Host streams PCM audio to both clients.
+- Frame stream moved to ~30fps, input to ~40Hz.
+- Host-only room supports two client slots; host-as-P1 retained.

@@ -71,6 +71,17 @@ async def handler(ws):
     is_host = False
     try:
         async for raw in ws:
+            if isinstance(raw, (bytes, bytearray)):
+                # Binary audio chunk from host; broadcast to players.
+                room = ROOMS.get(room_code)
+                if room:
+                    for p in room.get("players", []):
+                        if p:
+                            try:
+                                await p.send(raw)
+                            except Exception:
+                                pass
+                continue
             try:
                 msg = json.loads(raw)
             except Exception:
@@ -100,13 +111,16 @@ async def handler(ws):
                 room_code = code
                 await send(ws, {"type": "joined", "room": code, "slot": slot, "mode": room["mode"]})
                 await send(room["host"], {"type": "player-joined", "room": code, "slot": slot})
-            elif typ in ("input", "signal", "frame"):
+            elif typ in ("input", "signal", "frame", "loadout"):
                 room = ROOMS.get(room_code or msg.get("room", ""))
                 if not room:
                     continue
                 if typ == "frame":
                     await broadcast_frame(room, {"type": "frame", "data": msg.get("data", "")})
                 elif typ == "input":
+                    msg["slot"] = slot if slot is not None else 1
+                    await send(room["host"], msg)
+                elif typ == "loadout":
                     msg["slot"] = slot if slot is not None else 1
                     await send(room["host"], msg)
                 else:
