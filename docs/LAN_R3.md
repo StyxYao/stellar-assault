@@ -37,7 +37,7 @@ python3 tools/lan_server.py 8790 8791
 
 ## 使用
 
-### Host
+### 模式 A：Host 自己当 P1
 
 1. 两台设备连接同一局域网
 2. Host 打开：
@@ -47,11 +47,32 @@ http://<host-ip>:8785/index.html
 ```
 
 3. 点击右上角 **LAN**，或按 **L**
-4. **CREATE ROOM**
-5. 记下 4 位房间码
+4. **CREATE HOST-AS-P1 ROOM**
+5. 把房间码或 **COPY CLIENT LINK** 发给 P2
 6. 等 Client 加入后点击 **START LAN RUN**
 
 Host 控制 P1；P2 是远程玩家。
+
+### 模式 B：Host 只建房间，P1/P2 分别加入
+
+1. Host 打开同一页面
+2. 点击 **LAN**
+3. **CREATE 2P ROOM (HOST ONLY)**
+4. 复制 **COPY CLIENT LINK**，分别发给 P1 和 P2
+5. 第一个加入的是 P1，第二个加入的是 P2
+6. 两个槽位都 CONNECTED 后点 **START LAN RUN**
+
+Host 只做权威模拟和画面转发，不控制玩家。
+
+### 邀请链接
+
+Host 建房后自动生成：
+
+```text
+…/index.html?lanclient=1&lanjoin=<房间码>
+```
+
+客户端打开链接会自动填码并加入，无需手动输入。
 
 ### Client
 
@@ -62,7 +83,7 @@ http://<host-ip>:8785/index.html?lanclient=1
 ```
 
 2. 输入 4 位房间码
-3. **JOIN**
+3. 也可直接打开 Host 发的 `lanjoin` 邀请链接自动加入
 4. 画面出现后：
 
 ```text
@@ -78,8 +99,9 @@ O        副技能（AEGIS Force）
 - Host 发送的是 canvas JPEG 流，不是状态同步
 - 帧率约 18fps，输入约 25Hz
 - Client 无音频
-- P2 当前固定 VECTOR
-- 只支持 1 个远程 P2
+- 模式 B 的 P1 使用 Host 当前选中机体，P2 固定 VECTOR
+- 模式 A 的 P2 固定 VECTOR
+- 只支持 1 个远程 P2（模式 A）或 P1+P2（模式 B）
 - 无重连、无 NAT 穿透、无公网
 - Host 关闭或掉线后 Client 需要重新加入
 - 仅局域网 HTTP，不适用 EdgeOne/公网 HTTPS
@@ -122,4 +144,5 @@ R3.1 的目标是先验证：
 - [ ] 两台物理设备实测
 - [ ] 丢包/断线恢复
 - [ ] Client 音频
-- [ ] P2 完整机体/变体选择
+- [ ] 客户端 P1/P2 独立选机体
+- [ ] P2/P1 客户端音频

@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 """STELLAR ASSAULT LAN server: static dist + WebSocket room relay.
 
-Usage:
-  python3 tools/lan_server.py [http_port] [ws_port]
-
-The game is served from ./dist. Open http://<host-ip>:8785/index.html.
-Host creates a room in the game; guest opens the same URL with ?lanclient=1.
-Only LAN use; no authentication, no internet relay.
+Modes:
+  hostp1 : host is P1, one guest is P2
+  room   : host is authority only, two guests are P1/P2
 """
 import asyncio
 import http.server
@@ -59,12 +56,19 @@ async def send(ws, payload):
         pass
 
 
+async def broadcast_frame(room, msg):
+    for ws in room.get("players", []):
+        if ws:
+            await send(ws, msg)
+
+
 async def handler(ws):
     global NEXT_ID
     peer_id = NEXT_ID
     NEXT_ID += 1
     room_code = None
-    role = None
+    slot = None
+    is_host = False
     try:
         async for raw in ws:
             try:
@@ -74,30 +78,40 @@ async def handler(ws):
             typ = msg.get("type")
             if typ == "create":
                 code = make_code()
-                ROOMS[code] = {"host": ws, "guest": None, "host_id": peer_id}
+                mode = "room" if msg.get("mode") == "room" else "hostp1"
+                ROOMS[code] = {"host": ws, "mode": mode, "players": [None, None]}
                 room_code = code
-                role = "host"
-                await send(ws, {"type": "created", "room": code, "role": "host"})
+                is_host = True
+                await send(ws, {"type": "created", "room": code, "mode": mode, "role": "host"})
             elif typ == "join":
                 code = str(msg.get("room", ""))[:8]
                 room = ROOMS.get(code)
-                if not room or room.get("guest") is not None:
-                    await send(ws, {"type": "error", "message": "ROOM NOT FOUND OR FULL"})
+                if not room:
+                    await send(ws, {"type": "error", "message": "ROOM NOT FOUND"})
                     continue
-                room["guest"] = ws
-                room["guest_id"] = peer_id
+                free = [i for i, p in enumerate(room["players"]) if p is None]
+                if room["mode"] == "hostp1":
+                    free = [1] if room["players"][1] is None else []
+                if not free:
+                    await send(ws, {"type": "error", "message": "ROOM FULL"})
+                    continue
+                slot = free[0]
+                room["players"][slot] = ws
                 room_code = code
-                role = "guest"
-                await send(ws, {"type": "joined", "room": code, "role": "guest"})
-                await send(room["host"], {"type": "peer-joined", "room": code})
+                await send(ws, {"type": "joined", "room": code, "slot": slot, "mode": room["mode"]})
+                await send(room["host"], {"type": "player-joined", "room": code, "slot": slot})
             elif typ in ("input", "signal", "frame"):
                 room = ROOMS.get(room_code or msg.get("room", ""))
                 if not room:
                     continue
-                target = room.get("guest") if role == "host" else room.get("host")
-                if target:
-                    msg["from"] = role
-                    await send(target, msg)
+                if typ == "frame":
+                    await broadcast_frame(room, {"type": "frame", "data": msg.get("data", "")})
+                elif typ == "input":
+                    msg["slot"] = slot if slot is not None else 1
+                    await send(room["host"], msg)
+                else:
+                    # signaling is kept for future use; relay to host
+                    await send(room["host"], msg)
             elif typ == "leave":
                 break
     except Exception:
@@ -105,13 +119,15 @@ async def handler(ws):
     finally:
         room = ROOMS.get(room_code)
         if room:
-            other = room.get("guest") if role == "host" else room.get("host")
-            if other:
-                await send(other, {"type": "peer-left"})
-            if role == "host":
+            if is_host:
+                for p in room["players"]:
+                    if p:
+                        await send(p, {"type": "host-left"})
                 ROOMS.pop(room_code, None)
-            elif role == "guest":
-                room["guest"] = None
+            elif slot is not None:
+                if 0 <= slot < 2 and room["players"][slot] is ws:
+                    room["players"][slot] = None
+                await send(room["host"], {"type": "player-left", "slot": slot})
 
 
 async def main():

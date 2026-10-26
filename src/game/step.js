@@ -1,6 +1,7 @@
 // Main fixed-step gameplay update. Uses the legacy closure state during migration.
 function step(dt){
-  if(typeof updateDesktopInput==='function'&&!desktopPaused) updateDesktopInput(dt);
+  if(typeof coopRemoteP1Update==='function') coopRemoteP1Update(dt);
+  if(typeof updateDesktopInput==='function'&&!desktopPaused&&!(typeof coopRemoteP1!=='undefined'&&coopRemoteP1)) updateDesktopInput(dt);
   time+=dt;
   if(typeof updateAegis==='function') updateAegis(dt);
   if(typeof phantomUpdate==='function') phantomUpdate(dt);

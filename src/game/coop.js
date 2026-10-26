@@ -5,7 +5,9 @@ var coopEnabled = false;
 var coopInputMode = 'off'; // off | kb | mouse
 var coopShip2 = 'vector', coopSkin2 = 'void_lance';
 var coopRemote = false;
+var coopRemoteP1 = false;
 var lanRemoteInput = { dx: 0, dy: 0, primary: false, secondary: false };
+var lanRemoteInput1 = { dx: 0, dy: 0, primary: false, secondary: false };
 var player2 = null;
 var aegisState2 = null;
 var phantomState2 = null;
@@ -197,6 +199,23 @@ function coopCollectItem(it) {
   var s = coopSwapEnter();
   try { collectItem(it); } catch (e) {}
   coopSwapExit(s);
+}
+
+function coopRemoteP1Update(dt) {
+  if (!coopRemoteP1 || (state !== 'play' && state !== 'boss')) return;
+  var inp = lanRemoteInput1;
+  target.x = Math.max(22, Math.min(W - 22, target.x + (inp.dx || 0) * 390 * dt));
+  target.y = Math.max(70, Math.min(H - 70, target.y + (inp.dy || 0) * 390 * dt));
+  if (inp.primary) {
+    inp.primary = false;
+    if (player.ship === 'phantom') phantomSkill();
+    else if (player.ship === 'aegis') aegisTapCharge();
+    else if (player.bombs > 0) bomb();
+  }
+  if (inp.secondary) {
+    inp.secondary = false;
+    if (player.ship === 'aegis') aegisTapForce();
+  }
 }
 
 function coopUpdate(dt) {

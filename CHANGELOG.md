@@ -776,3 +776,10 @@
 - Added `tools/lan_server.py`: static dist + WebSocket room relay.
 - Added Host/Join room UI, host canvas JPEG stream and remote P2 input.
 - LAN client supports IJKL movement and U/O skills; no audio yet.
+
+## 0.9.35 — LAN invite links and host-only room
+
+- Added invite links (`lanjoin=code`) with auto-join.
+- Added 2P host-only room where P1 and P2 join separately.
+- Added remote P1 input; host can be authority/spectator.
+- Kept host-as-P1 mode.
