@@ -504,3 +504,13 @@
 - Moved the Force field beneath the ship layer with reduced brightness/opacity.
 - Removed the charge-release particle burst.
 - Menu info now defaults to the bottom placement.
+
+## 0.8.7 — Charge polish and no pickup magnet
+
+- Removed pickup attraction; ammo/weapon items now fall and must be collected manually.
+- M-charge full-screen preview lights removed; missiles only lengthen, never widen.
+- S-charge fan angle gap reduced by 50%.
+- N-charge projectiles use cyan.
+- N-charge muzzle flash shortened so it no longer covers the screen.
+- Menu info defaults to the bottom.
+- Force field circles recentered to the energy core.

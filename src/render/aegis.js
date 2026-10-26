@@ -107,16 +107,6 @@ function drawAegisShipFx() {
       ctx.fillStyle = bg; ctx.fillRect(shipX - bw, topY, bw * 2, cr);
       ctx.fillStyle = 'rgba(255,255,255,' + (0.85 * ca) + ')';
       ctx.fillRect(shipX - 2.5, topY, 5, cr);
-    } else if (aegisState.castKind === 'swarm') {
-      for (var mi = 0; mi < 10; mi++) {
-        var phase = time * 7 + mi * 1.1;
-        var mx = 40 + (W - 80) * (mi / 9);
-        var my = player.y - 28 - (cr * ((mi % 4) + 1) / 5);
-        ctx.globalAlpha = 0.8 * ca; ctx.fillStyle = mi % 2 ? '#ffe08a' : '#ffb347';
-        ctx.beginPath(); ctx.arc(mx, my + Math.sin(phase) * 4, 4.5, 0, TAU); ctx.fill();
-        ctx.strokeStyle = cc; ctx.lineWidth = 1.2; ctx.globalAlpha = 0.35 * ca;
-        ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(mx, my + 28); ctx.stroke();
-      }
     } else if (aegisState.castKind === 'force') {
       var lane = AEGIS_FORCE_LANE_HALF;
       var lg = ctx.createLinearGradient(shipX - lane, 0, shipX + lane, 0);
@@ -127,16 +117,12 @@ function drawAegisShipFx() {
       ctx.fillStyle = 'rgba(255,255,230,' + (0.9 * ca) + ')';
       ctx.fillRect(shipX - 4, 0, 8, player.y);
     } else {
-      var lw = 18;
-      var lineG = ctx.createLinearGradient(shipX - lw, 0, shipX + lw, 0);
-      lineG.addColorStop(0, 'rgba(120,240,255,0)');
-      lineG.addColorStop(0.45, 'rgba(160,250,255,' + (0.72 * ca) + ')');
-      lineG.addColorStop(0.5, 'rgba(255,255,255,' + (0.98 * ca) + ')');
-      lineG.addColorStop(0.55, 'rgba(160,250,255,' + (0.72 * ca) + ')');
-      lineG.addColorStop(1, 'rgba(120,240,255,0)');
-      ctx.fillStyle = lineG; ctx.fillRect(shipX - lw, topY, lw * 2, cr);
-      ctx.fillStyle = 'rgba(255,255,255,' + (0.9 * ca) + ')';
-      ctx.fillRect(shipX - 1.8, topY, 3.6, cr);
+      // N: short lance muzzle flash; the actual projectiles are already fired.
+      var mz = ctx.createLinearGradient(shipX, player.y - 90, shipX, player.y);
+      mz.addColorStop(0, 'rgba(120,240,255,0)');
+      mz.addColorStop(0.55, 'rgba(160,250,255,' + (0.34 * ca) + ')');
+      mz.addColorStop(1, 'rgba(255,255,255,' + (0.62 * ca) + ')');
+      ctx.fillStyle = mz; ctx.fillRect(shipX - 9, Math.max(0, player.y - 90), 18, 90);
     }
   }
 

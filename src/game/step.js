@@ -230,7 +230,6 @@ function step(dt){
   for(var i=items.length-1;i>=0;i--){
     var it=items[i];it.t+=dt;it.y+=it.vy*dt;
     var idx=player.x-it.x,idy=player.y-it.y,id=Math.hypot(idx,idy);
-    if(id<185&&id>1){it.x+=idx/id*180*dt;it.y+=idy/id*160*dt;}
     if(id<20){collectItem(it);items.splice(i,1);continue;}
     if(it.y>H+30)items.splice(i,1);
   }

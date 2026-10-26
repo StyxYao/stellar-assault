@@ -303,7 +303,7 @@ function aegisReleaseCharge() {
   if (prof.kind === 'fan') {
     var perFan = totalDamage / prof.count;
     for (var i = 0; i < prof.count; i++) {
-      var a = (i - (prof.count - 1) / 2) * 0.095;
+      var a = (i - (prof.count - 1) / 2) * 0.0475;
       addShot(px, py, Math.sin(a) * 900, -Math.cos(a) * 900, perFan, false, false, true, prof.power >= 4, prof.range);
       var sf = shots[shots.length - 1]; if (sf) { sf.lenScale = 1.5; sf.widScale = 1.2; sf.chargeLevel = player.specialPower; }
     }
@@ -314,7 +314,7 @@ function aegisReleaseCharge() {
     for (var m = 0; m < 10; m++) {
       var mx = 40 + (W - 80) * (m / 9);
       spawnMissile(mx, player.y - 18, false, perMissile, true, 0, -190, prof.range);
-      var mm = missiles[missiles.length - 1]; if (mm) { mm.lenScale = 1.5; mm.widScale = 1.3; mm.chargeLevel = player.specialPower; }
+      var mm = missiles[missiles.length - 1]; if (mm) { mm.lenScale = 1.5; mm.widScale = 1.0; mm.noWiden = true; mm.chargeLevel = player.specialPower; }
     }
   } else {
     // N: double the normal projectile count, split total damage evenly.
@@ -323,7 +323,7 @@ function aegisReleaseCharge() {
     var countN = baseN * 2;
     for (var n = 0; n < countN; n++) {
       addShot(px + (n - (countN - 1) / 2) * 10, py, 0, -1150, totalDamage / countN, false, false, true, true, prof.range);
-      var sn = shots[shots.length - 1]; if (sn) { sn.lenScale = 1.5; sn.widScale = 1.2; sn.chargeLevel = player.specialPower; }
+      var sn = shots[shots.length - 1]; if (sn) { sn.lenScale = 1.5; sn.widScale = 1.2; sn.chargeLevel = player.specialPower; sn.aegisCyan = true; }
     }
   }
   if (typeof fx !== 'undefined' && fx) fx.push({ x: px, y: py, t: 0, life: 0.32, kind: 'hitspark', sc: 3.4, color: prof.color });
