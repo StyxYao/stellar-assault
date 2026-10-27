@@ -654,14 +654,15 @@ function drawShipSelectOverlay(){
 }
 function menuSkinButton(){return {x:W/2+6,y:H*.395,w:112,h:38};}
 function drawMenuBrand(){
-  var title=(typeof GIMG!=='undefined'&&GIMG.brand_title)?GIMG.brand_title:null;
+  var stack=(typeof GIMG!=='undefined'&&GIMG.brand_title_stack)?GIMG.brand_title_stack:null;
+  var title=stack||((typeof GIMG!=='undefined'&&GIMG.brand_title)?GIMG.brand_title:null);
   var emblem=(typeof GIMG!=='undefined'&&GIMG.brand_emblem)?GIMG.brand_emblem:null;
   if(title&&title.complete){
-    var tw=Math.min(W*0.92,380), th=tw*title.height/title.width;
+    var tw=Math.min(W*(stack?0.64:0.92),stack?300:380), th=tw*title.height/title.width;
     ctx.save();
     ctx.globalAlpha=0.98;
     ctx.shadowColor='rgba(90,215,255,0.38)';ctx.shadowBlur=16;
-    ctx.drawImage(title,(W-tw)/2,H*0.044,tw,th);
+    ctx.drawImage(title,(W-tw)/2,stack?H*0.030:H*0.044,tw,th);
     ctx.restore();
   }
   if(emblem&&emblem.complete){
@@ -680,9 +681,9 @@ function drawMenu(){
   var menuInfoBottom=true;
   try { if(/menuinfo=top|#top/.test((location.search||'')+' '+(location.hash||''))) menuInfoBottom=false; } catch(e) {}
   // top title shade
-  var topShade=ctx.createLinearGradient(0,0,0,H*.16);
+  var topShade=ctx.createLinearGradient(0,0,0,H*.19);
   topShade.addColorStop(0,'rgba(1,3,9,0.78)');topShade.addColorStop(1,'rgba(1,3,9,0)');
-  ctx.fillStyle=topShade;ctx.fillRect(0,0,W,H*.16);
+  ctx.fillStyle=topShade;ctx.fillRect(0,0,W,H*.19);
   // bottom logo shade
   var lowShade=ctx.createLinearGradient(0,H*.63,0,H);
   lowShade.addColorStop(0,'rgba(1,3,9,0)');lowShade.addColorStop(0.65,'rgba(1,3,9,0.30)');lowShade.addColorStop(1,'rgba(1,3,9,0.82)');

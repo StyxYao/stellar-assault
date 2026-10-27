@@ -906,3 +906,9 @@
 - P1/P2 control rows now open a selectable mode menu instead of cycling.
 - Menu shows all five modes, current selection, and pointer conflicts.
 - Co-op setup frames and shared stage moved down for spacing.
+
+## 0.9.54 — Stacked large menu title
+
+- Rebuilt the STELLAR ASSAULT wordmark as a stacked two-line asset.
+- Doubled the title's visual height; top placement retained.
+- Kept the lower SA emblem and large title/logo scale.
