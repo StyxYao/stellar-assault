@@ -10,9 +10,9 @@
 - Invulnerable.
 - Body is semi-transparent.
 - Enemies prefer clones; with no clone, targeted attacks receive an off-screen aim point.
-- Damage buff: Quantum +30%, Raven +100%, Butterfly +0%.
+- Damage buff during cloak: Quantum/Butterfly +50%, Raven +150%.
 - Cloak duration: 3s, except Raven 4s.
-- Clones always deal 50% of the body's base weapon damage and never inherit the cloak damage buff.
+- Clones deal 70% of the body's base weapon damage and never inherit the cloak damage buff.
 
 ## Clones
 - Spawn at the activation position (offset to the side so they are visible).
@@ -29,7 +29,7 @@
 - Base cap: Quantum/Raven 1, Butterfly 2.
 - After 3 D pickups: cap doubles to 2/4.
 - Death resets cap and W count.
-- At cap, the oldest clone is removed.
+- Clones are never removed by casting; if at cap, the skill only refreshes cloak/dash and does not replace an existing clone.
 
 ## Pickups
 - E: restore one phase charge, max 6, overflow to OD.

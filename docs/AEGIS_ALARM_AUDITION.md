@@ -74,12 +74,12 @@ aegis-blast-audition.html
 
 ## Selected
 
-Selected by user: `1 PULSE + 22 CORE COLLAPSE`.
+Selected by user: `22 CORE COLLAPSE + 5 CRYSTAL SHATTER`.
 
 File:
 
 ```text
-assets/audio/aegis-break-mix-1-22.mp3
+assets/audio/aegis-break-mix-22-5.mp3
 ```
 
 Wired to `aegisShieldBreak()` through `playAegisBreak()`.

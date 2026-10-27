@@ -34,12 +34,12 @@ function phantomOnDeath() { phantomReset(); }
 
 function phantomDamageMult() {
   if (player.ship !== 'phantom' || phantomState.cloakT <= 0 || phantomState.cloneFiring) return 1;
-  if (phantomIsRaven()) return 2.0;
-  if (phantomIsButterfly()) return 1;
-  return 1.3;
+  if (phantomIsRaven()) return 2.5;
+  return 1.5;
 }
 
 function phantomSpawnClone(offset) {
+  if (phantomState.clones.length >= phantomState.cap) return null;
   var skin = currentSkinDef();
   var hp = phantomIsRaven() ? 1 : 3;
   var c = {
@@ -59,7 +59,6 @@ function phantomSpawnClone(offset) {
     skin: skin ? skin.id : 'quantum'
   };
   phantomState.clones.push(c);
-  while (phantomState.clones.length > phantomState.cap) phantomState.clones.shift();
   return c;
 }
 
@@ -199,7 +198,7 @@ function phantomCloneFire(c) {
   };
   player.x = c.x; player.y = c.y;
   player.weapon = c.weapon; player.specialPower = c.power;
-  player.extraBullets = c.extra; player.damageMult = (c.damageMult || 1) * 0.5;
+  player.extraBullets = c.extra; player.damageMult = (c.damageMult || 1) * 0.70;
   player.normalBuff = 1; player.odT = 0;
   phantomState.cloneFiring = true;
   if (c.weapon === 'spread') fireSpread();
@@ -381,4 +380,4 @@ function drawPhantomControls() {
   ctx.textAlign = 'left'; ctx.restore(); ctx.globalAlpha = 1;
 }
 
-try { window.__phantomSelect=function(id){ setSelectedShip('phantom', false); setSelectedSkin('phantom', id||'quantum', false); phantomReset(); }; window.__phantom=function(){return {ship:player.ship,bombs:player.bombs,cloakT:phantomState.cloakT,clones:phantomState.clones.map(function(c){return {x:c.x,y:c.y,hp:c.hp,invulnT:c.invulnT,weapon:c.weapon,power:c.power};}),cap:phantomState.cap,wCount:phantomState.wCount,cloakDamage:phantomDamageMult()};}; } catch(e) {}
+try { window.__phantomSelect=function(id){ setSelectedShip('phantom', false); setSelectedSkin('phantom', id||'quantum', false); phantomReset(); }; window.__phantom=function(){return {ship:player.ship,bombs:player.bombs,cloakT:phantomState.cloakT,clones:phantomState.clones.map(function(c){return {x:c.x,y:c.y,hp:c.hp,invulnT:c.invulnT,weapon:c.weapon,power:c.power};}),cap:phantomState.cap,wCount:phantomState.wCount,cloakDamage:phantomDamageMult()};}; window.__phantomW=function(){phantomCollectW();return window.__phantom();}; } catch(e) {}

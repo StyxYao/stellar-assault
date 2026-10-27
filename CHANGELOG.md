@@ -1097,3 +1097,16 @@
 
 - Wired a layered PULSE + CORE COLLAPSE (1+22) break sound.
 - Restored the user-supplied ungraded fleet key art as the main menu background with localized UI scrims.
+
+## 1.0.0-rc.1s — Phantom cap/stealth and 22+5 break
+
+- Phantom skill no longer removes existing clones; clones accumulate to cap.
+- Clone damage set to 70%.
+- Stealth damage baseline +50%; Raven +150%.
+- Break sound switched to CORE COLLAPSE + CRYSTAL SHATTER.
+
+## 1.0.0-rc.1t — Phantom cap and 22+5 break
+
+- Phantom clones now persist when casting; skills add only into free cap slots.
+- Clone damage = 70%; cloak damage = +50% base, Raven +150%.
+- Break sound is CORE COLLAPSE + CRYSTAL SHATTER (22+5).

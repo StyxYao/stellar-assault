@@ -42,7 +42,7 @@ var aegisBreakBuf=null,aegisBreakLoading=false;
 function loadAegisBreak(){
   if(aegisBreakBuf||aegisBreakLoading||!AC) return;
   aegisBreakLoading=true;
-  fetch('assets/audio/aegis-break-mix-1-22.mp3').then(function(r){ return r.arrayBuffer(); })
+  fetch('assets/audio/aegis-break-mix-22-5.mp3').then(function(r){ return r.arrayBuffer(); })
     .then(function(b){ AC.decodeAudioData(b,function(d){aegisBreakBuf=d;aegisBreakLoading=false;},function(){aegisBreakLoading=false;}); })
     .catch(function(){aegisBreakLoading=false;});
 }
