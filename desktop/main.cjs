@@ -3,6 +3,7 @@
 const { app, BrowserWindow, Menu, ipcMain, screen } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
+const os = require('node:os');
 
 const DEFAULT_WIDTH = 720;
 const DEFAULT_HEIGHT = 1280;
@@ -16,6 +17,8 @@ let win = null;
 let statePath = null;
 let savePath = null;
 let fullscreenState = false;
+let lanServer = null;
+let lanHost = '127.0.0.1';
 
 function readState() {
   try {
@@ -93,7 +96,8 @@ function createWindow() {
 
   win.setAspectRatio(9 / 16);
   win.setMenuBarVisibility(false);
-  win.loadFile(path.join(__dirname, '..', 'dist', 'index.html'));
+  if (lanServer) win.loadURL(`http://${lanHost}:${lanServer.httpPort}/index.html`);
+  else win.loadFile(path.join(__dirname, '..', 'dist', 'index.html'));
   win.once('ready-to-show', () => { win.show(); if (saved.fullscreen) setWindowFullscreen(true); });
   win.on('resize', writeState);
   win.on('move', writeState);
@@ -137,7 +141,21 @@ ipcMain.handle('window:toggle-fullscreen', () => setWindowFullscreen(!isWindowFu
 ipcMain.handle('window:is-fullscreen', () => isWindowFullscreen());
 ipcMain.handle('app:quit', () => { app.quit(); });
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  try {
+    const lan = await import(path.join(__dirname, '..', 'tools', 'lan_server.mjs'));
+    lanServer = lan.startLanServer(8785, 8786);
+    const nets = os.networkInterfaces();
+    for (const name of Object.keys(nets)) {
+      for (const n of nets[name] || []) {
+        if (n.family === 'IPv4' && !n.internal) { lanHost = n.address; break; }
+      }
+      if (lanHost !== '127.0.0.1') break;
+    }
+  } catch (e) {
+    console.warn('LAN server unavailable, using file mode:', e.message);
+    lanServer = null;
+  }
   statePath = path.join(app.getPath('userData'), 'window-state.json');
   savePath = path.join(app.getPath('userData'), 'save.json');
   Menu.setApplicationMenu(null);

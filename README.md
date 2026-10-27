@@ -31,6 +31,14 @@ Steam 构建和微信小游戏适配尚未实现，接口规划见 [`docs/HANDOF
 python3 -m pip install -r requirements.txt
 ```
 
+### LAN 启动
+
+```bash
+node tools/lan_server.mjs 8785 8786
+```
+
+或 `tools/start_lan.command` / `tools/start_lan.bat`。Electron 桌面端会自动启动 LAN server。
+
 ### 完整 Web 构建（推荐）
 
 ```bash

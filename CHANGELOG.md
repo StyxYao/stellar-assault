@@ -961,3 +961,10 @@
 - Added Rank 0-5 and E-S medals at run end.
 - Added persistent local top-5 runs with score/stage/result.
 - End screen shows RANK, MEDAL and LOCAL TOP 3.
+
+## 0.9.62 — Dependency-free LAN server
+
+- Added Node LAN server with static HTTP + WebSocket room relay.
+- Electron desktop starts the LAN server automatically and loads from the LAN IP.
+- Added start_lan.command / start_lan.bat launchers.
+- Tested 2-client state sync, host-as-P1, and range requests.

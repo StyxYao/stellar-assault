@@ -454,6 +454,8 @@ window.__hit=function(){player.invuln=0;hitPlayer();};
 window.__ult=function(){beginBossUltimate();};
 window.__bomb=function(){bomb();};
 window.__bgmInfo=function(){return {name:bgmName,paused:bgmAudio?bgmAudio.paused:null,time:bgmAudio?bgmAudio.currentTime:0};};
+window.__setScore=function(n){score=Math.max(0,Number(n)||0);return score;};
+window.__endRun=function(won){score=Math.max(0,Number(score)||0);state=won?'win':'over';if(typeof recordRunEnd==='function')recordRunEnd(!!won);return {state:state,rank:lastRunResult?lastRunResult.rank:null};};
 window.__sfxTest=function(){sfx('p_normal',0.4);return window.__audio();};
 window.__audio=function(){return {state:AC?AC.state:'none',boosted:audioBoosted,active:sfxActive,samples:Object.keys(SFXBUF),master:master?master.gain.value:0};};
 window.__enemies=function(){return enemies.map(function(e){return {t:e.type,x:Math.round(e.x),y:Math.round(e.y),hp:Math.round(e.hp),max:Math.round(e.max),mini:!!e.mini,transport:!!e.transport};});};

@@ -10,6 +10,8 @@ npm start
 
 `npm run dev` enables DevTools (F12).
 
+Desktop also starts the dependency-free LAN server on ports 8785/8786 and loads the game from the LAN IP.
+
 M1 scope: window/fullscreen, keyboard/gamepad, pause. Not yet: save, achievements, Steam Cloud, installer.
 
 ## M1 controls
