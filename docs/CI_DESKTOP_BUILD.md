@@ -1,5 +1,30 @@
 # Desktop CI Build
 
+## Latest feature build
+
+```text
+run 40519422447
+commit 89405ee
+tag steam/r3-stage5-cage-aegis
+```
+
+Windows and Linux jobs completed successfully; both packaged runtime smoke tests passed.
+
+Latest artifacts:
+
+```text
+stellar-assault-windows  545,627,405 bytes
+stellar-assault-linux    282,242,243 bytes
+```
+
+Download:
+
+```text
+https://github.com/StyxYao/stellar-assault/actions/runs/40519422447
+```
+
+> The local `backups/desktop-artifacts` zips are the earlier `c95eb38` Aegis build. Download this run for the Stage-5 director/cage/audio changes.
+
 Workflow: `.github/workflows/desktop-build.yml`
 
 ## Latest run

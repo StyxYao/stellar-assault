@@ -1063,3 +1063,8 @@
 - RADIANT CAGE now highlights the safe corridor and explains the damage zone.
 - AEGIS shield/Force clears bombs/orbs; shield bar centered; broken ring follows ship.
 - Added Deck testing doc and four break-alarm audition candidates.
+
+## 1.0.0-rc.1l — Latest feature artifacts
+
+- Windows/Linux CI built commit 89405ee with Stage-5 director, cage clarity and shield clear fixes.
+- Both packaged runtime smoke tests passed.
