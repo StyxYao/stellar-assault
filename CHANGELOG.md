@@ -1068,3 +1068,8 @@
 
 - Windows/Linux CI built commit 89405ee with Stage-5 director, cage clarity and shield clear fixes.
 - Both packaged runtime smoke tests passed.
+
+## 1.0.0-rc.1m — Stage5 director regression
+
+- Re-ran the full five-stage simulation after one-wave scheduling.
+- Reached finale with no page errors and no ebullet holes.
