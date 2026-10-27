@@ -112,9 +112,13 @@ function desktopKeyDown(e) {
     return;
   }
   if (state === 'menu' && typeof startConfirmOpen !== 'undefined' && startConfirmOpen) {
-    if (k === 'escape') { closeStartConfirm(); return; }
+    if (k === 'escape') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); closeStartConfirm(); return; }
     if (k === 'enter' || k === ' ') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) desktopConfirm(); return; }
-    if (k === 'v') { closeStartConfirm(); openShipSelect(); return; }
+    if (k === 'v') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); cycleP1Ship(); return; }
+    if (k === 'b') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); cycleP1Skin(); return; }
+    if (k === 'arrowleft' || k === 'a') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); selectedStage = (selectedStage + 4) % 5; return; }
+    if (k === 'arrowright' || k === 'd') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); selectedStage = (selectedStage + 1) % 5; return; }
+    if (k >= '1' && k <= '5') { selectedStage = Number(k) - 1; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
     if (k === 'p') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); if (typeof coopToggle === 'function') coopToggle(); return; }
     if (k === 'j') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); coopCycleShip2(); return; }
     if (k === 'k') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); coopCycleSkin2(); return; }
@@ -151,8 +155,6 @@ function desktopKeyDown(e) {
     if (typeof menuMoveSfx === 'function') menuMoveSfx();
     return;
   }
-  if (k === 'v' && state === 'menu') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); openShipSelect(); return; }
-  if (k === 'b' && state === 'menu') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); openSkinSelect(); return; }
   if (k === 'c' && player && player.ship === 'aegis') { e.preventDefault && e.preventDefault(); if (!e.repeat) aegisTapCharge(); return; }
   if (k === 'f' && player && player.ship === 'aegis') { e.preventDefault && e.preventDefault(); if (!e.repeat) aegisTapForce(); return; }
   if (k === 's' && desktopPaused) { openSettings(); return; }

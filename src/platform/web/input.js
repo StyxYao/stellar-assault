@@ -45,11 +45,13 @@ function onDown(e){
     if(typeof startConfirmOpen!=='undefined'&&startConfirmOpen){
       var sch=startConfirmAt(p);
       if(sch==='start'){if(typeof menuConfirmSfx==='function')menuConfirmSfx();closeStartConfirm();startAtStage(selectedStage);}
+      else if(sch==='back'||sch==='outside'){if(typeof menuMoveSfx==='function')menuMoveSfx();closeStartConfirm();}
       else if(sch==='coop'){if(typeof menuMoveSfx==='function')menuMoveSfx();if(typeof coopToggle==='function')coopToggle();}
+      else if(sch==='p1ship'){if(typeof menuMoveSfx==='function')menuMoveSfx();cycleP1Ship();}
+      else if(sch==='p1skin'){if(typeof menuMoveSfx==='function')menuMoveSfx();cycleP1Skin();}
       else if(sch==='p2ship'){if(typeof menuMoveSfx==='function')menuMoveSfx();coopCycleShip2();}
       else if(sch==='p2skin'){if(typeof menuMoveSfx==='function')menuMoveSfx();coopCycleSkin2();}
-      else if(sch==='change'){if(typeof menuMoveSfx==='function')menuMoveSfx();closeStartConfirm();openShipSelect();}
-      else if(sch==='cancel'||sch==='outside'){if(typeof menuMoveSfx==='function')menuMoveSfx();closeStartConfirm();}
+      else if(sch&&sch.indexOf('stage')===0){selectedStage=parseInt(sch.slice(5),10)||0;if(typeof menuMoveSfx==='function')menuMoveSfx();}
       return;
     }
     if(typeof skinSelectOpen!=='undefined'&&skinSelectOpen){
@@ -66,15 +68,6 @@ function onDown(e){
       if(hit==='tutorial'){ if(typeof menuMoveSfx==='function')menuMoveSfx(); var trows=shipSelectRows(); openTutorial(trows[shipSelectIndex]?trows[shipSelectIndex].def.id:selectedShip); return; }
       if(hit==='close'||hit==='outside'){if(typeof menuMoveSfx==='function')menuMoveSfx();closeShipSelect();}
       return;
-    }
-    var shb=menuShipButton();
-    if(p.x>=shb.x&&p.x<=shb.x+shb.w&&p.y>=shb.y&&p.y<=shb.y+shb.h){if(typeof menuMoveSfx==='function')menuMoveSfx();openShipSelect();return;}
-    var skb=menuSkinButton();
-    if(p.x>=skb.x&&p.x<=skb.x+skb.w&&p.y>=skb.y&&p.y<=skb.y+skb.h){if(typeof menuMoveSfx==='function')menuMoveSfx();openSkinSelect();return;}
-    var sbs=stageSelectButtons();
-    for(var si=0;si<sbs.length;si++){
-      var sb=sbs[si];
-      if(p.x>=sb.x&&p.x<=sb.x+sb.w&&p.y>=sb.y&&p.y<=sb.y+sb.h){ selectedStage=si; if(typeof menuMoveSfx==='function')menuMoveSfx(); return; }
     }
     var modes=menuModeButtons();
     for(var mi=0;mi<modes.length;mi++){

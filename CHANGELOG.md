@@ -870,3 +870,10 @@
 - Replaced menu background with the uploaded black-hole/fleet key art.
 - Added a bottom-center logo-lockup overlay and UI support shading.
 - Kept menu-orbital and menu-sanctum as backups.
+
+## 0.9.49 — Two-level menu
+
+- Main menu reduced to LOCAL SOLO / LOCAL CO-OP / LAN CO-OP.
+- Ship, variant and stage selection moved into a second-level Mission Setup screen.
+- Title wordmark moved to the top; SA emblem moved lower.
+- P1 ship/variant and stage now selectable in setup.
