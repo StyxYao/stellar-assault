@@ -18,6 +18,7 @@
     "src/game/ships.js",
     "src/game/phantom.js",
     "src/game/coop.js",
+    "src/game/controls.js",
     "src/render/player-hitbox.js",
     "src/render/player.js",
     "src/platform/web/input.js",

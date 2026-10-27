@@ -877,3 +877,12 @@
 - Ship, variant and stage selection moved into a second-level Mission Setup screen.
 - Title wordmark moved to the top; SA emblem moved lower.
 - P1 ship/variant and stage now selectable in setup.
+
+## 0.9.50 — Controls and ship popups
+
+- P1/P2 now choose independent AUTO/KEYBOARD/MOUSE/TOUCH/GAMEPAD controls.
+- Pointer conflict validation blocks two pointer players.
+- Removed the single co-op control toggle.
+- P1/P2 ship and variant selection reopened as image-preview popups.
+- P2 popup uses the same image previews as P1.
+- Increased title and SA emblem size; title top, emblem lower.

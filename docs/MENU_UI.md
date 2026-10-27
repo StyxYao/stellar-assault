@@ -19,22 +19,23 @@ LAN CO-OP    HOST / JOIN
 
 Selecting LOCAL SOLO or LOCAL CO-OP opens Mission Setup:
 
-- P1 ship cycle
-- P1 variant cycle
+- P1 ship popup with image previews
+- P1 variant popup with image previews
 - Stage 1–5
-- P2 ship/variant when local co-op is enabled
-- co-op mode toggle
+- P2 ship/variant popups with the same previews when local co-op is enabled
+- independent P1/P2 control-mode selectors
 - START
 - BACK TO MODES
 
 Desktop:
 
 ```text
-V = P1 ship
-B = P1 variant
+V = P1 ship popup
+B = P1 variant popup
 Arrow Left/Right or 1–5 = stage
-P = co-op mode
-J/K = P2 ship/variant
+P = P1 control mode
+O = P2 control mode
+J/K = P2 ship/variant popups
 Enter = start
 Esc = back
 ```

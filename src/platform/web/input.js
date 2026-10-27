@@ -1,13 +1,11 @@
 // Web pointer input adapter. UI/game functions remain in the closure during migration.
 var dragging=false,movePointerId=null,dragLift=0,dragMaxY=H-70,lastTapAt=0,lastTapX=0,lastTapY=0;
+var p2Dragging=false,p2PointerId=null,p2DragLift=86,p2DragMaxY=H-70;
 function pt(e){var r=cvs.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H};}
 function onDown(e){
   e.preventDefault();
   if(e.pointerType==='mouse'&&e.button===2){
-    if(typeof coopEnabled!=='undefined'&&coopEnabled&&coopInputMode==='mouse'&&(state==='play'||state==='boss')&&typeof coopSpecial==='function'){
-      e.preventDefault(); coopSpecial('secondary'); return;
-    }
-    // contextmenu handles the single bomb call; do not fire twice here
+    // contextmenu routes P2 Force or P1 bomb exactly once.
     return;
   }
   if(typeof desktopPaused!=='undefined'&&desktopPaused){desktopSetPaused(false);return;}primeVideos(); initAudio(); loadSfxExtras();
@@ -18,22 +16,26 @@ function onDown(e){
   try{if(AC&&AC.state==='suspended')AC.resume();}catch(err){}
   if(state==='menu'&&bgmPending){var pk=bgmPending;bgmPending='';playBgm(pk);}
   var p=pt(e);
-  if(typeof coopEnabled!=='undefined'&&coopEnabled&&(state==='play'||state==='boss')){
-    if(coopInputMode==='mouse'){
-      target2.x=Math.max(26,Math.min(W-26,p.x));
-      target2.y=Math.max(110,Math.min(H-70,p.y));
-      if(e.pointerType==='mouse'&&e.button===0&&typeof coopSpecial==='function') coopSpecial('primary');
-      return;
-    }
-    if(coopInputMode==='kb') return;
+  var inPlay=(state==='play'||state==='boss');
+  var p1Pointer = (typeof controlModeAllows!=='function'||controlModeAllows(1,'pointer',e.pointerType));
+  var p2Pointer = !!(typeof coopEnabled!=='undefined'&&coopEnabled&&typeof controlModeAllows==='function'&&controlModeAllows(2,'pointer',e.pointerType));
+  if(inPlay&&p2Pointer&&!p1Pointer){
+    var p2btn=(typeof coopButtonAt==='function')?coopButtonAt(p):null;
+    if(p2btn){ if(typeof coopSpecial==='function') coopSpecial(p2btn); return; }
+    p2Dragging=true;p2PointerId=e.pointerId;p2DragLift=(e.pointerType==='touch')?86:0;p2DragMaxY=(e.pointerType==='touch')?H-140:H-70;
+    target2.x=Math.max(26,Math.min(W-26,p.x));
+    target2.y=Math.max(110,Math.min(p2DragMaxY,p.y-p2DragLift));
+    if(e.pointerType==='mouse'&&e.button===0&&typeof coopSpecial==='function') coopSpecial('primary');
+    return;
   }
+  if(inPlay&&!p1Pointer&&!p2Pointer) return;
   if(player&&player.ship==='aegis'&&(state==='play'||state==='boss')&&typeof aegisButtonAt==='function'){
     var ab=aegisButtonAt(p);
     if(ab==='charge'){aegisTapCharge();return;}
     if(ab==='force'){aegisTapForce();return;}
   }
   if(player&&player.ship==='phantom'&&(state==='play'||state==='boss')&&typeof phantomButtonAt==='function'&&phantomButtonAt(p)){phantomSkill();return;}
-  if(e.pointerType==='mouse'&&(state==='play'||state==='boss')&&typeof desktopPrimaryFire==='function') desktopPrimaryFire();
+  if(e.pointerType==='mouse'&&(state==='play'||state==='boss')&&p1Pointer&&typeof desktopPrimaryFire==='function') desktopPrimaryFire();
   if(state==='menu'){
     if(!audioReady){ audioReady=true; playBgm('m'); }
     if(typeof tutorialOpen!=='undefined'&&tutorialOpen){
@@ -46,19 +48,20 @@ function onDown(e){
       var sch=startConfirmAt(p);
       if(sch==='start'){if(typeof menuConfirmSfx==='function')menuConfirmSfx();closeStartConfirm();startAtStage(selectedStage);}
       else if(sch==='back'||sch==='outside'){if(typeof menuMoveSfx==='function')menuMoveSfx();closeStartConfirm();}
-      else if(sch==='coop'){if(typeof menuMoveSfx==='function')menuMoveSfx();if(typeof coopToggle==='function')coopToggle();}
-      else if(sch==='p1ship'){if(typeof menuMoveSfx==='function')menuMoveSfx();cycleP1Ship();}
-      else if(sch==='p1skin'){if(typeof menuMoveSfx==='function')menuMoveSfx();cycleP1Skin();}
-      else if(sch==='p2ship'){if(typeof menuMoveSfx==='function')menuMoveSfx();coopCycleShip2();}
-      else if(sch==='p2skin'){if(typeof menuMoveSfx==='function')menuMoveSfx();coopCycleSkin2();}
+      else if(sch==='p1ctrl'){if(typeof menuMoveSfx==='function')menuMoveSfx();cycleControlMode(1,1);}
+      else if(sch==='p2ctrl'){if(typeof menuMoveSfx==='function')menuMoveSfx();cycleControlMode(2,1);}
+      else if(sch==='p1ship'){if(typeof menuMoveSfx==='function')menuMoveSfx();openShipSelect('p1');}
+      else if(sch==='p1skin'){if(typeof menuMoveSfx==='function')menuMoveSfx();openSkinSelect('p1');}
+      else if(sch==='p2ship'){if(typeof menuMoveSfx==='function')menuMoveSfx();openShipSelect('p2');}
+      else if(sch==='p2skin'){if(typeof menuMoveSfx==='function')menuMoveSfx();openSkinSelect('p2');}
       else if(sch&&sch.indexOf('stage')===0){selectedStage=parseInt(sch.slice(5),10)||0;if(typeof menuMoveSfx==='function')menuMoveSfx();}
       return;
     }
     if(typeof skinSelectOpen!=='undefined'&&skinSelectOpen){
       var skhit=skinSelectAt(p);
       if(typeof skhit==='number'){ skinSelectIndex=skhit; if(typeof menuConfirmSfx==='function')menuConfirmSfx(); skinSelectChoose(skhit); return; }
-      if(skhit==='tutorial'){if(typeof menuMoveSfx==='function')menuMoveSfx();openTutorial(selectedShip);return;}
-      if(skhit==='back'){if(typeof menuMoveSfx==='function')menuMoveSfx();closeSkinSelect();openShipSelect();return;}
+      if(skhit==='tutorial'){if(typeof menuMoveSfx==='function')menuMoveSfx();openTutorial(selectShipId());return;}
+      if(skhit==='back'){if(typeof menuMoveSfx==='function')menuMoveSfx();backToShipSelect();return;}
       if(skhit==='close'||skhit==='outside'){if(typeof menuMoveSfx==='function')menuMoveSfx();closeSkinSelect();}
       return;
     }
@@ -102,11 +105,14 @@ function onDown(e){
   target.y=Math.max(70,Math.min(dragMaxY,p.y-dragLift));
 }
 function onMove(e){
-  if(typeof coopEnabled!=='undefined'&&coopEnabled&&coopInputMode==='mouse'&&(state==='play'||state==='boss')){
-    var cp=pt(e); target2.x=Math.max(26,Math.min(W-26,cp.x)); target2.y=Math.max(110,Math.min(H-70,cp.y)); return;
+  if(p2Dragging&&e.pointerId===p2PointerId){
+    e.preventDefault(); var cp=pt(e);
+    target2.x=Math.max(26,Math.min(W-26,cp.x));
+    target2.y=Math.max(110,Math.min(p2DragMaxY,cp.y-p2DragLift));
+    return;
   }
   if(movePointerId!==null&&e.pointerId!==movePointerId&&e.pointerType!=='mouse') return;
-  if(e.pointerType==='mouse'&&(state==='play'||state==='boss')&&!(typeof desktopPaused!=='undefined'&&desktopPaused)){
+  if(e.pointerType==='mouse'&&(state==='play'||state==='boss')&&!(typeof desktopPaused!=='undefined'&&desktopPaused)&&(typeof controlModeAllows!=='function'||controlModeAllows(1,'pointer','mouse'))){
     e.preventDefault();
     var mp=pt(e);target.x=Math.max(22,Math.min(W-22,mp.x));target.y=Math.max(70,Math.min(H-70,mp.y));
     return;
@@ -115,9 +121,9 @@ function onMove(e){
   e.preventDefault();
   var p=pt(e);target.x=Math.max(22,Math.min(W-22,p.x));target.y=Math.max(70,Math.min(dragMaxY,p.y-dragLift));
 }
-function onUp(e){if(typeof coopEnabled!=='undefined'&&coopEnabled&&coopInputMode==='mouse'&&(state==='play'||state==='boss')) return;if(movePointerId===null||(e&&e.pointerId===movePointerId)){movePointerId=null;dragging=false;}if(state==='bossFusion'){fusionHoldActive=false;fusionHoldT=0;}}
+function onUp(e){if(p2Dragging&&(!e||e.pointerId===p2PointerId)){p2Dragging=false;p2PointerId=null;}if(movePointerId===null||!e||(e.pointerId===movePointerId)){movePointerId=null;dragging=false;}if(state==='bossFusion'){fusionHoldActive=false;fusionHoldT=0;}}
 cvs.addEventListener('pointerdown',onDown,{passive:false});
 cvs.addEventListener('pointermove',onMove,{passive:false});
 cvs.addEventListener('pointerup',onUp);
 cvs.addEventListener('pointercancel',onUp);
-cvs.addEventListener('contextmenu',function(e){e.preventDefault();if((typeof desktopPaused==='undefined'||!desktopPaused)&&(state==='play'||state==='boss')&&typeof bomb==='function')bomb();});
+cvs.addEventListener('contextmenu',function(e){e.preventDefault();if((typeof desktopPaused==='undefined'||!desktopPaused)&&(state==='play'||state==='boss')){var p=pt(e);var p2=(typeof coopEnabled!=='undefined'&&coopEnabled&&typeof controlModeAllows==='function'&&controlModeAllows(2,'pointer','mouse'));if(p2&&typeof coopSpecial==='function'){coopSpecial('secondary');return;}if(typeof bomb==='function')bomb();}});

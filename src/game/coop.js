@@ -17,8 +17,10 @@ var coopLastShot = 0, coopLastSpecial = 0, coopLastMissile = 0, coopLaserT = 0, 
 var coopPadPrevB = false, coopPadPrevF = false;
 
 function coopModeLabel() {
-  if (!coopEnabled) return 'CO-OP OFF';
-  return coopInputMode === 'mouse' ? 'P1 KB + P2 MOUSE' : '2P KEYBOARD';
+  if (!coopEnabled) return 'LOCAL SOLO';
+  var a=(typeof controlModeLabel==='function')?controlModeLabel(controlModeP1):String(controlModeP1||'auto').toUpperCase();
+  var b=(typeof controlModeLabel==='function')?controlModeLabel(controlModeP2):String(controlModeP2||'keyboard').toUpperCase();
+  return 'P1 ' + a + ' · P2 ' + b;
 }
 
 function coopSetMode(mode) {
@@ -28,16 +30,16 @@ function coopSetMode(mode) {
     return;
   }
   coopEnabled = true;
-  coopInputMode = (mode === 'mouse') ? 'mouse' : 'kb';
+  coopInputMode = 'custom';
+  if (typeof controlModeP2 === 'undefined' || (typeof controlModeP2 !== 'undefined' && !controlModeP2)) controlModeP2 = 'keyboard';
   coopEnsureDistinct();
-  pickupMsg = coopInputMode === 'mouse' ? 'LOCAL CO-OP · P2 MOUSE' : 'LOCAL CO-OP · 2P KEYBOARD';
+  pickupMsg = 'LOCAL CO-OP · P1 ' + String(typeof controlModeP1!=='undefined'?controlModeP1:'auto').toUpperCase() + ' / P2 ' + String(typeof controlModeP2!=='undefined'?controlModeP2:'keyboard').toUpperCase();
   pickupT = 1.4;
 }
 
 function coopToggle() {
-  if (!coopEnabled) { coopSetMode('coop'); }
-  else if (coopInputMode === 'kb') { coopSetMode('mouse'); }
-  else { coopSetMode('solo'); }
+  if (!coopEnabled) coopSetMode('coop');
+  else coopSetMode('solo');
   pickupT = 1.6;
 }
 
@@ -266,6 +268,17 @@ function coopHitP2() {
   }
 }
 
+function coopButtonAt(p) {
+  if (!player2) return null;
+  if (player2.ship === 'aegis') {
+    if (Math.hypot(p.x - (W - 138), p.y - (H - 78)) <= 32) return 'primary';
+    if (Math.hypot(p.x - (W - 64), p.y - (H - 78)) <= 38) return 'secondary';
+    return null;
+  }
+  if (Math.hypot(p.x - (W - 64), p.y - (H - 78)) <= 54) return 'primary';
+  return null;
+}
+
 function coopSpecial(kind) {
   if (!player2 || (state !== 'play' && state !== 'boss')) return;
   coopEnsureP2State();
@@ -283,11 +296,12 @@ function coopSpecial(kind) {
 function coopKey(e, down) {
   var k = String(e.key || '').toLowerCase();
   if (['i','j','k','l','u','o'].indexOf(k) < 0) return;
-  coopKeys[k] = !!down;
-  if (down && !e.repeat) {
+  var allowed = (typeof controlModeAllows !== 'function' || controlModeAllows(2, 'keyboard'));
+  coopKeys[k] = allowed ? !!down : false;
+  if (allowed && down && !e.repeat) {
     if (k === 'u' || k === 'o') coopSpecial(k === 'o' ? 'secondary' : 'primary');
+    if (e.preventDefault) e.preventDefault();
   }
-  if (e.preventDefault) e.preventDefault();
 }
 
 function coopLaserDamage(dt) {
@@ -359,12 +373,16 @@ function coopUpdate(dt) {
     if (lanRemoteInput.primary) { coopSpecial('primary'); lanRemoteInput.primary = false; }
     if (lanRemoteInput.secondary) { coopSpecial('secondary'); lanRemoteInput.secondary = false; }
   } else {
+  var p2Kb = (typeof controlModeAllows !== 'function' || controlModeAllows(2, 'keyboard'));
+  var p2Pad = (typeof controlModeAllows !== 'function' || controlModeAllows(2, 'gamepad'));
+  if (p2Kb) {
   if (coopKeys.j) dx -= 1;
   if (coopKeys.l) dx += 1;
   if (coopKeys.i) dy -= 1;
   if (coopKeys.k) dy += 1;
+  }
   var pads = navigator.getGamepads ? navigator.getGamepads() : [];
-  if (pads[1]) {
+  if (p2Pad && pads[1]) {
     var pad = pads[1], ax = pad.axes[0] || 0, ay = pad.axes[1] || 0;
     var padB = !!(pad.buttons[1] && pad.buttons[1].pressed);
     var padF = !!(pad.buttons[5] && pad.buttons[5].pressed);
@@ -458,5 +476,5 @@ function coopDrawHUD() {
 try {
   window.addEventListener('keydown', function (e) { coopKey(e, true); });
   window.addEventListener('keyup', function (e) { coopKey(e, false); });
-  if (typeof location !== 'undefined' && /(?:[?&])coop=1(?:&|$)/.test(location.search || '')) { coopEnabled = true; coopInputMode = 'kb'; }
+  if (typeof location !== 'undefined' && /(?:[?&])coop=1(?:&|$)/.test(location.search || '')) { coopEnabled = true; coopInputMode = 'custom'; }
 } catch (e) {}

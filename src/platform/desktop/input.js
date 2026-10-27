@@ -114,14 +114,15 @@ function desktopKeyDown(e) {
   if (state === 'menu' && typeof startConfirmOpen !== 'undefined' && startConfirmOpen) {
     if (k === 'escape') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); closeStartConfirm(); return; }
     if (k === 'enter' || k === ' ') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) desktopConfirm(); return; }
-    if (k === 'v') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); cycleP1Ship(); return; }
-    if (k === 'b') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); cycleP1Skin(); return; }
+    if (k === 'v') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); openShipSelect('p1'); return; }
+    if (k === 'b') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); openSkinSelect('p1'); return; }
     if (k === 'arrowleft' || k === 'a') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); selectedStage = (selectedStage + 4) % 5; return; }
     if (k === 'arrowright' || k === 'd') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); selectedStage = (selectedStage + 1) % 5; return; }
     if (k >= '1' && k <= '5') { selectedStage = Number(k) - 1; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
-    if (k === 'p') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); if (typeof coopToggle === 'function') coopToggle(); return; }
-    if (k === 'j') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); coopCycleShip2(); return; }
-    if (k === 'k') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); coopCycleSkin2(); return; }
+    if (k === 'p') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); cycleControlMode(1, 1); return; }
+    if (k === 'o') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); cycleControlMode(2, 1); return; }
+    if (k === 'j') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); openShipSelect('p2'); return; }
+    if (k === 'k') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); openSkinSelect('p2'); return; }
     return;
   }
   if (state === 'menu' && typeof skinSelectOpen !== 'undefined' && skinSelectOpen) {
@@ -129,8 +130,8 @@ function desktopKeyDown(e) {
     if (k === 'arrowup' || k === 'w') { skinSelectIndex = (skinSelectIndex + skList.length - 1) % skList.length; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
     if (k === 'arrowdown' || k === 's') { skinSelectIndex = (skinSelectIndex + 1) % skList.length; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
     if (k === 'enter' || k === ' ') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) desktopConfirm(); return; }
-    if (k === 't') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); openTutorial(selectedShip); return; }
-    if (k === 'b') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); closeSkinSelect(); openShipSelect(); return; }
+    if (k === 't') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); openTutorial(selectShipId()); return; }
+    if (k === 'b') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); backToShipSelect(); return; }
     if (k === 'escape') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); closeSkinSelect(); return; }
     return;
   }
@@ -155,11 +156,12 @@ function desktopKeyDown(e) {
     if (typeof menuMoveSfx === 'function') menuMoveSfx();
     return;
   }
-  if (k === 'c' && player && player.ship === 'aegis') { e.preventDefault && e.preventDefault(); if (!e.repeat) aegisTapCharge(); return; }
-  if (k === 'f' && player && player.ship === 'aegis') { e.preventDefault && e.preventDefault(); if (!e.repeat) aegisTapForce(); return; }
+  if (k === 'c' && player && player.ship === 'aegis' && (typeof controlModeAllows !== 'function' || controlModeAllows(1, 'keyboard'))) { e.preventDefault && e.preventDefault(); if (!e.repeat) aegisTapCharge(); return; }
+  if (k === 'f' && player && player.ship === 'aegis' && (typeof controlModeAllows !== 'function' || controlModeAllows(1, 'keyboard'))) { e.preventDefault && e.preventDefault(); if (!e.repeat) aegisTapForce(); return; }
   if (k === 's' && desktopPaused) { openSettings(); return; }
   var movement = ['arrowleft','arrowright','arrowup','arrowdown','a','d','w','s'];
   if (movement.indexOf(k) >= 0) {
+    if (state !== 'menu' && (typeof controlModeAllows === 'function' && !controlModeAllows(1, 'keyboard'))) return;
     desktopKeys[k] = true;
     if (e.preventDefault) e.preventDefault();
     if (state === 'menu' && (k === 'arrowleft' || k === 'a')) { desktopChangeStage(-1); return; }
@@ -168,7 +170,7 @@ function desktopKeyDown(e) {
   }
   if (k === 'z' || k === ' ') {
     if (e.preventDefault) e.preventDefault();
-    if (!e.repeat) desktopBomb();
+    if (!e.repeat && (typeof controlModeAllows !== 'function' || controlModeAllows(1, 'keyboard'))) desktopBomb();
     return;
   }
   if (k === 'escape') {
@@ -254,34 +256,29 @@ function desktopPoll() {
     if (desktopPadEdge(pad, 3)) closeShipSelect();
     return;
   }
-  if (state === 'menu' && desktopPadEdge(pad, 3)) {
-    openShipSelect();
-  }
-  if (state === 'menu' && desktopPadEdge(pad, 5)) {
-    openSkinSelect();
-  }
-  if (player && player.ship === 'aegis' && (state === 'play' || state === 'boss')) {
+  var p1PadPlay = (typeof controlModeAllows !== 'function' || controlModeAllows(1, 'gamepad'));
+  if (p1PadPlay && player && player.ship === 'aegis' && (state === 'play' || state === 'boss')) {
     if (desktopPadEdge(pad, 3)) aegisTapCharge();
     if (desktopPadEdge(pad, 5)) aegisTapForce();
   }
   if (start) desktopTogglePause();
   if (a) desktopConfirm();
-  if (b || x) desktopBomb();
-  if (state === 'menu') {
-    if (left) desktopChangeStage(-1);
-    if (right) desktopChangeStage(1);
-  }
+  if (p1PadPlay && (b || x)) desktopBomb();
 }
 
 function updateDesktopInput(dt) {
   if (desktopPaused) return;
   if (state !== 'play' && state !== 'boss') return;
   var dx = 0, dy = 0;
-  if (desktopKeys['arrowleft'] || desktopKeys['a']) dx -= 1;
-  if (desktopKeys['arrowright'] || desktopKeys['d']) dx += 1;
-  if (desktopKeys['arrowup'] || desktopKeys['w']) dy -= 1;
-  if (desktopKeys['arrowdown'] || desktopKeys['s']) dy += 1;
-  var pads = navigator.getGamepads ? navigator.getGamepads() : [];
+  var p1Kb = (typeof controlModeAllows !== 'function' || controlModeAllows(1, 'keyboard'));
+  var p1Pad = (typeof controlModeAllows !== 'function' || controlModeAllows(1, 'gamepad'));
+  if (p1Kb) {
+    if (desktopKeys['arrowleft'] || desktopKeys['a']) dx -= 1;
+    if (desktopKeys['arrowright'] || desktopKeys['d']) dx += 1;
+    if (desktopKeys['arrowup'] || desktopKeys['w']) dy -= 1;
+    if (desktopKeys['arrowdown'] || desktopKeys['s']) dy += 1;
+  }
+  var pads = p1Pad ? (navigator.getGamepads ? navigator.getGamepads() : []) : [];
   for (var i = 0; i < pads.length; i++) {
     var pad = pads[i]; if (!pad) continue;
     var ax = pad.axes[0] || 0, ay = pad.axes[1] || 0;
