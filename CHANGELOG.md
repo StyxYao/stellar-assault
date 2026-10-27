@@ -886,3 +886,12 @@
 - P1/P2 ship and variant selection reopened as image-preview popups.
 - P2 popup uses the same image previews as P1.
 - Increased title and SA emblem size; title top, emblem lower.
+
+## 0.9.51 — Split co-op setup and per-player controls
+
+- Local co-op Mission Setup is split vertically: P1 top, P2 bottom.
+- Both halves use identical preview/ship/variant/control layout.
+- Stage selector is shared; only P1 stage control is shown.
+- P2 uses the same image-preview ship/variant popups.
+- P1/P2 control modes are AUTO/KEYBOARD/MOUSE/TOUCH/GAMEPAD with pointer conflict checks.
+- Title/logo enlarged; title top, emblem lower.

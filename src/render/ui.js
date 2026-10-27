@@ -189,15 +189,41 @@ function drawShipPreview(key,x,y,size,color){
 }
 
 var startConfirmOpen = false;
-function startConfirmPanel(){ return {x:26,y:H*.085,w:W-52,h:H*.82}; }
+function startConfirmPanel(){
+  if(typeof coopEnabled!=='undefined'&&coopEnabled) return {x:18,y:H*.045,w:W-36,h:H*.90};
+  return {x:26,y:H*.085,w:W-52,h:H*.82};
+}
+function setupSplitPanels(){
+  var p=startConfirmPanel(), gap=8, h=230;
+  return {
+    p1:{x:p.x+10,y:p.y+44,w:p.w-20,h:h},
+    p2:{x:p.x+10,y:p.y+44+h+gap,w:p.w-20,h:h}
+  };
+}
 function setupStageButtons(){
-  var p=startConfirmPanel(), gap=6, bw=(p.w-40-4*gap)/5, y=p.y+296;
+  var p=startConfirmPanel(), gap=6, bw=(p.w-40-4*gap)/5;
+  var y=(typeof coopEnabled!=='undefined'&&coopEnabled)?p.y+p.h-232:p.y+296;
   var out=[];
   for(var i=0;i<5;i++) out.push({i:i,x:p.x+20+i*(bw+gap),y:y,w:bw,h:34});
   return out;
 }
 function startConfirmButtons(){
   var p=startConfirmPanel();
+  if(typeof coopEnabled!=='undefined'&&coopEnabled){
+    var sp=setupSplitPanels(), a=sp.p1, b=sp.p2;
+    function row(q,prefix){return {
+      ship:{x:q.x+12,y:q.y+150,w:96,h:24,id:prefix+'ship'},
+      skin:{x:q.x+116,y:q.y+150,w:96,h:24,id:prefix+'skin'},
+      ctrl:{x:q.x+220,y:q.y+150,w:q.w-232,h:24,id:prefix+'ctrl'}
+    };}
+    var r1=row(a,'p1'),r2=row(b,'p2');
+    return {
+      p1ship:r1.ship,p1skin:r1.skin,p1ctrl:r1.ctrl,
+      p2ship:r2.ship,p2skin:r2.skin,p2ctrl:r2.ctrl,
+      start:{x:p.x+22,y:p.y+p.h-138,w:p.w-44,h:44},
+      back:{x:p.x+22,y:p.y+p.h-38,w:p.w-44,h:28}
+    };
+  }
   return {
     p1ship:{x:p.x+22,y:p.y+244,w:145,h:28},
     p1skin:{x:p.x+p.w-167,y:p.y+244,w:145,h:28},
@@ -252,9 +278,76 @@ function startConfirmAt(p){
   if(p.x<panel.x||p.x>panel.x+panel.w||p.y<panel.y||p.y>panel.y+panel.h) return 'outside';
   return 'panel';
 }
+function drawSetupPlayerPanel(q, label, ship, skin, controlMode, buttons, color){
+  ctx.fillStyle='rgba(6,18,30,0.94)';ctx.fillRect(q.x,q.y,q.w,q.h);
+  ctx.strokeStyle=color;ctx.lineWidth=1.2;ctx.strokeRect(q.x,q.y,q.w,q.h);
+  ctx.textAlign='left';ctx.fillStyle=color;ctx.font='900 11px "Arial Black", Arial, sans-serif';
+  ctx.fillText(label+' LOADOUT',q.x+14,q.y+22);
+  var sd=SHIP_DEFS[ship]||{};
+  var def=coopSkinDef(ship,skin);
+  var img=def&&GIMG[def.image];
+  if(img&&img.complete) ctx.drawImage(img,q.x+14,q.y+34,82,82);
+  else drawShipPreview(def&&def.image,q.x+55,q.y+75,74,color);
+  ctx.textAlign='left';ctx.fillStyle='#eaf8ff';ctx.font='900 16px "Arial Black", Arial, sans-serif';
+  ctx.fillText(sd.label||String(ship).toUpperCase(),q.x+110,q.y+58);
+  ctx.fillStyle='#ffd36b';ctx.font='700 9px monospace';
+  ctx.fillText(def?def.label:'DEFAULT',q.x+110,q.y+78);
+  ctx.fillStyle='#9fc8dc';ctx.font='6px monospace';
+  ctx.fillText(def&&def.trait?def.trait:'NO SPECIAL TRAITS',q.x+110,q.y+94);
+  function btn(b,txt,c){
+    ctx.fillStyle='rgba(6,18,30,0.96)';ctx.fillRect(b.x,b.y,b.w,b.h);
+    ctx.strokeStyle=c;ctx.lineWidth=1;ctx.strokeRect(b.x,b.y,b.w,b.h);
+    ctx.fillStyle='#dff8ff';ctx.font='700 7px monospace';ctx.textAlign='center';
+    ctx.fillText(txt,b.x+b.w/2,b.y+16);
+  }
+  btn(buttons.p1ship||buttons.p2ship,'SHIP ›',color);
+  btn(buttons.p1skin||buttons.p2skin,'VAR ›',color);
+  btn(buttons.p1ctrl||buttons.p2ctrl,'CTRL · '+String(controlMode||'auto').toUpperCase(),color);
+}
+function drawSetupSplit(){
+  var p=startConfirmPanel();
+  ctx.fillStyle='rgba(1,4,10,0.86)';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(5,15,26,0.985)';ctx.fillRect(p.x,p.y,p.w,p.h);
+  ctx.strokeStyle='#ffd36b';ctx.lineWidth=1.6;ctx.strokeRect(p.x,p.y,p.w,p.h);
+  ctx.textAlign='center';ctx.fillStyle='#ffe7b0';ctx.font='900 15px "Arial Black", Arial, sans-serif';
+  ctx.fillText('MISSION SETUP · LOCAL CO-OP',W/2,p.y+28);
+  ctx.fillStyle='#9fc8dc';ctx.font='7px monospace';
+  ctx.fillText('P1 TOP · P2 BOTTOM · SHARED STAGE',W/2,p.y+44);
+  var b=startConfirmButtons(), sp=setupSplitPanels();
+  drawSetupPlayerPanel(sp.p1,'P1',selectedShip,selectedSkins[selectedShip],controlModeP1,{p1ship:b.p1ship,p1skin:b.p1skin,p1ctrl:b.p1ctrl},'#9fe8ff');
+  drawSetupPlayerPanel(sp.p2,'P2',coopShip2,coopSkin2,controlModeP2,{p2ship:b.p2ship,p2skin:b.p2skin,p2ctrl:b.p2ctrl},'#8dffb0');
+  // shared stage
+  ctx.textAlign='left';ctx.fillStyle='#8fb8ca';ctx.font='8px monospace';
+  ctx.fillText('STAGE · SHARED',p.x+22,p.y+p.h-244);
+  var sb=setupStageButtons();
+  for(var i=0;i<sb.length;i++){
+    var q=sb[i],sel=q.i===selectedStage;
+    ctx.fillStyle=sel?'rgba(85,60,18,0.95)':'rgba(6,18,30,0.92)';
+    ctx.fillRect(q.x,q.y,q.w,q.h);
+    ctx.strokeStyle=sel?'#ffe08a':'#31536a';ctx.lineWidth=sel?2:1;ctx.strokeRect(q.x,q.y,q.w,q.h);
+    ctx.textAlign='center';ctx.fillStyle=sel?'#fff2c4':'#dff4ff';ctx.font='900 11px "Arial Black", Arial, sans-serif';
+    ctx.fillText(String(q.i+1),q.x+q.w/2,q.y+14);
+    ctx.fillStyle=sel?'#ffe7b0':'#7893a8';ctx.font='6px monospace';
+    ctx.fillText((STAGES[q.i]&&STAGES[q.i].name?STAGES[q.i].name:'').slice(0,8),q.x+q.w/2,q.y+26);
+  }
+  if(typeof pickupT!=='undefined'&&pickupT>0&&pickupMsg&&/CONFLICT|CONTROL/.test(pickupMsg)){
+    ctx.fillStyle='#ffd36b';ctx.font='7px monospace';ctx.textAlign='center';
+    ctx.fillText(pickupMsg,W/2,sb[0].y+52);
+  }
+  ctx.fillStyle='rgba(50,32,10,0.96)';ctx.fillRect(b.start.x,b.start.y,b.start.w,b.start.h);
+  ctx.strokeStyle='#ffd27a';ctx.lineWidth=2;ctx.strokeRect(b.start.x,b.start.y,b.start.w,b.start.h);
+  ctx.fillStyle='#ffe7b0';ctx.font='900 15px "Arial Black", Arial, sans-serif';ctx.textAlign='center';
+  ctx.fillText('START  ·  STAGE '+(selectedStage+1),b.start.x+b.start.w/2,b.start.y+28);
+  ctx.fillStyle='rgba(6,18,30,0.92)';ctx.fillRect(b.back.x,b.back.y,b.back.w,b.back.h);
+  ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(b.back.x,b.back.y,b.back.w,b.back.h);
+  ctx.fillStyle='#9fb6cf';ctx.font='700 9px monospace';
+  ctx.fillText('‹ BACK TO MODES',b.back.x+b.back.w/2,b.back.y+18);
+}
+
 function drawStartConfirmOverlay(){
   if(!startConfirmOpen) return;
   ctx.save();
+  if(typeof coopEnabled!=='undefined'&&coopEnabled){ drawSetupSplit(); ctx.restore(); return; }
   ctx.fillStyle='rgba(1,4,10,0.84)';ctx.fillRect(0,0,W,H);
   var p=startConfirmPanel();
   ctx.fillStyle='rgba(5,15,26,0.985)';ctx.fillRect(p.x,p.y,p.w,p.h);
