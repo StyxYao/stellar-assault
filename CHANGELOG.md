@@ -1014,3 +1014,9 @@
 - Direct hits now consume shield instead of HP while Force is attached.
 - Added break/restore invulnerability, broken countdown ring, shield bar and low-shield alarm.
 - HP hits force noBlink=false with a hit flash.
+
+## 1.0.0-rc.1d — Aegis repeat-drain fix
+
+- Shield absorption now removes the contacting projectile and grants 0.18s grace.
+- A single beam/body can no longer drain the shield every frame and then hit HP.
+- Verified one bullet: shield 60→52, HP 3, bullet removed; restored shield 30→22.

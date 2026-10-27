@@ -127,6 +127,8 @@ function aegisAbsorbHit() {
   aegisState.shield = Math.max(0, aegisState.shield - AEGIS_SHIELD_COST);
   aegisState.lastBlockAt = time;
   aegisState.forceHitT = 0.18;
+  // Short grace prevents a single beam/body from draining the shield every frame.
+  if (typeof player !== 'undefined') player.invuln = Math.max(player.invuln || 0, 0.18);
   try { if (typeof part === 'function') part(aegisState.forceX, aegisState.forceY, '#9fe8ff', 5, 110); } catch (e) {}
   try { sfx('b_hit', 0.18); } catch (e) {}
   if (aegisState.shield <= 0) {

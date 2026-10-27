@@ -450,6 +450,7 @@ window.__castEnd=function(){castScroll=CAST_TOTAL;castHoldT=2;};
 window.__p3=function(){if(boss)bossPhase(2);};
 window.__fi=function(){return {state:state,fusionT:fusionT,time:time,boss:!!boss};};
 window.__ebTest=function(){if(boss){bossAimed(12);bossRing(18);bossSpiral(4,1,120);}};
+window.__spawnEB=function(x,y){if(typeof ebullets!=='undefined')ebullets.push({x:x,y:y,vx:0,vy:0,rad:6,type:1});};
 window.__hit=function(){player.invuln=0;hitPlayer();};
 window.__playerState=function(){return {ship:player.ship,hp:player.hp,lives:player.lives,invuln:+player.invuln.toFixed(2),noBlink:!!player.noBlink,hitFlashT:+(player.hitFlashT||0).toFixed(2)};};
 window.__ult=function(){beginBossUltimate();};

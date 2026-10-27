@@ -23,7 +23,12 @@ function hitPlayer(){
   if(player.odT>0) return;
   if(player.invuln>0||state!=='play'&&state!=='boss') return;
   // AEGIS shield absorbs any direct hit while attached and charged.
-  if(player.ship==='aegis'&&typeof aegisAbsorbHit==='function'&&aegisAbsorbHit()) return;
+  if(player.ship==='aegis'&&typeof aegisAbsorbHit==='function'&&aegisAbsorbHit()){
+    // Remove the contacting projectile so it cannot drain the shield again next frame.
+    for(var si=ebullets.length-1;si>=0;si--){var sb=ebullets[si];var sdx=sb.x-player.x,sdy=sb.y-player.y;if(sdx*sdx+sdy*sdy<110*110) ebullets.splice(si,1);}
+    for(var so=orbBullets.length-1;so>=0;so--){var ob=orbBullets[so];var odx=ob.x-player.x,ody=ob.y-player.y;if(odx*odx+ody*ody<110*110) orbBullets.splice(so,1);}
+    return;
+  }
   // VECTOR wingmen are now pure firepower; they no longer absorb hits.
   player.noBlink=false;
   player.hitFlashT=0.22;
