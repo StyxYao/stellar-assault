@@ -13,7 +13,9 @@
 - 第五关 6 种独立敌机：独立血量、攻击、子弹素材、阵型
 - 玩家真实判定圈视觉提示
 - 触屏拖动操作，自动开火
-- 模块化基础完成：27 个模块，`src/legacy/game.js` 仅保留 440 行组合根
+- 模块化基础：40 个模块，`src/legacy/game.js` 为 470 行组合根
+- 本地单人 / 本地双人 / LAN 2P
+- 1.0 范围见 [`docs/ROADMAP_1_0.md`](docs/ROADMAP_1_0.md)；Boss Rush / Tower 移到 1.1
 
 Steam 构建和微信小游戏适配尚未实现，接口规划见 [`docs/HANDOFF.md`](docs/HANDOFF.md)。
 
@@ -212,7 +214,8 @@ bash tools/make_snapshot.sh before-change
 ## 版本与变更
 
 - [`CHANGELOG.md`](CHANGELOG.md)
-- 当前模块化基线：`0.3.0`
+- 当前开发版本：`0.9.56`
+- 1.0 范围与门禁：`docs/ROADMAP_1_0.md`
 - 每个抽取步骤的 tag 见 [`docs/MIGRATION_LOG.md`](docs/MIGRATION_LOG.md)
 
 ## 平台路线

@@ -305,30 +305,53 @@ function updateDesktopInput(dt) {
   target.y = Math.max(70, Math.min(H - 70, target.y + (dy / len) * speed * dt));
 }
 
+function pauseMenuButtons(){
+  return {
+    resume:{x:W*0.20,y:H*0.43,w:W*0.60,h:48},
+    settings:{x:W*0.20,y:H*0.51,w:W*0.60,h:44},
+    quit:{x:W*0.20,y:H*0.59,w:W*0.60,h:44}
+  };
+}
+function pauseMenuAt(p){
+  var b=pauseMenuButtons();
+  for(var k in b){var q=b[k];if(p.x>=q.x&&p.x<=q.x+q.w&&p.y>=q.y&&p.y<=q.y+q.h)return k;}
+  return '';
+}
+function pauseQuitToMenu(){
+  try { if (typeof recordScoreSnapshot === 'function') recordScoreSnapshot(); } catch(e){}
+  try { if (typeof desktopSetPaused === 'function') desktopSetPaused(false); } catch(e){}
+  try { if (typeof closeSettings === 'function') closeSettings(); } catch(e){}
+  selectedStage = Math.max(0, Math.min(STAGES.length-1, stage||0));
+  state = 'menu';
+  try { playBgm('m'); } catch(e){}
+}
+
 function drawDesktopPause() {
   if (!desktopPaused) return;
   if (typeof settingsOpen !== 'undefined' && settingsOpen) { drawSettingsPanel(); return; }
   ctx.save();
-  ctx.fillStyle = 'rgba(2,6,14,0.72)';
-  ctx.fillRect(0, 0, W, H);
-  ctx.strokeStyle = 'rgba(159,232,255,0.55)';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(22, H * 0.28, W - 44, 230);
-  ctx.textAlign = 'center';
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '600 34px Orbitron, Arial, sans-serif';
-  ctx.fillText('PAUSED', W / 2, H * 0.38);
-  ctx.fillStyle = '#9fe8ff';
-  ctx.font = '600 15px Rajdhani, Arial, sans-serif';
-  ctx.fillText('ESC / START  RESUME', W / 2, H * 0.45);
-  ctx.fillStyle = '#8fb8ca';
-  ctx.font = '15px Rajdhani, Arial, sans-serif';
-  ctx.fillText('S  SETTINGS', W / 2, H * 0.49);
-  ctx.fillText('Q  QUIT', W / 2, H * 0.53);
-  ctx.textAlign = 'left';
-  ctx.restore();
-  ctx.globalAlpha = 1;
-  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle='rgba(2,6,14,0.78)';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(159,232,255,0.55)';ctx.lineWidth=1;
+  ctx.strokeRect(22,H*0.30,W-44,H*0.40);
+  ctx.textAlign='center';
+  ctx.fillStyle='#ffffff';ctx.font='600 34px Orbitron, Arial, sans-serif';
+  ctx.fillText('PAUSED',W/2,H*0.37);
+  ctx.fillStyle='#8fb8ca';ctx.font='12px Rajdhani, Arial, sans-serif';
+  ctx.fillText('ESC / START  RESUME',W/2,H*0.405);
+  var b=pauseMenuButtons();
+  function btn(q,label,col){
+    ctx.fillStyle='rgba(6,18,30,0.94)';ctx.fillRect(q.x,q.y,q.w,q.h);
+    ctx.strokeStyle=col;ctx.lineWidth=1.4;ctx.strokeRect(q.x,q.y,q.w,q.h);
+    ctx.fillStyle='#eaf8ff';ctx.font='700 15px Rajdhani, Arial, sans-serif';ctx.textAlign='center';
+    ctx.fillText(label,q.x+q.w/2,q.y+q.h/2+5);
+  }
+  btn(b.resume,'RESUME','#9fe8ff');
+  btn(b.settings,'SETTINGS','#8fb8ca');
+  btn(b.quit,'QUIT TO MENU','#ff9a7a');
+  ctx.fillStyle='#6d879b';ctx.font='9px monospace';
+  ctx.fillText('S  SETTINGS   Q  QUIT',W/2,H*0.67);
+  ctx.textAlign='left';ctx.restore();
+  ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
 }
 
 window.addEventListener('keydown', desktopKeyDown, { passive: false });

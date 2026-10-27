@@ -8,7 +8,14 @@ function onDown(e){
     // contextmenu routes P2 Force or P1 bomb exactly once.
     return;
   }
-  if(typeof desktopPaused!=='undefined'&&desktopPaused){desktopSetPaused(false);return;}primeVideos(); initAudio(); loadSfxExtras();
+  var paused=(typeof desktopPaused!=='undefined'&&desktopPaused);
+  if(paused){
+    var pp=pt(e);
+    if(typeof settingsOpen!=='undefined'&&settingsOpen){ if(typeof settingsTap==='function') settingsTap(pp); return; }
+    if(typeof pauseMenuAt==='function'){ var ph=pauseMenuAt(pp); if(ph==='resume'){desktopSetPaused(false);return;} if(ph==='settings'){if(typeof openSettings==='function')openSettings();return;} if(ph==='quit'){if(typeof pauseQuitToMenu==='function')pauseQuitToMenu();return;} }
+    return;
+  }
+  primeVideos(); initAudio(); loadSfxExtras();
   try{hedronLoopVideo.play().catch(function(){});}catch(err){}
   try{phase3LoopVideo.play().catch(function(){});}catch(err){}
   try{phase2LoopVideo.play().catch(function(){});}catch(err){}
@@ -17,6 +24,7 @@ function onDown(e){
   if(state==='menu'&&bgmPending){var pk=bgmPending;bgmPending='';playBgm(pk);}
   var p=pt(e);
   var inPlay=(state==='play'||state==='boss');
+  if(inPlay&&typeof pauseButton==='function'){var pb=pauseButton();if(p.x>=pb.x&&p.x<=pb.x+pb.w&&p.y>=pb.y&&p.y<=pb.y+pb.h){desktopSetPaused(true);return;}}
   var p1Pointer = (typeof controlModeAllows!=='function'||controlModeAllows(1,'pointer',e.pointerType));
   var p2Pointer = !!(typeof coopEnabled!=='undefined'&&coopEnabled&&typeof controlModeAllows==='function'&&controlModeAllows(2,'pointer',e.pointerType));
   if(inPlay&&p2Pointer&&!p1Pointer){

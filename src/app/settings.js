@@ -48,6 +48,29 @@ function settingsActivate() {
   }
 }
 
+function settingsAt(p) {
+  if (!settingsOpen) return '';
+  var startY = H * 0.32, gap = 48;
+  for (var i = 0; i < SETTINGS_ITEMS.length; i++) {
+    var y = startY + i * gap;
+    if (p.y >= y - 24 && p.y <= y + 14) {
+      var item = SETTINGS_ITEMS[i];
+      if (item.type === 'volume') return { i: i, zone: p.x < W / 2 ? -1 : 1 };
+      return { i: i, zone: 0 };
+    }
+  }
+  return '';
+}
+function settingsTap(p) {
+  var hit = settingsAt(p);
+  if (!hit) return false;
+  settingsIndex = hit.i;
+  var item = SETTINGS_ITEMS[hit.i];
+  if (item.type === 'volume') settingsAdjust(hit.zone);
+  else settingsActivate();
+  return true;
+}
+
 function drawSettingsPanel() {
   if (!settingsOpen) return;
   var st = settingsData();
@@ -78,7 +101,7 @@ function drawSettingsPanel() {
     if (item.type === 'volume') {
       var v = Math.round((Number(st[item.key]) || 0) * 100);
       ctx.fillStyle = sel ? '#9fe8ff' : '#8fb8ca';
-      ctx.fillText(v + '%', W - 54, y);
+      ctx.fillText('−  ' + v + '%  +', W - 54, y);
     } else if (item.key === 'fullscreen') {
       ctx.fillStyle = sel ? '#9fe8ff' : '#8fb8ca';
       ctx.fillText(st.fullscreen ? 'ON' : 'OFF', W - 54, y);
@@ -90,7 +113,7 @@ function drawSettingsPanel() {
   ctx.textAlign = 'center';
   ctx.fillStyle = '#8fb8ca';
   ctx.font = '13px Rajdhani, Arial, sans-serif';
-  ctx.fillText('↑↓ SELECT   ←→ ADJUST   ESC BACK', W / 2, H * 0.70);
+  ctx.fillText('TAP −/+ ADJUST · TAP BACK · ESC', W / 2, H * 0.70);
   ctx.textAlign = 'left';
   ctx.restore();
   ctx.globalAlpha = 1;

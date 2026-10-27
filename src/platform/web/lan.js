@@ -111,6 +111,7 @@ function lanSetLoadoutLocked(locked) {
 }
 function lanSendReady() {
   if (!lanJoined || lanMyReady) return;
+  lanEnsureClientAudio();
   lanMyReady = true;
   if (lanReadyBtn) { lanReadyBtn.disabled = true; lanReadyBtn.textContent = 'READY · WAITING'; lanReadyBtn.style.background = '#1d4a38'; }
   lanSetLoadoutLocked(true);
@@ -555,6 +556,7 @@ function lanScheduleReconnect() {
 }
 
 function lanJoin(rejoin) {
+  lanEnsureClientAudio();
   var code;
   if (rejoin) code = lanRoom;
   else {
@@ -648,6 +650,7 @@ function lanBuildTouchControls() {
   lanTouchLayer.addEventListener('pointerdown', function (e) {
     if (e.target !== lanTouchLayer) return;
     pid = e.pointerId; try { lanTouchLayer.setPointerCapture(pid); } catch (err) {}
+    lanEnsureClientAudio();
     var p = lanMapTouch(e.clientX, e.clientY); lanTouch.tx = p.x; lanTouch.ty = p.y; lanTouch.active = true;
     e.preventDefault();
   });

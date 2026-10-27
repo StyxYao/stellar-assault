@@ -8,6 +8,19 @@ function menuConfirmSfx(){
   try{ if(typeof sfx==='function') sfx('ui_metal',0.20); }catch(e){}
 }
 // HUD, menu, banners, cutscenes, finale and cast screens.
+function pauseButton(){ return {x:14,y:70,w:30,h:24}; }
+function drawPauseButton(){
+  if(state!=='play'&&state!=='boss') return;
+  if(typeof desktopPaused!=='undefined'&&desktopPaused) return;
+  var b=pauseButton();
+  ctx.save();
+  ctx.fillStyle='rgba(4,14,24,0.72)';ctx.fillRect(b.x,b.y,b.w,b.h);
+  ctx.strokeStyle='rgba(159,232,255,0.55)';ctx.lineWidth=1;ctx.strokeRect(b.x,b.y,b.w,b.h);
+  ctx.fillStyle='#bff4ff';ctx.font='700 10px monospace';ctx.textAlign='center';
+  ctx.fillText('II',b.x+b.w/2,b.y+16);
+  ctx.restore();ctx.textAlign='left';
+}
+
 function drawHUD(){
   if(state==='menu') return;
   ctx.fillStyle='rgba(3,6,14,0.55)';ctx.fillRect(0,0,W,64);
@@ -40,6 +53,7 @@ function drawHUD(){
   if(typeof drawAegisControls==='function') drawAegisControls();
   if(typeof drawPhantomControls==='function') drawPhantomControls();
   if(typeof coopDrawHUD==='function') coopDrawHUD();
+  drawPauseButton();
 }
 function drawBanner(){
   if(bannerT<=0||!banner) return;

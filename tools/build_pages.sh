@@ -9,7 +9,8 @@ mkdir -p dist dist/assets/bg
 cp assets/bg/*.webp dist/assets/bg/
 python tools/optimize_delivery.py rrootage3.html dist/full.html
 python tools/externalize_assets.py dist/full.html dist/index.html
-mkdir -p dist/assets/audio dist/assets/fonts dist/assets/video
+mkdir -p dist/assets/audio dist/assets/fonts dist/assets/video dist/assets/branding
+cp assets/branding/*.png dist/assets/branding/
 cp assets/audio/*.mp3 dist/assets/audio/
 cp assets/fonts/*.ttf dist/assets/fonts/
 cp assets/video/*.mp4 dist/assets/video/

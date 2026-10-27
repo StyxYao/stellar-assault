@@ -919,3 +919,15 @@
 - World snapshots raised to 20Hz with explicit 1/0 invite-link flags.
 - Client keeps local prediction and restores authoritative snapshots.
 - Reconnect, two-client, host-as-P1, audio and fallback paths tested.
+
+## 0.9.56 — 1.0 P0 start
+
+- Added mobile pause button, touch pause menu, settings/quit, and touch settings controls.
+- Added iOS safe-area CSS, Apple web-app meta, and LAN audio gesture unlock hooks.
+- Added R4 content audit and 1.0/1.1 roadmap split.
+- Fixed CI math test loader after seeded RNG.
+
+## 0.9.56a — 1.0 P0 slice
+
+- Mobile pause/settings/quit; iOS safe-area/meta; LAN audio gesture unlock.
+- R4 content audit and 1.0 roadmap.

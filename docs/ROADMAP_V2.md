@@ -1,6 +1,6 @@
 # STELLAR ASSAULT — Roadmap v2
 
-修订：2026-10-26 — R3 改为双人联机，原 R3–R9 顺延为 R4–R10；新增 R11 Switch 移植（资格 gate）。
+修订：2026-10-27 — 1.0 定为 5 关战役版；R8 Boss Rush / R9 Tower 移到 1.1；详见 `docs/ROADMAP_1_0.md`。
 
 日期：2026-10-24  
 基线：`172abdc`（Steam M2）  
@@ -89,12 +89,12 @@ FORCE：内置 Force + 蓄力炮，不带僚机
 | R5 | 关卡机制区分 | 每关一个主题机制 | 10 天 | R4 |
 | R6 | Boss 机制区分 | 每 Boss 一个核心交互 | 15 天 | R4 |
 | R7 | Rank / Medal / Score | 共享计分与 Rank | 10 天 | R6 |
-| R8 | Boss Rush | 5 Boss 连续战 | 10 天 | R6/R7 |
-| R9 | Tower | 30 波 + 三选一 + 榜 | 15 天 | R6/R7 |
-| R10 | Steam QA / 发行 | Windows / Deck best-effort / 成就 | 10 天 | R8/R9 |
+| R8 | Boss Rush | **1.1** — 5 Boss 连续战 | 10 天 | R6/R7 |
+| R9 | Tower | **1.1** — 30 波 + 三选一 + 榜 | 15 天 | R6/R7 |
+| R10 | Steam QA / 发行 | 1.0 发行门禁：Windows / Deck best-effort / 成就 | 10 天 | R4–R7 |
 | R11 | Switch 移植 | 资格 + 引擎重制 + Lotcheck | 9–15 个月 | R10 |
 
-Boss Rush 与 Tower 继续后置；R3 联机是新增关键路径，R0–R7 为当前主线。R11 Switch 是独立平台线，不阻塞 Steam。
+1.0 主线是 R4–R7 + 稳定化；Boss Rush / Tower 明确移到 1.1。R11 Switch 是独立平台线，不阻塞 1.0。
 
 ---
 
