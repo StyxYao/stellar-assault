@@ -859,3 +859,8 @@
 - Snapshot-sync clients now run local step for prediction.
 - Local P1/P2 input injects into the local remote-input path; host snapshots correct drift.
 - Added prediction/hold debug flags.
+
+## 0.9.47 — New menu background
+
+- Replaced the menu background with a dark SANCTUM cathedral composition and integrated logo.
+- Kept the previous orbital menu art as menu-orbital.webp.

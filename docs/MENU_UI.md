@@ -33,3 +33,9 @@ Enter = open highlighted mode
   - `×` close to menu
   - `TUTORIAL` button for the current ship
 - Tutorial closes back to the variant page.
+
+
+## Menu background
+
+- New menu art: `assets/bg/menu.webp` based on the SANCTUM cathedral key art, with an integrated logo.
+- Previous orbital menu art kept as `assets/bg/menu-orbital.webp`.
