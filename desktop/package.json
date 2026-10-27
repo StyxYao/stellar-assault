@@ -44,18 +44,21 @@
         "zip"
       ],
       "category": "public.app-category.games",
-      "identity": null
+      "identity": null,
+      "icon": "build/icon.png"
     },
     "win": {
       "target": [
         "nsis",
         "zip"
-      ]
+      ],
+      "icon": "build/icon.ico"
     },
     "linux": {
       "target": [
         "AppImage"
-      ]
+      ],
+      "icon": "build/icon.png"
     },
     "nsis": {
       "oneClick": false,

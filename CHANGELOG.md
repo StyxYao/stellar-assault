@@ -988,3 +988,9 @@
 - Added release checklist and automated version/build guard.
 - Scope frozen to 5-stage campaign, 3 ships, local co-op, LAN 2P; Boss Rush/Tower are 1.1.
 - Physical iOS/Android/Windows/Deck and Steamworks remain external release gates.
+
+## 1.0.0-rc.2 — Windows/Linux CI build
+
+- Made build_pages.sh work with Windows Python venv layout.
+- Added desktop-build workflow for native Windows NSIS/zip and Linux AppImage.
+- Added Windows ICO/Linux/macOS icon configuration.

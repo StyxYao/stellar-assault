@@ -56,3 +56,23 @@ so the packaged desktop can host LAN without Python.
 4. Sign macOS/Windows binaries.
 5. Test a Steam-installed build on Windows and Deck.
 6. Upload to a private depot and run Steam QA.
+
+
+## GitHub Actions
+
+`.github/workflows/desktop-build.yml` builds both targets natively:
+
+- `windows-latest`: NSIS installer + zip
+- `ubuntu-latest`: AppImage
+
+No Windows machine or Wine is required locally. The workflow runs on `steam/*` tags or manual dispatch.
+
+Required GitHub permissions for an unsigned build:
+
+- repository push access (already used by this repo)
+- Actions enabled
+- no extra token in the build
+
+For GitHub Releases uploads/API automation, a token with `contents: write` is required. For signed Windows builds, add a code-signing certificate to repository secrets.
+
+Steam Deck: no physical Deck available in this environment. The Linux AppImage is the testable artifact; Deck verification remains unverified until run on a Deck.
