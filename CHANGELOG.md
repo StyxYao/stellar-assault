@@ -824,3 +824,11 @@
 - 44.1kHz PCM audio with jitter buffer.
 - Lobby/ready/countdown state broadcasting.
 - Token-based client reconnect and reload rejoin.
+
+## 0.9.42 — Local co-op and LAN screen clean close-out
+
+- Scoped P2 player-slot context and World player binding.
+- Robust P2 AEGIS/PHANTOM state initialization.
+- Exact HUD touch zones, authoritative loadout sync, lobby broadcasts.
+- 45fps / 60Hz / 44.1k PCM / reconnect / countdown close-out.
+- Added local co-op and LAN screen acceptance docs plus LAN state-sync plan.

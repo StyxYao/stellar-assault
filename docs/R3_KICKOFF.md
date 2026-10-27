@@ -80,3 +80,10 @@
 - R3.2 在线：signaling + TURN/relay
 
 详见 `docs/MULTIPLAYER_R3.md`。
+
+
+## Clean close-out
+
+- [Local co-op](R3_LOCAL_CLEAN.md)
+- [LAN screen](LAN_SCREEN_CLEAN.md)
+- [LAN state sync plan](LAN_STATE_SYNC_PLAN.md)

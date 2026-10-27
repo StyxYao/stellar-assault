@@ -146,9 +146,10 @@ async def handler(ws):
                     msg["slot"] = slot if slot is not None else 1
                     await send(room["host"], msg)
                 elif typ == "broadcast":
+                    inner = msg.get("payload") or {}
                     for p in room.get("players", []):
                         if p:
-                            await send(p, msg)
+                            await send(p, inner)
                 else:
                     # signaling is kept for future use; relay to host
                     await send(room["host"], msg)

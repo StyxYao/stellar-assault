@@ -135,3 +135,9 @@
 - R2 的三机体平衡不被联机倍率破坏
 
 > R3 是“双人合作基础”，不是完整在线游戏。R4 起才回到内容审计和关卡/Boss 机制。
+
+
+## Close-out
+
+- [LAN screen clean](LAN_SCREEN_CLEAN.md)
+- [State sync plan](LAN_STATE_SYNC_PLAN.md)
