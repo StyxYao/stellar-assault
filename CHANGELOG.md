@@ -1077,3 +1077,8 @@
 ## 1.0.0-rc.1n — Shield bomb coverage
 
 - Verified attached AEGIS shield clears a boss bomb: shield 60→52, HP unchanged.
+
+## 1.0.0-rc.1o — AEGIS alarm set 2
+
+- Added six layered break-alarm candidates: crystal, siren, sonar, collapse, arc, horn.
+- Added second audition page; game still uses the old alarm until a choice is made.
