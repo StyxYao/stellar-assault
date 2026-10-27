@@ -72,6 +72,62 @@ World.snapshot = function () {
   };
 };
 
+function worldClone(v) { return (v == null) ? v : JSON.parse(JSON.stringify(v)); }
+
+World.snapshotFull = function () {
+  var out = {
+    v: 1,
+    stage: stage, state: state, time: time, stageT: stageT, waveIndex: waveIndex,
+    score: score, rng: getRngSeed(), selectedShip: selectedShip,
+    selectedSkins: worldClone(selectedSkins), coopEnabled: coopEnabled,
+    coopInputMode: coopInputMode, coopShip2: coopShip2, coopSkin2: coopSkin2,
+    player: worldClone(player), target: worldClone(target),
+    player2: worldClone(player2), target2: worldClone(target2),
+    aegis: worldClone(aegisState), aegis2: worldClone(aegisState2),
+    phantom: worldClone(phantomState), phantom2: worldClone(phantomState2),
+    enemies: worldClone(enemies), shots: worldClone(shots), ebullets: worldClone(ebullets),
+    items: worldClone(items), missiles: worldClone(missiles), wingBeams: worldClone(wingBeams),
+    beams: worldClone(beams), orbBullets: worldClone(orbBullets), blastZones: worldClone(blastZones),
+    parts: worldClone(parts), fx: worldClone(fx), phaseFx: worldClone(phaseFx), odLaserFx: worldClone(odLaserFx),
+    bombT: bombT, bombX: bombX, bombY: bombY, shake: shake,
+    boss: worldClone(boss), nextTransport: nextTransport
+  };
+  return out;
+};
+
+World.restore = function (s) {
+  if (!s || s.v !== 1) return false;
+  stage = s.stage; state = s.state; time = s.time; stageT = s.stageT;
+  waveIndex = s.waveIndex; score = s.score; selectedShip = s.selectedShip;
+  selectedSkins = worldClone(s.selectedSkins) || selectedSkins;
+  coopEnabled = !!s.coopEnabled; coopInputMode = s.coopInputMode || 'off';
+  coopShip2 = s.coopShip2 || 'vector'; coopSkin2 = s.coopSkin2 || 'void_lance';
+  player = worldClone(s.player); target = worldClone(s.target);
+  player2 = s.player2 ? worldClone(s.player2) : null;
+  target2 = worldClone(s.target2) || { x: W / 2 - 70, y: H - 150 };
+  aegisState = worldClone(s.aegis); aegisState2 = s.aegis2 ? worldClone(s.aegis2) : null;
+  phantomState = worldClone(s.phantom); phantomState2 = s.phantom2 ? worldClone(s.phantom2) : null;
+  enemies = worldClone(s.enemies) || [];
+  shots = worldClone(s.shots) || [];
+  ebullets = worldClone(s.ebullets) || [];
+  items = worldClone(s.items) || [];
+  missiles = worldClone(s.missiles) || [];
+  wingBeams = worldClone(s.wingBeams) || [];
+  beams = worldClone(s.beams) || [];
+  orbBullets = worldClone(s.orbBullets) || [];
+  blastZones = worldClone(s.blastZones) || [];
+  parts = worldClone(s.parts) || [];
+  fx = worldClone(s.fx) || [];
+  phaseFx = worldClone(s.phaseFx) || [];
+  odLaserFx = worldClone(s.odLaserFx) || [];
+  bombT = s.bombT || 0; bombX = s.bombX || 0; bombY = s.bombY || 0; shake = s.shake || 0;
+  boss = s.boss ? worldClone(s.boss) : null;
+  nextTransport = s.nextTransport || 0;
+  setRngSeed(s.rng || 1);
+  worldBindPlayers();
+  return true;
+};
+
 World.digest = function () {
   return JSON.stringify(World.snapshot());
 };

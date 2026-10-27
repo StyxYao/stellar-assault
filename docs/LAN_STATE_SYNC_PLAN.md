@@ -15,7 +15,9 @@
 - [x] World 可序列化快照（`World.snapshot()`）
 - [x] 确定性随机数（`rng()` / visual `vrng()` 分离）
 - [x] 同步种子 / 输入序号协议骨架
-- [ ] 客户端独立模拟
+- [x] Host World 快照 → Client restore/render 原型
+- [ ] Client 独立模拟
+- [ ] 预测/回滚
 - [ ] 不同步检测
 
 ## 候选路线
@@ -41,12 +43,15 @@
 - 体验最好
 - 工程量最大
 
-## 进度
+## 当前原型
 
 - `World.snapshot()` 已用于确定性回归
 - `__resetDeterministic(stage, seed)` + `__simulate(frames)` 已跑通两实例同快照
 - `sync-start` 已下发 seed/stage；input 已带 seq
-- 目前 Client 仍只接收画面，不跑模拟
+- `World.snapshotFull()` / `World.restore()` 已接入
+- LAN 面板可切 **SYNC · SNAPSHOT BETA**
+- Host 10Hz 广播 World 快照；Client restore 后在本机 canvas 绘制，不再传 JPEG
+- Client 当前 `lanSyncClientHold=true`，不跑本地 step；输入仍回传 Host
 
 ## 建议顺序
 
@@ -55,6 +60,14 @@
 3. LAN 输入帧 + 序号
 4. 锁步原型
 5. 再加入预测/回滚
+
+## 测试
+
+- [x] 单客户端 Host-as-P1：快照 restore，canvas 本地绘制
+- [x] Host-only 双客户端：P1/P2 都 restore，画面一致
+- [x] 客户端输入仍驱动 Host 的 P2
+- [x] 切换 JPEG/SNAPSHOT 不改现有流程
+- [x] 无控制台错误
 
 ## 暂不做
 

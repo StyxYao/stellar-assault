@@ -405,6 +405,8 @@ window.__stage=function(n){startStage(n);};
   window.__setSeed=function(seed){return setRngSeed(seed);};
   window.__rng=function(){return {seed:getRngSeed(),next:vrng()};};
   window.__worldSnapshot=function(){return World.snapshot();};
+  window.__fullSnapshot=function(){return World.snapshotFull();};
+  window.__restoreWorld=function(s){return World.restore(s);};
   window.__resetDeterministic=function(stageIndex,seed){desktopPaused=true;time=0;setRngSeed(seed);startStage(stageIndex||0);return {seed:getRngSeed(),state:state};};
   window.__simulate=function(frames,seed){if(seed!=null)setRngSeed(seed);desktopPaused=true;for(var i=0;i<(frames||1);i++)step(1/60);desktopPaused=false;return World.snapshot();};
   window.__setP2Od=function(v){if(player2)player2.odT=Math.max(0,Number(v)||0);};
@@ -459,9 +461,9 @@ function frame(now){
   var dt=Math.min(0.05,(now-last)/1000);last=now;
   try{
     if(typeof desktopPoll==='function') desktopPoll();
-    if(!desktopPaused) fixedStep.advance(dt,function(fixedDt){step(fixedDt);});
+    if(!desktopPaused && !(typeof lanSyncClientHold!=='undefined'&&lanSyncClientHold)) fixedStep.advance(dt,function(fixedDt){step(fixedDt);});
     draw();
-    if(typeof drawDesktopPause==='function') drawDesktopPause();
+    if(typeof drawDesktopPause==='function' && !(typeof lanSyncClientHold!=='undefined'&&lanSyncClientHold)) drawDesktopPause();
   }catch(e){ console.error('frame error',e); }
   requestAnimationFrame(frame);
 }

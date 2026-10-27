@@ -8,6 +8,8 @@ var lanDeadline = 0, lanLobbyTimer = null, lanStageRow = null, lanReadyBtn = nul
 var lanStarted = false;
 var lanToken = '', lanHostGone = false, lanReconnectT = null, lanReconnecting = false, lanFrames = 0;
 var lanSyncSeed = 0, lanSyncStage = 0, lanInputSeq = 0, lanRemoteSeq = 0, lanSyncVersion = 1;
+var lanStateSyncMode = false, lanSnapshotTimer = null, lanSnapSeq = 0, lanSnapBytes = 0;
+var lanSyncClientHold = false;
 var lanLastMsg = '', lanLoadoutSets = 0;
 var lanLoadoutShip = 'vector', lanLoadoutSkin = 'void_lance';
 var lanShipBtn = null, lanSkinBtn = null;
@@ -21,7 +23,7 @@ var lanOverlay = null, lanVideo = null, lanStatus = null, lanRoomLabel = null;
 var lanAudioBytes = 0, lanAudioRecv = 0;
 var lanAudioScript = null, lanAudioSink = null;
 var lanClientAC = null, lanNextAudio = 0;
-var lanStartBtn = null, lanCodeInput = null, lanLinkEl = null, lanSlotStatus = null;
+var lanStartBtn = null, lanCodeInput = null, lanLinkEl = null, lanSlotStatus = null, lanSyncBtn = null;
 
 function lanWsUrl() {
   var proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -39,7 +41,7 @@ function lanEl(tag, css, text) {
 
 function lanInviteLink() {
   if (!lanRoom) return '';
-  var q = '?lanclient=1&lanjoin=' + encodeURIComponent(lanRoom);
+  var q = '?lanclient=1&lanjoin=' + encodeURIComponent(lanRoom) + (lanStateSyncMode ? '&statesync=1' : '');
   try { var p = new URLSearchParams(location.search).get('wsport'); if (p) q += '&wsport=' + encodeURIComponent(p); } catch (e) {}
   return location.origin + location.pathname + q;
 }
@@ -169,6 +171,18 @@ function lanRefreshVariantCards() {
   }
 }
 
+function lanUpdateSyncButton() {
+  if (!lanSyncBtn) return;
+  lanSyncBtn.textContent = lanStateSyncMode ? 'SYNC · SNAPSHOT BETA' : 'SYNC · JPEG STREAM';
+  lanSyncBtn.style.borderColor = lanStateSyncMode ? '#8dffb0' : '#5d8fa8';
+  if (lanLinkEl && lanRoom) lanLinkEl.textContent = lanInviteLink();
+}
+function lanToggleSync() {
+  lanStateSyncMode = !lanStateSyncMode;
+  if (typeof menuMoveSfx === 'function') menuMoveSfx();
+  lanUpdateSyncButton();
+}
+
 function lanMakeOverlay(client) {
   if (lanOverlay) return;
   lanOverlay = lanEl('div', 'position:fixed;inset:0;z-index:9999;background:rgba(1,4,10,0.9);display:flex;align-items:center;justify-content:center;font-family:monospace;color:#dff8ff;');
@@ -214,6 +228,8 @@ function lanMakeOverlay(client) {
       if (lanStatus) lanStatus.textContent = 'LINK COPIED';
     };
     box.appendChild(copy);
+    lanSyncBtn = lanEl('button', 'width:100%;padding:7px;background:#081824;border:1px solid #5d8fa8;color:#b8d9e8;font:9px monospace;cursor:pointer;margin-bottom:8px;', 'SYNC · JPEG STREAM');
+    lanSyncBtn.onclick = lanToggleSync; box.appendChild(lanSyncBtn);
     lanSlotStatus = lanEl('div', 'font:11px monospace;color:#9fe8ff;min-height:18px;margin-bottom:8px;', 'P1: —   P2: —');
     box.appendChild(lanSlotStatus);
     var b1 = lanEl('button', 'width:100%;padding:9px;background:#123a4f;border:1px solid #9fe8ff;color:#eaf8ff;font:700 11px monospace;cursor:pointer;margin-bottom:6px;', 'CREATE HOST-AS-P1 ROOM');
@@ -225,7 +241,7 @@ function lanMakeOverlay(client) {
   }
   var close = lanEl('button', 'width:100%;padding:7px;background:#081824;border:1px solid #31536a;color:#9fb6cf;font:10px monospace;cursor:pointer;', 'CLOSE');
   close.onclick = lanClose; box.appendChild(close);
-  lanOverlay.appendChild(box); document.body.appendChild(lanOverlay);
+  lanOverlay.appendChild(box); document.body.appendChild(lanOverlay); lanUpdateSyncButton();
 }
 
 function lanClose() {
@@ -234,7 +250,7 @@ function lanClose() {
   lanSocket = null; lanRoom = ''; lanRole = ''; lanSlots = [false, false];
   lanReady = [false, false]; lanLoadouts = [null, null]; lanStarted = false; lanStage = 0; lanMyReady = false;
   coopRemote = false; coopRemoteP1 = false;
-  lanStopHostAudio();
+  lanStopHostAudio(); lanStopSnapshotTimer();
   if (lanFrameTimer) { clearInterval(lanFrameTimer); lanFrameTimer = null; }
   if (lanInputTimer) { clearInterval(lanInputTimer); lanInputTimer = null; }
   if (lanOverlay) { lanOverlay.remove(); lanOverlay = null; }
@@ -326,12 +342,31 @@ function lanStartRoom(force) {
   try { initAudio(); loadSfxExtras(); } catch (e) {}
   lanStartHostAudio();
   startAtStage(lanStage);
-  if (!lanFrameTimer) {
+  if (lanStateSyncMode) lanStartSnapshotTimer();
+  else if (!lanFrameTimer) {
     lanFrameTimer = setInterval(function () {
       if (!lanSocket || lanSocket.readyState !== 1) return;
       try { if (lanSocket.bufferedAmount > 350000) return; lanSocket.send(JSON.stringify({ type: 'frame', data: cvs.toDataURL('image/jpeg', 0.52) })); } catch (e) {}
     }, 22);
   }
+}
+
+function lanStartSnapshotTimer() {
+  if (lanSnapshotTimer || !lanStateSyncMode) return;
+  lanSnapshotTimer = setInterval(function () {
+    if (!lanSocket || lanSocket.readyState !== 1) return;
+    if (lanSocket.bufferedAmount > 500000) return;
+    try {
+      if (typeof World === 'undefined' || !World.snapshotFull) return;
+      var data = World.snapshotFull();
+      lanSnapSeq++; lanSnapBytes = JSON.stringify(data).length;
+      lanBroadcast({ type: 'world-snapshot', seq: lanSnapSeq, data: data });
+    } catch (e) {}
+  }, 100);
+}
+
+function lanStopSnapshotTimer() {
+  if (lanSnapshotTimer) { clearInterval(lanSnapshotTimer); lanSnapshotTimer = null; }
 }
 
 function lanOpenHost() {
@@ -353,7 +388,7 @@ function lanConnectHost() {
         lanReady = [false, false]; lanLoadouts = [null, null]; lanStarted = false; lanStage = 0; lanMyReady = false;
         lanRoomLabel.textContent = m.room;
         lanLinkEl.textContent = lanInviteLink();
-        lanSetStatus(lanHostMode === 'room' ? 'ROOM ONLY · SEND LINK TO P1 AND P2' : 'HOST IS P1 · SEND LINK TO P2');
+        lanSetStatus(lanHostMode === 'room' ? 'ROOM ONLY · SEND LINK TO P1 AND P2' : 'HOST IS P1 · SEND LINK TO P2'); lanUpdateSyncButton();
         lanUpdateSlots();
       } else if (m.type === 'player-joined') {
         lanSlots[m.slot] = true; lanSetStatus('PLAYER JOINED · SLOT ' + (m.slot + 1)); lanUpdateSlots();
@@ -480,7 +515,8 @@ function lanStartHost() {
   try { initAudio(); loadSfxExtras(); } catch (e) {}
   lanStartHostAudio();
   startAtStage(selectedStage);
-  if (!lanFrameTimer) {
+  if (lanStateSyncMode) lanStartSnapshotTimer();
+  else if (!lanFrameTimer) {
     lanFrameTimer = setInterval(function () {
       if (!lanSocket || lanSocket.readyState !== 1) return;
       try { if (lanSocket.bufferedAmount > 350000) return; lanSocket.send(JSON.stringify({ type: 'frame', data: cvs.toDataURL('image/jpeg', 0.52) })); } catch (e) {}
@@ -568,6 +604,16 @@ function lanJoin(rejoin) {
         if (lanStatus) lanStatus.textContent = 'WAITING · AUTO START ' + m.sec + 's';
       } else if (m.type === 'start') {
         // frames follow; overlay hides on first frame
+      } else if (m.type === 'world-snapshot') {
+        lanStateSyncMode = true; lanSnapSeq = Number(m.seq) || lanSnapSeq;
+        if (lanOverlay) lanOverlay.style.display = 'none';
+        if (lanVideo) { lanVideo.remove(); lanVideo = null; }
+        if (typeof cvs !== 'undefined') cvs.style.display = '';
+        if (typeof World !== 'undefined' && World.restore) {
+          try { World.restore(m.data); lanSyncClientHold = true; } catch (e) {}
+        }
+        if (!lanTouchLayer) lanBuildTouchControls(); else lanTouchLayer.style.display = 'block';
+        lanFrames++;
       } else if (m.type === 'frame') {
         lanFrames++;
         if (lanOverlay) lanOverlay.style.display = 'none';
@@ -705,6 +751,7 @@ window.__lanDebug = function () {
     ship: lanLoadoutShip, skin: lanLoadoutSkin, ready: lanMyReady, stage: lanStage,
     loadouts: lanLoadouts, readySlots: lanReady, started: lanStarted, lastMsg: lanLastMsg, loadoutSets: lanLoadoutSets,
     syncSeed: lanSyncSeed, syncStage: lanSyncStage, syncVersion: lanSyncVersion, inputSeq: lanInputSeq, remoteSeq: lanRemoteSeq,
+    stateSync: lanStateSyncMode, snapSeq: lanSnapSeq, snapBytes: lanSnapBytes, hold: lanSyncClientHold,
     script: !!lanAudioScript,
     clientAC: lanClientAC ? lanClientAC.state : null,
     nextAudio: +lanNextAudio.toFixed(2),
@@ -718,6 +765,7 @@ window.__openLanHost = function () { lanOpenHost(); };
 try {
   var q = new URLSearchParams(location.search || '');
   lanClientMode = q.get('lanclient') === '1';
+  lanStateSyncMode = q.get('statesync') === '1';
   if (lanClientMode) {
     function bootClient() {
       lanMakeOverlay(true); lanRefreshLoadoutButtons();

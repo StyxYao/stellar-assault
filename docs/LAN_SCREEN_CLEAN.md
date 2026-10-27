@@ -41,3 +41,8 @@
 - 真实 Wi-Fi 丢包/延迟
 - Host 掉线迁移（不做）
 - 完整状态同步（下一阶段）
+
+
+## State-sync beta
+
+LAN 面板有 `SYNC · SNAPSHOT BETA` 开关：Host 10Hz 发 World 快照，Client restore 后本地 canvas 绘制；当前 Client 不跑 step，输入仍回 Host。

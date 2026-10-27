@@ -846,3 +846,10 @@
 - Solo loadout hides P2 controls; local co-op shows them.
 - Variant page now has a tutorial button and a back-to-ships button.
 - Fixed variant page title/back overlap.
+
+## 0.9.45 — LAN snapshot state-sync beta
+
+- Added World.snapshotFull/World.restore.
+- Host streams 10Hz World snapshots; clients restore and render locally.
+- Added LAN panel JPEG/SNAPSHOT toggle.
+- Client holds local simulation while receiving snapshots; input still goes to host.
