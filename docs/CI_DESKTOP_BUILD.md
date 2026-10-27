@@ -5,22 +5,22 @@ Workflow: `.github/workflows/desktop-build.yml`
 ## Latest run
 
 ```text
-run: 40509081232
-sha: 24b365e
-tag: steam/r3-win-smoke-fix
+run: 40512055989
+sha: c95eb38
+tag: steam/r3-aegis-p2
 ```
 
 Results:
 
 | Job | Runner | Result | Artifact |
 |---|---|---|---|
-| windows | windows-latest | success | stellar-assault-windows (545,540,745 bytes) |
-| linux | ubuntu-latest | success | stellar-assault-linux (282,199,155 bytes) |
+| windows | windows-latest | success | stellar-assault-windows (545,543,135 bytes) |
+| linux | ubuntu-latest | success | stellar-assault-linux (282,200,379 bytes) |
 
 Artifacts:
 
 ```text
-https://github.com/StyxYao/stellar-assault/actions/runs/40509081232
+https://github.com/StyxYao/stellar-assault/actions/runs/40512055989
 ```
 
 GitHub artifact download requires an authenticated session. The workflow itself does not require extra secrets for an unsigned build.
@@ -71,7 +71,9 @@ Do not paste the token into chat; place it in a local secure environment.
 
 The workflow now launches the packaged app after building. Windows uses `pathToFileURL()` for the dynamic LAN module import so a drive-letter path is not treated as a URL scheme.
 
-Latest run result:
+Latest run result (includes Aegis shield fixes and ebullet guard):
+
+
 
 - Windows packaged app started; `http://127.0.0.1:8785/index.html` returned 200
 - Linux AppImage started under Xvfb; the same endpoint returned 200

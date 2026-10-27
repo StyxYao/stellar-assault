@@ -1025,3 +1025,8 @@
 
 - Added a defensive skip/removal for empty ebullet slots during the fixed step loop.
 - Ran 6,000 simulated frames without the previous `e.x` crash.
+
+## 1.0.0-rc.1f — Aegis packaged verification
+
+- Latest Windows/Linux native artifacts include Aegis shield fixes and ebullet guard.
+- Both packaged runtime smoke tests passed.
