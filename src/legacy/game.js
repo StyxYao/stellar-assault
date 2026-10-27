@@ -368,6 +368,7 @@ function drawScene(){
   for(var i=0;i<items.length;i++) drawItem(items[i]);
   for(var i=0;i<fx.length;i++) drawExplosion(fx[i]);
   drawBlastZones();
+  if(typeof drawStageMechanic==='function') drawStageMechanic();
 
   drawPlayerLaser();
   drawODLaserFx();
@@ -438,6 +439,8 @@ window.__boom=function(){boom(W/2,H*0.45,1.4);};
 window.__beam=function(){spawnBeam(W/2,180,Math.PI/2,1500,16,0.8,0.45,1,'#ff6a5a');};
 window.__bossLaser=function(){if(boss)bossLaser();};
 window.__bgInfo=function(){return {neb:{c:BG1_NEBULA.complete,w:BG1_NEBULA.naturalWidth,src:BG1_NEBULA.src},early:{c:BG1_EARLIEST.complete,w:BG1_EARLIEST.naturalWidth},main:{c:BG_MAIN[0]?BG_MAIN[0].complete:false,w:BG_MAIN[0]?BG_MAIN[0].naturalWidth:0}};};
+window.__mechWarn=function(){if(typeof stageMechWarning==='function'&&state==='play')stageMechWarning();};
+window.__stageMech=function(){return {stage:stageMech.stage,phase:stageMech.phase,t:stageMech.t,warn:stageMech.warnT,active:stageMech.activeT,data:stageMech.data,msg:stageMech.msg};};
 window.__bgv=function(){return {ready:bgLoopVideo.readyState,paused:bgLoopVideo.paused,w:bgLoopVideo.videoWidth,t:bgLoopVideo.currentTime,src:bgLoopVideo.currentSrc.slice(-24)};};
 window.__cast=function(){startCast();};
 window.__castEnd=function(){castScroll=CAST_TOTAL;castHoldT=2;};

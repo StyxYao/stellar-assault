@@ -92,7 +92,7 @@ World.snapshotFull = function () {
     beams: worldClone(beams), orbBullets: worldClone(orbBullets), blastZones: worldClone(blastZones),
     parts: worldClone(parts), fx: worldClone(fx), phaseFx: worldClone(phaseFx), odLaserFx: worldClone(odLaserFx),
     bombT: bombT, bombX: bombX, bombY: bombY, shake: shake,
-    boss: worldClone(boss), nextTransport: nextTransport
+    boss: worldClone(boss), nextTransport: nextTransport, mech: worldClone(typeof stageMech!=='undefined'?stageMech:null)
   };
   return out;
 };
@@ -125,6 +125,7 @@ World.restore = function (s) {
   bombT = s.bombT || 0; bombX = s.bombX || 0; bombY = s.bombY || 0; shake = s.shake || 0;
   boss = s.boss ? worldClone(s.boss) : null;
   nextTransport = s.nextTransport || 0;
+  if(typeof stageMech!=='undefined'&&s.mech) stageMech=worldClone(s.mech);
   setRngSeed(s.rng || 1);
   worldBindPlayers();
   return true;

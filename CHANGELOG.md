@@ -943,3 +943,9 @@
 - Stage-5 videos switch to preload=none on menu and load on stage entry.
 - First-screen transfer measured at ~6.7MB locally (was 28.4MB).
 - Stage-5 background video verified ready after stage entry.
+
+## 0.9.59 — R5 stage mechanics
+
+- Added ION STORM / RAIL CANNON / DUST FRONT / LIGHT GATE for stages 1-4.
+- All mechanics telegraph, have safe lanes, and are disabled during boss states.
+- Stage mechanism state is included in LAN full snapshots.

@@ -72,6 +72,7 @@ function startStage(i){
   if(i===4&&typeof loadStageVideos==='function'){try{loadStageVideos();}catch(e){}}
   prepareStageContent(i);
   stage=i; stageT=0; waveIndex=0; miniDropT=25; nextTransport=24+rng()*10;
+  if(typeof stageMechReset==='function') stageMechReset(i);
   player.ship=selectedShip;
   player.skin=selectedSkins[player.ship]||(player.ship==='aegis'?'orbital':'void_lance');
   if(typeof applyShipVariant==='function') applyShipVariant();

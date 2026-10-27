@@ -22,7 +22,7 @@ Desktop / Electron 基础发行
 ### 内容
 
 - [x] R4 内容审计表：5 关 / 5 Boss（见 R4_CONTENT_AUDIT.md）
-- [ ] R5 每关一个主要机制
+- [x] R5 每关一个主要机制（见 R5_STAGE_MECHANICS.md）
 - [ ] R6 每个 Boss 一个核心交互
 - [ ] R7 Rank / Medal / Score / 本地榜
 - [ ] 5 关完整、非强制通关

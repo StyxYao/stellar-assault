@@ -42,6 +42,7 @@ function step(dt){
   if(state==='finale'){finaleT+=dt;if(finaleT>=8.35)startCast();return;}
   if(state==='cast'){castT+=dt;castScroll=Math.min(CAST_TOTAL,castScroll+32*dt);if(castScroll>=CAST_TOTAL)castHoldT+=dt;return;}
   if(state==='menu'||state==='win'||state==='over') return;
+  if(typeof updateStageMechanic==='function') updateStageMechanic(dt);
 
   if(state==='warpOut'){
     warpT-=dt; warpSpeed+=1100*dt; player.y-=warpSpeed*dt; player.x=W/2;
