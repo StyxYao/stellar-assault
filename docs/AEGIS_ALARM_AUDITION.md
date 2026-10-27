@@ -35,3 +35,20 @@ aegis-alarm-audition.html
 ```text
 aegis-alarm-audition-2.html
 ```
+
+## Set 3 — fault / warning
+
+```text
+11 FAULT HYBRID    5+6 分层 + 电弧尾音
+12 POWER FAULT     电容下滑 + 断续电弧 + ping
+13 GLITCH SIREN    断音故障警报
+14 LOW ENERGY      低电量脉冲 + 渐高三声
+15 RELAY FAIL      继电器连击 + 警告钟
+16 REACTOR STALL   反应堆降速 + 低音警报
+```
+
+试听：
+
+```text
+aegis-alarm-audition-3.html
+```

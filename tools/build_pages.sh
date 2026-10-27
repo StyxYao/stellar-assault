@@ -17,6 +17,7 @@ cp assets/fonts/*.ttf dist/assets/fonts/
 cp assets/video/*.mp4 dist/assets/video/
 cp aegis-alarm-audition.html dist/aegis-alarm-audition.html
 cp aegis-alarm-audition-2.html dist/aegis-alarm-audition-2.html
+cp aegis-alarm-audition-3.html dist/aegis-alarm-audition-3.html
 git rev-parse --short HEAD > dist/build.txt 2>/dev/null || true
 for f in dist/index.html dist/assets/video/fusion.mp4 dist/assets/video/phase2-loop.mp4 dist/assets/video/phase3-loop.mp4 dist/assets/video/kaleido-bg.mp4; do
   test -s "$f" || { echo "EDGEONE BUILD MISSING: $f" >&2; exit 1; }

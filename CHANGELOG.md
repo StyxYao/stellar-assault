@@ -1082,3 +1082,8 @@
 
 - Added six layered break-alarm candidates: crystal, siren, sonar, collapse, arc, horn.
 - Added second audition page; game still uses the old alarm until a choice is made.
+
+## 1.0.0-rc.1p — Fault/warning alarm set 3
+
+- Added six hybrid fault/warning candidates, including a layered 5+6 mix.
+- Added third audition page; game alarm remains unchanged until selection.
