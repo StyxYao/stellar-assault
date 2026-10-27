@@ -6,6 +6,7 @@ var lanMySlot = -1, lanJoined = false, lanLoadouts = [null, null];
 var lanReady = [false, false], lanMyReady = false, lanStage = 0;
 var lanDeadline = 0, lanLobbyTimer = null, lanStageRow = null, lanReadyBtn = null, lanStageLabel = null;
 var lanStarted = false;
+var lanToken = '', lanHostGone = false, lanReconnectT = null, lanReconnecting = false;
 var lanLoadoutShip = 'vector', lanLoadoutSkin = 'void_lance';
 var lanShipBtn = null, lanSkinBtn = null;
 var lanShipCards = null, lanVariantCards = null, lanStageCards = null;
@@ -226,6 +227,7 @@ function lanMakeOverlay(client) {
 }
 
 function lanClose() {
+  lanHostGone = true;
   if (lanSocket) { try { lanSocket.send(JSON.stringify({ type: 'leave' })); lanSocket.close(); } catch (e) {} }
   lanSocket = null; lanRoom = ''; lanRole = ''; lanSlots = [false, false];
   lanReady = [false, false]; lanLoadouts = [null, null]; lanStarted = false; lanStage = 0; lanMyReady = false;
@@ -262,6 +264,15 @@ function lanBroadcast(payload) {
   if (lanSocket && lanSocket.readyState === 1) lanSocket.send(JSON.stringify(Object.assign({ type: 'broadcast' }, payload)));
 }
 
+function lanBroadcastLoadout(slot) {
+  if (!lanLoadouts[slot]) return;
+  lanBroadcast({ type: 'loadout-set', slot: slot, ship: lanLoadouts[slot].ship, skin: lanLoadouts[slot].skin });
+}
+
+function lanBroadcastLobby() {
+  lanBroadcast({ type: 'lobby', slots: lanSlots, ready: lanReady, stage: lanStage, deadline: lanDeadline });
+}
+
 function lanStartLobbyTimer() {
   if (lanHostMode !== 'room' || !lanSlots[0] || !lanSlots[1] || lanStarted) return;
   if (lanLobbyTimer) clearInterval(lanLobbyTimer);
@@ -270,7 +281,7 @@ function lanStartLobbyTimer() {
     if (lanStarted || lanHostMode !== 'room') { clearInterval(lanLobbyTimer); lanLobbyTimer = null; return; }
     var sec = Math.max(0, Math.ceil((lanDeadline - Date.now()) / 1000));
     if (lanSlotStatus) lanSlotStatus.textContent = 'AUTO START IN ' + sec + 's · P1: ' + (lanSlots[0] ? (lanReady[0] ? 'READY' : 'LOADOUT') : '—') + '  P2: ' + (lanSlots[1] ? (lanReady[1] ? 'READY' : 'LOADOUT') : '—');
-    lanBroadcast({ type: 'countdown', sec: sec });
+    lanBroadcastLobby(); lanBroadcast({ type: 'countdown', sec: sec });
     if (sec <= 0) { clearInterval(lanLobbyTimer); lanLobbyTimer = null; lanStartRoom(true); }
   }, 500);
 }
@@ -300,6 +311,9 @@ function lanStartRoom(force) {
     var sk = (typeof skinList === 'function') ? skinList(coopShip2) : [];
     for (var i = 0; i < sk.length; i++) if (sk[i].id !== selectedSkins[selectedShip]) { coopSkin2 = sk[i].id; break; }
   }
+  lanLoadouts[0] = { ship: selectedShip, skin: selectedSkins[selectedShip] };
+  lanLoadouts[1] = { ship: coopShip2, skin: coopSkin2 };
+  lanBroadcastLoadout(0); lanBroadcastLoadout(1);
   lanStarted = true; if (lanLobbyTimer) { clearInterval(lanLobbyTimer); lanLobbyTimer = null; }
   if (lanOverlay) lanOverlay.style.display = 'none';
   lanBroadcast({ type: 'start' });
@@ -309,8 +323,8 @@ function lanStartRoom(force) {
   if (!lanFrameTimer) {
     lanFrameTimer = setInterval(function () {
       if (!lanSocket || lanSocket.readyState !== 1) return;
-      try { lanSocket.send(JSON.stringify({ type: 'frame', data: cvs.toDataURL('image/jpeg', 0.55) })); } catch (e) {}
-    }, 33);
+      try { if (lanSocket.bufferedAmount > 350000) return; lanSocket.send(JSON.stringify({ type: 'frame', data: cvs.toDataURL('image/jpeg', 0.52) })); } catch (e) {}
+    }, 22);
   }
 }
 
@@ -337,16 +351,23 @@ function lanConnectHost() {
         lanUpdateSlots();
       } else if (m.type === 'player-joined') {
         lanSlots[m.slot] = true; lanSetStatus('PLAYER JOINED · SLOT ' + (m.slot + 1)); lanUpdateSlots();
-        if (lanHostMode === 'room' && lanSlots[0] && lanSlots[1]) lanStartLobbyTimer();
+        lanBroadcastLobby(); if (lanHostMode === 'room' && lanSlots[0] && lanSlots[1]) lanStartLobbyTimer();
       } else if (m.type === 'player-left') {
-        lanSlots[m.slot] = false; lanReady[m.slot] = false; if (lanLobbyTimer) { clearInterval(lanLobbyTimer); lanLobbyTimer = null; } lanSetStatus('PLAYER LEFT · SLOT ' + (m.slot + 1)); lanUpdateSlots();
+        lanSlots[m.slot] = false; lanReady[m.slot] = false; if (lanLobbyTimer) { clearInterval(lanLobbyTimer); lanLobbyTimer = null; } lanSetStatus('PLAYER LEFT · SLOT ' + (m.slot + 1)); lanBroadcastLobby(); lanUpdateSlots();
       } else if (m.type === 'loadout') {
         lanLoadouts[m.slot] = { ship: m.ship, skin: m.skin };
         lanUpdateSlots();
+      } else if (m.type === 'loadout-set') {
+        if (m.slot === lanMySlot) {
+          lanLoadoutShip = m.ship; lanLoadoutSkin = m.skin;
+          lanRefreshLoadoutButtons(); lanPositionTouchZones();
+          if (lanLoadouts[lanMySlot]) { lanLoadouts[lanMySlot] = { ship: m.ship, skin: m.skin }; }
+          if (lanStatus && !lanMyReady) lanStatus.textContent = 'HOST ADJUSTED VARIANT · ' + lanLoadoutLabel(m.ship, m.skin);
+        }
       } else if (m.type === 'stage') {
-        if (m.slot === 0) { lanStage = Math.max(0, Math.min(4, Number(m.stage) || 0)); selectedStage = lanStage; lanBroadcast({ type: 'stage', stage: lanStage }); }
+        if (m.slot === 0) { lanStage = Math.max(0, Math.min(4, Number(m.stage) || 0)); selectedStage = lanStage; lanBroadcast({ type: 'stage', stage: lanStage }); lanBroadcastLobby(); }
       } else if (m.type === 'ready') {
-        lanReady[m.slot] = !!m.ready; lanUpdateSlots();
+        lanReady[m.slot] = !!m.ready; lanBroadcastLobby(); lanUpdateSlots();
         if (lanHostMode === 'room' && lanReady[0] && lanReady[1] && lanSlots[0] && lanSlots[1]) lanStartRoom(false);
       } else if (m.type === 'input') {
         var inp = m.slot === 0 ? lanRemoteInput1 : lanRemoteInput;
@@ -381,13 +402,13 @@ function lanHandleAudio(ab) {
   lanAudioRecv += (ab.byteLength || 0);
   var ac = lanEnsureClientAudio(); if (!ac) return;
   var pcm = new Int16Array(ab); if (!pcm.length) return;
-  var buf = ac.createBuffer(1, pcm.length, 22050);
+  var buf = ac.createBuffer(1, pcm.length, 44100);
   var ch = buf.getChannelData(0);
   for (var i = 0; i < pcm.length; i++) ch[i] = pcm[i] / 32768;
   var src = ac.createBufferSource(); src.buffer = buf; src.connect(ac.destination);
   var now = ac.currentTime;
-  if (lanNextAudio < now + 0.02) lanNextAudio = now + 0.05;
-  if (lanNextAudio - now > 0.5) lanNextAudio = now + 0.05;
+  if (lanNextAudio < now + 0.02) lanNextAudio = now + 0.08;
+  if (lanNextAudio - now > 0.4) lanNextAudio = now + 0.08;
   try { src.start(lanNextAudio); } catch (e) { return; }
   lanNextAudio += buf.duration;
 }
@@ -401,7 +422,7 @@ function lanStartHostAudio() {
     master.connect(lanAudioScript);
     lanAudioScript.connect(lanAudioSink);
     lanAudioSink.connect(AC.destination);
-    var ratio = AC.sampleRate / 22050;
+    var ratio = AC.sampleRate / 44100;
     lanAudioScript.onaudioprocess = function (ev) {
       if (!lanSocket || lanSocket.readyState !== 1) return;
       var input = ev.inputBuffer.getChannelData(0);
@@ -443,6 +464,8 @@ function lanStartHost() {
     var sk = (typeof skinList === 'function') ? skinList(coopShip2) : [];
     for (var i = 0; i < sk.length; i++) if (sk[i].id !== selectedSkins[selectedShip]) { coopSkin2 = sk[i].id; break; }
   }
+  lanLoadouts[1] = { ship: coopShip2, skin: coopSkin2 };
+  lanBroadcastLoadout(1);
   if (lanOverlay) lanOverlay.style.display = 'none';
   try { initAudio(); loadSfxExtras(); } catch (e) {}
   lanStartHostAudio();
@@ -450,46 +473,76 @@ function lanStartHost() {
   if (!lanFrameTimer) {
     lanFrameTimer = setInterval(function () {
       if (!lanSocket || lanSocket.readyState !== 1) return;
-      try { lanSocket.send(JSON.stringify({ type: 'frame', data: cvs.toDataURL('image/jpeg', 0.55) })); } catch (e) {}
-    }, 33);
+      try { if (lanSocket.bufferedAmount > 350000) return; lanSocket.send(JSON.stringify({ type: 'frame', data: cvs.toDataURL('image/jpeg', 0.52) })); } catch (e) {}
+    }, 22);
   }
 }
 
-function lanJoin() {
-  if (!lanCodeInput) return;
-  var code = String(lanCodeInput.value || '').trim();
-  if (!/^\d{4}$/.test(code)) { lanSetStatus('ENTER A 4-DIGIT ROOM CODE'); return; }
-  lanStartBtn.disabled = true; lanSetStatus('CONNECTING...');
+function lanGuestJoined(m) {
+  lanRoom = m.room; lanRole = 'guest'; lanJoined = true; lanMySlot = Number(m.slot); lanHostMode = m.mode || lanHostMode;
+  if (m.token) { lanToken = m.token; try { sessionStorage.setItem('lan_rejoin_' + m.room, m.token); } catch (e) {} }
+  lanHostGone = false;
+  if (lanReconnectT) { clearTimeout(lanReconnectT); lanReconnectT = null; }
+  lanSetStatus('CONNECTED AS P' + (lanMySlot + 1) + (lanReconnecting ? ' · RECONNECTED' : ' · CHOOSE LOADOUT · WAITING FOR HOST'));
+  lanReconnecting = false;
+  if (lanStartBtn) { lanStartBtn.disabled = true; lanStartBtn.textContent = 'WAITING FOR HOST'; }
+  lanSendLoadout(); lanEnsureClientAudio(); lanRefreshLoadoutButtons();
+  if (lanCodeInput) lanCodeInput.style.display = 'none';
+  if (lanStartBtn) lanStartBtn.style.display = 'none';
+  if (lanReadyBtn) { lanReadyBtn.style.display = 'block'; lanReadyBtn.disabled = lanMyReady; lanReadyBtn.textContent = lanMyReady ? 'READY · WAITING' : 'READY'; }
+  lanSetLoadoutLocked(lanMyReady);
+  if (lanStageRow) lanStageRow.style.display = lanMySlot === 0 ? 'flex' : 'none';
+  if (lanStageLabel) lanStageLabel.textContent = 'STAGE · P1 SELECTS';
+  if (!lanVideo) {
+    lanVideo = document.createElement('img');
+    lanVideo.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;object-fit:contain;background:#000;z-index:9998;';
+    document.body.appendChild(lanVideo);
+  }
+  if (typeof cvs !== 'undefined') cvs.style.display = 'none';
+  lanStartClientInput();
+  if (lanMyReady && lanSocket && lanSocket.readyState === 1) lanSocket.send(JSON.stringify({ type: 'ready', ready: true, stage: lanStage }));
+}
+function lanScheduleReconnect() {
+  if (lanHostGone || !lanToken || lanReconnectT) return;
+  lanSetStatus('RECONNECTING...');
+  lanReconnectT = setTimeout(function () { lanReconnectT = null; lanReconnecting = true; lanJoin(true); }, 1000);
+}
+
+function lanJoin(rejoin) {
+  var code;
+  if (rejoin) code = lanRoom;
+  else {
+    if (!lanCodeInput) return;
+    code = String(lanCodeInput.value || '').trim();
+    if (!/^\d{4}$/.test(code)) { lanSetStatus('ENTER A 4-DIGIT ROOM CODE'); return; }
+  }
+  if (lanStartBtn) lanStartBtn.disabled = true; lanSetStatus(rejoin ? 'RECONNECTING...' : 'CONNECTING...');
   try {
     lanSocket = new WebSocket(lanWsUrl());
     lanSocket.binaryType = 'arraybuffer';
-    lanSocket.onopen = function () { lanSocket.send(JSON.stringify({ type: 'join', room: code })); };
-    lanSocket.onerror = function () { lanSetStatus('SERVER OFFLINE'); lanStartBtn.disabled = false; };
-    lanSocket.onclose = function () { lanSetStatus('DISCONNECTED'); };
+    lanSocket.onopen = function () {
+      if (rejoin) lanSocket.send(JSON.stringify({ type: 'rejoin', room: code, token: lanToken }));
+      else lanSocket.send(JSON.stringify({ type: 'join', room: code }));
+    };
+    lanSocket.onerror = function () { lanSetStatus('SERVER OFFLINE'); if (lanStartBtn) lanStartBtn.disabled = false; };
+    lanSocket.onclose = function () { lanSetStatus('DISCONNECTED'); if (lanRole === 'guest' && lanJoined && !lanHostGone) lanScheduleReconnect(); };
     lanSocket.onmessage = function (ev) {
       if (typeof ev.data !== 'string') { lanHandleAudio(ev.data); return; }
       var m; try { m = JSON.parse(ev.data); } catch (e) { return; }
-      if (m.type === 'error') { lanSetStatus(m.message || 'JOIN FAILED'); lanStartBtn.disabled = false; }
-      else if (m.type === 'joined') {
-        lanRoom = m.room; lanRole = 'guest'; lanJoined = true; lanMySlot = Number(m.slot); lanHostMode = m.mode || lanHostMode;
-        lanSetStatus('CONNECTED AS P' + (lanMySlot + 1) + ' · CHOOSE LOADOUT · WAITING FOR HOST');
-        if (lanStartBtn) { lanStartBtn.disabled = true; lanStartBtn.textContent = 'WAITING FOR HOST'; }
-        lanSendLoadout(); lanEnsureClientAudio(); lanRefreshLoadoutButtons();
-        if (lanCodeInput) lanCodeInput.style.display = 'none';
-        if (lanStartBtn) lanStartBtn.style.display = 'none';
-        if (lanReadyBtn) { lanReadyBtn.style.display = 'block'; lanReadyBtn.disabled = false; lanReadyBtn.textContent = 'READY'; }
-        lanSetLoadoutLocked(false);
-        if (lanStageRow) lanStageRow.style.display = lanMySlot === 0 ? 'flex' : 'none';
-        if (lanStageLabel) lanStageLabel.textContent = lanMySlot === 0 ? 'STAGE · P1 SELECTS' : 'STAGE · P1 SELECTS';
-        if (!lanVideo) {
-          lanVideo = document.createElement('img');
-          lanVideo.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;object-fit:contain;background:#000;z-index:9998;';
-          document.body.appendChild(lanVideo);
-        }
-        if (typeof cvs !== 'undefined') cvs.style.display = 'none';
-        lanStartClientInput();
-      } else if (m.type === 'stage') {
+      if (m.type === 'error') {
+        lanSetStatus(m.message || 'JOIN FAILED'); if (lanStartBtn) lanStartBtn.disabled = false;
+        if (rejoin) { lanHostGone = true; lanReconnecting = false; }
+      }
+      else if (m.type === 'joined' || m.type === 'rejoined') { lanGuestJoined(m); }
+      else if (m.type === 'stage') {
         lanStage = Number(m.stage) || 0; lanRefreshStageButtons(); if (lanMySlot === 1 && lanStageLabel) lanStageLabel.textContent = 'STAGE ' + (lanStage + 1) + ' · CHOSEN BY P1';
+      } else if (m.type === 'lobby') {
+        if (m.slots) lanSlots = m.slots;
+        if (m.ready) lanReady = m.ready;
+        if (m.slots && m.slots[0] && m.slots[1]) {
+          var st = (m.ready && m.ready[0] ? 'P1 READY' : 'P1 CHOOSING') + ' · ' + (m.ready && m.ready[1] ? 'P2 READY' : 'P2 CHOOSING');
+          if (lanStatus && !lanMyReady) lanStatus.textContent = st;
+        }
       } else if (m.type === 'countdown') {
         if (lanStatus) lanStatus.textContent = 'WAITING · AUTO START ' + m.sec + 's';
       } else if (m.type === 'start') {
@@ -499,6 +552,7 @@ function lanJoin() {
         if (!lanTouchLayer) lanBuildTouchControls(); else lanTouchLayer.style.display = 'block';
         if (lanVideo) lanVideo.src = m.data;
       } else if (m.type === 'host-left') {
+        lanHostGone = true; lanReconnecting = false; if (lanReconnectT) { clearTimeout(lanReconnectT); lanReconnectT = null; }
         lanSetStatus('HOST LEFT'); if (lanVideo) lanVideo.remove(); lanVideo = null; if (lanTouchLayer) lanTouchLayer.style.display = 'none';
       }
     };
@@ -545,19 +599,37 @@ function lanBuildTouchControls() {
   lanTouchLayer.appendChild(secondary);
   document.body.appendChild(lanTouchLayer);
   lanPositionTouchZones();
+  window.addEventListener('resize', lanPositionTouchZones);
+}
+
+function lanImageRect() {
+  var vw = window.innerWidth, vh = window.innerHeight, ar = 390 / 844;
+  var dw, dh, ox, oy;
+  if (vw / vh > ar) { dh = vh; dw = dh * ar; ox = (vw - dw) / 2; oy = 0; }
+  else { dw = vw; dh = dw / ar; ox = 0; oy = 0; }
+  return { x: ox, y: oy, w: dw, h: dh, s: dw / 390 };
+}
+
+function lanPlaceZone(zone, cx, cy, r) {
+  if (!zone) return;
+  var b = lanImageRect();
+  zone.style.left = (b.x + (cx - r) * b.s) + 'px';
+  zone.style.top = (b.y + (cy - r) * b.s) + 'px';
+  zone.style.width = (r * 2 * b.s) + 'px';
+  zone.style.height = (r * 2 * b.s) + 'px';
+  zone.style.right = 'auto'; zone.style.bottom = 'auto';
 }
 
 function lanPositionTouchZones() {
   if (!lanPrimaryZone || !lanSecondaryZone) return;
   if (lanLoadoutShip === 'aegis') {
-    // CHG is left of FORCE in the AEGIS HUD.
-    lanPrimaryZone.style.right = '25%'; lanPrimaryZone.style.width = '70px'; lanPrimaryZone.style.height = '70px'; lanPrimaryZone.style.bottom = '24px';
-    lanPrimaryZone.style.display = 'block';
-    lanSecondaryZone.style.right = '8%'; lanSecondaryZone.style.width = '72px'; lanSecondaryZone.style.height = '72px'; lanSecondaryZone.style.bottom = '22px';
+    // Exact HUD coords: CHG (W-138,H-78,r32), FORCE (W-64,H-78,r38)
+    lanPlaceZone(lanPrimaryZone, 252, 766, 36);
+    lanPlaceZone(lanSecondaryZone, 326, 766, 42);
     lanSecondaryZone.style.display = 'block';
   } else {
-    lanPrimaryZone.style.right = '16px'; lanPrimaryZone.style.width = '78px'; lanPrimaryZone.style.height = '78px'; lanPrimaryZone.style.bottom = '22px';
-    lanPrimaryZone.style.display = 'block';
+    // Exact HUD coords: single skill (W-64,H-78,r54)
+    lanPlaceZone(lanPrimaryZone, 326, 766, 58);
     lanSecondaryZone.style.display = 'none';
   }
 }
@@ -591,7 +663,7 @@ function lanSendClientInput() {
   lanSocket.send(JSON.stringify({ type: 'input', dx: dx, dy: dy, primary: primary, secondary: secondary, tx: lanTouch.active ? lanTouch.tx : null, ty: lanTouch.active ? lanTouch.ty : null }));
 }
 
-function lanStartClientInput() { if (!lanInputTimer) lanInputTimer = setInterval(lanSendClientInput, 25); }
+function lanStartClientInput() { if (!lanInputTimer) lanInputTimer = setInterval(lanSendClientInput, 16); }
 
 function lanClientKey(e, down) {
   var k = String(e.key || '').toLowerCase();
@@ -625,7 +697,11 @@ try {
       var joinCode = q.get('lanjoin');
       if (joinCode && lanCodeInput) {
         lanCodeInput.value = String(joinCode).slice(0, 4);
-        setTimeout(function () { if (!lanSocket) lanJoin(); }, 250);
+        lanRoom = String(joinCode).slice(0, 4);
+        var saved = '';
+        try { saved = sessionStorage.getItem('lan_rejoin_' + lanRoom) || ''; } catch (e) {}
+        lanToken = saved;
+        setTimeout(function () { if (!lanSocket) lanJoin(!!saved); }, 250);
       }
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootClient); else bootClient();

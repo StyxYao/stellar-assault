@@ -815,3 +815,12 @@
 - AEGIS touch zones are now left CHG / right FORCE; non-AEGIS hides the secondary zone.
 - P2 OD timer now decrements correctly.
 - Ready lobby state resets per room.
+
+## 0.9.41 — LAN batch 1/2
+
+- Exact HUD touch hit zones; AEGIS CHG/FORCE corrected; secondary hidden for other ships.
+- Authoritative loadout sync back to clients.
+- 45fps JPEG stream, 60Hz input, WebSocket backpressure guard.
+- 44.1kHz PCM audio with jitter buffer.
+- Lobby/ready/countdown state broadcasting.
+- Token-based client reconnect and reload rejoin.

@@ -10,6 +10,7 @@ import http.server
 import json
 import os
 import random
+import secrets
 import socketserver
 import sys
 import threading
@@ -90,7 +91,7 @@ async def handler(ws):
             if typ == "create":
                 code = make_code()
                 mode = "room" if msg.get("mode") == "room" else "hostp1"
-                ROOMS[code] = {"host": ws, "mode": mode, "players": [None, None]}
+                ROOMS[code] = {"host": ws, "mode": mode, "players": [None, None], "tokens": [None, None]}
                 room_code = code
                 is_host = True
                 await send(ws, {"type": "created", "room": code, "mode": mode, "role": "host"})
@@ -107,9 +108,30 @@ async def handler(ws):
                     await send(ws, {"type": "error", "message": "ROOM FULL"})
                     continue
                 slot = free[0]
+                token = secrets.token_hex(12)
+                room["players"][slot] = ws
+                room["tokens"][slot] = token
+                room_code = code
+                await send(ws, {"type": "joined", "room": code, "slot": slot, "mode": room["mode"], "token": token})
+                await send(room["host"], {"type": "player-joined", "room": code, "slot": slot})
+            elif typ == "rejoin":
+                code = str(msg.get("room", ""))[:8]
+                token = str(msg.get("token", ""))
+                room = ROOMS.get(code)
+                if not room:
+                    await send(ws, {"type": "error", "message": "ROOM GONE"})
+                    continue
+                found = None
+                for i, t in enumerate(room.get("tokens", [])):
+                    if t == token and room["players"][i] is None:
+                        found = i; break
+                if found is None:
+                    await send(ws, {"type": "error", "message": "RECONNECT FAILED"})
+                    continue
+                slot = found
                 room["players"][slot] = ws
                 room_code = code
-                await send(ws, {"type": "joined", "room": code, "slot": slot, "mode": room["mode"]})
+                await send(ws, {"type": "rejoined", "room": code, "slot": slot, "mode": room["mode"], "token": token})
                 await send(room["host"], {"type": "player-joined", "room": code, "slot": slot})
             elif typ in ("input", "signal", "frame", "loadout", "ready", "stage", "broadcast"):
                 room = ROOMS.get(room_code or msg.get("room", ""))
