@@ -900,3 +900,9 @@
 
 - Moved P1/P2 setup frames down slightly.
 - Moved the shared stage selector down to clear the P2 frame.
+
+## 0.9.53 — Control mode menu
+
+- P1/P2 control rows now open a selectable mode menu instead of cycling.
+- Menu shows all five modes, current selection, and pointer conflicts.
+- Co-op setup frames and shared stage moved down for spacing.

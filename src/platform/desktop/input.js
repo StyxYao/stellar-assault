@@ -61,6 +61,14 @@ function desktopConfirm() {
     tutorialNext();
     return;
   }
+  if (state === 'menu' && typeof controlSelectOpen !== 'undefined' && controlSelectOpen) {
+    if (k === 'escape') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); closeControlSelect(); return; }
+    if (k === 'arrowup' || k === 'w') { controlSelectIndex = (controlSelectIndex + 4) % 5; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
+    if (k === 'arrowdown' || k === 's') { controlSelectIndex = (controlSelectIndex + 1) % 5; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
+    if (k >= '1' && k <= '5') { controlSelectIndex = Number(k) - 1; if (typeof menuConfirmSfx === 'function') menuConfirmSfx(); controlSelectChoose(controlSelectIndex); return; }
+    if (k === 'enter' || k === ' ') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) controlSelectChoose(controlSelectIndex); return; }
+    return;
+  }
   if (state === 'menu' && typeof startConfirmOpen !== 'undefined' && startConfirmOpen) {
     if (typeof menuConfirmSfx === 'function') menuConfirmSfx();
     closeStartConfirm();
@@ -119,8 +127,8 @@ function desktopKeyDown(e) {
     if (k === 'arrowleft' || k === 'a') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); selectedStage = (selectedStage + 4) % 5; return; }
     if (k === 'arrowright' || k === 'd') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); selectedStage = (selectedStage + 1) % 5; return; }
     if (k >= '1' && k <= '5') { selectedStage = Number(k) - 1; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
-    if (k === 'p') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); cycleControlMode(1, 1); return; }
-    if (k === 'o') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); cycleControlMode(2, 1); return; }
+    if (k === 'p') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); openControlSelect(1); return; }
+    if (k === 'o') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); openControlSelect(2); return; }
     if (k === 'j') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); openShipSelect('p2'); return; }
     if (k === 'k') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); openSkinSelect('p2'); return; }
     return;

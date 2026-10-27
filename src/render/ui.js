@@ -344,6 +344,88 @@ function drawSetupSplit(){
   ctx.fillText('‹ BACK TO MODES',b.back.x+b.back.w/2,b.back.y+18);
 }
 
+var controlSelectOpen=false, controlSelectFor=1, controlSelectIndex=0;
+function controlSelectPanel(){ return {x:30,y:H*.16,w:W-60,h:H*.62}; }
+function controlSelectRows(){
+  var p=controlSelectPanel(), modes=['auto','keyboard','mouse','touch','gamepad'], out=[];
+  var start=p.y+92, h=54, gap=6;
+  for(var i=0;i<modes.length;i++) out.push({i:i,mode:modes[i],x:p.x+14,y:start+i*(h+gap),w:p.w-28,h:h});
+  return out;
+}
+function controlModeDesc(mode){
+  if(mode==='auto') return 'KEYBOARD + POINTER + PAD';
+  if(mode==='keyboard') return 'P1 ARROWS / ZX · P2 IJKL / UO';
+  if(mode==='mouse') return 'MOUSE MOVE + CLICK SKILLS';
+  if(mode==='touch') return 'TOUCH DRAG + HUD SKILL ZONES';
+  if(mode==='gamepad') return 'P1 PAD 0 · P2 PAD 1';
+  return '';
+}
+function openControlSelect(slot){
+  if(slot===2&&!(typeof coopEnabled!=='undefined'&&coopEnabled)) return;
+  controlSelectFor=slot===2?2:1;
+  controlSelectOpen=true;
+  var cur=(typeof controlModeFor==='function')?controlModeFor(controlSelectFor):'auto';
+  controlSelectIndex=Math.max(0,['auto','keyboard','mouse','touch','gamepad'].indexOf(cur));
+}
+function closeControlSelect(){ controlSelectOpen=false; }
+function controlRowBlocked(slot,mode){
+  if(typeof controlOtherMode!=='function'||typeof controlConflict!=='function') return false;
+  return controlConflict(mode,controlOtherMode(slot));
+}
+function controlSelectChoose(i){
+  var modes=['auto','keyboard','mouse','touch','gamepad'];
+  if(i<0||i>=modes.length) return false;
+  if(controlRowBlocked(controlSelectFor,modes[i])){
+    pickupMsg='CONTROL CONFLICT · OTHER PLAYER USES POINTER';pickupT=1.8;return false;
+  }
+  var ok=(typeof setControlMode==='function')?setControlMode(controlSelectFor,modes[i]):false;
+  if(ok) closeControlSelect();
+  return ok;
+}
+function controlSelectAt(p){
+  var cb={x:controlSelectPanel().x+controlSelectPanel().w-38,y:controlSelectPanel().y+10,w:26,h:26};
+  if(p.x>=cb.x&&p.x<=cb.x+cb.w&&p.y>=cb.y&&p.y<=cb.y+cb.h) return 'close';
+  var rows=controlSelectRows();
+  for(var i=0;i<rows.length;i++){var r=rows[i];if(p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h)return i;}
+  var panel=controlSelectPanel();
+  if(p.x<panel.x||p.x>panel.x+panel.w||p.y<panel.y||p.y>panel.y+panel.h) return 'outside';
+  return 'panel';
+}
+function drawControlSelectOverlay(){
+  if(!controlSelectOpen) return;
+  ctx.save();
+  ctx.fillStyle='rgba(1,4,10,0.82)';ctx.fillRect(0,0,W,H);
+  var p=controlSelectPanel();
+  ctx.fillStyle='rgba(5,15,26,0.99)';ctx.fillRect(p.x,p.y,p.w,p.h);
+  ctx.strokeStyle=controlSelectFor===2?'#8dffb0':'#9fe8ff';ctx.lineWidth=1.6;ctx.strokeRect(p.x,p.y,p.w,p.h);
+  ctx.textAlign='left';ctx.fillStyle='#eaf8ff';ctx.font='900 18px "Arial Black", Arial, sans-serif';
+  ctx.fillText('P'+controlSelectFor+' CONTROL MODE',p.x+20,p.y+34);
+  ctx.fillStyle='#7f9bb0';ctx.font='8px monospace';
+  ctx.fillText('CHOOSE ONE INPUT SOURCE',p.x+20,p.y+52);
+  var cb={x:p.x+p.w-38,y:p.y+10,w:26,h:26};
+  ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(cb.x,cb.y,cb.w,cb.h);
+  ctx.fillStyle='#9fb6cf';ctx.font='700 14px Arial, sans-serif';ctx.textAlign='center';ctx.fillText('×',cb.x+cb.w/2,cb.y+17);
+  var rows=controlSelectRows(), cur=(typeof controlModeFor==='function')?controlModeFor(controlSelectFor):'auto';
+  var other=controlSelectFor===2?'P1':'P2';
+  for(var i=0;i<rows.length;i++){
+    var r=rows[i],sel=cur===r.mode,blocked=controlRowBlocked(controlSelectFor,r.mode),focus=i===controlSelectIndex;
+    ctx.fillStyle=sel?'rgba(20,52,42,0.95)':'rgba(6,18,30,0.92)';
+    ctx.fillRect(r.x,r.y,r.w,r.h);
+    ctx.strokeStyle=blocked?'#6b4350':(sel?'#8dffb0':(focus?'#9fe8ff':'#31536a'));
+    ctx.lineWidth=sel||focus?2:1;ctx.strokeRect(r.x,r.y,r.w,r.h);
+    ctx.textAlign='left';ctx.fillStyle=blocked?'#8f7b86':'#eaf8ff';ctx.font='900 13px "Arial Black", Arial, sans-serif';
+    ctx.fillText(r.mode.toUpperCase(),r.x+14,r.y+22);
+    ctx.fillStyle=blocked?'#6f5c68':'#9fc8dc';ctx.font='7px monospace';
+    ctx.fillText(controlModeDesc(r.mode),r.x+14,r.y+38);
+    ctx.textAlign='right';ctx.font='700 8px monospace';
+    ctx.fillStyle=blocked?'#c07080':(sel?'#8dffb0':'#7893a8');
+    ctx.fillText(blocked?'CONFLICT WITH '+other:(sel?'EQUIPPED':'SELECT'),r.x+r.w-12,r.y+26);
+  }
+  ctx.textAlign='center';ctx.fillStyle='#6d879b';ctx.font='8px monospace';
+  ctx.fillText('TAP TO SELECT · ESC CLOSE',W/2,p.y+p.h-16);
+  ctx.restore();ctx.textAlign='left';
+}
+
 function drawStartConfirmOverlay(){
   if(!startConfirmOpen) return;
   ctx.save();
@@ -646,6 +728,7 @@ function drawMenu(){
   drawSkinSelectOverlay();
   drawStartConfirmOverlay();
   drawTutorialOverlay();
+  drawControlSelectOverlay();
 }
 function drawBossOmen(){
   var t=bossOmenT;

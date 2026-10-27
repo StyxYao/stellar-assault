@@ -30,6 +30,8 @@ P1 CONTROL · AUTO
 P2 CONTROL · KEYBOARD   (co-op only)
 ```
 
+Tap either control row to open a mode menu. It lists AUTO / KEYBOARD / MOUSE / TOUCH / GAMEPAD, marks the equipped mode, and disables pointer rows that conflict with the other player.
+
 There is no single co-op control toggle anymore.
 
 ## Input routing

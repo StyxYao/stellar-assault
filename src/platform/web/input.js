@@ -44,12 +44,18 @@ function onDown(e){
       else if(th==='close'||th==='outside'){ if(typeof menuMoveSfx==='function')menuMoveSfx(); closeTutorial(); }
       return;
     }
+    if(typeof controlSelectOpen!=='undefined'&&controlSelectOpen){
+      var ctrlHit=controlSelectAt(p);
+      if(typeof ctrlHit==='number'){ controlSelectIndex=ctrlHit; if(typeof menuConfirmSfx==='function')menuConfirmSfx(); controlSelectChoose(ctrlHit); return; }
+      if(ctrlHit==='close'||ctrlHit==='outside'){if(typeof menuMoveSfx==='function')menuMoveSfx();closeControlSelect();}
+      return;
+    }
     if(typeof startConfirmOpen!=='undefined'&&startConfirmOpen){
       var sch=startConfirmAt(p);
       if(sch==='start'){if(typeof menuConfirmSfx==='function')menuConfirmSfx();closeStartConfirm();startAtStage(selectedStage);}
       else if(sch==='back'||sch==='outside'){if(typeof menuMoveSfx==='function')menuMoveSfx();closeStartConfirm();}
-      else if(sch==='p1ctrl'){if(typeof menuMoveSfx==='function')menuMoveSfx();cycleControlMode(1,1);}
-      else if(sch==='p2ctrl'){if(typeof menuMoveSfx==='function')menuMoveSfx();cycleControlMode(2,1);}
+      else if(sch==='p1ctrl'){if(typeof menuMoveSfx==='function')menuMoveSfx();openControlSelect(1);}
+      else if(sch==='p2ctrl'){if(typeof menuMoveSfx==='function')menuMoveSfx();openControlSelect(2);}
       else if(sch==='p1ship'){if(typeof menuMoveSfx==='function')menuMoveSfx();openShipSelect('p1');}
       else if(sch==='p1skin'){if(typeof menuMoveSfx==='function')menuMoveSfx();openSkinSelect('p1');}
       else if(sch==='p2ship'){if(typeof menuMoveSfx==='function')menuMoveSfx();openShipSelect('p2');}
