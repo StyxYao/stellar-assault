@@ -69,7 +69,9 @@ Do not paste the token into chat; place it in a local secure environment.
 
 ## Packaged runtime smoke
 
-The workflow now launches the packaged app after building:
+The workflow now launches the packaged app after building. Windows uses `pathToFileURL()` for the dynamic LAN module import so a drive-letter path is not treated as a URL scheme.
+
+
 
 - Windows: starts `STELLAR ASSAULT.exe`, waits for `http://127.0.0.1:8785/index.html`
 - Linux: runs the AppImage under Xvfb, waits for the same endpoint

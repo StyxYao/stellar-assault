@@ -54,6 +54,7 @@ jobs:
             Get-Process | Where-Object { $_.ProcessName -like 'STELLAR*' } | Stop-Process -Force -ErrorAction SilentlyContinue
           }
       - name: Upload Windows artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: stellar-assault-windows
@@ -102,6 +103,7 @@ jobs:
           if [ "$OK" != "1" ]; then echo 'packaged Linux app LAN server did not respond'; exit 1; fi
           echo 'Linux packaged runtime smoke: PASS'
       - name: Upload Linux artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: stellar-assault-linux

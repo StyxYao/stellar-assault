@@ -4,6 +4,7 @@ const { app, BrowserWindow, Menu, ipcMain, screen } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const os = require('node:os');
+const { pathToFileURL } = require('node:url');
 
 const DEFAULT_WIDTH = 720;
 const DEFAULT_HEIGHT = 1280;
@@ -146,7 +147,7 @@ ipcMain.handle('app:quit', () => { app.quit(); });
 
 app.whenReady().then(async () => {
   try {
-    const lan = await import(lanModulePath);
+    const lan = await import(pathToFileURL(lanModulePath).href);
     lanServer = lan.startLanServer(8785, 8786);
     const nets = os.networkInterfaces();
     for (const name of Object.keys(nets)) {
