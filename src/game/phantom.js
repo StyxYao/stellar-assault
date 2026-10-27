@@ -50,7 +50,7 @@ function phantomSpawnClone(offset) {
     power: player.specialPower,
     extra: player.extraBullets || 0,
     damageMult: player.damageMult || 1,
-    fireT: 0.12 + Math.random() * 0.06,
+    fireT: 0.12 + rng() * 0.06,
     target: null,
     retargetT: 0,
     slot: phantomState.clones.length,

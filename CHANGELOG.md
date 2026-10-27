@@ -832,3 +832,10 @@
 - Exact HUD touch zones, authoritative loadout sync, lobby broadcasts.
 - 45fps / 60Hz / 44.1k PCM / reconnect / countdown close-out.
 - Added local co-op and LAN screen acceptance docs plus LAN state-sync plan.
+
+## 0.9.43 — Deterministic foundation
+
+- Added seeded simulation RNG and separate visual RNG.
+- Added World.snapshot/digest, deterministic reset/simulate debug hooks.
+- Verified two instances produce identical snapshots for the same seed/frame count.
+- Added sync-start seed/stage and input sequence scaffold to LAN.

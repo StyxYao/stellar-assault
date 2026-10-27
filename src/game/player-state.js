@@ -59,19 +59,19 @@ function maybeDrop(e){
     items.push({x:e.x,y:e.y,vy:45,type:'P',t:0});
     items.push({x:e.x+24,y:e.y,vy:45,type:'D',t:0});
     items.push({x:e.x,y:e.y+16,vy:45,type:'E',t:0});
-    if(Math.random()<0.21) items.push({x:e.x+12,y:e.y+24,vy:40,type:'1UP',t:0});
+    if(rng()<0.21) items.push({x:e.x+12,y:e.y+24,vy:40,type:'1UP',t:0});
     return;
   }
   if(e.transport) return;
   if(e.elite){
     items.push({x:e.x-20,y:e.y,vy:50,type:'D',t:0});
     items.push({x:e.x+20,y:e.y,vy:50,type:'P',t:0});
-    if(Math.random()<0.165) items.push({x:e.x,y:e.y+20,vy:45,type:'1UP',t:0});
+    if(rng()<0.165) items.push({x:e.x,y:e.y+20,vy:45,type:'1UP',t:0});
     return;
   }
   var chance=([0.10,0.14,0.16,0.35,0.28,0.14][e.type]||0.10)*0.75;
-  if(!e.first && Math.random()>=chance) return;
-  var r=Math.random(),type;
+  if(!e.first && rng()>=chance) return;
+  var r=rng(),type;
   if(r<0.40) type='P';
   else if(r<0.52) type='D';
   else if(r<0.66) type='E';

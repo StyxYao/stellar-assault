@@ -89,15 +89,15 @@ function bossBeamColor(){
  if(stage===4&&boss&&boss.phase===0) return '#fff2c0';
  return bossPalette().beam;
 }
-for(var i=0;i<64;i++) stars.push({x:Math.random()*W,y:Math.random()*H,z:0.3+Math.random()*0.9});
+for(var i=0;i<64;i++) stars.push({x:vrng()*W,y:vrng()*H,z:0.3+vrng()*0.9});
 for(var bi=1;bi<=5;bi++){
   var mi=new Image(); mi.src='assets/bg/stage'+bi+'-main.webp'; BG_MAIN[bi-1]=mi;
   var ei=new Image(); ei.src='assets/bg/stage'+bi+'-edge.webp'; BG_EDGE[bi-1]=ei;
 }
-for(var di=0;di<90;di++) bgDust.push({x:Math.random()*W,y:Math.random()*H,sp:220+Math.random()*190,len:1.5+Math.random()*4,a:0.18+Math.random()*0.45,c:Math.random()<0.55?'#cfefff':'#e7d8ff'});
+for(var di=0;di<90;di++) bgDust.push({x:vrng()*W,y:vrng()*H,sp:220+vrng()*190,len:1.5+vrng()*4,a:0.18+vrng()*0.45,c:vrng()<0.55?'#cfefff':'#e7d8ff'});
 var BEAD_COLS=['#7dffd8','#7fe6ff','#ffd27a','#c9a6ff'];
 var BG_BEADS=[];
-for(var bgi=0;bgi<18;bgi++) BG_BEADS.push({ba:rand(-0.16,0.16),br:rand(.16,.96),s:rand(2.2,6.4),c:bgi%4,ph:rand(0,TAU)});
+for(var bgi=0;bgi<18;bgi++) BG_BEADS.push({ba:vrand(-0.16,0.16),br:vrand(.16,.96),s:vrand(2.2,6.4),c:bgi%4,ph:vrand(0,TAU)});
 var BEAD_SPR={};
 function beadSprite(ci){
   if(BEAD_SPR[ci]) return BEAD_SPR[ci];
@@ -135,11 +135,11 @@ function setStageBg(img){
 var lastBoomSfx=0;
 function boom(x,y,sc,kind){
   var life=kind==='boss'?1.6:((kind==='elite'||kind==='player')?0.95:0.6);
-  fx.push({x:x,y:y,t:0,sc:sc||1,seed:Math.random()*TAU,kind:kind||'normal',life:life});
+  fx.push({x:x,y:y,t:0,sc:sc||1,seed:vrng()*TAU,kind:kind||'normal',life:life});
   if(kind==='player'){
     sfx('bomb_big',0.55); shake=Math.max(shake,14);
   }else if(kind==='elite'){
-    for(var i=0;i<3;i++) fx.push({x:x+rand(-24,24),y:y+rand(-18,18),t:-i*0.05,sc:(sc||1)*0.55,seed:Math.random()*TAU,kind:'elite',life:0.95});
+    for(var i=0;i<3;i++) fx.push({x:x+vrand(-24,24),y:y+vrand(-18,18),t:-i*0.05,sc:(sc||1)*0.55,seed:vrng()*TAU,kind:'elite',life:0.95});
     sfx('bomb_big',0.42); shake=Math.max(shake,7);
   }else if(kind==='boss'){
     sfx('bomb_big',1.0); shake=Math.max(shake,26);
@@ -156,7 +156,7 @@ function enemyDeath(e){
 function enemyBombExplode(e){
   var bossBomb=!!e.bossBomb,rad=e.blastR||(bossBomb?118:72);
   blastZones.push({x:e.x,y:e.y,t:0,life:bossBomb?0.60:0.42,r:rad,hit:false,boss:bossBomb});
-  fx.push({x:e.x,y:e.y,t:0,sc:bossBomb?2.4:1.15,seed:Math.random()*TAU,kind:'enemybomb',life:bossBomb?1.15:0.9});
+  fx.push({x:e.x,y:e.y,t:0,sc:bossBomb?2.4:1.15,seed:vrng()*TAU,kind:'enemybomb',life:bossBomb?1.15:0.9});
   if(AC&&!muted){
     if(bossBomb){noiseBurst(0.28,0.42,750);tone(62,22,0.42,0.55,'sine');sfx('bomb_big',0.42);}
     else{noiseBurst(0.20,0.32,900);tone(75,28,0.32,0.50,'sine');tone(180,60,0.16,0.22,'sawtooth');}
@@ -165,8 +165,8 @@ function enemyBombExplode(e){
 }
 function bossDeathBoom(b,noShake){
   for(var i=0;i<11;i++){
-    var a=i/11*TAU,rr=rand(20,95);
-    fx.push({x:b.x+Math.cos(a)*rr,y:b.y+Math.sin(a)*rr,t:-i*0.035,sc:rand(0.7,1.9),seed:Math.random()*TAU,kind:i%3?'boss':'elite',life:rand(1.2,1.8)});
+    var a=i/11*TAU,rr=vrand(20,95);
+    fx.push({x:b.x+Math.cos(a)*rr,y:b.y+Math.sin(a)*rr,t:-i*0.035,sc:vrand(0.7,1.9),seed:vrng()*TAU,kind:i%3?'boss':'elite',life:vrand(1.2,1.8)});
   }
   phaseFx.push({x:b.x,y:b.y,t:0,life:1.8,kind:'death'});
   sfx('bomb_big',1.0); if(!noShake)shake=30;
@@ -174,8 +174,8 @@ function bossDeathBoom(b,noShake){
 function part(x,y,col,n,sp){
   n=n||6; sp=sp||90;
   for(var i=0;i<n;i++){
-    var a=Math.random()*TAU,v=sp*(0.3+Math.random());
-    parts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:0.35+Math.random()*0.45,col:col});
+    var a=vrng()*TAU,v=sp*(0.3+vrng());
+    parts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:0.35+vrng()*0.45,col:col});
   }
 }
 function updateODLaserFx(dt){
@@ -296,7 +296,7 @@ function draw(){
 function drawScene(){
   ctx.clearRect(0,0,W,H);
   ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.filter='none';
-  var sx=shake?rand(-shake,shake):0,sy=shake?rand(-shake,shake):0;
+  var sx=shake?vrand(-shake,shake):0,sy=shake?vrand(-shake,shake):0;
   ctx.save();ctx.translate(sx,sy);
   if(state==='menu'){ drawMenu(); ctx.restore(); return; }
   if(state==='finale'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); drawFinaleScene(); ctx.restore(); return; }
@@ -402,6 +402,11 @@ window.__stage=function(n){startStage(n);};
   window.__world=function(){return {players:(typeof World!=='undefined'?World.players:[]).map(function(p,i){return {slot:i+1,ship:p.ship,x:Math.round(p.x),y:Math.round(p.y),hp:p.hp,lives:p.lives,bombs:p.bombs,odT:+(p.odT||0).toFixed(1)};}),stage:(typeof World!=='undefined'?World.stage:stage),state:state,time:+(typeof World!=='undefined'?World.time:time).toFixed(1),enemies:enemies.length,bullets:shots.length,ebullets:ebullets.length};
   };
   window.__coop=function(){return {enabled:coopEnabled,mode:coopInputMode,p2:player2?{ship:player2.ship,x:+player2.x.toFixed(0),y:+player2.y.toFixed(0),hp:player2.hp,lives:player2.lives,invuln:+player2.invuln.toFixed(1),bombs:player2.bombs,cloak:phantomState2?+phantomState2.cloakT.toFixed(1):null,charge:aegisState2?aegisState2.charge:null,force:aegisState2?aegisState2.force:null,odT:player2?+player2.odT.toFixed(1):null}:null};};
+  window.__setSeed=function(seed){return setRngSeed(seed);};
+  window.__rng=function(){return {seed:getRngSeed(),next:vrng()};};
+  window.__worldSnapshot=function(){return World.snapshot();};
+  window.__resetDeterministic=function(stageIndex,seed){desktopPaused=true;time=0;setRngSeed(seed);startStage(stageIndex||0);return {seed:getRngSeed(),state:state};};
+  window.__simulate=function(frames,seed){if(seed!=null)setRngSeed(seed);desktopPaused=true;for(var i=0;i<(frames||1);i++)step(1/60);desktopPaused=false;return World.snapshot();};
   window.__setP2Od=function(v){if(player2)player2.odT=Math.max(0,Number(v)||0);};
   window.__setP2Ship=function(id,skin){coopShip2=id;var sl=skinList(id);coopSkin2=skin||sl[0].id;coopEnsureDistinct();if(player2){player2.ship=coopShip2;player2.skin=coopSkin2;player2.maxHp=(coopSkinDef(coopShip2,coopSkin2)||{}).maxHp||3;player2.hp=player2.maxHp;}};
   window.__selectShip=function(id){setSelectedShip(id,false);var sl=skinList(id);setSelectedSkin(id,sl[0].id,false);};

@@ -398,7 +398,7 @@ function aegisLaneHit() {
     if (typeof hitSpark === 'function') hitSpark(boss.x, boss.y, false, true);
   }
   for (var k = 0; k < 14; k++) {
-    if (typeof part === 'function') part(px + (Math.random() - 0.5) * lane * 1.7, player.y - Math.random() * (player.y - 40), '#ffd36b', 1, 240);
+    if (typeof part === 'function') part(px + (vrng() - 0.5) * lane * 1.7, player.y - vrng() * (player.y - 40), '#ffd36b', 1, 240);
   }
 }
 

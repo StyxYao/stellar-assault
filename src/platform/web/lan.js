@@ -7,6 +7,7 @@ var lanReady = [false, false], lanMyReady = false, lanStage = 0;
 var lanDeadline = 0, lanLobbyTimer = null, lanStageRow = null, lanReadyBtn = null, lanStageLabel = null;
 var lanStarted = false;
 var lanToken = '', lanHostGone = false, lanReconnectT = null, lanReconnecting = false, lanFrames = 0;
+var lanSyncSeed = 0, lanSyncStage = 0, lanInputSeq = 0, lanRemoteSeq = 0, lanSyncVersion = 1;
 var lanLastMsg = '', lanLoadoutSets = 0;
 var lanLoadoutShip = 'vector', lanLoadoutSkin = 'void_lance';
 var lanShipBtn = null, lanSkinBtn = null;
@@ -289,8 +290,8 @@ function lanStartLobbyTimer() {
 
 function lanRandomBase() {
   var ships = ['vector', 'aegis', 'phantom'];
-  var p1 = ships[Math.floor(Math.random() * ships.length)];
-  var p2 = ships[Math.floor(Math.random() * ships.length)];
+  var p1 = ships[Math.floor(vrng() * ships.length)];
+  var p2 = ships[Math.floor(vrng() * ships.length)];
   var l1 = (typeof skinList === 'function' ? skinList(p1) : []);
   var l2 = (typeof skinList === 'function' ? skinList(p2) : []);
   var s1 = l1.length ? l1[0].id : 'void_lance';
@@ -315,6 +316,10 @@ function lanStartRoom(force) {
   lanLoadouts[0] = { ship: selectedShip, skin: selectedSkins[selectedShip] };
   lanLoadouts[1] = { ship: coopShip2, skin: coopSkin2 };
   lanBroadcastLoadout(0); lanBroadcastLoadout(1);
+  lanSyncSeed = ((Date.now() ^ (Date.now() >>> 11)) >>> 0) || 1;
+  lanSyncStage = lanStage;
+  try { setRngSeed(lanSyncSeed); } catch (e) {}
+  lanBroadcast({ type: 'sync-start', version: lanSyncVersion, seed: lanSyncSeed, stage: lanSyncStage });
   lanStarted = true; if (lanLobbyTimer) { clearInterval(lanLobbyTimer); lanLobbyTimer = null; }
   if (lanOverlay) lanOverlay.style.display = 'none';
   lanBroadcast({ type: 'start' });
@@ -372,6 +377,7 @@ function lanConnectHost() {
         if (lanHostMode === 'room' && lanReady[0] && lanReady[1] && lanSlots[0] && lanSlots[1]) lanStartRoom(false);
       } else if (m.type === 'input') {
         var inp = m.slot === 0 ? lanRemoteInput1 : lanRemoteInput;
+        lanRemoteSeq = Number(m.seq) || lanRemoteSeq;
         inp.dx = Number(m.dx) || 0; inp.dy = Number(m.dy) || 0;
         inp.tx = (m.tx == null) ? null : Number(m.tx); inp.ty = (m.ty == null) ? null : Number(m.ty);
         if (m.primary) inp.primary = true;
@@ -467,6 +473,9 @@ function lanStartHost() {
   }
   lanLoadouts[1] = { ship: coopShip2, skin: coopSkin2 };
   lanBroadcastLoadout(1);
+  lanSyncSeed = ((Date.now() ^ (Date.now() >>> 11)) >>> 0) || 1; lanSyncStage = selectedStage;
+  try { setRngSeed(lanSyncSeed); } catch (e) {}
+  lanBroadcast({ type: 'sync-start', version: lanSyncVersion, seed: lanSyncSeed, stage: lanSyncStage });
   if (lanOverlay) lanOverlay.style.display = 'none';
   try { initAudio(); loadSfxExtras(); } catch (e) {}
   lanStartHostAudio();
@@ -536,7 +545,10 @@ function lanJoin(rejoin) {
         if (rejoin) { lanHostGone = true; lanReconnecting = false; }
       }
       else if (m.type === 'joined' || m.type === 'rejoined') { lanGuestJoined(m); }
-      else if (m.type === 'loadout-set') {
+      else if (m.type === 'sync-start') {
+        lanSyncSeed = Number(m.seed) >>> 0; lanSyncStage = Number(m.stage) || 0; lanSyncVersion = Number(m.version) || 1;
+        try { setRngSeed(lanSyncSeed); } catch (e) {}
+      } else if (m.type === 'loadout-set') {
         if (Number(m.slot) === Number(lanMySlot)) {
           lanLoadoutShip = m.ship; lanLoadoutSkin = m.skin;
           lanRefreshLoadoutButtons(); lanPositionTouchZones();
@@ -670,7 +682,7 @@ function lanSendClientInput() {
     if (bb && !lanPadPrev.b) secondary = true;
     lanPadPrev.a = ba; lanPadPrev.b = bb;
   }
-  lanSocket.send(JSON.stringify({ type: 'input', dx: dx, dy: dy, primary: primary, secondary: secondary, tx: lanTouch.active ? lanTouch.tx : null, ty: lanTouch.active ? lanTouch.ty : null }));
+  lanSocket.send(JSON.stringify({ type: 'input', seq: ++lanInputSeq, dx: dx, dy: dy, primary: primary, secondary: secondary, tx: lanTouch.active ? lanTouch.tx : null, ty: lanTouch.active ? lanTouch.ty : null }));
 }
 
 function lanStartClientInput() { if (!lanInputTimer) lanInputTimer = setInterval(lanSendClientInput, 16); }
@@ -692,6 +704,7 @@ window.__lanDebug = function () {
     audioSend: lanAudioBytes, audioRecv: lanAudioRecv, frames: lanFrames,
     ship: lanLoadoutShip, skin: lanLoadoutSkin, ready: lanMyReady, stage: lanStage,
     loadouts: lanLoadouts, readySlots: lanReady, started: lanStarted, lastMsg: lanLastMsg, loadoutSets: lanLoadoutSets,
+    syncSeed: lanSyncSeed, syncStage: lanSyncStage, syncVersion: lanSyncVersion, inputSeq: lanInputSeq, remoteSeq: lanRemoteSeq,
     script: !!lanAudioScript,
     clientAC: lanClientAC ? lanClientAC.state : null,
     nextAudio: +lanNextAudio.toFixed(2),

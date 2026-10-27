@@ -44,7 +44,7 @@ function spawnWave(w){
     else { x=W/2+(i-(n-1)/2)*40; y=-50; baseX=x; mode='dive'; }
     var hpScale=(stage===4?1.0:(1+stage*0.18));
     var ehp=Math.round(ET[w.type].hp*hpScale*((w.elite&&(n<=2||i===0))?0.85:1));
-    var e={type:w.type,x:x,y:y,baseX:baseX,tx:tx,ty:ty,mode:mode,entering:(mode==='pincer'||mode==='turret'||mode==='orbitEnter'||mode==='ringEnter'||mode==='arc'),t:0,phase:i*0.7,spd:w.spd,hp:ehp,max:ehp,fireT:w.fodder?6.0+Math.random()*3.0:0.8+Math.random()*0.8,flash:0,noFire:!!w.noFire,aggr:w.aggr||1,role:w.role||'',visT:0,elite:!!w.elite&&(n<=2||i===0),first:(i===0&&waveIndex%2===0)};
+    var e={type:w.type,x:x,y:y,baseX:baseX,tx:tx,ty:ty,mode:mode,entering:(mode==='pincer'||mode==='turret'||mode==='orbitEnter'||mode==='ringEnter'||mode==='arc'),t:0,phase:i*0.7,spd:w.spd,hp:ehp,max:ehp,fireT:w.fodder?6.0+rng()*3.0:0.8+rng()*0.8,flash:0,noFire:!!w.noFire,aggr:w.aggr||1,role:w.role||'',visT:0,elite:!!w.elite&&(n<=2||i===0),first:(i===0&&waveIndex%2===0)};
     if(mode==='dive'){
       var ptDive=phantomAimTarget(),a=Math.atan2(ptDive.y-y,ptDive.x-x);
       e.vx=Math.cos(a)*w.spd; e.vy=Math.sin(a)*w.spd;
@@ -180,7 +180,7 @@ function fireEnemy(e){
     sfx('e_shot',0.12);return;
   }
   if(e.type===10){
-    var gap10=Math.random()*TAU;
+    var gap10=rng()*TAU;
     for(var q10=0;q10<10;q10++){
       var a10=q10/10*TAU+time*0.18;
       var d10=Math.atan2(Math.sin(a10-gap10),Math.cos(a10-gap10));
@@ -208,7 +208,7 @@ function fireEnemy(e){
     }
     sfx('e_shot',0.16);return;
   }
-  if(e.type===4&&Math.random()<0.42){
+  if(e.type===4&&rng()<0.42){
     var btx=Math.max(30,Math.min(W-30,player.x+rand(-110,110)));
     var bty=Math.max(70,Math.min(H-50,player.y+rand(-80,80)));
     var bd=Math.hypot(btx-e.x,bty-e.y),bspd=90;
@@ -232,13 +232,13 @@ function fireEnemy(e){
   }
   var ptFire=phantomAimTarget(),et=ET[e.type],a=Math.atan2(ptFire.y-e.y,ptFire.x-e.x),sp=(140+stage*10)*Math.max(0.7,e.aggr||1);
   if(e.elite){
-    if(beams.length<4&&Math.random()<0.28) spawnBeam(e.x,e.y,a,1500,18,1.0,0.4,1,bossBeamColor(),false,e);
+    if(beams.length<4&&rng()<0.28) spawnBeam(e.x,e.y,a,1500,18,1.0,0.4,1,bossBeamColor(),false,e);
     for(var i=0;i<10;i++){var ang=i/10*TAU+time*0.2;ebullets.push({x:e.x,y:e.y,vx:Math.cos(ang)*95,vy:Math.sin(ang)*95,rad:5.5,type:2});}
     for(var i=0;i<3;i++){var ang=a+(i-1)*0.18;ebullets.push({x:e.x,y:e.y,vx:Math.cos(ang)*180,vy:Math.sin(ang)*180,rad:6,type:1});}
     sfx('e_shot',0.16);
     return;
   }
-  if((e.type===3||e.type===4)&&beams.length<5&&Math.random()<0.38){
+  if((e.type===3||e.type===4)&&beams.length<5&&rng()<0.38){
     spawnBeam(e.x,e.y,a,1500,15,1.0,0.38,1,bossBeamColor(),false,e);
     return;
   }

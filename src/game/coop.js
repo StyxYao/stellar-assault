@@ -39,11 +39,28 @@ function worldBindPlayers() {
 
 World.snapshot = function () {
   return {
-    stage: World.stage, time: World.time, state: state,
+    stage: World.stage, time: World.time, state: state, rng: getRngSeed(),
+    stageT: stageT, waveIndex: waveIndex, score: score,
     players: World.players.map(function (p) {
-      return { slot: p.slot, owner: p.owner, ship: p.ship, skin: p.skin, x: p.x, y: p.y, hp: p.hp, lives: p.lives, bombs: p.bombs, odT: p.odT };
-    })
+      return {
+        slot: p.slot, owner: p.owner, ship: p.ship, skin: p.skin,
+        x: p.x, y: p.y, hp: p.hp, maxHp: p.maxHp, lives: p.lives, bombs: p.bombs,
+        invuln: p.invuln, od: p.od, odT: p.odT, power: p.power, options: p.options,
+        weapon: p.weapon, specialPower: p.specialPower
+      };
+    }),
+    enemies: enemies.map(function (e) {
+      return { type: e.type, x: e.x, y: e.y, hp: e.hp, max: e.max, t: e.t, mode: e.mode, fireT: e.fireT, mini: !!e.mini };
+    }),
+    shots: shots.map(function (s) { return { x: s.x, y: s.y, vx: s.vx || 0, vy: s.vy, dmg: s.dmg }; }),
+    ebullets: ebullets.map(function (b) { return { x: b.x, y: b.y, vx: b.vx, vy: b.vy, rad: b.rad }; }),
+    items: items.map(function (it) { return { x: it.x, y: it.y, type: it.type, vy: it.vy, t: it.t }; }),
+    boss: boss ? { id: boss.id, x: boss.x, y: boss.y, hp: boss.hp, max: boss.max, phase: boss.phase, invuln: boss.invuln } : null
   };
+};
+
+World.digest = function () {
+  return JSON.stringify(World.snapshot());
 };
 
 function coopUseSlot(p, fn) {

@@ -70,7 +70,7 @@ function prepareStageContent(s){
 }
 function startStage(i){
   prepareStageContent(i);
-  stage=i; stageT=0; waveIndex=0; miniDropT=25; nextTransport=24+Math.random()*10;
+  stage=i; stageT=0; waveIndex=0; miniDropT=25; nextTransport=24+rng()*10;
   player.ship=selectedShip;
   player.skin=selectedSkins[player.ship]||(player.ship==='aegis'?'orbital':'void_lance');
   if(typeof applyShipVariant==='function') applyShipVariant();
@@ -133,11 +133,11 @@ function startBossPhase1Death(){
   player.invuln=99;if(boss)bossDeathBoom(boss,true);
   if(boss){
     for(var i=0;i<64;i++){
-      var a=rand(0,TAU),v=rand(100,620);
-      part(boss.x+Math.cos(a)*rand(0,110),boss.y+Math.sin(a)*rand(0,80),
-        ['#fff6d8','#ffe7a0','#ff9a3a','#c9a6ff'][i%4],rand(2.5,6),v);
+      var a=vrand(0,TAU),v=vrand(100,620);
+      part(boss.x+Math.cos(a)*vrand(0,110),boss.y+Math.sin(a)*vrand(0,80),
+        ['#fff6d8','#ffe7a0','#ff9a3a','#c9a6ff'][i%4],vrand(2.5,6),v);
     }
-    for(var bb=0;bb<5;bb++) fx.push({x:boss.x+rand(-80,80),y:boss.y+rand(-60,60),t:-bb*.06,sc:2.4+bb*.28,seed:Math.random()*TAU,kind:'boss',life:2.3});
+    for(var bb=0;bb<5;bb++) fx.push({x:boss.x+vrand(-80,80),y:boss.y+vrand(-60,60),t:-bb*.06,sc:2.4+bb*.28,seed:vrng()*TAU,kind:'boss',life:2.3});
   }
   sfx('bomb_big',1.0);
 }
@@ -248,7 +248,7 @@ function bossPhase(p){
   if(stage===4&&p===2&&boss){
     bossPhaseGlitchT=0.72;
     bossDeathBoom(boss,true);
-    for(var pe=0;pe<7;pe++) fx.push({x:boss.x+rand(-90,90),y:boss.y+rand(-60,60),t:-pe*.035,sc:2.0+pe*.22,seed:Math.random()*TAU,kind:'boss',life:2.0});
+    for(var pe=0;pe<7;pe++) fx.push({x:boss.x+vrand(-90,90),y:boss.y+vrand(-60,60),t:-pe*.035,sc:2.0+pe*.22,seed:vrng()*TAU,kind:'boss',life:2.0});
   }
   boss.phase=p; boss.invuln=1.6; boss.hitFlash=0; boss.ultT=boss.def.ultRate-2.2; boss.ultCharge=0; boss.spiralT=0; boss.broadT=0; boss.blinkT=0; boss.aimT=0; boss.ringT=0; boss.laserT=0;
   boom(boss.x,boss.y,1.5); shake=Math.max(shake,14);

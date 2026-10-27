@@ -1,5 +1,5 @@
 // Pure math helpers. No DOM / canvas / audio.
-function rand(a, b) { return a + Math.random() * (b - a); }
+function rand(a, b) { return a + rng() * (b - a); }
 function clamp01(v) { return v < 0 ? 0 : (v > 1 ? 1 : v); }
 function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
 function lerp(a, b, t) { return a + (b - a) * t; }

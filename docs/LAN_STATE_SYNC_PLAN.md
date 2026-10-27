@@ -12,9 +12,10 @@
 - [x] 本地双人 P1/P2 槽位
 - [x] `World.players` 玩家槽位绑定
 - [x] 固定 1/60 步长
-- [ ] World 可序列化快照
-- [ ] 输入帧/序号
-- [ ] 确定性随机数
+- [x] World 可序列化快照（`World.snapshot()`）
+- [x] 确定性随机数（`rng()` / visual `vrng()` 分离）
+- [x] 同步种子 / 输入序号协议骨架
+- [ ] 客户端独立模拟
 - [ ] 不同步检测
 
 ## 候选路线
@@ -40,9 +41,16 @@
 - 体验最好
 - 工程量最大
 
+## 进度
+
+- `World.snapshot()` 已用于确定性回归
+- `__resetDeterministic(stage, seed)` + `__simulate(frames)` 已跑通两实例同快照
+- `sync-start` 已下发 seed/stage；input 已带 seq
+- 目前 Client 仍只接收画面，不跑模拟
+
 ## 建议顺序
 
-1. `World.snapshot()` / `World.restore()`：先只用于调试
+1. `World.restore()`：先用于回放/调试
 2. 无网络双实例重放：同一输入序列结果一致
 3. LAN 输入帧 + 序号
 4. 锁步原型

@@ -48,7 +48,7 @@ function noiseBurst(dur,vol,freq,when){
   if(!AC||!master) return;
   var t=AC.currentTime+(when||0),len=Math.max(1,Math.floor(AC.sampleRate*dur));
   var b=AC.createBuffer(1,len,AC.sampleRate),d=b.getChannelData(0);
-  for(var i=0;i<len;i++) d[i]=Math.random()*2-1;
+  for(var i=0;i<len;i++) d[i]=vrng()*2-1;
   var s=AC.createBufferSource();s.buffer=b;
   var f=AC.createBiquadFilter();f.type='lowpass';f.frequency.value=freq;
   var g=AC.createGain();g.gain.setValueAtTime(Math.max(0.001,vol),t);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
@@ -98,7 +98,7 @@ function metalHit(v){
   var fs=[1650,2410,3180,4720,6300];
   for(var i=0;i<fs.length;i++){
     var o=AC.createOscillator(),g=AC.createGain();
-    o.type='sine';o.frequency.setValueAtTime(fs[i]*(.92+Math.random()*.16),t);
+    o.type='sine';o.frequency.setValueAtTime(fs[i]*(.92+vrng()*.16),t);
     o.frequency.exponentialRampToValueAtTime(fs[i]*.86,t+.055);
     g.gain.setValueAtTime(Math.max(.008,v*(.15/(i*.55+1))),t);
     g.gain.exponentialRampToValueAtTime(.0001,t+.055+i*.012);
@@ -131,7 +131,7 @@ function playWarpJet(vol){
   if(AC.state==='suspended') AC.resume();
   if(SFXBUF['jetfly']){playSample('jetfly',Math.min(1,vol*1.15));return;}
   var t0=AC.currentTime,dur=0.85,len=Math.floor(AC.sampleRate*dur),buf=AC.createBuffer(1,len,AC.sampleRate),d=buf.getChannelData(0);
-  for(var i=0;i<len;i++){var e=1-i/len;d[i]=(Math.random()*2-1)*e*e;}
+  for(var i=0;i<len;i++){var e=1-i/len;d[i]=(vrng()*2-1)*e*e;}
   var src=AC.createBufferSource();src.buffer=buf;
   var bp=AC.createBiquadFilter();bp.type='bandpass';bp.Q.value=1.1;
   bp.frequency.setValueAtTime(180,t0);bp.frequency.exponentialRampToValueAtTime(1900,t0+0.24);bp.frequency.exponentialRampToValueAtTime(220,t0+dur);

@@ -231,7 +231,7 @@ function updateBeams(dt){
 
 
 function spawnTransport(){
-  var side=Math.random()<0.5?-1:1;
+  var side=rng()<0.5?-1:1;
   enemies.push({type:3,x:side<0?-70:W+70,y:135,baseX:W/2,mode:'transport',vx:side*95,hp:180+stage*40,max:180+stage*40,t:0,phase:0,spd:0,fireT:999,flash:0,transport:true,first:false});
 }
 

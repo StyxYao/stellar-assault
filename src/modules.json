@@ -4,6 +4,7 @@
   "modules": [
     "src/core/fixed-step.js",
     "src/core/math.js",
+    "src/core/rng.js",
     "src/core/collision.js",
     "src/content/enemy-archetypes.js",
     "src/content/stage-waves.js",

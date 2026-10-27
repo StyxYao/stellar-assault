@@ -9,7 +9,7 @@ function beginBossUltimate(){
   if(!boss) return;
   boss.ultT=0;boss.ultCharge=1.3;
   if(stage===4&&boss.phase>=1){
-    boss.ultPick=Math.floor(Math.random()*4);
+    boss.ultPick=Math.floor(rng()*4);
     var un=['TENTACLE CAGE','LASER CURTAIN','SWARM SINGULARITY','SERAPHIC CHOIR'];
     var on=['VOID SOVEREIGN','ABYSS DEVOURER','STAR BEHEMOTH','SERAPHIC WINGS'];
     setBanner('FUSED MEMORY / '+un[boss.ultPick],on[boss.ultPick],1.5);
@@ -101,11 +101,11 @@ function runSignature(pi,fn){
 function bossUltimate(){
   if(!boss) return;
   if(stage===4&&boss.phase>=1){
-    var pick=(boss.ultPick==null)?Math.floor(Math.random()*4):boss.ultPick;
+    var pick=(boss.ultPick==null)?Math.floor(rng()*4):boss.ultPick;
     var fns=[ultOctopus,ultDread,ultHive,ultSeraph];
     runSignature(pick,fns[pick]);
     if(boss.phase===2){
-      var p2=(pick+1+Math.floor(Math.random()*3))%4;
+      var p2=(pick+1+Math.floor(rng()*3))%4;
       runSignature(p2,fns[p2]);
     }
   }else if(boss.def.style==='octopus') ultOctopus();

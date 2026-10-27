@@ -11,10 +11,10 @@ function step(dt){
   for(var i=0;i<fx.length;i++) fx[i].t+=dt;
   for(var i=fx.length-1;i>=0;i--) if(fx[i].t>(fx[i].life||0.6)) fx.splice(i,1);
   for(var pi=phaseFx.length-1;pi>=0;pi--){phaseFx[pi].t+=dt;if(phaseFx[pi].t>phaseFx[pi].life) phaseFx.splice(pi,1);}
-  for(var i=0;i<stars.length;i++){stars[i].y+=(18+stars[i].z*40)*dt;if(stars[i].y>H+4){stars[i].y=-4;stars[i].x=Math.random()*W;}}
+  for(var i=0;i<stars.length;i++){stars[i].y+=(18+stars[i].z*40)*dt;if(stars[i].y>H+4){stars[i].y=-4;stars[i].x=vrng()*W;}}
   if(state!=='menu'){
     bgScroll+=82*dt; bgEdgeScroll+=165*dt;
-    for(var di=0;di<bgDust.length;di++){var dp=bgDust[di];dp.y+=dp.sp*dt;if(dp.y>H+6){dp.y=-6;dp.x=Math.random()*W;}}
+    for(var di=0;di<bgDust.length;di++){var dp=bgDust[di];dp.y+=dp.sp*dt;if(dp.y>H+6){dp.y=-6;dp.x=vrng()*W;}}
   }
   if(shake>0) shake=Math.max(0,shake-dt*40);
   if(bgFade>0) bgFade=Math.max(0,bgFade-dt/1.4);
@@ -109,7 +109,7 @@ function step(dt){
         spawnWave(waves[waveIndex]); waveIndex++;
       }
     }
-    if(stageT>nextTransport&&!enemies.some(function(e){return e.transport;} )){ if(Math.random()<0.55) spawnTransport(); nextTransport=stageT+22+Math.random()*10; }
+    if(stageT>nextTransport&&!enemies.some(function(e){return e.transport;} )){ if(rng()<0.55) spawnTransport(); nextTransport=stageT+22+rng()*10; }
     if(waveIndex>=waves.length&&(enemies.length===0||stageT>waves[waves.length-1].t+8)) startBossWarn();
   }else if(state==='bossWarn'){
     if(bannerT<=0) spawnBoss();
@@ -305,9 +305,9 @@ function step(dt){
             var sigGap=boss.phase===2?2.4:3.2;
             if(boss.bossSigT>sigGap){
               boss.bossSigT=0;
-              var spi=Math.floor(Math.random()*4);
+              var spi=Math.floor(rng()*4);
               var arr=SIG_FNS[spi];
-              runSignature(spi,arr[Math.floor(Math.random()*arr.length)]);
+              runSignature(spi,arr[Math.floor(rng()*arr.length)]);
             }
           }
           boss.patternT+=dt; if(boss.patternT>8) setBossPattern(boss.patternIdx+1);
@@ -410,16 +410,16 @@ function step(dt){
     if(stage===4&&boss&&boss.phase===0&&boss.hp<=0){ boss.hp=0; startBossPhase1Death(); }
     else if(boss.hp<=0){
       boss.hp=0;
-      for(var k=0;k<30;k++) part(boss.x+rand(-70,70),boss.y+rand(-40,40),'#ffb066',2,220);
+      for(var k=0;k<30;k++) part(boss.x+vrand(-70,70),boss.y+vrand(-40,40),'#ffb066',2,220);
       bossDeathBoom(boss);
       bullets.length=0; ebullets.length=0; beams.length=0;
       score+=1000; player.bombs=Math.min(player.ship==='aegis'?9:5,player.bombs+1);
       if(stage===4){
         finaleT=0;state='finale';shake=48;
-        for(var fk=0;fk<18;fk++) phaseFx.push({x:W/2+rand(-120,120),y:H*.44+rand(-100,100),t:-fk*.035,life:3.8,kind:'death'});
+        for(var fk=0;fk<18;fk++) phaseFx.push({x:W/2+vrand(-120,120),y:H*.44+vrand(-100,100),t:-fk*.035,life:3.8,kind:'death'});
         for(var pk=0;pk<110;pk++){
-          var pa=rand(0,TAU),pv=rand(80,520);
-          part(W/2+Math.cos(pa)*rand(0,70),H*.44+Math.sin(pa)*rand(0,50),['#ff5f7a','#c06aff','#ff9a3a','#ffe7a0','#7fe6ff'][pk%5],rand(2,5),pv);
+          var pa=vrand(0,TAU),pv=vrand(80,520);
+          part(W/2+Math.cos(pa)*vrand(0,70),H*.44+Math.sin(pa)*vrand(0,50),['#ff5f7a','#c06aff','#ff9a3a','#ffe7a0','#7fe6ff'][pk%5],vrand(2,5),pv);
         }
       }else{setBanner('STAGE CLEAR',STAGES[stage].name,3.0);state='clear';if(typeof recordStageClear==='function') recordStageClear();}
       boss=null; runner=null;
