@@ -864,3 +864,9 @@
 
 - Replaced the menu background with a dark SANCTUM cathedral composition and integrated logo.
 - Kept the previous orbital menu art as menu-orbital.webp.
+
+## 0.9.48 — Fleet key-art menu
+
+- Replaced menu background with the uploaded black-hole/fleet key art.
+- Added a bottom-center logo-lockup overlay and UI support shading.
+- Kept menu-orbital and menu-sanctum as backups.

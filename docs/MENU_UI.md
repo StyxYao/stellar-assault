@@ -37,5 +37,7 @@ Enter = open highlighted mode
 
 ## Menu background
 
-- New menu art: `assets/bg/menu.webp` based on the SANCTUM cathedral key art, with an integrated logo.
-- Previous orbital menu art kept as `assets/bg/menu-orbital.webp`.
+- New menu art: `assets/bg/menu.webp` from the fleet/black-hole key art, with a dark UI support band and a bottom-center overlaid logo.
+- Logo/title is drawn at runtime from `GIMG.brand_lockup`, at `H * 0.735`.
+- Previous orbital art: `assets/bg/menu-orbital.webp`.
+- Previous SANCTUM art: `assets/bg/menu-sanctum.webp`.

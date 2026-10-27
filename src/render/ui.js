@@ -398,6 +398,23 @@ function drawShipSelectOverlay(){
   ctx.restore();ctx.textAlign='left';
 }
 function menuSkinButton(){return {x:W/2+6,y:H*.395,w:112,h:38};}
+function drawMenuBrand(){
+  var img=(typeof GIMG!=='undefined'&&GIMG.brand_lockup)?GIMG.brand_lockup:null;
+  if(!img||!img.complete) return;
+  var w=Math.min(W*0.78,340), h=w*img.height/img.width;
+  var x=(W-w)/2, y=H*0.735;
+  ctx.save();
+  ctx.globalAlpha=0.98;
+  ctx.shadowColor='rgba(80,210,255,0.30)';ctx.shadowBlur=18;
+  ctx.drawImage(img,x,y,w,h);
+  ctx.shadowBlur=0;
+  ctx.globalAlpha=1;
+  // thin divider under the wordmark
+  ctx.strokeStyle='rgba(159,232,255,0.35)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(W*0.28,y+h+12);ctx.lineTo(W*0.72,y+h+12);ctx.stroke();
+  ctx.restore();
+}
+
 function drawMenu(){
   paintBg(BGMENU,1)||paintBg(BG1,1);
   ctx.fillStyle='rgba(2,4,12,0.05)';ctx.fillRect(0,0,W,H);
@@ -420,7 +437,7 @@ function drawMenu(){
   ctx.font='7px monospace';ctx.fillStyle='#9fc3d8';ctx.shadowBlur=3;
   ctx.fillText('DRAG · SHIP FOLLOWS ABOVE FINGER · AUTO-FIRE',W/2,infoY2);
   ctx.shadowBlur=0;
-  // The poster already contains the STELLAR ASSAULT logo.
+  // The key art leaves the lower third for the overlaid wordmark.
   var tg=ctx.createLinearGradient(0,H*0.34,0,H*0.64);
   tg.addColorStop(0,'rgba(0,0,0,0)');tg.addColorStop(0.45,'rgba(2,4,12,0.56)');tg.addColorStop(1,'rgba(2,4,12,0.70)');
   ctx.fillStyle=tg;ctx.fillRect(0,H*0.34,W,H*0.30);
@@ -471,6 +488,8 @@ function drawMenu(){
     ctx.fillStyle='#8fb8ca';ctx.font='9px monospace';
     ctx.fillText('BEST  '+String(best).padStart(7,'0'),W/2,H*.625);
   } catch(e) {}
+
+  drawMenuBrand();
 
   // credits: intentionally smaller and quieter
   if(!menuInfoBottom){
