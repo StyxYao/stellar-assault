@@ -981,3 +981,10 @@
 - Added electron-builder config, icon, RC version and mac/win/linux targets.
 - Packaged macOS app includes dist and the Node LAN server.
 - Documented Steamworks/signing/depot gates in STEAM_RELEASE.md.
+
+## 1.0.0-rc.1 — Release candidate freeze
+
+- Web and desktop versions unified at 1.0.0-rc.1.
+- Added release checklist and automated version/build guard.
+- Scope frozen to 5-stage campaign, 3 ships, local co-op, LAN 2P; Boss Rush/Tower are 1.1.
+- Physical iOS/Android/Windows/Deck and Steamworks remain external release gates.

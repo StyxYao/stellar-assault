@@ -222,7 +222,8 @@ bash tools/make_snapshot.sh before-change
 ## 版本与变更
 
 - [`CHANGELOG.md`](CHANGELOG.md)
-- 当前开发版本：`0.9.56`
+- 当前发布候选：`1.0.0-rc.1`
+- 发布清单：[`docs/RELEASE_1_0.md`](docs/RELEASE_1_0.md)
 - 1.0 范围与门禁：`docs/ROADMAP_1_0.md`
 - 每个抽取步骤的 tag 见 [`docs/MIGRATION_LOG.md`](docs/MIGRATION_LOG.md)
 
