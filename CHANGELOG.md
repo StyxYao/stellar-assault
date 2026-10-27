@@ -1073,3 +1073,7 @@
 
 - Re-ran the full five-stage simulation after one-wave scheduling.
 - Reached finale with no page errors and no ebullet holes.
+
+## 1.0.0-rc.1n — Shield bomb coverage
+
+- Verified attached AEGIS shield clears a boss bomb: shield 60→52, HP unchanged.
