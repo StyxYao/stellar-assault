@@ -503,8 +503,7 @@ function aegisShieldBreak() {
   aegisState.lowWarnT = 0;
   if (typeof player !== 'undefined') { player.invuln = Math.max(player.invuln || 0, 1.2); player.noBlink = false; }
   try { shake = Math.max(shake, 18); } catch (e) {}
-  try { sfx('bomb_big', 0.58); } catch (e) {}
-  try { sfx('aegis_force', 0.55); } catch (e) {}
+  try { if (typeof playAegisBreak === 'function') playAegisBreak(); else sfx('bomb_big', 0.58); } catch (e) {}
   try { if (typeof part === 'function') for (var i = 0; i < 26; i++) part(aegisState.forceX, aegisState.forceY, i % 2 ? '#ffd36b' : '#ff7a4d', 1, 240); } catch (e) {}
   try { if (typeof boom === 'function') boom(aegisState.forceX, aegisState.forceY, 0.75); } catch (e) {}
 }

@@ -36,7 +36,28 @@ function loadSfxExtras(){
       AC.decodeAudioData(u.buffer,function(d){SFXBUF[k]=d;},function(){});
     }catch(e){}
   });
+  loadAegisBreak();
 }
+var aegisBreakBuf=null,aegisBreakLoading=false;
+function loadAegisBreak(){
+  if(aegisBreakBuf||aegisBreakLoading||!AC) return;
+  aegisBreakLoading=true;
+  fetch('assets/audio/aegis-break-mix-1-22.mp3').then(function(r){ return r.arrayBuffer(); })
+    .then(function(b){ AC.decodeAudioData(b,function(d){aegisBreakBuf=d;aegisBreakLoading=false;},function(){aegisBreakLoading=false;}); })
+    .catch(function(){aegisBreakLoading=false;});
+}
+function playAegisBreak(){
+  if(!AC||muted||!master) return;
+  loadAegisBreak();
+  if(!aegisBreakBuf) return;
+  try{
+    var s=AC.createBufferSource(); s.buffer=aegisBreakBuf;
+    var g=AC.createGain(); g.gain.value=0.82;
+    s.connect(g); g.connect(master); s.start();
+    s.onended=function(){try{s.disconnect();g.disconnect();}catch(e){}};
+  }catch(e){}
+}
+
 function tone(f0,f1,dur,vol,type,when){
   if(!AC||!master) return;
   var t=AC.currentTime+(when||0),o=AC.createOscillator(),g=AC.createGain();

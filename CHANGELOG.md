@@ -1092,3 +1092,8 @@
 
 - Restored the ungraded fleet key art as the main menu background.
 - Added six original energy-blast break SFX candidates (no alarm melody).
+
+## 1.0.0-rc.1r — Selected Aegis break sound and original menu
+
+- Wired a layered PULSE + CORE COLLAPSE (1+22) break sound.
+- Restored the user-supplied ungraded fleet key art as the main menu background with localized UI scrims.
