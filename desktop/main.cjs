@@ -19,6 +19,9 @@ let savePath = null;
 let fullscreenState = false;
 let lanServer = null;
 let lanHost = '127.0.0.1';
+const isPackaged = app.isPackaged;
+const distRoot = isPackaged ? path.join(process.resourcesPath, 'dist') : path.join(__dirname, '..', 'dist');
+const lanModulePath = isPackaged ? path.join(process.resourcesPath, 'tools', 'lan_server.mjs') : path.join(__dirname, '..', 'tools', 'lan_server.mjs');
 
 function readState() {
   try {
@@ -97,7 +100,7 @@ function createWindow() {
   win.setAspectRatio(9 / 16);
   win.setMenuBarVisibility(false);
   if (lanServer) win.loadURL(`http://${lanHost}:${lanServer.httpPort}/index.html`);
-  else win.loadFile(path.join(__dirname, '..', 'dist', 'index.html'));
+  else win.loadFile(path.join(distRoot, 'index.html'));
   win.once('ready-to-show', () => { win.show(); if (saved.fullscreen) setWindowFullscreen(true); });
   win.on('resize', writeState);
   win.on('move', writeState);
@@ -143,7 +146,7 @@ ipcMain.handle('app:quit', () => { app.quit(); });
 
 app.whenReady().then(async () => {
   try {
-    const lan = await import(path.join(__dirname, '..', 'tools', 'lan_server.mjs'));
+    const lan = await import(lanModulePath);
     lanServer = lan.startLanServer(8785, 8786);
     const nets = os.networkInterfaces();
     for (const name of Object.keys(nets)) {

@@ -975,3 +975,9 @@
 - Added fusion video-blocked fallback so bossFusion cannot stall.
 - Re-ran local co-op and Node LAN state sync QA.
 - Added QA_1_0.md with remaining physical-device and Steam gates.
+
+## 0.9.64 — Desktop packaging gate
+
+- Added electron-builder config, icon, RC version and mac/win/linux targets.
+- Packaged macOS app includes dist and the Node LAN server.
+- Documented Steamworks/signing/depot gates in STEAM_RELEASE.md.

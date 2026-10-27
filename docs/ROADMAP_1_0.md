@@ -42,8 +42,8 @@ Desktop / Electron 基础发行
 
 - [ ] 1.0.0 版本号统一
 - [ ] README / CHANGELOG / 验收文档同步
-- [ ] Windows / macOS Desktop 构建
-- [ ] Steamworks / 安装包 / 商店素材（Steam 发行门禁）
+- [x] Windows / macOS Desktop 构建链路（macOS unpacked 已验证；Windows 未构建）
+- [~] Steamworks / 安装包 / 商店素材（electron-builder 已配置；Steamworks 未接）
 - [ ] 隐私 / EULA / 第三方声明
 - [ ] 回滚包与发布快照
 

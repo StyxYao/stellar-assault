@@ -6,6 +6,10 @@ Dev shell for the Steam build. It loads the normal `dist/index.html`; game code 
 cd desktop
 npm install
 npm start
+
+# packaged app / installers
+npm run pack
+npm run dist:mac
 ```
 
 `npm run dev` enables DevTools (F12).
