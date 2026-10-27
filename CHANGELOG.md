@@ -1030,3 +1030,9 @@
 
 - Latest Windows/Linux native artifacts include Aegis shield fixes and ebullet guard.
 - Both packaged runtime smoke tests passed.
+
+## 1.0.0-rc.1g — Desktop artifacts downloaded
+
+- Downloaded Windows NSIS/portable and Linux AppImage artifacts for c95eb38.
+- Verified packaged `resources/dist/build.txt = c95eb38`.
+- Recorded SHA256 checksums in backups/desktop-artifacts/SHA256SUMS.
