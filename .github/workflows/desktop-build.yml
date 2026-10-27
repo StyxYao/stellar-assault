@@ -31,6 +31,28 @@ jobs:
       - name: Build Windows installer and zip
         working-directory: desktop
         run: npm run dist:win
+      - name: Smoke test packaged Windows app and LAN server
+        shell: pwsh
+        working-directory: desktop
+        run: |
+          $exe = Get-ChildItem -Path release -Recurse -Filter 'STELLAR ASSAULT.exe' | Select-Object -First 1
+          if (-not $exe) { throw 'packaged exe not found' }
+          $p = Start-Process -FilePath $exe.FullName -ArgumentList '--no-sandbox','--disable-gpu' -PassThru
+          try {
+            $ok = $false
+            for ($i = 0; $i -lt 15; $i++) {
+              Start-Sleep -Seconds 1
+              try {
+                $r = Invoke-WebRequest -Uri 'http://127.0.0.1:8785/index.html' -UseBasicParsing -TimeoutSec 3
+                if ($r.StatusCode -eq 200) { $ok = $true; break }
+              } catch {}
+            }
+            if (-not $ok) { throw 'packaged Windows app LAN server did not respond on 8785' }
+            Write-Host 'Windows packaged runtime smoke: PASS'
+          } finally {
+            Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+            Get-Process | Where-Object { $_.ProcessName -like 'STELLAR*' } | Stop-Process -Force -ErrorAction SilentlyContinue
+          }
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -62,6 +84,23 @@ jobs:
       - name: Build Linux AppImage
         working-directory: desktop
         run: npm run dist:linux
+      - name: Smoke test packaged Linux app and LAN server
+        working-directory: desktop
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb
+          APP=$(ls release/*.AppImage | head -1)
+          chmod +x "$APP"
+          APPIMAGE_EXTRACT_AND_RUN=1 xvfb-run -a "$APP" --no-sandbox --disable-gpu &
+          APP_PID=$!
+          OK=0
+          for i in $(seq 1 15); do
+            sleep 1
+            if curl -fsS --max-time 3 http://127.0.0.1:8785/index.html >/dev/null; then OK=1; break; fi
+          done
+          kill "$APP_PID" 2>/dev/null || true
+          if [ "$OK" != "1" ]; then echo 'packaged Linux app LAN server did not respond'; exit 1; fi
+          echo 'Linux packaged runtime smoke: PASS'
       - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4
         with:

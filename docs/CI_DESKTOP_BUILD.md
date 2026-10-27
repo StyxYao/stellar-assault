@@ -65,3 +65,13 @@ To let the agent download artifacts or publish a GitHub Release:
 - `Contents: Write` for GitHub Release upload
 
 Do not paste the token into chat; place it in a local secure environment.
+
+
+## Packaged runtime smoke
+
+The workflow now launches the packaged app after building:
+
+- Windows: starts `STELLAR ASSAULT.exe`, waits for `http://127.0.0.1:8785/index.html`
+- Linux: runs the AppImage under Xvfb, waits for the same endpoint
+
+This validates that the packaged app can start and host the built-in LAN server. It does not replace a human playthrough or Steam Deck hardware validation.
