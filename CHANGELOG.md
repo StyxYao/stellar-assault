@@ -1042,3 +1042,8 @@
 - Simulated Stage 1 through Stage 5 finale with real state transitions.
 - No page errors, no ebullet holes.
 - Stage 5 fusion path completed in simulation.
+
+## 1.0.0-rc.1i — Determinism regression
+
+- Re-ran World snapshot/restore regression after Aegis and ebullet changes.
+- Snapshot restore produced an identical 3038-byte state.
