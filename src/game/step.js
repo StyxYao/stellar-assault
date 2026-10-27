@@ -93,6 +93,7 @@ function step(dt){
     }
   }
   if(typeof coopUpdate==='function') coopUpdate(dt);
+  if(typeof worldBindPlayers==='function') worldBindPlayers();
   if(bannerT>0) bannerT-=dt;
   if(state==='intro'){
     if(bannerT<=0){ state='play'; stageT=0; }

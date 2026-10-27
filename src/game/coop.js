@@ -1,6 +1,6 @@
-// R3.0 local co-op vertical slice. P1 is the existing player; P2 is a VECTOR
-// slot controlled by IJKL or the second gamepad. This module intentionally
-// keeps P2 self-contained so single-player paths are untouched.
+// R3 local co-op. P1 keeps the legacy global slot; P2 is a first-class slot
+// with independent ship/skin/state. Ship-system calls use a scoped context so
+// P1/P2 state cannot leak between updates.
 var coopEnabled = false;
 var coopInputMode = 'off'; // off | kb | mouse
 var coopShip2 = 'vector', coopSkin2 = 'void_lance';
@@ -28,19 +28,43 @@ function coopToggle() {
   pickupT = 1.6;
 }
 
-function coopClone(o) { return JSON.parse(JSON.stringify(o)); }
-function coopSwapEnter() {
-  var s = { player: player, target: target, aegis: aegisState, phantom: phantomState, ship: selectedShip, skin: selectedSkins[player2.ship] };
-  player = player2; target = target2;
-  selectedShip = player2.ship; selectedSkins[player2.ship] = player2.skin;
-  if (player2.ship === 'aegis') aegisState = aegisState2;
-  if (player2.ship === 'phantom') phantomState = phantomState2;
-  return s;
+var World = { players: [], stage: 0, time: 0 };
+function worldBindPlayers() {
+  player.slot = 1; player.owner = 'P1';
+  World.players = [player];
+  if (player2) { player2.slot = 2; player2.owner = 'P2'; World.players.push(player2); }
+  World.stage = stage;
+  World.time = time;
 }
-function coopSwapExit(s) {
-  player = s.player; target = s.target; aegisState = s.aegis; phantomState = s.phantom;
-  selectedShip = s.ship; selectedSkins[player2 ? player2.ship : selectedShip] = s.skin;
+
+World.snapshot = function () {
+  return {
+    stage: World.stage, time: World.time, state: state,
+    players: World.players.map(function (p) {
+      return { slot: p.slot, owner: p.owner, ship: p.ship, skin: p.skin, x: p.x, y: p.y, hp: p.hp, lives: p.lives, bombs: p.bombs, odT: p.odT };
+    })
+  };
+};
+
+function coopUseSlot(p, fn) {
+  if (!p || p === player) return fn();
+  var saved = {
+    player: player, target: target, aegis: aegisState, phantom: phantomState,
+    ship: selectedShip, skin: selectedSkins[p.ship]
+  };
+  player = p; target = target2;
+  selectedShip = p.ship; selectedSkins[p.ship] = p.skin;
+  if (p.ship === 'aegis') aegisState = aegisState2;
+  if (p.ship === 'phantom') phantomState = phantomState2;
+  try { return fn(); }
+  finally {
+    player = saved.player; target = saved.target;
+    aegisState = saved.aegis; phantomState = saved.phantom;
+    selectedShip = saved.ship;
+    selectedSkins[p.ship] = saved.skin;
+  }
 }
+
 function coopSkinDef(ship, id) {
   if (typeof skinList !== 'function') return null;
   var list = skinList(ship), fallback = list[0];
@@ -89,6 +113,18 @@ function coopEnsureDistinct() {
   }
 }
 
+function coopEnsureP2State() {
+  if (!player2) return;
+  if (player2.ship === 'aegis' && !aegisState2) {
+    aegisState2 = JSON.parse(JSON.stringify(aegisState));
+    coopUseSlot(player2, function () { aegisReset(); });
+  }
+  if (player2.ship === 'phantom' && !phantomState2) {
+    phantomState2 = JSON.parse(JSON.stringify(phantomState));
+    coopUseSlot(player2, function () { phantomReset(); });
+  }
+}
+
 function coopSpawn() {
   coopEnsureDistinct();
   if (!coopEnabled) { player2 = null; return; }
@@ -100,7 +136,7 @@ function coopSpawn() {
     bombs: 3, od: 0, odT: 0, powerXp: 0,
     respawnT: 0, respawnGift: false, invuln: 2.0, bank: 0, noBlink: false,
     power: 1, weapon: 'normal', specialPower: 1, options: 0, wingPower: 1,
-    ship: ship, skin: skin, trail: [], wingEntry: []
+    ship: ship, skin: skin, slot: 2, owner: 'P2', trail: [], wingEntry: []
   };
   var d = coopSkinDef(ship, skin);
   player2.maxHp = (d && d.maxHp) ? d.maxHp : 3;
@@ -110,13 +146,14 @@ function coopSpawn() {
   player2.normalBuff = 1;
   if (ship === 'aegis') {
     aegisState2 = JSON.parse(JSON.stringify(aegisState));
-    var sA = coopSwapEnter(); aegisReset(); coopSwapExit(sA);
+    coopUseSlot(player2, function () { aegisReset(); });
   }
   if (ship === 'phantom') {
     phantomState2 = JSON.parse(JSON.stringify(phantomState));
-    var sP = coopSwapEnter(); phantomReset(); coopSwapExit(sP);
+    coopUseSlot(player2, function () { phantomReset(); });
   }
   target2.x = player2.x; target2.y = player2.y;
+  worldBindPlayers();
 }
 
 function coopHitP2() {
@@ -145,8 +182,8 @@ function coopHitP2() {
 
 function coopSpecial(kind) {
   if (!player2 || (state !== 'play' && state !== 'boss')) return;
-  var s = coopSwapEnter();
-  try {
+  coopEnsureP2State();
+  coopUseSlot(player2, function () {
     if (player2.ship === 'phantom') {
       if (kind !== 'secondary') phantomSkill();
     } else if (player2.ship === 'aegis') {
@@ -154,8 +191,7 @@ function coopSpecial(kind) {
     } else if (kind !== 'secondary') {
       if (player2.bombs > 0) bomb();
     }
-  } catch (e) {}
-  coopSwapExit(s);
+  });
 }
 
 function coopKey(e, down) {
@@ -196,9 +232,7 @@ function coopLaserDamage(dt) {
 
 function coopCollectItem(it) {
   if (!player2) return;
-  var s = coopSwapEnter();
-  try { collectItem(it); } catch (e) {}
-  coopSwapExit(s);
+  coopUseSlot(player2, function () { collectItem(it); });
 }
 
 function coopRemoteP1Update(dt) {
@@ -228,6 +262,7 @@ function coopUpdate(dt) {
   if (!player2) coopSpawn();
   var p = player2;
   if (!p || (state !== 'play' && state !== 'boss')) return;
+  coopEnsureP2State();
   if (p.invuln > 0) p.invuln = Math.max(0, p.invuln - dt);
   if (p.odT > 0) p.odT = Math.max(0, p.odT - dt);
   if (coopLaserFx) { coopLaserFx.t -= dt; if (coopLaserFx.t <= 0) coopLaserFx = null; }
@@ -276,12 +311,11 @@ function coopUpdate(dt) {
   p.trail.unshift({ x: p.x, y: p.y }); if (p.trail.length > 80) p.trail.pop();
 
   if (state === 'play' || state === 'boss') {
-    var s = coopSwapEnter();
-    try {
+    coopUseSlot(p, function () {
       if (p.ship === 'aegis') updateAegis(dt);
       if (p.ship === 'phantom') phantomUpdate(dt);
       if (p.options > 0) { updateWingEntries(dt); updateOptions(dt); }
-      var hold = p.ship === 'aegis' && aegisState2 && (aegisState2.charge === 'charging' || p.odT > 0 || aegisState2.normalLockT > 0);
+      var hold = p.ship === 'aegis' && aegisState && (aegisState.charge === 'charging' || p.odT > 0 || aegisState.normalLockT > 0);
       if (!hold) {
         if (p.weapon === 'spread') {
           if (time - coopLastSpecial > 0.16) { coopLastSpecial = time; fireSpread(); }
@@ -293,17 +327,16 @@ function coopUpdate(dt) {
           coopLastShot = time; fireNormal();
         }
       }
-    } catch (e) {}
-    coopSwapExit(s);
+    });
   }
+  worldBindPlayers();
 }
 
 function coopDrawP2() {
   if (!coopEnabled || !player2) return;
   var p = player2;
-  var s = coopSwapEnter();
-  try { drawPlayerEntity(); if (p.options > 0) drawOptions(); } catch (e) {}
-  coopSwapExit(s);
+  coopEnsureP2State();
+  coopUseSlot(p, function () { drawPlayerEntity(); if (p.options > 0) drawOptions(); });
   if (coopLaserFx) {
     var lf = coopLaserFx, cols = ['80,190,255','120,240,255','255,120,220','255,215,100'], cc = cols[Math.max(0,Math.min(3,(lf.level||1)-1))];
     var by = lf.endY > 0 ? lf.endY : 0, h = Math.max(0, p.y - 16 - by);
