@@ -52,3 +52,21 @@ aegis-alarm-audition-2.html
 ```text
 aegis-alarm-audition-3.html
 ```
+
+
+## Set 4 — energy blast (break, not alarm)
+
+```text
+17 PLASMA BURST        等离子爆炸
+18 ARC DETONATION      电弧引爆
+19 SHIELD NOVA         护盾新星
+20 REACTOR RUPTURE     反应堆爆裂
+21 ION BURST           离子爆点
+22 CORE COLLAPSE       核心内爆
+```
+
+试听：
+
+```text
+aegis-blast-audition.html
+```

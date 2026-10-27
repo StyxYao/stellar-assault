@@ -1087,3 +1087,8 @@
 
 - Added six hybrid fault/warning candidates, including a layered 5+6 mix.
 - Added third audition page; game alarm remains unchanged until selection.
+
+## 1.0.0-rc.1q — Original menu colors + energy blast SFX
+
+- Restored the ungraded fleet key art as the main menu background.
+- Added six original energy-blast break SFX candidates (no alarm melody).
