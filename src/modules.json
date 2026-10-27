@@ -13,6 +13,7 @@
     "src/app/modes.js",
     "src/app/ranking.js",
     "src/app/save.js",
+    "src/app/run-rank.js",
     "src/app/settings.js",
     "src/app/cloud-save.js",
     "src/game/ships.js",

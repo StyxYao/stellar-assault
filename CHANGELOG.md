@@ -955,3 +955,9 @@
 - Added CORE LOCK / DEVOUR / SIEGE CHARGE / RADIANT CAGE / ECHO LOCK.
 - Each boss has a telegraphed core interaction and an output/dodge window.
 - Boss mechanic state is included in LAN full snapshots.
+
+## 0.9.61 — R7 rank, medal and local top runs
+
+- Added Rank 0-5 and E-S medals at run end.
+- Added persistent local top-5 runs with score/stage/result.
+- End screen shows RANK, MEDAL and LOCAL TOP 3.

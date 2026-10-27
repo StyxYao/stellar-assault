@@ -1107,8 +1107,17 @@ function drawEnd(){
   ctx.textAlign='center';
   ctx.fillStyle=state==='win'?'#9fe8ff':'#ff8a66';ctx.font='28px monospace';
   ctx.fillText(state==='win'?(stage===4?'TIME RECLAIMED':'MISSION COMPLETE'):'GAME OVER',W/2,H/2-20);
+  if(typeof lastRunResult!=='undefined'&&lastRunResult){
+    var rk=lastRunResult.rank,md=lastRunResult.medal;
+    ctx.fillStyle='#ffd27a';ctx.font='700 18px monospace';ctx.fillText('RANK '+rk+'  ·  MEDAL '+md,W/2,H/2-52);
+  }
   ctx.fillStyle='#e8f2ff';ctx.font='16px monospace';ctx.fillText('SCORE '+score,W/2,H/2+18);
   ctx.fillStyle='#9db3c8';ctx.font='11px monospace';ctx.fillText('TAP TO RETRY',W/2,H/2+52);
+  if(typeof SaveStore!=='undefined'&&SaveStore.data&&SaveStore.data.campaign&&SaveStore.data.campaign.topRuns&&SaveStore.data.campaign.topRuns.length){
+    var top=SaveStore.data.campaign.topRuns.slice(0,3),by=H/2+82;
+    ctx.fillStyle='#7f93a8';ctx.font='9px monospace';ctx.fillText('LOCAL TOP 3',W/2,by);by+=14;
+    for(var ri=0;ri<top.length;ri++){ctx.fillStyle=ri===0?'#ffd27a':'#9db3c8';ctx.font='10px monospace';ctx.fillText((ri+1)+'  '+top[ri].medal+'  '+top[ri].score,W/2,by);by+=13;}
+  }
   ctx.textAlign='left';
 }
 function resetCanvasState(){

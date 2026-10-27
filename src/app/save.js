@@ -4,7 +4,7 @@ var SAVE_VERSION = 1;
 var SAVE_STORAGE_KEY = 'stellar-assault-save-v1';
 var DEFAULT_SAVE = {
   version: SAVE_VERSION,
-  campaign: { unlockedStage: 4, bestScore: 0, clears: 0, lastStage: 0 },
+  campaign: { unlockedStage: 4, bestScore: 0, clears: 0, lastStage: 0, lastRank: 0, bestRank: 0, lastMedal: 'E', bestMedal: 'E', topRuns: [] },
   ships: { vector: { bestScore: 0, skin: 'void_lance' }, aegis: { bestScore: 0, skin: 'orbital' }, phantom: { bestScore: 0, skin: 'quantum', locked: false }, selected: 'vector' },
   settings: { master: 1, bgm: 1, sfx: 1, fullscreen: false, language: 'zh', difficulty: 'normal', aegisTutorialSeen: false },
   stats: { runs: 0, gameOvers: 0, wins: 0 },
@@ -29,6 +29,11 @@ function normalizeSave(raw) {
     out.campaign.bestScore = Math.max(0, Number(raw.campaign.bestScore) || 0);
     out.campaign.clears = Math.max(0, Number(raw.campaign.clears) || 0);
     out.campaign.lastStage = Math.max(0, Math.min(4, Number(raw.campaign.lastStage) || 0));
+    out.campaign.lastRank = Math.max(0, Math.min(5, Number(raw.campaign.lastRank) || 0));
+    out.campaign.bestRank = Math.max(0, Math.min(5, Number(raw.campaign.bestRank) || 0));
+    out.campaign.lastMedal = /^[EDCBAS]$/.test(raw.campaign.lastMedal || '') ? raw.campaign.lastMedal : 'E';
+    out.campaign.bestMedal = /^[EDCBAS]$/.test(raw.campaign.bestMedal || '') ? raw.campaign.bestMedal : 'E';
+    out.campaign.topRuns = Array.isArray(raw.campaign.topRuns) ? raw.campaign.topRuns.slice(0, 5) : [];
   }
   if (raw.settings && typeof raw.settings === 'object') {
     out.settings.master = Math.max(0, Math.min(1, raw.settings.master == null ? 1 : Number(raw.settings.master)));
@@ -140,6 +145,7 @@ function recordRunEnd(won) {
   if (!SaveStore.data.ships[sid]) SaveStore.data.ships[sid] = { bestScore: 0 };
   SaveStore.data.ships[sid].bestScore = Math.max(SaveStore.data.ships[sid].bestScore || 0, score || 0);
   c.lastStage = stage;
+  if (typeof runRankRecord === 'function') runRankRecord(won);
   persistSave(true);
 }
 
