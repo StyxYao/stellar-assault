@@ -5,22 +5,22 @@ Workflow: `.github/workflows/desktop-build.yml`
 ## Latest run
 
 ```text
-run: 40507200205
-sha: 951b69f
-tag: steam/r3-desktop-ci
+run: 40509081232
+sha: 24b365e
+tag: steam/r3-win-smoke-fix
 ```
 
 Results:
 
 | Job | Runner | Result | Artifact |
 |---|---|---|---|
-| windows | windows-latest | success | stellar-assault-windows (545,540,729 bytes) |
-| linux | ubuntu-latest | success | stellar-assault-linux (282,199,121 bytes) |
+| windows | windows-latest | success | stellar-assault-windows (545,540,745 bytes) |
+| linux | ubuntu-latest | success | stellar-assault-linux (282,199,155 bytes) |
 
 Artifacts:
 
 ```text
-https://github.com/StyxYao/stellar-assault/actions/runs/40507200205
+https://github.com/StyxYao/stellar-assault/actions/runs/40509081232
 ```
 
 GitHub artifact download requires an authenticated session. The workflow itself does not require extra secrets for an unsigned build.
@@ -70,6 +70,13 @@ Do not paste the token into chat; place it in a local secure environment.
 ## Packaged runtime smoke
 
 The workflow now launches the packaged app after building. Windows uses `pathToFileURL()` for the dynamic LAN module import so a drive-letter path is not treated as a URL scheme.
+
+Latest run result:
+
+- Windows packaged app started; `http://127.0.0.1:8785/index.html` returned 200
+- Linux AppImage started under Xvfb; the same endpoint returned 200
+
+This is startup + built-in LAN server smoke, not gameplay/signing.
 
 
 

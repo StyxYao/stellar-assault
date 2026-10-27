@@ -1000,3 +1000,10 @@
 - Added GitHub Actions Windows/Linux desktop build.
 - Windows NSIS/zip and Linux AppImage built successfully on native runners.
 - Recorded user-reported iOS/Android browser validation; Deck still unverified.
+
+## 1.0.0-rc.1b — Desktop runtime smoke
+
+- Fixed packaged LAN server import on Windows with pathToFileURL.
+- Windows packaged app starts and serves LAN 8785 on GitHub runner.
+- Linux AppImage starts under Xvfb and serves LAN 8785.
+- Artifacts retained even if smoke fails.
