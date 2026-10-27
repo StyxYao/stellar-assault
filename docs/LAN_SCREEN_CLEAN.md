@@ -45,4 +45,4 @@
 
 ## State-sync beta
 
-LAN 面板有 `SYNC · SNAPSHOT BETA` 开关：Host 10Hz 发 World 快照，Client restore 后本地 canvas 绘制；当前 Client 不跑 step，输入仍回 Host。
+LAN 面板有 `SYNC · SNAPSHOT BETA` 开关：Host 10Hz 发 World 快照，Client restore 后本地 canvas 绘制；当前 Client 会跑本地 step 做预测，Host 快照周期校正；输入仍回 Host。

@@ -853,3 +853,9 @@
 - Host streams 10Hz World snapshots; clients restore and render locally.
 - Added LAN panel JPEG/SNAPSHOT toggle.
 - Client holds local simulation while receiving snapshots; input still goes to host.
+
+## 0.9.46 — LAN client prediction
+
+- Snapshot-sync clients now run local step for prediction.
+- Local P1/P2 input injects into the local remote-input path; host snapshots correct drift.
+- Added prediction/hold debug flags.

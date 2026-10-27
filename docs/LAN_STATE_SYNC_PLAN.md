@@ -16,8 +16,8 @@
 - [x] 确定性随机数（`rng()` / visual `vrng()` 分离）
 - [x] 同步种子 / 输入序号协议骨架
 - [x] Host World 快照 → Client restore/render 原型
-- [ ] Client 独立模拟
-- [ ] 预测/回滚
+- [x] Client 本地 step 预测 + Host 快照校正（Beta）
+- [ ] 预测/回滚的正式误差处理
 - [ ] 不同步检测
 
 ## 候选路线
@@ -51,7 +51,8 @@
 - `World.snapshotFull()` / `World.restore()` 已接入
 - LAN 面板可切 **SYNC · SNAPSHOT BETA**
 - Host 10Hz 广播 World 快照；Client restore 后在本机 canvas 绘制，不再传 JPEG
-- Client 当前 `lanSyncClientHold=true`，不跑本地 step；输入仍回传 Host
+- Client 现在会跑本地 `step()` 做预测，Host 10Hz 快照校正
+- Client 保留 `lanSyncClientHold` 作为回放/调试开关
 
 ## 建议顺序
 
@@ -64,6 +65,7 @@
 ## 测试
 
 - [x] 单客户端 Host-as-P1：快照 restore，canvas 本地绘制
+- [x] Client 本地 step 预测：time/bullets 持续前进，快照校正无报错
 - [x] Host-only 双客户端：P1/P2 都 restore，画面一致
 - [x] 客户端输入仍驱动 Host 的 P2
 - [x] 切换 JPEG/SNAPSHOT 不改现有流程

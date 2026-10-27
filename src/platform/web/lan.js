@@ -9,7 +9,7 @@ var lanStarted = false;
 var lanToken = '', lanHostGone = false, lanReconnectT = null, lanReconnecting = false, lanFrames = 0;
 var lanSyncSeed = 0, lanSyncStage = 0, lanInputSeq = 0, lanRemoteSeq = 0, lanSyncVersion = 1;
 var lanStateSyncMode = false, lanSnapshotTimer = null, lanSnapSeq = 0, lanSnapBytes = 0;
-var lanSyncClientHold = false;
+var lanSyncClientHold = false, lanLocalPrediction = false;
 var lanLastMsg = '', lanLoadoutSets = 0;
 var lanLoadoutShip = 'vector', lanLoadoutSkin = 'void_lance';
 var lanShipBtn = null, lanSkinBtn = null;
@@ -610,7 +610,11 @@ function lanJoin(rejoin) {
         if (lanVideo) { lanVideo.remove(); lanVideo = null; }
         if (typeof cvs !== 'undefined') cvs.style.display = '';
         if (typeof World !== 'undefined' && World.restore) {
-          try { World.restore(m.data); lanSyncClientHold = true; } catch (e) {}
+          try {
+            World.restore(m.data);
+            coopEnabled = true; coopInputMode = 'remote'; coopRemote = true; coopRemoteP1 = true;
+            lanSyncClientHold = false; lanLocalPrediction = true;
+          } catch (e) {}
         }
         if (!lanTouchLayer) lanBuildTouchControls(); else lanTouchLayer.style.display = 'block';
         lanFrames++;
@@ -728,7 +732,14 @@ function lanSendClientInput() {
     if (bb && !lanPadPrev.b) secondary = true;
     lanPadPrev.a = ba; lanPadPrev.b = bb;
   }
-  lanSocket.send(JSON.stringify({ type: 'input', seq: ++lanInputSeq, dx: dx, dy: dy, primary: primary, secondary: secondary, tx: lanTouch.active ? lanTouch.tx : null, ty: lanTouch.active ? lanTouch.ty : null }));
+  var px = lanTouch.active ? lanTouch.tx : null, py = lanTouch.active ? lanTouch.ty : null;
+  if (lanLocalPrediction && lanMySlot >= 0) {
+    var inp = lanMySlot === 0 ? lanRemoteInput1 : lanRemoteInput;
+    inp.dx = dx; inp.dy = dy; inp.tx = px; inp.ty = py;
+    if (primary) inp.primary = true;
+    if (secondary) inp.secondary = true;
+  }
+  lanSocket.send(JSON.stringify({ type: 'input', seq: ++lanInputSeq, dx: dx, dy: dy, primary: primary, secondary: secondary, tx: px, ty: py }));
 }
 
 function lanStartClientInput() { if (!lanInputTimer) lanInputTimer = setInterval(lanSendClientInput, 16); }
@@ -751,7 +762,7 @@ window.__lanDebug = function () {
     ship: lanLoadoutShip, skin: lanLoadoutSkin, ready: lanMyReady, stage: lanStage,
     loadouts: lanLoadouts, readySlots: lanReady, started: lanStarted, lastMsg: lanLastMsg, loadoutSets: lanLoadoutSets,
     syncSeed: lanSyncSeed, syncStage: lanSyncStage, syncVersion: lanSyncVersion, inputSeq: lanInputSeq, remoteSeq: lanRemoteSeq,
-    stateSync: lanStateSyncMode, snapSeq: lanSnapSeq, snapBytes: lanSnapBytes, hold: lanSyncClientHold,
+    stateSync: lanStateSyncMode, snapSeq: lanSnapSeq, snapBytes: lanSnapBytes, hold: lanSyncClientHold, prediction: lanLocalPrediction,
     script: !!lanAudioScript,
     clientAC: lanClientAC ? lanClientAC.state : null,
     nextAudio: +lanNextAudio.toFixed(2),
