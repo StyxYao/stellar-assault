@@ -931,3 +931,9 @@
 
 - Mobile pause/settings/quit; iOS safe-area/meta; LAN audio gesture unlock.
 - R4 content audit and 1.0 roadmap.
+
+## 0.9.57 — Lazy image loading
+
+- GIMG now loads images on first access instead of all 105 at startup.
+- Initial menu transfer reduced to ~28.9MB in local measurement.
+- Added asset budget audit; target remains <20MB initial.

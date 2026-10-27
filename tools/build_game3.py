@@ -14,9 +14,10 @@ for ei in range(1,13):
     p2='gpt-assets/enemies/%02d_%s_2.png'%(ei,enames[ei-1])
     if os.path.exists(p2): assets['n%db'%ei]=p2
 for i in range(1,9): assets['e%d'%i]='gpt-assets/explosions/explosion_%02d.png'%i
-js="var GIMG={};\n"
+js="var GIMG={};var GIMG_SRC={};var GIMG_CACHE={};\n"
 for k,p in assets.items():
-    js+="GIMG.%s=new Image();GIMG.%s.src='data:image/png;base64,%s';\n"%(k,k,base64.b64encode(open(p,'rb').read()).decode())
+    js+="GIMG_SRC[%r]='data:image/png;base64,%s';\n"%(k,base64.b64encode(open(p,'rb').read()).decode())
+js+="Object.keys(GIMG_SRC).forEach(function(k){Object.defineProperty(GIMG,k,{configurable:true,enumerable:true,get:function(){if(!GIMG_CACHE[k]){var im=new Image();im.src=GIMG_SRC[k];GIMG_CACHE[k]=im;}return GIMG_CACHE[k];}});});\n"
 a=prefix.index('var GIMG={};'); b=prefix.index('var BG1=')
 prefix=prefix[:a]+js+prefix[b:]
 prefix=prefix.replace('<title>BOSS RUSH · rRootage Tribute</title>','<title>STELLAR ASSAULT · 5 Stages</title>')
