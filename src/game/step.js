@@ -27,6 +27,8 @@ function step(dt){
   if(state==='bossOmen'){bossOmenT+=dt;if(bossOmenT>=6.5)startBossFusionCinematic();return;}
   if(state==='bossFusion'){
     if(fusionFadeT>0)fusionFadeT=Math.max(0,fusionFadeT-dt);
+    fusionWaitT+=dt;
+    if(fusionWaitT>2.8&&(!fusionVideo||fusionVideo.readyState<2||fusionVideo.paused)){finishBossFusionPhase();return;}
     if(fusionHoldActive){fusionHoldT+=dt;if(fusionHoldT>=1.1){try{fusionVideo.currentTime=fusionVideo.duration;}catch(e){}finishBossFusionPhase();return;}}
     if(fusionVideo&&fusionVideo.readyState>=2&&fusionVideo.videoWidth>0){
       if(fusionVideo.paused&&!fusionHoldActive){try{fusionVideo.play().catch(function(){});}catch(e){}}

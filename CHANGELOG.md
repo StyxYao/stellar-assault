@@ -968,3 +968,10 @@
 - Electron desktop starts the LAN server automatically and loads from the LAN IP.
 - Added start_lan.command / start_lan.bat launchers.
 - Tested 2-client state sync, host-as-P1, and range requests.
+
+## 0.9.63 — Full-flow QA pass
+
+- Ran stage 1-5 transition automation through stage-5 finale.
+- Added fusion video-blocked fallback so bossFusion cannot stall.
+- Re-ran local co-op and Node LAN state sync QA.
+- Added QA_1_0.md with remaining physical-device and Steam gates.

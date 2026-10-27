@@ -193,12 +193,12 @@ function drawPhase1DeathScene(){
 function startBossFusionCinematic(){
   state='bossFusion';bossFusionT=0;
   try{fusionVideo.loop=false;fusionVideo.currentTime=0;fusionVideo.play().catch(function(){});}catch(e){}
-  fusionFadeT=1.15;fusionHoldT=0;fusionHoldActive=false;
+  fusionFadeT=1.15;fusionHoldT=0;fusionHoldActive=false;fusionWaitT=0;
   setBanner('FUSION','FOUR ECHOES',9.0);
   sfx('b_charge',0.65);
 }
 function finishBossFusionPhase(){
-  state='boss';bossFusionT=0;
+  fusionWaitT=0;state='boss';bossFusionT=0;
   spawnBossNow();
   boss.phase=1;boss.max=Math.round((boss.totalHp||10080)*.64);boss.hp=boss.max;
   boss.y=H*.44;boss.entering=false;boss.invuln=2.2;
