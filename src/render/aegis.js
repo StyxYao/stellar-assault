@@ -37,10 +37,22 @@ function drawAegisForceUnderlay() {
   var attached = aegisState.force === 'attached';
   var fx0 = (attached && typeof aegisVisualX === 'function') ? aegisVisualX() : aegisState.forceX;
   var fy0 = attached ? player.y : aegisState.forceY;
-  var shieldRatio = Math.max(0, Math.min(1, aegisState.shield / aegisShieldMax()));
+  var shieldRatio = aegisShieldRatio();
   ctx.save();
 
-  if (aegisState.force === 'attached') {
+  if (aegisState.force === 'broken') {
+    ctx.globalCompositeOperation = 'lighter';
+    var brk = 0.45 + 0.3 * Math.sin(time * 18);
+    ctx.globalAlpha = brk;
+    ctx.strokeStyle = '#ff5f4d'; ctx.lineWidth = 2.4;
+    ctx.beginPath(); ctx.arc(fx0, fy0, 38 + 6 * Math.sin(time * 9), 0.2, 2.6); ctx.stroke();
+    ctx.beginPath(); ctx.arc(fx0, fy0, 52 + 8 * Math.sin(time * 7 + 1), 3.1, 5.7); ctx.stroke();
+    ctx.fillStyle = '#ff7a4d';
+    for (var bi = 0; bi < 6; bi++) {
+      var ba = time * 1.8 + bi * TAU / 6;
+      ctx.beginPath(); ctx.arc(fx0 + Math.cos(ba) * (40 + bi * 3), fy0 + Math.sin(ba) * (40 + bi * 3), 2.2, 0, TAU); ctx.fill();
+    }
+  } else if (aegisState.force === 'attached') {
     drawForceField(fx0, fy0, 94 + aegisForceRadius() * 0.9, 0.34 + shieldRatio * 0.38, 0, aegisForceColor());
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 0.52;
@@ -178,9 +190,44 @@ function drawAegisShipFx() {
     ctx.globalAlpha = 0.9 * ba; ctx.strokeStyle = '#ffb347'; ctx.lineWidth = 4;
     ctx.beginPath(); ctx.arc(fx0, fy0, 28 + (1 - ba) * 58, 0, TAU); ctx.stroke();
   }
+  drawAegisShieldMeter();
+  if (player.hitFlashT > 0) {
+    var hf = Math.min(1, player.hitFlashT / 0.22);
+    ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = hf;
+    ctx.strokeStyle = '#ff7a66'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(shipX, player.y, 34 + (1 - hf) * 12, 0, TAU); ctx.stroke();
+  }
   ctx.restore();
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = 'source-over';
+}
+
+function drawAegisShieldMeter() {
+  var ratio = aegisShieldRatio();
+  var broken = aegisState.force === 'broken';
+  var low = !broken && (ratio <= 0.12 || aegisState.lowWarnT > 0);
+  var w = 56, h = 5;
+  var x = aegisVisualX() - w / 2 - 8, y = player.y + 43;
+  ctx.save(); ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = 'rgba(2,10,18,0.86)'; ctx.fillRect(x - 1, y - 1, w + 2, h + 2);
+  ctx.fillStyle = 'rgba(80,105,125,0.48)'; ctx.fillRect(x, y, w, h);
+  if (broken) {
+    ctx.fillStyle = Math.floor(time * 8) % 2 ? '#ff5f4d' : '#7d211c';
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = '#ffb0a0'; ctx.font = '700 7px monospace'; ctx.textAlign = 'center';
+    ctx.fillText('FORCE BROKEN · ' + Math.max(0, Math.ceil(aegisState.breakT)) + 's', x + w / 2, y - 6);
+  } else {
+    var col = ratio > 0.35 ? '#8fe9ff' : (ratio > 0.10 ? '#ffd36b' : '#ff6a5a');
+    ctx.fillStyle = col; ctx.fillRect(x, y, w * ratio, h);
+    ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.fillRect(x + w * 0.10 - 1, y - 2, 1, h + 4);
+    if (low) {
+      var lf = 0.55 + 0.45 * Math.sin(time * 14);
+      ctx.fillStyle = 'rgba(255,70,60,' + lf + ')';
+      ctx.font = '700 8px monospace'; ctx.textAlign = 'center';
+      ctx.fillText('LOW SHIELD · ' + Math.round(ratio * 100) + '%', x + w / 2, y - 6);
+    }
+  }
+  ctx.restore(); ctx.textAlign = 'left';
 }
 
 function drawAegisControls() {

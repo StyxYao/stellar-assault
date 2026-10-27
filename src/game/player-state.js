@@ -22,7 +22,11 @@ function bomb(){
 function hitPlayer(){
   if(player.odT>0) return;
   if(player.invuln>0||state!=='play'&&state!=='boss') return;
+  // AEGIS shield absorbs any direct hit while attached and charged.
+  if(player.ship==='aegis'&&typeof aegisAbsorbHit==='function'&&aegisAbsorbHit()) return;
   // VECTOR wingmen are now pure firepower; they no longer absorb hits.
+  player.noBlink=false;
+  player.hitFlashT=0.22;
   player.hp--;
   player.invuln=1.0; shake=10; sfx('hurt',0.75);
   for(var i=bullets.length-1;i>=0;i--){

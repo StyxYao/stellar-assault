@@ -79,6 +79,8 @@ var aegisState = {
   odShotT: 0,
   postOdT: 0,
   breakFlashT: 0,
+  lowWarnT: 0,
+  lowAlarmT: 0,
   forceHits: [],
   forceBossHit: false
 };
@@ -114,6 +116,28 @@ function aegisShieldMax() {
   var d = aegisVariant();
   return Math.round(AEGIS_SHIELD_MAX * (d && d.shieldMult ? d.shieldMult : 1));
 }
+function aegisShieldRatio() {
+  return Math.max(0, Math.min(1, aegisState.shield / Math.max(1, aegisShieldMax())));
+}
+function aegisShieldRadius() {
+  return Math.max(26, 18 + aegisForceRadius() * 0.55);
+}
+function aegisAbsorbHit() {
+  if (player.ship !== 'aegis' || aegisState.force !== 'attached' || aegisState.shield <= 0) return false;
+  aegisState.shield = Math.max(0, aegisState.shield - AEGIS_SHIELD_COST);
+  aegisState.lastBlockAt = time;
+  aegisState.forceHitT = 0.18;
+  try { if (typeof part === 'function') part(aegisState.forceX, aegisState.forceY, '#9fe8ff', 5, 110); } catch (e) {}
+  try { sfx('b_hit', 0.18); } catch (e) {}
+  if (aegisState.shield <= 0) {
+    aegisState.shield = 0;
+    aegisState.force = 'broken';
+    aegisState.breakT = AEGIS_BREAK_TIME;
+    aegisShieldBreak();
+  }
+  return true;
+}
+
 function aegisChargeMax() {
   var d = aegisVariant();
   return AEGIS_CHARGE_MAX * AEGIS_CHARGE_BASE_TIME * (d && d.chargeTimeMult ? d.chargeTimeMult : 1);
@@ -219,6 +243,8 @@ function aegisReset() {
   aegisState.odShotT = 0;
   aegisState.postOdT = 0;
   aegisState.breakFlashT = 0;
+  aegisState.lowWarnT = 0;
+  aegisState.lowAlarmT = 0;
   aegisState.forceHits = [];
   aegisState.forceBossHit = false;
   if (typeof player !== 'undefined') {
@@ -409,6 +435,8 @@ function aegisRestoreForce() {
   aegisState.shield = aegisShieldMax();
   aegisState.breakT = 0;
   aegisState.breakFlashT = 0;
+  aegisState.lowWarnT = 0;
+  if (typeof player !== 'undefined') { player.invuln = Math.max(player.invuln || 0, 1.5); player.noBlink = false; }
   aegisState.forceX = aegisVisualX();
   aegisState.forceY = player.y;
   try { sfx('aegis_force', 0.65); } catch (e) {}
@@ -458,6 +486,8 @@ function aegisAutoChargedAttack() {
 
 function aegisShieldBreak() {
   aegisState.breakFlashT = 0.55;
+  aegisState.lowWarnT = 0;
+  if (typeof player !== 'undefined') { player.invuln = Math.max(player.invuln || 0, 1.2); player.noBlink = false; }
   try { shake = Math.max(shake, 18); } catch (e) {}
   try { sfx('bomb_big', 0.58); } catch (e) {}
   try { sfx('aegis_force', 0.55); } catch (e) {}
@@ -556,6 +586,7 @@ function updateAegis(dt) {
     if (av && av.postOdBuff) aegisState.postOdT = 2.0;
   }
   if (aegisState.breakFlashT > 0) aegisState.breakFlashT = Math.max(0, aegisState.breakFlashT - dt);
+  if (aegisState.lowWarnT > 0) aegisState.lowWarnT = Math.max(0, aegisState.lowWarnT - dt);
   if (aegisState.postOdT > 0) {
     aegisState.postOdT = Math.max(0, aegisState.postOdT - dt);
     var av2 = aegisVariant();
@@ -581,16 +612,26 @@ function updateAegis(dt) {
 
   if (aegisState.force === 'broken') {
     aegisState.breakT -= dt;
-    if (aegisState.breakT <= 0) { aegisState.force = 'attached'; aegisState.shield = 20; }
+    if (aegisState.breakT <= 0) {
+      aegisState.force = 'attached';
+      aegisState.shield = Math.max(20, Math.round(aegisShieldMax() * 0.5));
+      aegisState.lowWarnT = 0;
+      if (typeof player !== 'undefined') { player.invuln = Math.max(player.invuln || 0, 1.2); player.noBlink = false; }
+    }
   } else if (aegisState.force === 'attached') {
     aegisState.forceX = aegisVisualX();
     aegisState.forceY = player.y;
     if (aegisState.shield < aegisShieldMax() && time - aegisState.lastBlockAt > AEGIS_SHIELD_DELAY) aegisState.shield = Math.min(aegisShieldMax(), aegisState.shield + AEGIS_SHIELD_REGEN * dt);
+    if (aegisShieldRatio() <= 0.12) {
+      if (aegisState.lowWarnT <= 0) { aegisState.lowWarnT = 3.0; try { sfx('alarm', 0.42); } catch (e) {} }
+    } else if (aegisShieldRatio() > 0.22) {
+      aegisState.lowWarnT = 0;
+    }
     if (ebullets) {
       for (var i = ebullets.length - 1; i >= 0; i--) {
         var b = ebullets[i];
         if (b.bomb) continue;
-        if (Math.hypot(b.x - aegisState.forceX, b.y - aegisState.forceY) < AEGIS_SHIELD_HIT_RADIUS) {
+        if (Math.hypot(b.x - aegisState.forceX, b.y - aegisState.forceY) < aegisShieldRadius()) {
           ebullets.splice(i, 1);
           aegisState.shield -= AEGIS_SHIELD_COST;
           aegisState.lastBlockAt = time;

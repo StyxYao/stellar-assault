@@ -6,7 +6,7 @@
     if(document.fonts&&document.fonts.load){document.fonts.load('600 20px Orbitron');document.fonts.load('600 20px Rajdhani');}
   }catch(e){}
 })();
-var player={x:W/2,y:H-130,r:6,lives:3,hp:3,maxHp:3,bombs:2,od:0,odT:0,powerXp:0,respawnT:0,respawnGift:false,invuln:0,bank:0,noBlink:false,power:1,weapon:'normal',specialPower:1,options:0,wingPower:1,ship:'vector',skin:'void_lance',trail:[],wingEntry:[]};
+var player={x:W/2,y:H-130,r:6,lives:3,hp:3,maxHp:3,bombs:2,od:0,odT:0,powerXp:0,respawnT:0,respawnGift:false,invuln:0,hitFlashT:0,bank:0,noBlink:false,power:1,weapon:'normal',specialPower:1,options:0,wingPower:1,ship:'vector',skin:'void_lance',trail:[],wingEntry:[]};
 var target={x:W/2,y:H-130};
 var stage=0,state='menu',score=0,time=0,lastShot=0,lastHitSfx=0,shake=0;
 var enemies=[],bullets=[],shots=[],parts=[],stars=[],fx=[],ebullets=[],items=[],missiles=[],wingBeams=[],beams=[],orbBullets=[],phaseFx=[],blastZones=[],odLaserFx=[];
@@ -451,6 +451,7 @@ window.__p3=function(){if(boss)bossPhase(2);};
 window.__fi=function(){return {state:state,fusionT:fusionT,time:time,boss:!!boss};};
 window.__ebTest=function(){if(boss){bossAimed(12);bossRing(18);bossSpiral(4,1,120);}};
 window.__hit=function(){player.invuln=0;hitPlayer();};
+window.__playerState=function(){return {ship:player.ship,hp:player.hp,lives:player.lives,invuln:+player.invuln.toFixed(2),noBlink:!!player.noBlink,hitFlashT:+(player.hitFlashT||0).toFixed(2)};};
 window.__ult=function(){beginBossUltimate();};
 window.__bomb=function(){bomb();};
 window.__bgmInfo=function(){return {name:bgmName,paused:bgmAudio?bgmAudio.paused:null,time:bgmAudio?bgmAudio.currentTime:0};};

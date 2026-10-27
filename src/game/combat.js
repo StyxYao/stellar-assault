@@ -195,7 +195,7 @@ function aegisBlockedBeamLen(b) {
   var attached = aegisState.force === 'attached';
   var fx = attached ? aegisVisualX() : aegisState.forceX;
   var fy = attached ? player.y : aegisState.forceY;
-  var br = attached ? AEGIS_SHIELD_HIT_RADIUS + 8 : aegisForceRadius() + 30;
+  var br = attached ? (typeof aegisShieldRadius==='function'?aegisShieldRadius():30) : aegisForceRadius() + 30;
   var dx = fx - b.x, dy = fy - b.y;
   var proj = dx * Math.cos(b.ang) + dy * Math.sin(b.ang);
   var perp = Math.abs(-dx * Math.sin(b.ang) + dy * Math.cos(b.ang));

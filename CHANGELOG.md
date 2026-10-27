@@ -1007,3 +1007,10 @@
 - Windows packaged app starts and serves LAN 8785 on GitHub runner.
 - Linux AppImage starts under Xvfb and serves LAN 8785.
 - Artifacts retained even if smoke fails.
+
+## 1.0.0-rc.1c — AEGIS shield fix
+
+- Increased shield block radius to match the Force field.
+- Direct hits now consume shield instead of HP while Force is attached.
+- Added break/restore invulnerability, broken countdown ring, shield bar and low-shield alarm.
+- HP hits force noBlink=false with a hit flash.

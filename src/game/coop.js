@@ -224,7 +224,7 @@ function coopSpawn() {
     x: W / 2 - 72, y: H - 150, r: 6,
     lives: 3, hp: 3, maxHp: 3,
     bombs: 3, od: 0, odT: 0, powerXp: 0,
-    respawnT: 0, respawnGift: false, invuln: 2.0, bank: 0, noBlink: false,
+    respawnT: 0, respawnGift: false, invuln: 2.0, hitFlashT: 0, bank: 0, noBlink: false,
     power: 1, weapon: 'normal', specialPower: 1, options: 0, wingPower: 1,
     ship: ship, skin: skin, slot: 2, owner: 'P2', trail: [], wingEntry: []
   };
@@ -249,6 +249,13 @@ function coopSpawn() {
 function coopHitP2() {
   var p = player2;
   if (!p || p.invuln > 0 || (state !== 'play' && state !== 'boss')) return;
+  if (p.ship === 'aegis') {
+    var absorbed = false;
+    coopUseSlot(p, function () { absorbed = (typeof aegisAbsorbHit === 'function') && aegisAbsorbHit(); });
+    if (absorbed) return;
+  }
+  p.noBlink = false;
+  p.hitFlashT = 0.22;
   p.hp--;
   p.invuln = 1.0;
   shake = Math.max(shake, 7);

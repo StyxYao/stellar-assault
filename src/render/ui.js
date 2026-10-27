@@ -45,7 +45,7 @@ function drawHUD(){
   ctx.fillStyle='#cfe0f0';ctx.font='11px monospace';
   var hpx='HP ';for(var hi=0;hi<player.maxHp;hi++)hpx+=(hi<player.hp?'●':'○');
   ctx.fillStyle='#8dff9e';ctx.fillText(hpx,16,H-78);ctx.fillStyle='#cfe0f0';
-  if(player.ship==='aegis'){ctx.fillStyle='#9fe8ff';ctx.fillText('FORCE · SHIELD '+Math.round(aegisState.shield/aegisShieldMax()*100)+'%',16,H-60);ctx.fillStyle='#cfe0f0';}
+  if(player.ship==='aegis'){var sr=aegisShieldRatio();ctx.fillStyle=(aegisState.force==='broken'||sr<=0.12)?'#ff6a5a':'#9fe8ff';ctx.fillText('FORCE · SHIELD '+Math.round(sr*100)+'%'+(aegisState.force==='broken'?' · BROKEN':' · '+'R'+(aegisState.forceLevel||1)),16,H-60);ctx.fillStyle='#cfe0f0';}
   else if(player.ship==='phantom'){ctx.fillStyle='#c9a0ff';ctx.fillText('CLONES '+phantomState.clones.length+'/'+phantomState.cap+' · CLOAK '+phantomState.cloakT.toFixed(1),16,H-60);ctx.fillStyle='#cfe0f0';}
   else ctx.fillText('WING '+player.options+'·P'+player.wingPower,16,H-60);
   ctx.fillText('SHIPS '+player.lives,16,H-42);ctx.fillText((player.ship==='aegis'?'FORCE ':(player.ship==='phantom'?'PHASE ':'BOMB '))+player.bombs,16,H-24);
