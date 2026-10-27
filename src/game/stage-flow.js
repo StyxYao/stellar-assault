@@ -69,6 +69,7 @@ function prepareStageContent(s){
   st.__prepared=true;
 }
 function startStage(i){
+  if(i===4&&typeof loadStageVideos==='function'){try{loadStageVideos();}catch(e){}}
   prepareStageContent(i);
   stage=i; stageT=0; waveIndex=0; miniDropT=25; nextTransport=24+rng()*10;
   player.ship=selectedShip;

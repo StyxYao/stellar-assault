@@ -12,11 +12,10 @@ assets/bg      7.3 MB
 dist total     171 MB
 ```
 
-Initial menu load after lazy `GIMG`:
+Initial menu load after lazy images + lazy stage-5 video:
 
 ```text
-~28.9 MB transferred
-21 image/bg responses
+~6.7 MB transferred
 ```
 
 ## What changed
@@ -32,9 +31,9 @@ This removed the previous all-105-images-at-start behavior.
 
 ## Remaining
 
-- [ ] background images still preload all 5 stages
-- [ ] 5 stage videos still use early priming
-- [ ] target initial load <20 MB
+- [x] stage-5 videos no longer preload on menu (`preload='none'`)
+- [x] initial load target <20 MB
+- [ ] background images still preload all 5 stages (5.5 MB)
 - [ ] compress/re-encode large AI source art
 - [ ] lazy per-stage background/video budget
 

@@ -937,3 +937,9 @@
 - GIMG now loads images on first access instead of all 105 at startup.
 - Initial menu transfer reduced to ~28.9MB in local measurement.
 - Added asset budget audit; target remains <20MB initial.
+
+## 0.9.58 — Asset budget P0
+
+- Stage-5 videos switch to preload=none on menu and load on stage entry.
+- First-screen transfer measured at ~6.7MB locally (was 28.4MB).
+- Stage-5 background video verified ready after stage entry.
