@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
-const ctx = { Math };
+const ctx = { Math, Date };
 vm.createContext(ctx);
-vm.runInContext(fs.readFileSync('src/core/math.js', 'utf8') + '\n;globalThis.api={rand,clamp,clamp01,lerp,dist2};', ctx);
+vm.runInContext(fs.readFileSync('src/core/rng.js', 'utf8') + '\n' + fs.readFileSync('src/core/math.js', 'utf8') + '\n;globalThis.api={rand,clamp,clamp01,lerp,dist2};', ctx);
 const { rand, clamp, clamp01, lerp, dist2 } = ctx.api;
 for (let i = 0; i < 1000; i++) { const r = rand(-3, 7); if (r < -3 || r > 7) throw new Error('rand out of range'); }
 if (clamp(5, 0, 1) !== 1 || clamp(-1, 0, 1) !== 0) throw new Error('clamp failed');
