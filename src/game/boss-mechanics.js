@@ -111,8 +111,20 @@ function drawBossMech(){
     }
   }else if(d.kind==='cage'&&(bossMech.phase==='warn'||bossMech.phase==='active')){
     var gx=d.gapX,band=W*.22;
+    var cageSafe=Math.max(0,gx-band),cageRight=Math.min(W,gx+band);
+    // Make the moving safe corridor explicit; outside is the damage zone.
+    ctx.globalAlpha=bossMech.phase==='active'?.16:.08;
+    ctx.fillStyle='#dff8ff';ctx.fillRect(cageSafe,60,cageRight-cageSafe,H-120);
+    ctx.globalAlpha=bossMech.phase==='active'?.42:.22;
+    ctx.strokeStyle='#e8fbff';ctx.lineWidth=1;ctx.setLineDash([6,8]);
+    ctx.beginPath();ctx.moveTo(cageSafe,60);ctx.lineTo(cageSafe,H-60);ctx.moveTo(cageRight,60);ctx.lineTo(cageRight,H-60);ctx.stroke();ctx.setLineDash([]);
+    ctx.globalAlpha=.82;ctx.fillStyle='rgba(2,12,20,0.78)';ctx.fillRect(W/2-92,H*.285,184,20);
+    ctx.strokeStyle='rgba(232,251,255,0.65)';ctx.lineWidth=1;ctx.strokeRect(W/2-92,H*.285,184,20);
+    ctx.fillStyle='#eafaff';ctx.font='700 10px monospace';ctx.textAlign='center';
+    ctx.fillText('SAFE LIGHT · STAY INSIDE',W/2,H*.285+14);
+    ctx.textAlign='left';
     if(bossMech.phase==='warn'){
-      ctx.globalAlpha=.2;ctx.fillStyle='#d6b4ff';ctx.fillRect(0,60,gx-band-60,H-120);ctx.fillRect(gx+band,60,W-(gx+band),H-120);
+      ctx.globalAlpha=.2;ctx.fillStyle='#d6b4ff';ctx.fillRect(0,60,cageSafe-60,H-120);ctx.fillRect(cageRight,60,W-cageRight,H-120);
     }else{
       var lg=ctx.createLinearGradient(gx-band-30,0,gx-band,0);lg.addColorStop(0,'rgba(200,160,255,0)');lg.addColorStop(1,'rgba(255,255,255,.7)');
       ctx.globalAlpha=.75;ctx.fillStyle=lg;ctx.fillRect(gx-band-30,0,30,H);

@@ -449,10 +449,13 @@ window.__bgv=function(){return {ready:bgLoopVideo.readyState,paused:bgLoopVideo.
 window.__cast=function(){startCast();};
 window.__castEnd=function(){castScroll=CAST_TOTAL;castHoldT=2;};
 window.__p3=function(){if(boss)bossPhase(2);};
+window.__setBossPhase=function(p){if(boss){boss.phase=Math.max(0,Math.min(2,p|0));boss.invuln=0;if(typeof stage5DirectorReset==='function')stage5DirectorReset();}};
 window.__fi=function(){return {state:state,fusionT:fusionT,time:time,boss:!!boss};};
 window.__ebTest=function(){if(boss){bossAimed(12);bossRing(18);bossSpiral(4,1,120);}};
 window.__ebCheck=function(){var bad=[];for(var i=0;i<ebullets.length;i++)if(!ebullets[i])bad.push(i);return {len:ebullets.length,bad:bad,state:state,stage:stage,wave:waveIndex};};
 window.__spawnEB=function(x,y){if(typeof ebullets!=='undefined')ebullets.push({x:x,y:y,vx:0,vy:0,rad:6,type:1});};
+window.__spawnBomb=function(x,y){if(typeof ebullets!=='undefined')ebullets.push({x:x,y:y,vx:0,vy:0,rad:12,type:2,bomb:true,tx:x,ty:y,blastR:70,bombSpeed:0,fuse:99,bossBomb:true});};
+window.__aegisForce=function(){if(typeof aegisTapForce==='function')aegisTapForce();};
 window.__hit=function(){player.invuln=0;hitPlayer();};
 window.__playerState=function(){return {ship:player.ship,hp:player.hp,lives:player.lives,invuln:+player.invuln.toFixed(2),noBlink:!!player.noBlink,hitFlashT:+(player.hitFlashT||0).toFixed(2)};};
 window.__ult=function(){beginBossUltimate();};

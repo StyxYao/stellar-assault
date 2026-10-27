@@ -1047,3 +1047,19 @@
 
 - Re-ran World snapshot/restore regression after Aegis and ebullet changes.
 - Snapshot restore produced an identical 3038-byte state.
+
+## 1.0.0-rc.1j — Stage5 director, cage clarity, shield clears
+
+- Regularized Chronos Bloom into three fixed rings with one safe wedge.
+- Added one-wave-at-a-time stage-5 director; 1-2 skills in phase 1, 1-3 in phase 2, waits for projectiles to clear.
+- Clarified RADIANT CAGE safe corridor and damage feedback.
+- AEGIS shield/Force now clears bombs and orb bullets, including large boss bullets.
+- Centered the shield bar under the Force core; broken ring now follows the ship.
+- Added four self-made AEGIS break alarm audition candidates.
+
+## 1.0.0-rc.1k — Stage5 director/cage/alarm audition
+
+- Added one-wave stage-5 director and regularized Chronos Bloom.
+- RADIANT CAGE now highlights the safe corridor and explains the damage zone.
+- AEGIS shield/Force clears bombs/orbs; shield bar centered; broken ring follows ship.
+- Added Deck testing doc and four break-alarm audition candidates.

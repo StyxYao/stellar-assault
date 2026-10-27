@@ -41,6 +41,7 @@ function drawAegisForceUnderlay() {
   ctx.save();
 
   if (aegisState.force === 'broken') {
+    fx0 = player.x; fy0 = player.y;
     ctx.globalCompositeOperation = 'lighter';
     var brk = 0.45 + 0.3 * Math.sin(time * 18);
     ctx.globalAlpha = brk;
@@ -83,7 +84,7 @@ function drawAegisForceUnderlay() {
 
 function drawAegisShipFx() {
   if (player.ship !== 'aegis' || (state !== 'play' && state !== 'boss')) return;
-  var fx0 = (aegisState.force === 'attached' && typeof aegisVisualX === 'function') ? aegisVisualX() : aegisState.forceX, fy0 = aegisState.forceY;
+  var fx0 = (aegisState.force === 'attached' && typeof aegisVisualX === 'function') ? aegisVisualX() : (aegisState.force === 'broken' ? player.x : aegisState.forceX), fy0 = (aegisState.force === 'broken' ? player.y : aegisState.forceY);
   var shipX = (typeof aegisVisualX === 'function') ? aegisVisualX() : player.x;
   var col = aegisWeaponColor();
   var shieldRatio = Math.max(0, Math.min(1, aegisState.shield / aegisShieldMax()));
@@ -206,8 +207,8 @@ function drawAegisShieldMeter() {
   var ratio = aegisShieldRatio();
   var broken = aegisState.force === 'broken';
   var low = !broken && (ratio <= 0.12 || aegisState.lowWarnT > 0);
-  var w = 56, h = 5;
-  var x = aegisVisualX() - w / 2 - 8, y = player.y + 43;
+  var w = 48, h = 5;
+  var x = aegisVisualX() - w / 2, y = player.y + 43;
   ctx.save(); ctx.globalCompositeOperation = 'source-over';
   ctx.fillStyle = 'rgba(2,10,18,0.86)'; ctx.fillRect(x - 1, y - 1, w + 2, h + 2);
   ctx.fillStyle = 'rgba(80,105,125,0.48)'; ctx.fillRect(x, y, w, h);

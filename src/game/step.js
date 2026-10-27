@@ -295,6 +295,8 @@ function step(dt){
       var hw=def.w/2+6; boss.x=Math.max(hw,Math.min(W-hw,boss.x));
       if(boss.phase===0&&boss.hp<boss.max*0.60&&stage!==4) bossPhase(1);
       else if(boss.phase===1&&boss.hp<boss.max*(stage===4?0.50:0.30)) bossPhase(2);
+      if(stage===4&&boss.phase>=1&&typeof updateStage5Director==='function') updateStage5Director(dt);
+      if(!(stage===4&&boss.phase>=1)){
       if(boss.ultCharge>0){
         boss.ultCharge-=dt;
         if(boss.ultCharge<=0) bossUltimate();
@@ -397,6 +399,7 @@ function step(dt){
               if(boss.blinkT>3.2){boss.blinkT=0;bossBlink();}
               if(boss.laserT>5.6){boss.laserT=0;bossRotatingLaser();}
             }
+          }
           }
           if(runner){ runner.x=boss.x; runner.y=boss.y; runner.update(); }
         }

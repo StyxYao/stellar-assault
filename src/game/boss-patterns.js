@@ -179,13 +179,16 @@ function bossCrossArms(){
 function bossChronosBloom(){
   if(!boss||boss.invuln>0) return;
   if(bullets.length+ebullets.length>300) return;
-  var gap=bossGapAngle();
+  // Three evenly spaced rings, each ring shares one fixed safe wedge.
+  // No random per-bullet offsets: the player can read the lanes and cut through the gap.
+  var gap=Math.PI/2 + Math.sin(time*0.18)*0.30;
+  var speeds=[84,110,136];
   for(var r=0;r<3;r++){
     for(var i=0;i<12;i++){
-      var a=i/12*TAU+r*.24+time*.12;
+      var a=i/12*TAU + r*TAU/24 + time*0.045;
       var da=Math.atan2(Math.sin(a-gap),Math.cos(a-gap));
-      if(Math.abs(da)<0.62-r*0.05) continue;
-      ebullets.push({x:boss.x,y:boss.y+10,vx:Math.cos(a)*(78+r*30),vy:Math.sin(a)*(78+r*30),rad:5,type:r===2?1:2});
+      if(Math.abs(da)<0.58) continue;
+      ebullets.push({x:boss.x,y:boss.y+10,vx:Math.cos(a)*speeds[r],vy:Math.sin(a)*speeds[r],rad:5,type:r===2?1:2});
     }
   }
   sfx('e_shot',0.20);

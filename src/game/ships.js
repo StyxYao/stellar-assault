@@ -405,6 +405,17 @@ function aegisLaneHit() {
       }
     }
   }
+  if (typeof orbBullets !== 'undefined' && orbBullets) {
+    for (var bo = orbBullets.length - 1; bo >= 0; bo--) {
+      var ob = orbBullets[bo];
+      var ox = ob.owner ? ob.owner.x + Math.cos(ob.ang) * ob.r : 0;
+      var oy = ob.owner ? ob.owner.y + Math.sin(ob.ang) * ob.r : 0;
+      if (oy < player.y + 14 && oy > -30 && Math.abs(ox - px) < lane + 7) {
+        if (typeof part === 'function') part(ox, oy, '#ffd36b', 1, 130);
+        orbBullets.splice(bo, 1);
+      }
+    }
+  }
   // Damage enemies in the lane. 240 = 2x the old bomb's 120 boss damage.
   if (typeof enemies !== 'undefined' && enemies) {
     for (var i = enemies.length - 1; i >= 0; i--) {
@@ -461,6 +472,7 @@ function aegisLaunchForce() {
   aegisState.castKind = '';
   aegisState.forceHits = [];
   aegisState.forceBossHit = false;
+  aegisLaneHit();
   try { shake = Math.max(shake, 12); } catch (e) {}
   try { sfx('aegis_force', 0.72); } catch (e) {}
   return true;
@@ -632,12 +644,25 @@ function updateAegis(dt) {
     if (ebullets) {
       for (var i = ebullets.length - 1; i >= 0; i--) {
         var b = ebullets[i];
-        if (b.bomb) continue;
         if (Math.hypot(b.x - aegisState.forceX, b.y - aegisState.forceY) < aegisShieldRadius()) {
           ebullets.splice(i, 1);
           aegisState.shield -= AEGIS_SHIELD_COST;
           aegisState.lastBlockAt = time;
           if (typeof part === 'function') part(aegisState.forceX, aegisState.forceY, '#9fe8ff', 2, 80);
+          if (aegisState.shield <= 0) { aegisState.shield = 0; aegisState.force = 'broken'; aegisState.breakT = AEGIS_BREAK_TIME; aegisShieldBreak(); break; }
+        }
+      }
+    }
+    if (typeof orbBullets !== 'undefined' && orbBullets) {
+      for (var oi = orbBullets.length - 1; oi >= 0; oi--) {
+        var ob = orbBullets[oi];
+        var ox = ob.owner ? ob.owner.x + Math.cos(ob.ang) * ob.r : 0;
+        var oy = ob.owner ? ob.owner.y + Math.sin(ob.ang) * ob.r : 0;
+        if (Math.hypot(ox - aegisState.forceX, oy - aegisState.forceY) < aegisShieldRadius()) {
+          orbBullets.splice(oi, 1);
+          aegisState.shield = Math.max(0, aegisState.shield - AEGIS_SHIELD_COST);
+          aegisState.lastBlockAt = time;
+          if (typeof part === 'function') part(ox, oy, '#9fe8ff', 2, 80);
           if (aegisState.shield <= 0) { aegisState.shield = 0; aegisState.force = 'broken'; aegisState.breakT = AEGIS_BREAK_TIME; aegisShieldBreak(); break; }
         }
       }

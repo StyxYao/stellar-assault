@@ -123,6 +123,7 @@ function spawnBossNow(){
   if(stage===4){boss.y=H*.44;boss.entering=false;boss.invuln=1.6;boss.totalHp=bhp;boss.max=Math.round(bhp*.36);boss.hp=boss.max;}
   if(stage===2) repairAudio();
   if(typeof bossMechReset==='function') bossMechReset(stage);
+  if(typeof stage5DirectorReset==='function') stage5DirectorReset();
   state='boss'; playBgm(['c','s2boss','s3boss','s4boss','s5boss'][stage]||'c'); setBossPattern(0);
 }
 function startBossOmen(){
