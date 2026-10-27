@@ -1110,3 +1110,8 @@
 - Phantom clones now persist when casting; skills add only into free cap slots.
 - Clone damage = 70%; cloak damage = +50% base, Raven +150%.
 - Break sound is CORE COLLAPSE + CRYSTAL SHATTER (22+5).
+
+## 1.0.0-rc.1u — Final short break blast
+
+- Shortened the 22+5 break mix by 25% to 0.98s.
+- Raised pitch naturally and layered enemy explosion SFX.

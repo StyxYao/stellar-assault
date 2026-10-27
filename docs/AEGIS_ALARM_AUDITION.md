@@ -79,7 +79,10 @@ Selected by user: `22 CORE COLLAPSE + 5 CRYSTAL SHATTER`.
 File:
 
 ```text
-assets/audio/aegis-break-mix-22-5.mp3
+assets/audio/aegis-break-final.mp3
 ```
 
 Wired to `aegisShieldBreak()` through `playAegisBreak()`.
+
+
+Final processing: shortened 25%, pitch raised ~15%, layered `exp-b` / `exp-c`, 0.98s.
