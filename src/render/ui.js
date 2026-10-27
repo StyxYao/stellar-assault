@@ -196,13 +196,13 @@ function startConfirmPanel(){
 function setupSplitPanels(){
   var p=startConfirmPanel(), gap=8, h=230;
   return {
-    p1:{x:p.x+10,y:p.y+44,w:p.w-20,h:h},
-    p2:{x:p.x+10,y:p.y+44+h+gap,w:p.w-20,h:h}
+    p1:{x:p.x+10,y:p.y+58,w:p.w-20,h:h},
+    p2:{x:p.x+10,y:p.y+58+h+gap,w:p.w-20,h:h}
   };
 }
 function setupStageButtons(){
   var p=startConfirmPanel(), gap=6, bw=(p.w-40-4*gap)/5;
-  var y=(typeof coopEnabled!=='undefined'&&coopEnabled)?p.y+p.h-232:p.y+296;
+  var y=(typeof coopEnabled!=='undefined'&&coopEnabled)?p.y+p.h-212:p.y+296;
   var out=[];
   for(var i=0;i<5;i++) out.push({i:i,x:p.x+20+i*(bw+gap),y:y,w:bw,h:34});
   return out;
@@ -318,7 +318,7 @@ function drawSetupSplit(){
   drawSetupPlayerPanel(sp.p2,'P2',coopShip2,coopSkin2,controlModeP2,{p2ship:b.p2ship,p2skin:b.p2skin,p2ctrl:b.p2ctrl},'#8dffb0');
   // shared stage
   ctx.textAlign='left';ctx.fillStyle='#8fb8ca';ctx.font='8px monospace';
-  ctx.fillText('STAGE · SHARED',p.x+22,p.y+p.h-244);
+  ctx.fillText('STAGE · SHARED',p.x+22,p.y+p.h-224);
   var sb=setupStageButtons();
   for(var i=0;i<sb.length;i++){
     var q=sb[i],sel=q.i===selectedStage;

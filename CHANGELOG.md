@@ -895,3 +895,8 @@
 - P2 uses the same image-preview ship/variant popups.
 - P1/P2 control modes are AUTO/KEYBOARD/MOUSE/TOUCH/GAMEPAD with pointer conflict checks.
 - Title/logo enlarged; title top, emblem lower.
+
+## 0.9.52 — Co-op setup spacing
+
+- Moved P1/P2 setup frames down slightly.
+- Moved the shared stage selector down to clear the P2 frame.
