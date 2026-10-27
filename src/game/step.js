@@ -444,7 +444,9 @@ function step(dt){
     }
   }else if(!enemies.some(function(e){return e.mini;})) miniDropT=25;
   for(var i=ebullets.length-1;i>=0;i--){
-    var e=ebullets[i]; e.x+=e.vx*dt; e.y+=e.vy*dt;
+    var e=ebullets[i];
+    if(!e){ ebullets.splice(i,1); if(typeof window!=='undefined') window.__ebHoles=(window.__ebHoles||0)+1; continue; }
+    e.x+=e.vx*dt; e.y+=e.vy*dt;
     if(e.bomb){
       e.fuse-=dt;
       if(e.tx!=null){

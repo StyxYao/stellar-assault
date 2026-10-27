@@ -1020,3 +1020,8 @@
 - Shield absorption now removes the contacting projectile and grants 0.18s grace.
 - A single beam/body can no longer drain the shield every frame and then hit HP.
 - Verified one bullet: shield 60→52, HP 3, bullet removed; restored shield 30→22.
+
+## 1.0.0-rc.1e — Empty ebullet guard
+
+- Added a defensive skip/removal for empty ebullet slots during the fixed step loop.
+- Ran 6,000 simulated frames without the previous `e.x` crash.
