@@ -994,3 +994,9 @@
 - Made build_pages.sh work with Windows Python venv layout.
 - Added desktop-build workflow for native Windows NSIS/zip and Linux AppImage.
 - Added Windows ICO/Linux/macOS icon configuration.
+
+## 1.0.0-rc.1a — Native desktop CI
+
+- Added GitHub Actions Windows/Linux desktop build.
+- Windows NSIS/zip and Linux AppImage built successfully on native runners.
+- Recorded user-reported iOS/Android browser validation; Deck still unverified.

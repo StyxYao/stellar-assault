@@ -39,8 +39,8 @@ Boss Rush / Tower 明确属于 1.1。
 - [ ] 完整 5 关非强制人工通关
 - [ ] 本地双人完整 5 关
 - [ ] 两台物理设备 LAN
-- [ ] iOS Safari / Android 真机
-- [ ] Windows / Steam Deck
+- [x] iOS Safari / Android 真机（用户报告）
+- [~] Windows CI installer/zip + Linux AppImage；Deck 未验证
 - [ ] 实体手柄
 - [ ] Apple/Windows 签名
 - [ ] Steamworks App ID / Overlay / 成就 / Cloud

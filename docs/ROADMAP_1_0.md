@@ -31,7 +31,7 @@ Desktop / Electron 基础发行
 
 - [x] 移动端暂停 / 设置 / 退出到菜单
 - [x] 首屏资源懒加载：GIMG 按需 + 第五关视频延迟加载（首屏约 6.7MB）
-- [x] iOS Safari 安全区、音频手势解锁（待真机）
+- [x] iOS Safari 安全区、音频手势解锁（用户报告真机运行）
 - [~] 本地双人回归通过；完整 5 关待人工
 - [x] LAN 双客户端状态同步/加入通过
 - [ ] LAN 物理设备测试
@@ -42,8 +42,8 @@ Desktop / Electron 基础发行
 
 - [ ] 1.0.0 版本号统一
 - [ ] README / CHANGELOG / 验收文档同步
-- [x] Windows / macOS Desktop 构建链路（macOS unpacked 已验证；Windows 未构建）
-- [~] Steamworks / 安装包 / 商店素材（electron-builder 已配置；Steamworks 未接）
+- [x] Windows / macOS / Linux Desktop 构建链路（macOS unpacked；Windows NSIS/zip 与 Linux AppImage CI 已成功）
+- [~] Windows/Linux 安装包已产出；Steamworks/签名/商店素材未完成
 - [ ] 隐私 / EULA / 第三方声明
 - [ ] 回滚包与发布快照
 
