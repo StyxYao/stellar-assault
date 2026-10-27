@@ -713,6 +713,8 @@ window.__lanDebug = function () {
   };
 };
 
+window.__openLanHost = function () { lanOpenHost(); };
+
 try {
   var q = new URLSearchParams(location.search || '');
   lanClientMode = q.get('lanclient') === '1';

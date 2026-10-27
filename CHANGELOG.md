@@ -839,3 +839,10 @@
 - Added World.snapshot/digest, deterministic reset/simulate debug hooks.
 - Verified two instances produce identical snapshots for the same seed/frame count.
 - Added sync-start seed/stage and input sequence scaffold to LAN.
+
+## 0.9.44 — Menu modes and variant tutorial
+
+- Home menu now offers LOCAL SOLO / LOCAL CO-OP / LAN CO-OP.
+- Solo loadout hides P2 controls; local co-op shows them.
+- Variant page now has a tutorial button and a back-to-ships button.
+- Fixed variant page title/back overlap.

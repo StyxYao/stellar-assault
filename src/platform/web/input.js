@@ -55,6 +55,8 @@ function onDown(e){
     if(typeof skinSelectOpen!=='undefined'&&skinSelectOpen){
       var skhit=skinSelectAt(p);
       if(typeof skhit==='number'){ skinSelectIndex=skhit; if(typeof menuConfirmSfx==='function')menuConfirmSfx(); skinSelectChoose(skhit); return; }
+      if(skhit==='tutorial'){if(typeof menuMoveSfx==='function')menuMoveSfx();openTutorial(selectedShip);return;}
+      if(skhit==='back'){if(typeof menuMoveSfx==='function')menuMoveSfx();closeSkinSelect();openShipSelect();return;}
       if(skhit==='close'||skhit==='outside'){if(typeof menuMoveSfx==='function')menuMoveSfx();closeSkinSelect();}
       return;
     }
@@ -74,8 +76,15 @@ function onDown(e){
       var sb=sbs[si];
       if(p.x>=sb.x&&p.x<=sb.x+sb.w&&p.y>=sb.y&&p.y<=sb.y+sb.h){ selectedStage=si; if(typeof menuMoveSfx==='function')menuMoveSfx(); return; }
     }
-    var stb=menuStartButton();
-    if(p.x>=stb.x&&p.x<=stb.x+stb.w&&p.y>=stb.y&&p.y<=stb.y+stb.h){if(typeof menuMoveSfx==='function')menuMoveSfx();openStartConfirm(); return;}
+    var modes=menuModeButtons();
+    for(var mi=0;mi<modes.length;mi++){
+      var mb=modes[mi];
+      if(p.x>=mb.x&&p.x<=mb.x+mb.w&&p.y>=mb.y&&p.y<=mb.y+mb.h){
+        menuModeIndex=mi;
+        if(typeof menuMoveSfx==='function')menuMoveSfx();
+        activateMainMode(mb.id); return;
+      }
+    }
     return;
   }
   if(state==='bossOmen'){ bossOmenT=6.5; return; }

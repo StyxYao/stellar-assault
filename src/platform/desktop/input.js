@@ -42,7 +42,10 @@ function desktopPrime() {
 function desktopMenuStart() {
   desktopPrime();
   if (typeof menuMoveSfx === 'function') menuMoveSfx();
-  if (typeof openStartConfirm === 'function') openStartConfirm();
+  var modes = (typeof menuModeButtons === 'function') ? menuModeButtons() : [];
+  var mode = modes[typeof menuModeIndex === 'number' ? menuModeIndex : 0];
+  if (mode && typeof activateMainMode === 'function') activateMainMode(mode.id);
+  else if (typeof openStartConfirm === 'function') openStartConfirm();
 }
 
 function desktopChangeStage(delta) {
@@ -122,7 +125,9 @@ function desktopKeyDown(e) {
     if (k === 'arrowup' || k === 'w') { skinSelectIndex = (skinSelectIndex + skList.length - 1) % skList.length; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
     if (k === 'arrowdown' || k === 's') { skinSelectIndex = (skinSelectIndex + 1) % skList.length; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
     if (k === 'enter' || k === ' ') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) desktopConfirm(); return; }
-    if (k === 'escape' || k === 'b') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); closeSkinSelect(); return; }
+    if (k === 't') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); openTutorial(selectedShip); return; }
+    if (k === 'b') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); closeSkinSelect(); openShipSelect(); return; }
+    if (k === 'escape') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); closeSkinSelect(); return; }
     return;
   }
   if (state === 'menu' && typeof shipSelectOpen !== 'undefined' && shipSelectOpen) {
@@ -131,6 +136,19 @@ function desktopKeyDown(e) {
     if (k === 'enter' || k === ' ') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) desktopConfirm(); return; }
     if (k === 't') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); var trows=shipSelectRows(); openTutorial(trows[shipSelectIndex]?trows[shipSelectIndex].def.id:selectedShip); return; }
     if (k === 'escape' || k === 'v') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); closeShipSelect(); return; }
+    return;
+  }
+  if (state === 'menu' && (k === '1' || k === '2' || k === '3')) {
+    if (e.preventDefault) e.preventDefault();
+    menuModeIndex = k === '1' ? 0 : (k === '2' ? 1 : 2);
+    if (typeof menuMoveSfx === 'function') menuMoveSfx();
+    desktopMenuStart();
+    return;
+  }
+  if (state === 'menu' && k === 'tab') {
+    if (e.preventDefault) e.preventDefault();
+    menuModeIndex = (menuModeIndex + 1) % 3;
+    if (typeof menuMoveSfx === 'function') menuMoveSfx();
     return;
   }
   if (k === 'v' && state === 'menu') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); openShipSelect(); return; }

@@ -21,10 +21,23 @@ function coopModeLabel() {
   return coopInputMode === 'mouse' ? 'P1 KB + P2 MOUSE' : '2P KEYBOARD';
 }
 
+function coopSetMode(mode) {
+  if (mode === 'solo' || mode === 'off') {
+    coopEnabled = false; coopInputMode = 'off'; player2 = null;
+    pickupMsg = 'LOCAL SOLO'; pickupT = 1.2;
+    return;
+  }
+  coopEnabled = true;
+  coopInputMode = (mode === 'mouse') ? 'mouse' : 'kb';
+  coopEnsureDistinct();
+  pickupMsg = coopInputMode === 'mouse' ? 'LOCAL CO-OP · P2 MOUSE' : 'LOCAL CO-OP · 2P KEYBOARD';
+  pickupT = 1.4;
+}
+
 function coopToggle() {
-  if (!coopEnabled) { coopEnabled = true; coopInputMode = 'kb'; pickupMsg = 'CO-OP · 2P KEYBOARD'; }
-  else if (coopInputMode === 'kb') { coopInputMode = 'mouse'; pickupMsg = 'CO-OP · P1 KB + P2 MOUSE'; }
-  else { coopEnabled = false; coopInputMode = 'off'; player2 = null; pickupMsg = 'CO-OP OFF'; }
+  if (!coopEnabled) { coopSetMode('coop'); }
+  else if (coopInputMode === 'kb') { coopSetMode('mouse'); }
+  else { coopSetMode('solo'); }
   pickupT = 1.6;
 }
 

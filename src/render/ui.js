@@ -56,7 +56,16 @@ function stageSelectButtons(){
   for(var i=0;i<5;i++)out.push({i:i,x:sx+i*(bw+gap),y:sy,w:bw,h:bh});
   return out;
 }
-function menuStartButton(){return {x:W/2-108,y:H*.55,w:216,h:42};}
+var menuModeIndex = 0;
+function menuModeButtons(){
+  var gap=7, w=(W-52-2*gap)/3, y=H*.545, x=26;
+  return [
+    {id:'solo', label:'LOCAL SOLO', sub:'1 PLAYER', x:x, y:y, w:w, h:44},
+    {id:'coop', label:'LOCAL CO-OP', sub:'2 PLAYERS', x:x+w+gap, y:y, w:w, h:44},
+    {id:'lan', label:'LAN CO-OP', sub:'HOST / JOIN', x:x+(w+gap)*2, y:y, w:w, h:44}
+  ];
+}
+function menuStartButton(){return menuModeButtons()[0];}
 function menuShipButton(){return {x:W/2-118,y:H*.395,w:112,h:38};}
 
 var tutorialOpen = false, tutorialShip = 'vector', tutorialPage = 0;
@@ -161,7 +170,22 @@ function startConfirmButtons(){
     cancel:{x:p.x+p.w-160,y:p.y+p.h-44,w:130,h:30}
   };
 }
-function openStartConfirm(){ startConfirmOpen=true; shipSelectOpen=false; skinSelectOpen=false; }
+function activateMainMode(mode) {
+  if (mode === 'lan') {
+    if (typeof coopSetMode === 'function') coopSetMode('solo');
+    startConfirmOpen = false; shipSelectOpen = false; skinSelectOpen = false; tutorialOpen = false;
+    if (window.__openLanHost) window.__openLanHost();
+    return;
+  }
+  openStartConfirm(mode === 'coop' ? 'coop' : 'solo');
+}
+
+function openStartConfirm(mode){
+  if(mode==='solo'||mode==='coop'){
+    if(typeof coopSetMode==='function') coopSetMode(mode);
+  }
+  startConfirmOpen=true; shipSelectOpen=false; skinSelectOpen=false;
+}
 function closeStartConfirm(){ startConfirmOpen=false; }
 function startConfirmAt(p){
   var b=startConfirmButtons();
@@ -202,16 +226,21 @@ function drawStartConfirmOverlay(){
   ctx.fillStyle='#8fb8ca';ctx.font='7px monospace';
   ctx.fillText(sd.trait||'',W/2,p.y+276);
   var b=startConfirmButtons();
-  ctx.fillStyle='rgba(6,18,30,0.9)';
-  ctx.fillRect(b.p2ship.x,b.p2ship.y,b.p2ship.w,b.p2ship.h);
-  ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(b.p2ship.x,b.p2ship.y,b.p2ship.w,b.p2ship.h);
-  ctx.fillStyle='#9fe8ff';ctx.font='700 8px monospace';ctx.textAlign='left';
-  ctx.fillText('P2 SHIP · '+(typeof coopShipLabel2==='function'?coopShipLabel2():'VECTOR'),b.p2ship.x+7,b.p2ship.y+14);
-  ctx.fillStyle='rgba(6,18,30,0.9)';
-  ctx.fillRect(b.p2skin.x,b.p2skin.y,b.p2skin.w,b.p2skin.h);
-  ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(b.p2skin.x,b.p2skin.y,b.p2skin.w,b.p2skin.h);
-  ctx.fillStyle='#c8eaff';ctx.font='700 8px monospace';ctx.textAlign='left';
-  ctx.fillText('P2 VAR · '+(typeof coopSkinLabel2==='function'?coopSkinLabel2():'DEFAULT'),b.p2skin.x+7,b.p2skin.y+14);
+  if (typeof coopEnabled !== 'undefined' && coopEnabled) {
+    ctx.fillStyle='rgba(6,18,30,0.9)';
+    ctx.fillRect(b.p2ship.x,b.p2ship.y,b.p2ship.w,b.p2ship.h);
+    ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(b.p2ship.x,b.p2ship.y,b.p2ship.w,b.p2ship.h);
+    ctx.fillStyle='#9fe8ff';ctx.font='700 8px monospace';ctx.textAlign='left';
+    ctx.fillText('P2 SHIP · '+(typeof coopShipLabel2==='function'?coopShipLabel2():'VECTOR'),b.p2ship.x+7,b.p2ship.y+14);
+    ctx.fillStyle='rgba(6,18,30,0.9)';
+    ctx.fillRect(b.p2skin.x,b.p2skin.y,b.p2skin.w,b.p2skin.h);
+    ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(b.p2skin.x,b.p2skin.y,b.p2skin.w,b.p2skin.h);
+    ctx.fillStyle='#c8eaff';ctx.font='700 8px monospace';ctx.textAlign='left';
+    ctx.fillText('P2 VAR · '+(typeof coopSkinLabel2==='function'?coopSkinLabel2():'DEFAULT'),b.p2skin.x+7,b.p2skin.y+14);
+  } else {
+    ctx.textAlign='center';ctx.fillStyle='#9fb6cf';ctx.font='8px monospace';
+    ctx.fillText('LOCAL SOLO · 1 PLAYER · P2 CONTROLS HIDDEN',W/2,b.p2ship.y+14);
+  }
   ctx.fillStyle=(typeof coopEnabled!=='undefined'&&coopEnabled)?'rgba(18,52,42,0.95)':'rgba(6,18,30,0.9)';
   ctx.fillRect(b.coop.x,b.coop.y,b.coop.w,b.coop.h);
   ctx.strokeStyle=(typeof coopEnabled!=='undefined'&&coopEnabled)?'#8dffb0':'#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(b.coop.x,b.coop.y,b.coop.w,b.coop.h);
@@ -235,6 +264,8 @@ var skinSelectOpen = false;
 var skinSelectIndex = 0;
 function skinSelectPanel(){ return {x:24,y:H*.14,w:W-48,h:H*.57}; }
 function skinSelectCloseButton(){ var p=skinSelectPanel(); return {x:p.x+p.w-36,y:p.y+12,w:24,h:24}; }
+function skinSelectBackButton(){ var p=skinSelectPanel(); return {x:p.x+14,y:p.y+12,w:78,h:24}; }
+function skinTutorialButton(){ var p=skinSelectPanel(); return {x:p.x+20,y:p.y+p.h-52,w:150,h:26}; }
 function skinSelectRows(){
   var p=skinSelectPanel(), list=(typeof skinList==='function'?skinList(selectedShip):[]), rows=[];
   var start=p.y+96, h=98, gap=10;
@@ -258,6 +289,10 @@ function skinSelectChoose(i){
   return true;
 }
 function skinSelectAt(p){
+  var bb=skinSelectBackButton();
+  if(p.x>=bb.x&&p.x<=bb.x+bb.w&&p.y>=bb.y&&p.y<=bb.y+bb.h) return 'back';
+  var tb=skinTutorialButton();
+  if(p.x>=tb.x&&p.x<=tb.x+tb.w&&p.y>=tb.y&&p.y<=tb.y+tb.h) return 'tutorial';
   var cb=skinSelectCloseButton();
   if(p.x>=cb.x&&p.x<=cb.x+cb.w&&p.y>=cb.y&&p.y<=cb.y+cb.h) return 'close';
   var rows=skinSelectRows();
@@ -275,9 +310,13 @@ function drawSkinSelectOverlay(){
   ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1.5;ctx.strokeRect(p.x,p.y,p.w,p.h);
   ctx.textAlign='left';
   ctx.fillStyle='#eaf8ff';ctx.font='900 20px "Arial Black", Arial, sans-serif';
-  ctx.fillText('SELECT VARIANT',p.x+20,p.y+36);
+  ctx.fillText('SELECT VARIANT',p.x+104,p.y+36);
   ctx.fillStyle='#7f9bb0';ctx.font='9px monospace';
-  ctx.fillText((SHIP_DEFS[selectedShip]?SHIP_DEFS[selectedShip].label:selectedShip.toUpperCase())+' · CHOOSE LOADOUT',p.x+20,p.y+54);
+  ctx.fillText((SHIP_DEFS[selectedShip]?SHIP_DEFS[selectedShip].label:selectedShip.toUpperCase())+' · CHOOSE LOADOUT',p.x+104,p.y+54);
+  var bb=skinSelectBackButton();
+  ctx.fillStyle='rgba(8,24,38,0.9)';ctx.fillRect(bb.x,bb.y,bb.w,bb.h);
+  ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(bb.x,bb.y,bb.w,bb.h);
+  ctx.fillStyle='#b8d9e8';ctx.font='700 9px monospace';ctx.textAlign='center';ctx.fillText('‹ SHIPS',bb.x+bb.w/2,bb.y+16);
   var cb=skinSelectCloseButton();
   ctx.strokeStyle='#5d8fa8';ctx.lineWidth=1;ctx.strokeRect(cb.x,cb.y,cb.w,cb.h);
   ctx.fillStyle='#9fb6cf';ctx.font='700 14px Arial, sans-serif';ctx.textAlign='center';ctx.fillText('×',cb.x+cb.w/2,cb.y+17);
@@ -297,6 +336,11 @@ function drawSkinSelectOverlay(){
     ctx.textAlign='right';ctx.fillStyle='#6d879b';ctx.font='10px monospace';
     ctx.fillText('0'+(i+1),r.x+r.w-14,r.y+38);
   }
+  ctx.textAlign='center';ctx.fillStyle='#6d879b';ctx.font='8px monospace';
+  var tb=skinTutorialButton();
+  ctx.fillStyle='rgba(8,24,38,0.9)';ctx.fillRect(tb.x,tb.y,tb.w,tb.h);
+  ctx.strokeStyle='#9fe8ff';ctx.lineWidth=1;ctx.strokeRect(tb.x,tb.y,tb.w,tb.h);
+  ctx.fillStyle='#dff5ff';ctx.font='700 9px monospace';ctx.textAlign='center';ctx.fillText('TUTORIAL · '+(SHIP_DEFS[selectedShip]?SHIP_DEFS[selectedShip].label:'SHIP'),tb.x+tb.w/2,tb.y+17);
   ctx.textAlign='center';ctx.fillStyle='#6d879b';ctx.font='8px monospace';
   ctx.fillText('↑ ↓ SELECT · ENTER EQUIP · ESC MENU',W/2,p.y+p.h-16);
   ctx.restore();ctx.textAlign='left';
@@ -410,10 +454,17 @@ function drawMenu(){
     ctx.fillStyle=sel?'#fff2c4':(si===4?'#ffe2a8':'#dff4ff');ctx.font='900 16px "Arial Black", Arial, sans-serif';
     ctx.textAlign='center';ctx.fillText(String(si+1),sb.x+sb.w/2,sb.y+25);
   }
-  var stb=menuStartButton();ctx.fillStyle='rgba(50,32,10,0.88)';ctx.fillRect(stb.x,stb.y,stb.w,stb.h);
-  ctx.strokeStyle='#ffd27a';ctx.lineWidth=2;ctx.strokeRect(stb.x,stb.y,stb.w,stb.h);
-  ctx.fillStyle='#ffe7b0';ctx.font='900 18px "Arial Black", Arial, sans-serif';ctx.textAlign='center';
-  ctx.fillText('START  ·  STAGE '+(selectedStage+1),W/2,stb.y+27);
+  var modes=menuModeButtons();
+  for(var mi=0;mi<modes.length;mi++){
+    var mb=modes[mi], mc=mb.id==='coop'?'#8dffb0':(mb.id==='lan'?'#ffd36b':'#9fe8ff');
+    ctx.fillStyle=mi===menuModeIndex?'rgba(24,48,58,0.92)':'rgba(6,18,30,0.82)';
+    ctx.fillRect(mb.x,mb.y,mb.w,mb.h);
+    ctx.strokeStyle=mc;ctx.lineWidth=mi===menuModeIndex?2:1.2;ctx.strokeRect(mb.x,mb.y,mb.w,mb.h);
+    ctx.fillStyle=mc;ctx.font='900 10px "Arial Black", Arial, sans-serif';ctx.textAlign='center';
+    ctx.fillText(mb.label,mb.x+mb.w/2,mb.y+18);
+    ctx.fillStyle='#9fb6cf';ctx.font='7px monospace';
+    ctx.fillText(mb.sub,mb.x+mb.w/2,mb.y+32);
+  }
   ctx.shadowBlur=0;
   try {
     var best=typeof aegisBestScore==='function'?aegisBestScore():(SaveStore&&SaveStore.data?SaveStore.data.campaign.bestScore:0);
