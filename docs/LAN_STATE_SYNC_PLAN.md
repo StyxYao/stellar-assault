@@ -1,6 +1,6 @@
 # LAN State Sync — Next Phase Plan
 
-状态：**准备讨论，不实现**
+状态：**Host 权威快照同步 + Client 本地预测已默认启用**
 范围：仅 LAN 2P。世界联机、公网、NAT、4 人、Host migration 不做。
 
 ## 目标
@@ -43,15 +43,19 @@
 - 体验最好
 - 工程量最大
 
-## 当前原型
+## 当前实现
+
+- LAN 默认 `STATE SYNC`，20Hz 完整 World 快照
+- Client restore 后本地 step 预测，Host 快照校正
+- JPEG 画面流保留为手动 fallback
 
 - `World.snapshot()` 已用于确定性回归
 - `__resetDeterministic(stage, seed)` + `__simulate(frames)` 已跑通两实例同快照
 - `sync-start` 已下发 seed/stage；input 已带 seq
 - `World.snapshotFull()` / `World.restore()` 已接入
 - LAN 面板可切 **SYNC · SNAPSHOT BETA**
-- Host 10Hz 广播 World 快照；Client restore 后在本机 canvas 绘制，不再传 JPEG
-- Client 现在会跑本地 `step()` 做预测，Host 10Hz 快照校正
+- Host 20Hz 广播 World 快照；Client restore 后在本机 canvas 绘制，不再传 JPEG
+- Client 会跑本地 `step()` 做预测，Host 20Hz 快照校正
 - Client 保留 `lanSyncClientHold` 作为回放/调试开关
 
 ## 建议顺序

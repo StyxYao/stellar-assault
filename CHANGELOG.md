@@ -912,3 +912,10 @@
 - Rebuilt the STELLAR ASSAULT wordmark as a stacked two-line asset.
 - Doubled the title's visual height; top placement retained.
 - Kept the lower SA emblem and large title/logo scale.
+
+## 0.9.55 — LAN state sync default
+
+- STATE SYNC is now the default LAN transport; JPEG is manual fallback.
+- World snapshots raised to 20Hz with explicit 1/0 invite-link flags.
+- Client keeps local prediction and restores authoritative snapshots.
+- Reconnect, two-client, host-as-P1, audio and fallback paths tested.

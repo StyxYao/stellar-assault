@@ -41,7 +41,7 @@ function lanEl(tag, css, text) {
 
 function lanInviteLink() {
   if (!lanRoom) return '';
-  var q = '?lanclient=1&lanjoin=' + encodeURIComponent(lanRoom) + (lanStateSyncMode ? '&statesync=1' : '');
+  var q = '?lanclient=1&lanjoin=' + encodeURIComponent(lanRoom) + '&statesync=' + (lanStateSyncMode ? '1' : '0');
   try { var p = new URLSearchParams(location.search).get('wsport'); if (p) q += '&wsport=' + encodeURIComponent(p); } catch (e) {}
   return location.origin + location.pathname + q;
 }
@@ -173,7 +173,7 @@ function lanRefreshVariantCards() {
 
 function lanUpdateSyncButton() {
   if (!lanSyncBtn) return;
-  lanSyncBtn.textContent = lanStateSyncMode ? 'SYNC · SNAPSHOT BETA' : 'SYNC · JPEG STREAM';
+  lanSyncBtn.textContent = lanStateSyncMode ? 'SYNC · STATE SYNC' : 'SYNC · JPEG FALLBACK';
   lanSyncBtn.style.borderColor = lanStateSyncMode ? '#8dffb0' : '#5d8fa8';
   if (lanLinkEl && lanRoom) lanLinkEl.textContent = lanInviteLink();
 }
@@ -228,7 +228,7 @@ function lanMakeOverlay(client) {
       if (lanStatus) lanStatus.textContent = 'LINK COPIED';
     };
     box.appendChild(copy);
-    lanSyncBtn = lanEl('button', 'width:100%;padding:7px;background:#081824;border:1px solid #5d8fa8;color:#b8d9e8;font:9px monospace;cursor:pointer;margin-bottom:8px;', 'SYNC · JPEG STREAM');
+    lanSyncBtn = lanEl('button', 'width:100%;padding:7px;background:#081824;border:1px solid #8dffb0;color:#b8d9e8;font:9px monospace;cursor:pointer;margin-bottom:8px;', 'SYNC · STATE SYNC');
     lanSyncBtn.onclick = lanToggleSync; box.appendChild(lanSyncBtn);
     lanSlotStatus = lanEl('div', 'font:11px monospace;color:#9fe8ff;min-height:18px;margin-bottom:8px;', 'P1: —   P2: —');
     box.appendChild(lanSlotStatus);
@@ -362,7 +362,7 @@ function lanStartSnapshotTimer() {
       lanSnapSeq++; lanSnapBytes = JSON.stringify(data).length;
       lanBroadcast({ type: 'world-snapshot', seq: lanSnapSeq, data: data });
     } catch (e) {}
-  }, 100);
+  }, 50);
 }
 
 function lanStopSnapshotTimer() {
@@ -776,7 +776,7 @@ window.__openLanHost = function () { lanOpenHost(); };
 try {
   var q = new URLSearchParams(location.search || '');
   lanClientMode = q.get('lanclient') === '1';
-  lanStateSyncMode = q.get('statesync') === '1';
+  lanStateSyncMode = q.get('statesync') !== '0';
   if (lanClientMode) {
     function bootClient() {
       lanMakeOverlay(true); lanRefreshLoadoutButtons();
