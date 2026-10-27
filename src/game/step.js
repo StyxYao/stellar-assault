@@ -400,6 +400,7 @@ function step(dt){
         }
       }
     }
+    if(typeof updateBossMech==='function') updateBossMech(dt);
     for(var i=bullets.length-1;i>=0;i--){
       var b=bullets[i]; b.r.update(); b.x=b.r.x; b.y=b.r.y;
       if(b.dead||b.x<-40||b.x>W+40||b.y<-40||b.y>H+40){bullets.splice(i,1);continue;}

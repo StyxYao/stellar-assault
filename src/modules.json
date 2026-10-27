@@ -42,6 +42,7 @@
     "src/game/combat.js",
     "src/game/stage-flow.js",
     "src/game/stage-mechanics.js",
+    "src/game/boss-mechanics.js",
     "src/game/step.js"
   ]
 }

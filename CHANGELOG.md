@@ -949,3 +949,9 @@
 - Added ION STORM / RAIL CANNON / DUST FRONT / LIGHT GATE for stages 1-4.
 - All mechanics telegraph, have safe lanes, and are disabled during boss states.
 - Stage mechanism state is included in LAN full snapshots.
+
+## 0.9.60 — R6 boss mechanics
+
+- Added CORE LOCK / DEVOUR / SIEGE CHARGE / RADIANT CAGE / ECHO LOCK.
+- Each boss has a telegraphed core interaction and an output/dodge window.
+- Boss mechanic state is included in LAN full snapshots.

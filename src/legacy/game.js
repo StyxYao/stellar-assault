@@ -361,6 +361,7 @@ function drawScene(){
     var ob=orbBullets[i];ctx.save();ctx.globalCompositeOperation='lighter';ctx.fillStyle='#b58bff';ctx.beginPath();ctx.arc(ob.x,ob.y,ob.rad+3,0,TAU);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ob.x,ob.y,2.2,0,TAU);ctx.fill();ctx.restore();
   }
   drawBoss();
+  if(typeof drawBossMech==='function') drawBossMech();
   if(state==='bossAwaken') drawBossAwakenFx();
   drawBossCrossOrb();
   drawPhaseFx();
@@ -419,6 +420,7 @@ window.__stage=function(n){startStage(n);};
   window.__setPlayer=function(x,y){player.x=target.x=x;player.y=target.y=y;};
   window.__dummy=function(hp){enemies.length=0;ebullets.length=0;spawnWave({t:0,type:0,n:1,form:'line',spd:0,noFire:true,aggr:1});var e=enemies[enemies.length-1];if(e){e.x=W/2;e.y=300;e.entering=false;e.vx=0;e.vy=0;e.mode='hold';e.noFire=true;e.hp=hp||999999;e.max=e.hp;}player.x=target.x=W/2;player.y=target.y=H-130;};
 window.__boss=function(){if(!boss)spawnBoss();};
+window.__bossMechNow=function(){if(typeof bossMechBegin==='function'&&state==='boss'&&boss)bossMechBegin();};
 window.__form=function(f){spawnWave({t:0,type:f==='escort'?4:2,n:5,form:f,spd:70,noFire:false,aggr:1});};
 window.__enemy=function(t){spawnWave({t:0,type:t==null?4:t,n:1,form:'line',spd:0,noFire:false,aggr:1});var e=enemies[enemies.length-1];if(e){e.y=280;e.entering=false;}};
 window.__warn=function(){startBossWarn();};
@@ -440,6 +442,7 @@ window.__beam=function(){spawnBeam(W/2,180,Math.PI/2,1500,16,0.8,0.45,1,'#ff6a5a
 window.__bossLaser=function(){if(boss)bossLaser();};
 window.__bgInfo=function(){return {neb:{c:BG1_NEBULA.complete,w:BG1_NEBULA.naturalWidth,src:BG1_NEBULA.src},early:{c:BG1_EARLIEST.complete,w:BG1_EARLIEST.naturalWidth},main:{c:BG_MAIN[0]?BG_MAIN[0].complete:false,w:BG_MAIN[0]?BG_MAIN[0].naturalWidth:0}};};
 window.__mechWarn=function(){if(typeof stageMechWarning==='function'&&state==='play')stageMechWarning();};
+window.__bossMech=function(){return {stage:bossMech.stage,phase:bossMech.phase,t:bossMech.t,warn:bossMech.warnT,active:bossMech.activeT,data:bossMech.data,msg:bossMech.msg};};
 window.__stageMech=function(){return {stage:stageMech.stage,phase:stageMech.phase,t:stageMech.t,warn:stageMech.warnT,active:stageMech.activeT,data:stageMech.data,msg:stageMech.msg};};
 window.__bgv=function(){return {ready:bgLoopVideo.readyState,paused:bgLoopVideo.paused,w:bgLoopVideo.videoWidth,t:bgLoopVideo.currentTime,src:bgLoopVideo.currentSrc.slice(-24)};};
 window.__cast=function(){startCast();};
