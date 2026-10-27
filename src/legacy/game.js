@@ -442,6 +442,7 @@ window.__beam=function(){spawnBeam(W/2,180,Math.PI/2,1500,16,0.8,0.45,1,'#ff6a5a
 window.__bossLaser=function(){if(boss)bossLaser();};
 window.__bgInfo=function(){return {neb:{c:BG1_NEBULA.complete,w:BG1_NEBULA.naturalWidth,src:BG1_NEBULA.src},early:{c:BG1_EARLIEST.complete,w:BG1_EARLIEST.naturalWidth},main:{c:BG_MAIN[0]?BG_MAIN[0].complete:false,w:BG_MAIN[0]?BG_MAIN[0].naturalWidth:0}};};
 window.__mechWarn=function(){if(typeof stageMechWarning==='function'&&state==='play')stageMechWarning();};
+window.__aegis2=function(){return typeof aegisState2!=='undefined'?aegisState2:null;};
 window.__bossMech=function(){return {stage:bossMech.stage,phase:bossMech.phase,t:bossMech.t,warn:bossMech.warnT,active:bossMech.activeT,data:bossMech.data,msg:bossMech.msg};};
 window.__stageMech=function(){return {stage:stageMech.stage,phase:stageMech.phase,t:stageMech.t,warn:stageMech.warnT,active:stageMech.activeT,data:stageMech.data,msg:stageMech.msg};};
 window.__bgv=function(){return {ready:bgLoopVideo.readyState,paused:bgLoopVideo.paused,w:bgLoopVideo.videoWidth,t:bgLoopVideo.currentTime,src:bgLoopVideo.currentSrc.slice(-24)};};
