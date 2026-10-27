@@ -2,6 +2,7 @@
 var phantomState = {
   cloakT: 0,
   wCount: 0,
+  cloneHp: 3,
   capBase: 1,
   cap: 1,
   clones: [],
@@ -16,13 +17,18 @@ var phantomState = {
 function phantomSkinId() { return (selectedSkins && selectedSkins.phantom) || 'quantum'; }
 function phantomIsRaven() { return phantomSkinId() === 'raven'; }
 function phantomIsButterfly() { return phantomSkinId() === 'butterfly'; }
-function phantomBaseCap() { return phantomIsButterfly() ? 2 : 1; }
+function phantomBaseCap() {
+  if (phantomIsRaven()) return 1;
+  if (phantomIsButterfly()) return 4;
+  return 2;
+}
 function phantomMaxCharges() { return 6; }
 function phantomSkillButton() { return { x: W - 64, y: H - 78, r: 38 }; }
 
 function phantomReset() {
   phantomState.cloakT = 0;
   phantomState.wCount = 0;
+  phantomState.cloneHp = 3;
   phantomState.capBase = phantomBaseCap();
   phantomState.cap = phantomState.capBase;
   phantomState.clones.length = 0;
@@ -41,7 +47,7 @@ function phantomDamageMult() {
 function phantomSpawnClone(offset) {
   if (phantomState.clones.length >= phantomState.cap) return null;
   var skin = currentSkinDef();
-  var hp = phantomIsRaven() ? 1 : 3;
+  var hp = phantomState.cloneHp || 3;
   var c = {
     x: Math.max(26, Math.min(W - 26, player.x + (offset || 0))),
     y: player.y - 12,
@@ -143,17 +149,16 @@ function phantomSkill() {
 }
 
 function phantomCollectW() {
-  if (phantomState.wCount < 3) {
-    phantomState.wCount++;
-    if (phantomState.wCount >= 3) {
-      phantomState.cap = phantomState.capBase * 2;
-      pickupMsg = 'CLONE LIMIT +1 · CAP ' + phantomState.cap;
-    } else {
-      pickupMsg = 'CLONE CHARGE ' + phantomState.wCount + '/3';
+  if (phantomState.cloneHp < 6) {
+    phantomState.cloneHp++;
+    for (var i = 0; i < phantomState.clones.length; i++) {
+      phantomState.clones[i].maxHp = phantomState.cloneHp;
+      phantomState.clones[i].hp = phantomState.cloneHp;
     }
+    pickupMsg = 'CLONE HP ' + phantomState.cloneHp + '/6';
     score += 40;
   } else {
-    pickupMsg = gainOD(15) ? 'OVERDRIVE!' : 'CLONE MAX +15 OD';
+    pickupMsg = gainOD(15) ? 'OVERDRIVE!' : 'CLONE HP MAX +15 OD';
     score += 40;
   }
 }
@@ -380,4 +385,4 @@ function drawPhantomControls() {
   ctx.textAlign = 'left'; ctx.restore(); ctx.globalAlpha = 1;
 }
 
-try { window.__phantomSelect=function(id){ setSelectedShip('phantom', false); setSelectedSkin('phantom', id||'quantum', false); phantomReset(); }; window.__phantom=function(){return {ship:player.ship,bombs:player.bombs,cloakT:phantomState.cloakT,clones:phantomState.clones.map(function(c){return {x:c.x,y:c.y,hp:c.hp,invulnT:c.invulnT,weapon:c.weapon,power:c.power};}),cap:phantomState.cap,wCount:phantomState.wCount,cloakDamage:phantomDamageMult()};}; window.__phantomW=function(){phantomCollectW();return window.__phantom();}; } catch(e) {}
+try { window.__phantomSelect=function(id){ setSelectedShip('phantom', false); setSelectedSkin('phantom', id||'quantum', false); phantomReset(); }; window.__phantom=function(){return {ship:player.ship,bombs:player.bombs,cloakT:phantomState.cloakT,clones:phantomState.clones.map(function(c){return {x:c.x,y:c.y,hp:c.hp,invulnT:c.invulnT,weapon:c.weapon,power:c.power};}),cap:phantomState.cap,cloneHp:phantomState.cloneHp,wCount:phantomState.wCount,cloakDamage:phantomDamageMult()};}; window.__phantomW=function(){phantomCollectW();return window.__phantom();}; } catch(e) {}

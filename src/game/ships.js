@@ -3,7 +3,7 @@
 var SHIP_DEFS = {
   vector: { id: 'vector', label: 'VECTOR', subtitle: 'BALANCED · WINGMAN', trait: 'FIREPOWER WINGMEN · FULL-SCREEN BOMB', stats: 'HP 3 · WINGMEN MAX 4 · BOMB DMG 200' },
   aegis: { id: 'aegis', label: 'AEGIS', subtitle: 'FORCE · CHARGE', trait: 'FORCE SHIELD · CHARGE CANNON', stats: 'SHIELD 60 · FORCE DMG 400 · CHARGE CANNON' },
-  phantom: { id: 'phantom', label: 'PHANTOM', subtitle: 'CLOAK · CLONE', trait: 'STEALTH · DECOY CLONES', stats: 'CLOAK 3s · CLONE DMG 50% · CAP 1→2' }
+  phantom: { id: 'phantom', label: 'PHANTOM', subtitle: 'CLOAK · CLONE', trait: 'STEALTH · DECOY CLONES', stats: 'CLOAK +50% · CLONE DMG 70% · HP 3→6 · CAP 2' }
 };
 var selectedShip = 'vector';
 var SHIP_SKINS = {
@@ -18,9 +18,9 @@ var SHIP_SKINS = {
     { id: 'temporal', label: 'TEMPORAL WANDERER', image: 'sk_aegis_temporal', ox: 0.5, oy: 1, shieldMult: 1.15, radiusMult: 1.15, chargeTimeMult: 0.7, chargeDamageMult: 0.8, postOdBuff: 0.3, trait: 'SHD +15% · CHG -30% · DMG -20% · OD-END +30%' }
   ],
   phantom: [
-    { id: 'quantum', label: 'QUANTUM HUNTER', image: 'sk_phantom_quantum', maxHp: 3, cloakBuff: 0.5, cloneHp: 3, trait: 'CLOAK +50% · CLONE HP 3' },
-    { id: 'raven', label: 'PHANTOM RAVEN', image: 'sk_phantom_raven', maxHp: 3, cloakBuff: 1.5, cloneHp: 1, trait: '4s CLOAK +150% · CLONE HP 1' },
-    { id: 'butterfly', label: 'PHANTOM BUTTERFLY', image: 'sk_phantom_butterfly', maxHp: 3, cloakBuff: 0.5, cloneHp: 3, trait: 'CLOAK +50% · 2 CLONES · CAP 2→4' }
+    { id: 'quantum', label: 'QUANTUM HUNTER', image: 'sk_phantom_quantum', maxHp: 3, cloakBuff: 0.5, cloneHp: 3, trait: 'CLOAK +50% · CLONE DMG 70% · HP 3→6 · CAP 2' },
+    { id: 'raven', label: 'PHANTOM RAVEN', image: 'sk_phantom_raven', maxHp: 3, cloakBuff: 1.5, cloneHp: 3, trait: '4s CLOAK +150% · CLONE HP 3→6 · CAP 1' },
+    { id: 'butterfly', label: 'PHANTOM BUTTERFLY', image: 'sk_phantom_butterfly', maxHp: 3, cloakBuff: 0.5, cloneHp: 3, trait: 'CLOAK +50% · CLONE HP 3→6 · CAP 4' }
   ]
 };
 var selectedSkins = { vector: 'void_lance', aegis: 'orbital', phantom: 'quantum' };

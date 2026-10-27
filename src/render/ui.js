@@ -92,8 +92,8 @@ function tutorialPages(ship){
     {t:'AEGIS · 02 / FORCE', lines:['Tap F or the FORCE button.','Attached: Force blocks bullets.','Detached: Force adds firepower.','Tap again to recall the Force.','E restores charge. D expands Force radius.']}
   ];
   if(ship==='phantom') return [
-    {t:'PHANTOM · 01 / CLOAK', lines:['Tap Z or the PHASE button.','3 seconds of invincibility.','Raven: 4 seconds.','Cloak damage: +30% / Raven +100%.','No wingmen and no bomb.']},
-    {t:'PHANTOM · 02 / CLONES', lines:['A 3 HP clone is left behind.','It copies your weapon and level.','Clone damage is 50% of base.','After a hit it is invulnerable for 1s.','E restores charge. D raises clone cap.']}
+    {t:'PHANTOM · 01 / CLOAK', lines:['Tap Z or the PHASE button.','3 seconds of invincibility.','Raven: 4 seconds.','Cloak damage: +50% / Raven +150%.','No wingmen and no bomb.']},
+    {t:'PHANTOM · 02 / CLONES', lines:['Clones start at 3 HP (cap 2 / 4 / Raven 1).','It copies your weapon and level.','Clone damage is 70% of base.','After a hit it is invulnerable for 1s.','E restores charge. D raises clone HP to 6.']}
   ];
   return [
     {t:'VECTOR · 01 / FIRE', lines:['MOVE with drag / arrows / left stick.','AUTO-FIRE is always on.','Tap Z or Space for a screen bomb.','The bomb clears bullets around you.']},
@@ -147,7 +147,7 @@ function shipSelectRows(){
   var defs=[
     {id:'vector',name:'VECTOR',role:'BALANCED · WINGMAN',trait:'FIREPOWER WINGMEN · FULL-SCREEN BOMB',stats:'HP 3 · WINGMEN MAX 4 · BOMB 200',status:'AVAILABLE',color:'#9fe8ff',image:'sk_vector_void_lance'},
     {id:'aegis',name:'AEGIS',role:'FORCE · CHARGE',trait:'FORCE SHIELD · CHARGE CANNON',stats:'SHIELD 60 · FORCE 400 · CHARGE CANNON',status:'AVAILABLE',color:'#ffd36b',image:'sk_aegis_orbital'},
-    {id:'phantom',name:'PHANTOM',role:'CLOAK · CLONE',trait:'STEALTH · DECOY CLONES',stats:'CLOAK 3s · CLONE DMG 50% · CAP 1→2',status:'AVAILABLE',color:'#c98bff',image:'sk_phantom_quantum'}
+    {id:'phantom',name:'PHANTOM',role:'CLOAK · CLONE',trait:'STEALTH · DECOY CLONES',stats:'CLOAK +50% · CLONE DMG 70% · HP 3→6 · CAP 2',status:'AVAILABLE',color:'#c98bff',image:'sk_phantom_quantum'}
   ];
   for(var i=0;i<defs.length;i++) rows.push({i:i,x:p.x+14,y:start+i*(h+gap),w:p.w-28,h:h,def:defs[i]});
   return rows;

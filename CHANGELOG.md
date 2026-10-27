@@ -1115,3 +1115,10 @@
 
 - Shortened the 22+5 break mix by 25% to 0.98s.
 - Raised pitch naturally and layered enemy explosion SFX.
+
+## 1.0.0-rc.1v — Fixed Phantom caps and clone HP upgrades
+
+- Quantum cap 2, Butterfly cap 4, Raven cap 1; no cap upgrade.
+- W/D now raises clone HP 3→6 and updates existing clones.
+- Raven clone HP back to 3.
+- Menus/tutorials/ship traits updated.

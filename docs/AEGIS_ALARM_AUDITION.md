@@ -85,4 +85,4 @@ assets/audio/aegis-break-final.mp3
 Wired to `aegisShieldBreak()` through `playAegisBreak()`.
 
 
-Final processing: shortened 25%, pitch raised ~15%, layered `exp-b` / `exp-c`, 0.98s.
+Final processing: 22+5 shortened to 0.98s (~25%), pitch raised ~15%, layered `exp-b` / `exp-c`.

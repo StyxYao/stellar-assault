@@ -16,24 +16,26 @@
 
 ## Clones
 - Spawn at the activation position (offset to the side so they are visible).
-- HP: 3, except Raven 1.
+- Base HP: 3 for all variants, including Raven.
 - After taking a hit, a surviving clone is invulnerable for 1 second.
 - Copy weapon, level and extra bullets at activation.
-- Damage multiplier: exactly 0.5 of the body's base damage; cloak buff is excluded.
+- Damage multiplier: exactly 0.7 of the body's base damage; cloak buff is excluded.
 - Autonomous targeting: selects the nearest enemy/Boss and slides horizontally to align with it.
 - Clones stay near the player vertically and only move sideways to aim; they never charge into enemies.
 - Clones fire forward only, exactly like the player. Projectile patterns are not rotated.
 - Clone laser uses the same palette, width, gradient and endpoint glow as the player laser.
 - Lifetime 25 seconds.
 - Cannot collect items.
-- Base cap: Quantum/Raven 1, Butterfly 2.
-- After 3 D pickups: cap doubles to 2/4.
-- Death resets cap and W count.
+- Fixed base cap: Quantum 2, Butterfly 4, Raven 1.
+- Cap does not upgrade.
+- D/W pickup raises clone HP from 3 up to 6; existing clones are updated too.
+- Death resets clone HP to 3.
 - Clones are never removed by casting; if at cap, the skill only refreshes cloak/dash and does not replace an existing clone.
 
 ## Pickups
 - E: restore one phase charge, max 6, overflow to OD.
-- D: clone-limit progress; after 3, +1 cap; at max, score + OD.
+- D/W: clone HP +1, max 6; at max, score + OD.
+- E: phase charge.
 
 ## Known prototype limits
 - Clone target selection is aimed at the first clone; enemy aim sites are patched for enemy fire, boss aimed/ring/broadside and boss ultimate origins. Some non-aimed attack patterns still use the player origin but cannot damage a cloaked player.
