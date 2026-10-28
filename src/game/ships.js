@@ -123,6 +123,27 @@ function aegisShieldRadius() {
   // 30% smaller than the 1.0 RC shield; the visual ring and collision use the same value.
   return Math.max(18, (18 + aegisForceRadius() * 0.55) * 0.70);
 }
+function aegisTryBlockBigBullet(e) {
+  if (!e || player.ship !== 'aegis' || aegisState.force === 'broken' || aegisState.shield <= 0) return false;
+  // Boss/elite large projectiles (including yellow boss bullets) are stopped at
+  // the ship core even when the Force is detached.
+  if (!(e.bomb || e.bossBomb || (e.rad || 0) >= 6 || e.type === 2)) return false;
+  var rr = aegisShieldRadius() + (e.rad || 0);
+  if (Math.hypot(player.x - e.x, player.y - e.y) > rr) return false;
+  aegisState.shield = Math.max(0, aegisState.shield - AEGIS_SHIELD_COST);
+  aegisState.lastBlockAt = time;
+  aegisState.forceHitT = 0.18;
+  try { if (typeof part === 'function') part(e.x, e.y, '#9fe8ff', 4, 100); } catch (err) {}
+  try { sfx('b_hit', 0.14); } catch (err) {}
+  if (aegisState.shield <= 0) {
+    aegisState.shield = 0;
+    aegisState.force = 'broken';
+    aegisState.breakT = AEGIS_BREAK_TIME;
+    aegisShieldBreak();
+  }
+  return true;
+}
+
 function aegisBlockBossBlast(x, y, blastR) {
   if (player.ship !== 'aegis' || aegisState.force === 'broken' || aegisState.shield <= 0) return false;
   var pr = aegisShieldRadius() + (blastR || 0) * 0.12;

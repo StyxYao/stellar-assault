@@ -138,7 +138,7 @@ function drawHedronRecursiveForm(){
   ctx.save();
   // soft dark backing separates the recursive shell from the bright crystal field
   ctx.save();var bg0=ctx.createRadialGradient(cx,cy,base*.22,cx,cy,base*.62);bg0.addColorStop(0,'rgba(2,4,14,.42)');bg0.addColorStop(.7,'rgba(2,4,14,.18)');bg0.addColorStop(1,'rgba(2,4,14,0)');ctx.fillStyle=bg0;ctx.beginPath();ctx.arc(cx,cy,base*.62,0,TAU);ctx.fill();ctx.restore();
-  var useVid=hedronLoopVideo&&hedronLoopVideo.readyState>=2&&hedronLoopVideo.videoWidth>0&&!hedronLoopVideo.paused;
+  var useVid=videoFxEnabled&&hedronLoopVideo&&hedronLoopVideo.readyState>=2&&hedronLoopVideo.videoWidth>0&&!hedronLoopVideo.paused;
   if(useVid){
     var bs=base*(1+.035*Math.sin(t*1.15));
     ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.98;
@@ -201,7 +201,7 @@ function drawHedronRecursiveForm(){
 function drawPhase3CollapseForm(){
   if(!boss) return;
   var cx=boss.x,cy=boss.y;
-  var p3v=phase3LoopVideo&&phase3LoopVideo.readyState>=2&&phase3LoopVideo.videoWidth>0&&!phase3LoopVideo.paused;
+  var p3v=videoFxEnabled&&phase3LoopVideo&&phase3LoopVideo.readyState>=2&&phase3LoopVideo.videoWidth>0&&!phase3LoopVideo.paused;
   if(p3v){
     var sz=phaseBossSize();
     drawKeyedBossVideo(phase3LoopVideo,cx,cy,sz,true,time*.04);
@@ -269,7 +269,7 @@ function drawPhase3CollapseForm(){
 function drawPhase2FusionForm(){
   if(!boss) return;
   var cx=boss.x,cy=boss.y;
-  var p2v=phase2LoopVideo&&phase2LoopVideo.readyState>=2&&phase2LoopVideo.videoWidth>0&&!phase2LoopVideo.paused;
+  var p2v=videoFxEnabled&&phase2LoopVideo&&phase2LoopVideo.readyState>=2&&phase2LoopVideo.videoWidth>0&&!phase2LoopVideo.paused;
   if(p2v){
     var sz2=phaseBossSize();
     // opaque circular mask instead of screen blending; keeps the video colors solid

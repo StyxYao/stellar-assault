@@ -792,7 +792,7 @@ function drawEntityArrivalScene(){
   }
   // the uploaded loop is the single Hedron appearance; no second layer
   ctx.globalCompositeOperation='screen';
-  var entranceVid=(hedronLoopVideo&&hedronLoopVideo.readyState>=2&&hedronLoopVideo.videoWidth>0);
+  var entranceVid=videoFxEnabled&&hedronLoopVideo&&hedronLoopVideo.readyState>=2&&hedronLoopVideo.videoWidth>0;
   if(entranceVid){
     ctx.save();ctx.globalAlpha=ease;// direct loop, no extra rotation
     ctx.drawImage(hedronLoopVideo,cx-size/2,cy-size/2,size,size);ctx.restore();
@@ -1044,6 +1044,7 @@ var CAST_LINES=[
  ['MECH · INTERCEPTOR','aegis warden'],
  ['RAIL LANCER · MINE SEEDER','fractal shard'],
  ['KALEIDO PRISM · ECHO WARDEN','void echoes'],
+ ['',''],
  ['SPECIAL THANKS','EVERY PILOT WHO REACHED THE END'],
  ['','']
 ];
@@ -1073,8 +1074,10 @@ function drawCast(){
     for(var i=0;i<CAST_LINES.length;i++){
       var y=startY+i*CAST_LINE_H;if(y<-80||y>H+80) continue;
       var isTitle=i===0;
-      var titleFont=(isTitle?'600 32px':'600 20px')+' Orbitron, Arial, sans-serif';
-      ctx.fillStyle=isTitle?'#ffffff':'#eaf4ff';ctx.font=titleFont;
+      var isThanks=CAST_LINES[i][0]==='SPECIAL THANKS';
+      var titleFont=(isTitle?'600 32px':(isThanks?'600 24px':'600 20px'))+' Orbitron, Arial, sans-serif';
+      ctx.fillStyle=isTitle?'#ffffff':(isThanks?'#ffd27a':'#eaf4ff');ctx.font=titleFont;
+      if(isThanks){ctx.save();ctx.globalAlpha=.55;ctx.strokeStyle='rgba(255,210,122,0.55)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(W*.18,y-30);ctx.lineTo(W*.82,y-30);ctx.stroke();ctx.restore();}
       var tlines=wrapCastText(CAST_LINES[i][0],W-48,titleFont);
       for(var tl=0;tl<tlines.length;tl++)ctx.fillText(tlines[tl],W/2,y+tl*20);
       if(CAST_LINES[i][1]){

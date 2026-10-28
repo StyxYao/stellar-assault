@@ -1170,3 +1170,12 @@
 - Documented unsigned Electron/NSIS false-positive causes.
 - Removed the NSIS elevate helper, disabled elevation, added Windows metadata/sign targets.
 - Added optional CSC_LINK/CSC_KEY_PASSWORD signing path and signature reporting.
+
+## 1.0.0-rc.2e — Menu mouse, desktop audio, Windows video mode
+
+- Desktop BGM starts automatically without a click.
+- Main menu no longer treats arbitrary clicks as Start; ship selection works by mouse.
+- Mouse hover selects modes, ships and skins.
+- Windows desktop uses the no-video-decode Stage-5 performance path.
+- Aegis now intercepts large boss bullets even with a detached Force.
+- Cast special-thanks block has extra spacing and emphasis.

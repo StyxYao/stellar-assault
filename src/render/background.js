@@ -182,7 +182,7 @@ function drawRecursiveBg(img,rot,scale,alpha,comp){
 function paintFractalBg(main,edge,offsetY){
   ctx.fillStyle='#03020a';ctx.fillRect(0,0,W,H);
   var cx=W/2,cy=H*.44,N=16;
-  var bgVidReady=bgLoopVideo&&bgLoopVideo.readyState>=2&&bgLoopVideo.videoWidth>0;
+  var bgVidReady=videoFxEnabled&&bgLoopVideo&&bgLoopVideo.readyState>=2&&bgLoopVideo.videoWidth>0;
   if(bgVidReady){
     var sh=Math.max(H*1.16,W*1280/720),sw=sh*720/1280;
     // Draw the live frame directly. A canvas filter here was a Windows decode
@@ -201,8 +201,13 @@ function paintFractalBg(main,edge,offsetY){
     }
     ctx.fillStyle='rgba(2,4,14,0.30)';ctx.fillRect(0,0,W,H);
   }else{
-    // video not ready yet: keep it black, never show the old procedural background
-    ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+    // Windows performance mode / pre-ready fallback: keep the stage key art,
+    // with a slow procedural drift instead of black frames.
+    if(main&&main.complete){
+      var msc=Math.max(W/main.width,H/main.height),mw=main.width*msc,mh=main.height*msc;
+      ctx.save();ctx.translate(W/2,H*.44);ctx.rotate(Math.sin(time*.04)*.018);ctx.globalAlpha=.92;
+      ctx.drawImage(main,-mw/2,-mh/2,mw,mh);ctx.restore();ctx.globalAlpha=1;
+    }else{ctx.fillStyle='#03020a';ctx.fillRect(0,0,W,H);}
   }
   // dark vortex fade so the crystal pours into one static eye
   // no background black hole; the kaleidoscope center is the focal point

@@ -306,7 +306,7 @@ function drawScene(){
   if(state==='bossDeath1'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); drawPhase1DeathScene(); ctx.restore(); return; }
   if(state==='bossOmen'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); ctx.fillStyle='rgba(0,0,0,0.84)';ctx.fillRect(0,0,W,H); drawBossOmen(); ctx.restore(); return; }
   if(state==='bossFusion'){
-    var fvOK=fusionVideo&&fusionVideo.readyState>=2&&fusionVideo.videoWidth>0;
+    var fvOK=videoFxEnabled&&fusionVideo&&fusionVideo.readyState>=2&&fusionVideo.videoWidth>0;
     if(fvOK&&fusionVideo.paused){try{fusionVideo.play().catch(function(){});}catch(e){}}
     if(fvOK){
       var sh=Math.max(H,W*1280/720),sw=sh*720/1280;
@@ -464,6 +464,7 @@ window.__mechWarn=function(){if(typeof stageMechWarning==='function'&&state==='p
 window.__aegis2=function(){return typeof aegisState2!=='undefined'?aegisState2:null;};
 window.__bossInfo=function(){return boss?{x:boss.x,y:boss.y,phase:boss.phase,entering:boss.entering,w:boss.def.w,h:boss.def.h}:null;};
 window.__bossBlast=function(x,y){enemyBombExplode({x:x,y:y,bossBomb:true,blastR:78});};
+window.__menuState=function(){return {menuModeIndex:typeof menuModeIndex!=='undefined'?menuModeIndex:null,controlSelectOpen:typeof controlSelectOpen!=='undefined'?controlSelectOpen:null,controlSelectIndex:typeof controlSelectIndex!=='undefined'?controlSelectIndex:null,startConfirmOpen:typeof startConfirmOpen!=='undefined'?startConfirmOpen:null,shipSelectOpen:typeof shipSelectOpen!=='undefined'?shipSelectOpen:null,shipSelectIndex:typeof shipSelectIndex!=='undefined'?shipSelectIndex:null,skinSelectOpen:typeof skinSelectOpen!=='undefined'?skinSelectOpen:null,skinSelectIndex:typeof skinSelectIndex!=='undefined'?skinSelectIndex:null,selectedShip:selectedShip};};
 window.__bossMech=function(){return {stage:bossMech.stage,phase:bossMech.phase,t:bossMech.t,warn:bossMech.warnT,active:bossMech.activeT,data:bossMech.data,msg:bossMech.msg};};
 window.__stageMech=function(){return {stage:stageMech.stage,phase:stageMech.phase,t:stageMech.t,warn:stageMech.warnT,active:stageMech.activeT,data:stageMech.data,msg:stageMech.msg};};
 window.__bgv=function(){return {ready:bgLoopVideo.readyState,paused:bgLoopVideo.paused,w:bgLoopVideo.videoWidth,t:bgLoopVideo.currentTime,src:bgLoopVideo.currentSrc.slice(-24)};};

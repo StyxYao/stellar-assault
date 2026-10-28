@@ -152,6 +152,7 @@ stellar-assault-linux
 - Steam Deck 尚未完成实机验证，不能标注为 Verified
 - Windows / Linux 构建未签名
 - 部分旧设备可能无法流畅播放高码率背景视频
+- Windows 桌面版 Stage 5 使用无视频解码的性能模式（程序化背景 + 静态 Boss/融合层）
 - 1.0 暂不含 Boss Rush / Tower
 
 ---

@@ -384,3 +384,20 @@ function desktopPrimaryFire() {
     else if (typeof fireNormal === 'function') fireNormal();
   } catch (e) {}
 }
+
+// Desktop starts the menu score without requiring a click. Electron is launched
+// with autoplay-policy=no-user-gesture-required; the web build keeps the
+// normal first-gesture policy.
+function desktopBootAudio(){
+  if (!window.desktopBridge) return;
+  try {
+    if (typeof initAudio === 'function') initAudio();
+    if (typeof loadSfxExtras === 'function') loadSfxExtras();
+    if (typeof AC !== 'undefined' && AC && AC.state === 'suspended') AC.resume();
+    if (typeof audioReady !== 'undefined') audioReady = true;
+    if (typeof playBgm === 'function' && state === 'menu') playBgm('m');
+  } catch (e) {}
+}
+if (typeof window !== 'undefined') {
+  window.addEventListener('load', function () { setTimeout(desktopBootAudio, 250); });
+}

@@ -438,6 +438,7 @@ function step(dt){
     var e=ebullets[i];
     if(!e){ ebullets.splice(i,1); if(typeof window!=='undefined') window.__ebHoles=(window.__ebHoles||0)+1; continue; }
     e.x+=e.vx*dt; e.y+=e.vy*dt;
+    if(typeof aegisTryBlockBigBullet==='function'&&aegisTryBlockBigBullet(e)){ebullets.splice(i,1);continue;}
     if(e.bomb){
       e.fuse-=dt;
       if(e.tx!=null){

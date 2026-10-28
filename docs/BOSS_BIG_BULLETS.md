@@ -22,6 +22,7 @@ Behavior:
 
 AEGIS handling:
 
+- `aegisTryBlockBigBullet()` catches `type:2` / `bomb` / large-radius projectiles at the ship core, even with a detached Force
 - attached shield clears bomb projectiles inside `aegisShieldRadius()`
 - `aegisBlockBossBlast()` cancels a boss blast zone if it lands near the player
   or near a detached Force

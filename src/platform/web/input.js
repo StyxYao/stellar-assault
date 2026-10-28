@@ -16,10 +16,10 @@ function onDown(e){
     return;
   }
   primeVideos(); initAudio(); loadSfxExtras();
-  try{hedronLoopVideo.play().catch(function(){});}catch(err){}
-  try{phase3LoopVideo.play().catch(function(){});}catch(err){}
-  try{phase2LoopVideo.play().catch(function(){});}catch(err){}
-  try{bgLoopVideo.play().catch(function(){});}catch(err){}
+  if(videoFxEnabled){try{hedronLoopVideo.play().catch(function(){});}catch(err){}}
+  if(videoFxEnabled){try{phase3LoopVideo.play().catch(function(){});}catch(err){}}
+  if(videoFxEnabled){try{phase2LoopVideo.play().catch(function(){});}catch(err){}}
+  if(videoFxEnabled){try{bgLoopVideo.play().catch(function(){});}catch(err){}}
   try{if(AC&&AC.state==='suspended')AC.resume();}catch(err){}
   if(state==='menu'&&bgmPending){var pk=bgmPending;bgmPending='';playBgm(pk);}
   var p=pt(e);
@@ -45,7 +45,7 @@ function onDown(e){
   if(player&&player.ship==='phantom'&&(state==='play'||state==='boss')&&typeof phantomButtonAt==='function'&&phantomButtonAt(p)){phantomSkill();return;}
   if(e.pointerType==='mouse'&&(state==='play'||state==='boss')&&p1Pointer){
     if(player&&player.ship==='aegis'&&typeof aegisTapCharge==='function') aegisTapCharge();
-  } else if(e.pointerType==='mouse'&&state!=='play'&&state!=='boss'&&typeof desktopPrimaryFire==='function') desktopPrimaryFire();
+  }
   if(state==='menu'){
     if(!audioReady){ audioReady=true; playBgm('m'); }
     if(typeof tutorialOpen!=='undefined'&&tutorialOpen){
@@ -128,6 +128,16 @@ function onMove(e){
     return;
   }
   if(movePointerId!==null&&e.pointerId!==movePointerId&&e.pointerType!=='mouse') return;
+  if(e.pointerType==='mouse'&&state==='menu'&&!(typeof desktopPaused!=='undefined'&&desktopPaused)){
+    var hp=pt(e);
+    if(typeof tutorialOpen!=='undefined'&&tutorialOpen) return;
+    if(typeof controlSelectOpen!=='undefined'&&controlSelectOpen){var ch=controlSelectAt(hp);if(typeof ch==='number')controlSelectIndex=ch;return;}
+    if(typeof startConfirmOpen!=='undefined'&&startConfirmOpen) return;
+    if(typeof skinSelectOpen!=='undefined'&&skinSelectOpen){var sh=skinSelectAt(hp);if(typeof sh==='number')skinSelectIndex=sh;return;}
+    if(typeof shipSelectOpen!=='undefined'&&shipSelectOpen){var sh2=shipSelectAt(hp);if(typeof sh2==='number')shipSelectIndex=sh2;return;}
+    var ms=menuModeButtons();for(var hi=0;hi<ms.length;hi++){var mb=ms[hi];if(hp.x>=mb.x&&hp.x<=mb.x+mb.w&&hp.y>=mb.y&&hp.y<=mb.y+mb.h){menuModeIndex=hi;return;}}
+    return;
+  }
   if(e.pointerType==='mouse'&&(state==='play'||state==='boss')&&!(typeof desktopPaused!=='undefined'&&desktopPaused)&&(typeof controlModeAllows!=='function'||controlModeAllows(1,'pointer','mouse'))){
     e.preventDefault();
     var mp=pt(e);target.x=Math.max(22,Math.min(W-22,mp.x));target.y=Math.max(70,Math.min(H-70,mp.y));
