@@ -39,7 +39,7 @@ var AEGIS_SHIELD_REGEN = 14;
 var AEGIS_SHIELD_DELAY = 1.2;
 var AEGIS_BREAK_TIME = 7.5;
 var AEGIS_FORCE_DAMAGE = 400;
-var AEGIS_FORCE_LANE_HALF = 110;
+var AEGIS_FORCE_LANE_HALF = 38;
 
 var AEGIS_CHARGE_PROFILES = {
   normal:  { kind: 'lance', count: 1, color: '#9fe8ff', range: 560 },
@@ -441,9 +441,7 @@ function aegisLaneHit() {
   if (typeof ebullets !== 'undefined' && ebullets) {
     for (var bi = ebullets.length - 1; bi >= 0; bi--) {
       var b = ebullets[bi];
-      var up = player.y - b.y;
-      var cone = up > 0 ? up * 0.34 : 0;
-      if (b.y < player.y + 14 && b.y > -30 && Math.abs(b.x - px) < lane + cone + 7) {
+      if (b.y < player.y + 14 && b.y > -30 && Math.abs(b.x - px) < lane + 7) {
         if (typeof part === 'function') part(b.x, b.y, '#ffd36b', 1, 130);
         ebullets.splice(bi, 1);
       }
@@ -454,9 +452,7 @@ function aegisLaneHit() {
       var ob = orbBullets[bo];
       var ox = ob.owner ? ob.owner.x + Math.cos(ob.ang) * ob.r : 0;
       var oy = ob.owner ? ob.owner.y + Math.sin(ob.ang) * ob.r : 0;
-      var oup = player.y - oy;
-      var ocone = oup > 0 ? oup * 0.34 : 0;
-      if (oy < player.y + 14 && oy > -30 && Math.abs(ox - px) < lane + ocone + 7) {
+      if (oy < player.y + 14 && oy > -30 && Math.abs(ox - px) < lane + 7) {
         if (typeof part === 'function') part(ox, oy, '#ffd36b', 1, 130);
         orbBullets.splice(bo, 1);
       }

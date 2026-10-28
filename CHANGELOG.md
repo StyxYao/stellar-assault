@@ -1184,5 +1184,5 @@
 
 - Menu no longer preempts clicks; ship/skin selection works by mouse; hover selects.
 - Desktop menu BGM starts automatically.
-- Force launch uses a widening forward cone to clear side yellow chains.
+- Force lane widening was reverted after user clarification; the remaining yellow-chain case is under investigation.
 - Windows desktop uses procedural/static Stage-5 video fallback.

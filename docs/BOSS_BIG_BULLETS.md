@@ -20,8 +20,6 @@ Behavior:
 - explosion creates a `blastZones` entry
 - the blast can hit the player even if the projectile itself was avoided
 
-AEGIS Force launch now clears a widening forward cone (half-lane 110) so side yellow chains are removed too.
-
 AEGIS handling:
 
 - `aegisTryBlockBigBullet()` catches `type:2` / `bomb` / large-radius projectiles at the ship core, even with a detached Force
