@@ -37,6 +37,7 @@ function loadSfxExtras(){
     }catch(e){}
   });
   loadAegisBreak();
+  loadAegisWarning();
 }
 var aegisBreakBuf=null,aegisBreakLoading=false;
 function loadAegisBreak(){
@@ -53,6 +54,26 @@ function playAegisBreak(){
   try{
     var s=AC.createBufferSource(); s.buffer=aegisBreakBuf;
     var g=AC.createGain(); g.gain.value=0.82;
+    s.connect(g); g.connect(master); s.start();
+    s.onended=function(){try{s.disconnect();g.disconnect();}catch(e){}};
+  }catch(e){}
+}
+
+var aegisWarningBuf=null,aegisWarningLoading=false;
+function loadAegisWarning(){
+  if(aegisWarningBuf||aegisWarningLoading||!AC) return;
+  aegisWarningLoading=true;
+  fetch('assets/audio/aegis-low-warning.mp3').then(function(r){ return r.arrayBuffer(); })
+    .then(function(b){ AC.decodeAudioData(b,function(d){aegisWarningBuf=d;aegisWarningLoading=false;},function(){aegisWarningLoading=false;}); })
+    .catch(function(){aegisWarningLoading=false;});
+}
+function playAegisWarning(v){
+  if(!AC||muted||!master) return;
+  loadAegisWarning();
+  if(!aegisWarningBuf){ try{ sfx('alarm',v||0.42); }catch(e){} return; }
+  try{
+    var s=AC.createBufferSource(); s.buffer=aegisWarningBuf;
+    var g=AC.createGain(); g.gain.value=v||0.55;
     s.connect(g); g.connect(master); s.start();
     s.onended=function(){try{s.disconnect();g.disconnect();}catch(e){}};
   }catch(e){}

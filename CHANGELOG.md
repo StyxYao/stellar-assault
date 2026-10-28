@@ -1155,3 +1155,8 @@
 ## 1.0.0-rc.2a — Cinematic alarm set 2
 
 - Added vintage air-raid, general-quarters, reactor-evac, braam, distress and meltdown candidates.
+
+## 1.0.0-rc.2b — Selected low-shield warning
+
+- Selected MELTDOWN (16), shortened 40% to 1.2s with natural pitch lift.
+- Replaced the old low-shield alarm with the loaded sample.

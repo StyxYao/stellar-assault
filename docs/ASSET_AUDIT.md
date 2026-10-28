@@ -50,3 +50,8 @@ siren in `attic/sfx-sel/siren.mp3` (Kinoton, freesound 420661).
 
 `attic/warning-filmic-2/` extends the CC0 air-raid base with vintage, naval,
 reactor, braam, distress and meltdown variations.
+
+## Selected low-shield warning
+
+User selected `16 · MELTDOWN`, shortened 40% to 1.20s and pitch-raised naturally (~20%).
+Runtime file: `assets/audio/aegis-low-warning.mp3`. Wired to `playAegisWarning()`.

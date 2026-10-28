@@ -657,7 +657,7 @@ function updateAegis(dt) {
     aegisState.forceY = player.y;
     if (aegisState.shield < aegisShieldMax() && time - aegisState.lastBlockAt > AEGIS_SHIELD_DELAY) aegisState.shield = Math.min(aegisShieldMax(), aegisState.shield + AEGIS_SHIELD_REGEN * dt);
     if (aegisShieldRatio() <= 0.12) {
-      if (aegisState.lowWarnT <= 0) { aegisState.lowWarnT = 3.0; try { sfx('alarm', 0.42); } catch (e) {} }
+      if (aegisState.lowWarnT <= 0) { aegisState.lowWarnT = 3.0; try { if (typeof playAegisWarning === 'function') playAegisWarning(0.55); else sfx('alarm', 0.42); } catch (e) {} }
     } else if (aegisShieldRatio() > 0.22) {
       aegisState.lowWarnT = 0;
     }
