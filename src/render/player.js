@@ -14,8 +14,11 @@ function drawPlayerEntity(){
     if(state==='warpIn') psc=0.42+0.58*Math.min(1,1-warpT/0.95);
     if(player.specialPower>=4){ctx.save();ctx.globalCompositeOperation='lighter';var ag=ctx.createRadialGradient(player.x,drawY,0,player.x,drawY,52);ag.addColorStop(0,'rgba(255,215,100,0.28)');ag.addColorStop(1,'rgba(255,180,40,0)');ctx.fillStyle=ag;ctx.beginPath();ctx.arc(player.x,drawY,52,0,TAU);ctx.fill();ctx.restore();}
     drawODAura(drawY);
+    ctx.drawImage(gi,player.x-40*psc+ox*psc,drawY-40*psc+oy*psc,80*psc,80*psc);
+    // Draw the Force/shield pass above the ship so the returning ring is not
+    // hidden inside the 80px sprite.
     if(typeof drawAegisForceUnderlay==='function') drawAegisForceUnderlay();
-    ctx.drawImage(gi,player.x-40*psc+ox*psc,drawY-40*psc+oy*psc,80*psc,80*psc);ctx.globalAlpha=1;
+    ctx.globalAlpha=1;
   }
   drawPlayerHitbox(player.x,drawY,player.r,time);
   if(typeof drawPhantomClones==='function') drawPhantomClones();

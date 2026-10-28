@@ -1197,3 +1197,9 @@
 
 - AEGIS clears the whole contacting ebullet/orb volley before deducting shield and breaking.
 - This removes the last residual bullet when a dense chain breaks the shield mid-loop.
+
+## 1.0.0-rc.2i — Force return/visual alignment
+
+- Force collision now runs during return.
+- Shield circle centered on ship core; attached visual radius matches collision.
+- Force ring drawn above ship so it remains visible after recall.

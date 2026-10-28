@@ -49,3 +49,11 @@
 - P2 AEGIS 单颗弹：SHIELD 60→52，HP 3，弹体清除
 - 挂载护盾挡 boss bomb：SHIELD 60→52，HP 3，弹体清除
 - 本地双人回归无 error
+
+
+## Force presentation / return
+
+- Shield ring is centered on the ship core (`player.x`), not the padded sprite center.
+- Attached ring uses the same radius as collision, so a bullet cannot visually pass through an oversized ring.
+- The ring is drawn above the ship sprite so it remains visible after return.
+- `aegisForceCollide()` now runs while the Force is returning as well as detached; a returning Force clears bullets it passes through.

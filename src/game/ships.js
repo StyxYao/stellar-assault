@@ -97,6 +97,9 @@ function aegisVisualX() {
   var def = (typeof currentSkinDef === 'function') ? currentSkinDef() : null;
   return player.x + (def && def.ox ? def.ox : 0);
 }
+// The sprite image has transparent padding and a visual core slightly left of
+// its image center. The Force/shield must center on the actual ship core.
+function aegisCoreX() { return player.x; }
 function vectorLaserRate() {
   var d = currentSkinDef();
   if (!d || !d.laserRate) return 1;
@@ -292,7 +295,7 @@ function aegisReset() {
   aegisState.forceHits = [];
   aegisState.forceBossHit = false;
   if (typeof player !== 'undefined') {
-    aegisState.forceX = aegisVisualX();
+    aegisState.forceX = aegisCoreX();
     aegisState.forceY = player.y;
   }
 }
@@ -492,7 +495,7 @@ function aegisRestoreForce() {
   aegisState.breakFlashT = 0;
   aegisState.lowWarnT = 0;
   if (typeof player !== 'undefined') { player.invuln = Math.max(player.invuln || 0, 1.5); player.noBlink = false; }
-  aegisState.forceX = aegisVisualX();
+  aegisState.forceX = aegisCoreX();
   aegisState.forceY = player.y;
   try { sfx('aegis_force', 0.65); } catch (e) {}
   try { sfx('b_charge', 0.35); } catch (e) {}
@@ -506,7 +509,7 @@ function aegisLaunchForce() {
   player.bombs--;
   if (aegisState.charge === 'charging') { aegisState.charge = 'idle'; aegisState.chargeT = 0; }
   aegisState.force = 'detached';
-  aegisState.forceX = aegisVisualX();
+  aegisState.forceX = aegisCoreX();
   aegisState.forceY = player.y;
   aegisState.flashT = 0.55;
   aegisState.laneT = 0;
@@ -551,7 +554,7 @@ function aegisShieldBreak() {
 }
 
 function aegisForceCollide(dt) {
-  if (aegisState.force !== 'detached') return;
+  if (aegisState.force !== 'detached' && aegisState.force !== 'returning') return;
   var fx = aegisState.forceX, fy = aegisState.forceY, rad = aegisForceRadius() + 30;
   // The Force clears bullets it physically passes through.
   if (typeof ebullets !== 'undefined' && ebullets) {
@@ -674,7 +677,7 @@ function updateAegis(dt) {
       if (typeof player !== 'undefined') { player.invuln = Math.max(player.invuln || 0, 1.2); player.noBlink = false; }
     }
   } else if (aegisState.force === 'attached') {
-    aegisState.forceX = aegisVisualX();
+    aegisState.forceX = aegisCoreX();
     aegisState.forceY = player.y;
     if (aegisState.shield < aegisShieldMax() && time - aegisState.lastBlockAt > AEGIS_SHIELD_DELAY) aegisState.shield = Math.min(aegisShieldMax(), aegisState.shield + AEGIS_SHIELD_REGEN * dt);
     if (aegisShieldRatio() <= 0.12) {
@@ -720,7 +723,8 @@ function updateAegis(dt) {
     aegisForceCollide(dt);
     if (aegisState.forceY < -40) aegisState.force = 'returning';
   } else if (aegisState.force === 'returning') {
-    var tx = aegisVisualX(), ty = player.y;
+    aegisForceCollide(dt);
+    var tx = aegisCoreX(), ty = player.y;
     var rdx = tx - aegisState.forceX, rdy = ty - aegisState.forceY;
     var rd = Math.hypot(rdx, rdy);
     if (rd > 0.01) {

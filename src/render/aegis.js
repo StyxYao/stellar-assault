@@ -17,10 +17,10 @@ function drawForceField(x, y, size, alpha, spin, color) {
   var lvl = Math.max(1, Math.min(4, aegisState.forceLevel || 1));
   var img = (typeof GIMG !== 'undefined') ? (GIMG['aegis_field' + lvl] || GIMG.aegis_field) : null;
   ctx.save();
+  ctx.translate(x, y); ctx.rotate(spin || 0);
   ctx.globalCompositeOperation = 'lighter';
   if (img && img.complete) {
     ctx.globalAlpha = alpha * 0.64;
-    ctx.translate(x, y); ctx.rotate(spin || 0);
     ctx.drawImage(img, -size / 2, -size / 2, size, size);
   } else {
     ctx.globalAlpha = alpha;
@@ -35,7 +35,7 @@ function drawForceField(x, y, size, alpha, spin, color) {
 function drawAegisForceUnderlay() {
   if (player.ship !== 'aegis' || (state !== 'play' && state !== 'boss')) return;
   var attached = aegisState.force === 'attached';
-  var fx0 = (attached && typeof aegisVisualX === 'function') ? aegisVisualX() : aegisState.forceX;
+  var fx0 = (attached && typeof aegisCoreX === 'function') ? aegisCoreX() : aegisState.forceX;
   var fy0 = attached ? player.y : aegisState.forceY;
   var shieldRatio = aegisShieldRatio();
   ctx.save();
@@ -54,7 +54,7 @@ function drawAegisForceUnderlay() {
       ctx.beginPath(); ctx.arc(fx0 + Math.cos(ba) * (40 + bi * 3), fy0 + Math.sin(ba) * (40 + bi * 3), 2.2, 0, TAU); ctx.fill();
     }
   } else if (aegisState.force === 'attached') {
-    drawForceField(fx0, fy0, aegisShieldRadius() * 1.18, 0.34 + shieldRatio * 0.38, 0, aegisForceColor());
+    drawForceField(fx0, fy0, aegisShieldRadius(), 0.42 + shieldRatio * 0.34, 0, aegisForceColor());
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 0.52;
     var core = ctx.createRadialGradient(fx0, fy0, 0, fx0, fy0, 22);
