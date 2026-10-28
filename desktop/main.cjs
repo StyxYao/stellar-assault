@@ -1,6 +1,6 @@
 'use strict';
 
-const { app, BrowserWindow, Menu, ipcMain, screen } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, screen, clipboard } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const os = require('node:os');
@@ -144,6 +144,9 @@ ipcMain.handle('save:write', (_event, data) => writeSaveFile(data));
 ipcMain.handle('window:toggle-fullscreen', () => setWindowFullscreen(!isWindowFullscreen()));
 ipcMain.handle('window:is-fullscreen', () => isWindowFullscreen());
 ipcMain.handle('app:quit', () => { app.quit(); });
+ipcMain.handle('clipboard:write', (_event, text) => {
+  try { clipboard.writeText(String(text || '')); return true; } catch { return false; }
+});
 
 app.whenReady().then(async () => {
   try {

@@ -296,8 +296,6 @@ function step(dt){
       var hw=def.w/2+6; boss.x=Math.max(hw,Math.min(W-hw,boss.x));
       if(boss.phase===0&&boss.hp<boss.max*0.60&&stage!==4) bossPhase(1);
       else if(boss.phase===1&&boss.hp<boss.max*(stage===4?0.50:0.30)) bossPhase(2);
-      if(stage===4&&boss.phase>=1&&typeof updateStage5Director==='function') updateStage5Director(dt);
-      if(!(stage===4&&boss.phase>=1)){
       if(boss.ultCharge>0){
         boss.ultCharge-=dt;
         if(boss.ultCharge<=0) bossUltimate();
@@ -306,16 +304,6 @@ function step(dt){
         if(boss.ultT>def.ultRate){
           beginBossUltimate();
         }else{
-          if(stage===4&&boss.phase>=1){
-            boss.bossSigT=(boss.bossSigT||0)+dt;
-            var sigGap=boss.phase===2?2.4:3.2;
-            if(boss.bossSigT>sigGap){
-              boss.bossSigT=0;
-              var spi=Math.floor(rng()*4);
-              var arr=SIG_FNS[spi];
-              runSignature(spi,arr[Math.floor(rng()*arr.length)]);
-            }
-          }
           boss.patternT+=dt; if(boss.patternT>8) setBossPattern(boss.patternIdx+1);
           boss.aimT+=dt; boss.ringT+=dt; boss.laserT+=dt; boss.spiralT+=dt; boss.broadT+=dt; boss.blinkT+=dt;
           var rage=boss.phase===2?0.72:1;
@@ -366,7 +354,7 @@ function step(dt){
               if(boss.aimT>1.35){boss.aimT=0;bossAimed(9);}
               if(boss.laserT>5.8){boss.laserT=0;bossCrossLaser();}
             }
-          }else if(def.style==='chronos'&&boss.phase===0){
+          }else if(def.style==='chronos'){
             if(boss.phase===0){
               if(boss.ringT>2.8){boss.ringT=0;bossChronosBloom();}
               if(boss.aimT>1.8){boss.aimT=0;bossAimed(6);}
@@ -400,7 +388,6 @@ function step(dt){
               if(boss.blinkT>3.2){boss.blinkT=0;bossBlink();}
               if(boss.laserT>5.6){boss.laserT=0;bossRotatingLaser();}
             }
-          }
           }
           if(runner){ runner.x=boss.x; runner.y=boss.y; runner.update(); }
         }

@@ -43,7 +43,9 @@ function onDown(e){
     if(ab==='force'){aegisTapForce();return;}
   }
   if(player&&player.ship==='phantom'&&(state==='play'||state==='boss')&&typeof phantomButtonAt==='function'&&phantomButtonAt(p)){phantomSkill();return;}
-  if(e.pointerType==='mouse'&&(state==='play'||state==='boss')&&p1Pointer&&typeof desktopPrimaryFire==='function') desktopPrimaryFire();
+  if(e.pointerType==='mouse'&&(state==='play'||state==='boss')&&p1Pointer){
+    if(player&&player.ship==='aegis'&&typeof aegisTapCharge==='function') aegisTapCharge();
+  } else if(e.pointerType==='mouse'&&state!=='play'&&state!=='boss'&&typeof desktopPrimaryFire==='function') desktopPrimaryFire();
   if(state==='menu'){
     if(!audioReady){ audioReady=true; playBgm('m'); }
     if(typeof tutorialOpen!=='undefined'&&tutorialOpen){
@@ -140,4 +142,4 @@ cvs.addEventListener('pointerdown',onDown,{passive:false});
 cvs.addEventListener('pointermove',onMove,{passive:false});
 cvs.addEventListener('pointerup',onUp);
 cvs.addEventListener('pointercancel',onUp);
-cvs.addEventListener('contextmenu',function(e){e.preventDefault();if((typeof desktopPaused==='undefined'||!desktopPaused)&&(state==='play'||state==='boss')){var p=pt(e);var p2=(typeof coopEnabled!=='undefined'&&coopEnabled&&typeof controlModeAllows==='function'&&controlModeAllows(2,'pointer','mouse'));if(p2&&typeof coopSpecial==='function'){coopSpecial('secondary');return;}if(typeof bomb==='function')bomb();}});
+cvs.addEventListener('contextmenu',function(e){e.preventDefault();if((typeof desktopPaused==='undefined'||!desktopPaused)&&(state==='play'||state==='boss')){var p2=(typeof coopEnabled!=='undefined'&&coopEnabled&&typeof controlModeAllows==='function'&&controlModeAllows(2,'pointer','mouse'));if(p2&&typeof coopSpecial==='function'){coopSpecial('secondary');return;}if(player&&player.ship==='aegis'&&typeof aegisTapForce==='function'){aegisTapForce();return;}if(player&&player.ship==='phantom'&&typeof phantomSkill==='function'){phantomSkill();return;}if(typeof bomb==='function')bomb();}});

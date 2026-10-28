@@ -120,8 +120,29 @@ function aegisShieldRatio() {
   return Math.max(0, Math.min(1, aegisState.shield / Math.max(1, aegisShieldMax())));
 }
 function aegisShieldRadius() {
-  return Math.max(26, 18 + aegisForceRadius() * 0.55);
+  // 30% smaller than the 1.0 RC shield; the visual ring and collision use the same value.
+  return Math.max(18, (18 + aegisForceRadius() * 0.55) * 0.70);
 }
+function aegisBlockBossBlast(x, y, blastR) {
+  if (player.ship !== 'aegis' || aegisState.force === 'broken' || aegisState.shield <= 0) return false;
+  var pr = aegisShieldRadius() + (blastR || 0) * 0.12;
+  var nearPlayer = Math.hypot(player.x - x, player.y - y) < pr;
+  var nearForce = aegisState.force !== 'attached' && Math.hypot(aegisState.forceX - x, aegisState.forceY - y) < aegisForceRadius() + (blastR || 0) * 0.12;
+  if (!nearPlayer && !nearForce) return false;
+  aegisState.shield = Math.max(0, aegisState.shield - AEGIS_SHIELD_COST);
+  aegisState.lastBlockAt = time;
+  aegisState.forceHitT = 0.18;
+  try { if (typeof part === 'function') part(x, y, '#9fe8ff', 7, 130); } catch (e) {}
+  try { sfx('b_hit', 0.20); } catch (e) {}
+  if (aegisState.shield <= 0) {
+    aegisState.shield = 0;
+    aegisState.force = 'broken';
+    aegisState.breakT = AEGIS_BREAK_TIME;
+    aegisShieldBreak();
+  }
+  return true;
+}
+
 function aegisAbsorbHit() {
   if (player.ship !== 'aegis' || aegisState.force !== 'attached' || aegisState.shield <= 0) return false;
   aegisState.shield = Math.max(0, aegisState.shield - AEGIS_SHIELD_COST);

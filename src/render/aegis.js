@@ -54,7 +54,7 @@ function drawAegisForceUnderlay() {
       ctx.beginPath(); ctx.arc(fx0 + Math.cos(ba) * (40 + bi * 3), fy0 + Math.sin(ba) * (40 + bi * 3), 2.2, 0, TAU); ctx.fill();
     }
   } else if (aegisState.force === 'attached') {
-    drawForceField(fx0, fy0, 94 + aegisForceRadius() * 0.9, 0.34 + shieldRatio * 0.38, 0, aegisForceColor());
+    drawForceField(fx0, fy0, aegisShieldRadius() * 1.18, 0.34 + shieldRatio * 0.38, 0, aegisForceColor());
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 0.52;
     var core = ctx.createRadialGradient(fx0, fy0, 0, fx0, fy0, 22);
@@ -72,7 +72,7 @@ function drawAegisForceUnderlay() {
       ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.78; ctx.fillStyle = tg;
       ctx.fillRect(fx0 - 8, fy0, 16, 110);
     }
-    drawForceField(fx0, fy0, 80 + aegisForceRadius() * 1.1, aegisState.force === 'detached' ? 0.9 : 0.6, 0, aegisForceColor());
+    drawForceField(fx0, fy0, aegisForceRadius() * 1.25 + 16, aegisState.force === 'detached' ? 0.9 : 0.6, 0, aegisForceColor());
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 0.5; ctx.fillStyle = '#ffd36b';
     ctx.beginPath(); ctx.arc(fx0, fy0, 6, 0, TAU); ctx.fill();

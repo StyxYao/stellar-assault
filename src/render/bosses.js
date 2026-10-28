@@ -72,39 +72,29 @@ function drawFeatherAnnulus(cx,cy,inner,outer,alpha){
   ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,outer,0,TAU);ctx.fill();
 }
 function drawKeyedBossVideo(video,cx,cy,size,hole,rot){
-  var S=384;
-  if(!phaseMaskCv){phaseMaskCv=document.createElement('canvas');phaseMaskCv.width=phaseMaskCv.height=S;phaseMaskCtx=phaseMaskCv.getContext('2d',{willReadFrequently:true});}
-  var x=phaseMaskCtx;x.clearRect(0,0,S,S);x.globalCompositeOperation='source-over';
   var vw=video.videoWidth||720,vh=video.videoHeight||1200,crop=Math.min(vw,vh);
-  x.drawImage(video,(vw-crop)/2,(vh-crop)/2,crop,crop,0,0,S,S);
-  var id=x.getImageData(0,0,S,S),d=id.data;
-  for(var i=0;i<d.length;i+=4){
-    var m=Math.max(d[i],d[i+1],d[i+2]);
-    var a=Math.min(255,Math.max(0,(m-14)*4.5));
-    d[i+3]=a;
-  }
-  x.putImageData(id,0,0);
-  if(hole){
-    // restore the hole/rim from the video itself, not a separate game layer
-    var hcx=(vw-crop)/2+crop*.5,hcy=(vh-crop)/2+crop*.5,hr=crop*.16;
-    x.save();x.beginPath();x.arc(S/2,S/2,S*.16,0,TAU);x.clip();x.globalCompositeOperation='source-over';
-    x.drawImage(video,hcx-hr,hcy-hr,hr*2,hr*2,S/2-S*.16,S/2-S*.16,S*.32,S*.32);x.restore();
-  }
   var firstKey=video.currentSrc||video.src;
   if(!PHASE_FIRST_CVS[firstKey]){
-    var fc=document.createElement('canvas');fc.width=fc.height=S;fc.getContext('2d').drawImage(phaseMaskCv,0,0);PHASE_FIRST_CVS[firstKey]=fc;
-    PHASE_GLITCH_CVS[firstKey]=phaseGlitchFrames(fc,S);
+    var fc=document.createElement('canvas');fc.width=fc.height=384;
+    fc.getContext('2d').drawImage(video,(vw-crop)/2,(vh-crop)/2,crop,crop,0,0,384,384);
+    PHASE_FIRST_CVS[firstKey]=fc;PHASE_GLITCH_CVS[firstKey]=phaseGlitchFrames(fc,384);
   }
-  var fcv=PHASE_FIRST_CVS[firstKey];var vt=video.currentTime||0,vd=video.duration||1,seam=.22,fa=0;
+  var fcv=PHASE_FIRST_CVS[firstKey];
+  var vt=video.currentTime||0,vd=video.duration||1,seam=.18,fa=0;
   if(vt<seam)fa=1-vt/seam; else if(vt>vd-seam)fa=(vt-(vd-seam))/seam;
-  ctx.save();ctx.globalCompositeOperation='source-over';ctx.translate(cx,cy);ctx.rotate(rot||0);
-  // static fallback underlay: covers decoder gaps at the loop seam with the same-size first frame
-  var glitch=PHASE_GLITCH_CVS[firstKey];
-  var under=glitch?glitch[Math.floor(time*10)%glitch.length]:fcv;
-  if(under)ctx.drawImage(under,-size/2,-size/2,size,size);
-  ctx.drawImage(phaseMaskCv,-size/2,-size/2,size,size);
-  if(fa>0){ctx.globalAlpha=Math.min(1,fa);ctx.drawImage(fcv,-size/2,-size/2,size,size);ctx.globalAlpha=1;}
-  ctx.restore();
+  ctx.save();
+  ctx.translate(cx,cy);ctx.rotate(rot||0);
+  ctx.beginPath();ctx.arc(0,0,size*.5,0,TAU);ctx.clip();
+  // Screen blend makes the video's black background transparent without a
+  // per-frame getImageData() pass (the old path stuttered on Windows).
+  ctx.globalCompositeOperation='screen';
+  ctx.globalAlpha=.96;
+  ctx.drawImage(video,(vw-crop)/2,(vh-crop)/2,crop,crop,-size/2,-size/2,size,size);
+  if(fa>0&&fcv){
+    ctx.globalAlpha=Math.min(1,fa)*.55;
+    ctx.drawImage(fcv,-size/2,-size/2,size,size);
+  }
+  ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
 }
 
 function drawPhaseGlitchTransition(cx,cy,size){
@@ -413,6 +403,8 @@ function drawBoss(){
   if(stage===4&&phase===0){img=GIMG.np1||img;}
   if(!img||!img.complete) return;
   var phaseScale=[1,1.06,1.12][phase]||1;
+  // Stage 3 phase 3 art has long outer claws; fit it below the HUD instead of clipping at the top edge.
+  if(stage===2&&phase>=2) phaseScale*=.82;
   if(stage===4) phaseScale=(phase===0?1.00:(phase===1?0.99:1.10));
   var w=boss.def.w*phaseScale*1.15,h=w*img.height/img.width;
   var cols=boss.def.glow||['90,200,255','255,120,220','255,170,80'],col=cols[phase]||cols[0];

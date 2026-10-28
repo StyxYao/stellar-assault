@@ -35,3 +35,8 @@ after confirming source references.
 - Audition pages are not copied into production.
 - Runtime sound file is present at `dist/assets/audio/aegis-break-final.mp3`.
 - `attic/` is excluded from `build_pages.sh`.
+
+## Low-shield alarm candidates
+
+`attic/warning-candidates/` contains five electronic warning candidates and a
+local audition page. They are intentionally not copied into production.

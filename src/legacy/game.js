@@ -17,7 +17,7 @@ var miniDropT=25,bossPhaseGlitchT=0,fusionHoldT=0,fusionHoldActive=false,fusionF
 var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpeed=0,glowWarp=0,bombT=0,bombX=0,bombY=0;
 var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
 var BG4=new Image();BG4.src='assets/bg/stage4-main.webp';
-var phaseMaskCv=null,phaseMaskCtx=null,BG_FIRST_CV=null,PHASE_FIRST_CVS={},PHASE_GLITCH_CVS={};
+var phaseMaskCv=null,phaseMaskCtx=null,BG_FIRST_CV=null,FUSION_FIRST_CV=null,PHASE_FIRST_CVS={},PHASE_GLITCH_CVS={};
 // web video elements/host/priming live in src/platform/web/video.js
 var BG5=new Image();BG5.src='assets/bg/stage5-main.webp';
 var BG1_BH=new Image();BG1_BH.src='assets/bg/stage1-bh.webp';
@@ -198,6 +198,7 @@ function updateBlastZones(dt){
   for(var i=blastZones.length-1;i>=0;i--){
     var z=blastZones[i];z.t+=dt;
     if(!z.hit){
+      if(z.boss&&typeof aegisBlockBossBlast==='function'&&aegisBlockBossBlast(z.x,z.y,z.r)){z.hit=true;continue;}
       var dx=player.x-z.x,dy=player.y-z.y;
       if(dx*dx+dy*dy<z.r*z.r){z.hit=true;hitPlayer();}
     }
@@ -312,6 +313,15 @@ function drawScene(){
       ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
       ctx.save();ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
       ctx.drawImage(fusionVideo,(W-sw)/2,(H-sh)/2,sw,sh);ctx.restore();
+      if(!FUSION_FIRST_CV){
+        FUSION_FIRST_CV=document.createElement('canvas');FUSION_FIRST_CV.width=360;FUSION_FIRST_CV.height=640;
+        try{FUSION_FIRST_CV.getContext('2d').drawImage(fusionVideo,0,0,360,640);}catch(e){}
+      }
+      if(FUSION_FIRST_CV){
+        var fvt=fusionVideo.currentTime||0,fvd=fusionVideo.duration||8,fseam=.18,ffa=0;
+        if(fvt<fseam)ffa=1-fvt/fseam;else if(fvt>fvd-fseam)ffa=(fvt-(fvd-fseam))/fseam;
+        if(ffa>0){ctx.save();ctx.globalAlpha=Math.min(1,ffa)*.85;ctx.drawImage(FUSION_FIRST_CV,(W-sw)/2,(H-sh)/2,sw,sh);ctx.restore();}
+      }
       ctx.fillStyle='rgba(2,2,12,0.12)';ctx.fillRect(0,0,W,H);
     }else{
       paintFractalBg(BG_MAIN[4],BG_EDGE[4],0);ctx.fillStyle='rgba(2,2,12,0.28)';ctx.fillRect(0,0,W,H);drawFusionScene(bossFusionT);
@@ -347,11 +357,18 @@ function drawScene(){
     ctx.restore();ctx.globalAlpha=1;
   }
   if(boss&&boss.ultCharge>0){
-    ctx.save();ctx.strokeStyle='rgba(255,70,70,'+(0.3+0.25*Math.sin(time*18))+')';ctx.lineWidth=7;ctx.strokeRect(3,3,W-6,H-6);ctx.restore();
+    var ua=0.10+0.06*Math.sin(time*18);
+    var ug=ctx.createRadialGradient(W/2,H/2,H*.22,W/2,H/2,H*.78);
+    ug.addColorStop(0,'rgba(255,40,50,0)');ug.addColorStop(.72,'rgba(255,40,50,'+(ua*.45)+')');ug.addColorStop(1,'rgba(255,40,50,'+ua+')');
+    ctx.save();ctx.fillStyle=ug;ctx.fillRect(0,0,W,H);ctx.restore();
   }
   var charging=false;
   for(var i=0;i<beams.length;i++) if(beams[i].t<beams[i].charge) charging=true;
-  if(charging){ctx.save();ctx.fillStyle='rgba(255,40,40,0.05)';ctx.fillRect(0,0,W,H);ctx.strokeStyle='rgba(255,70,70,'+(0.25+0.15*Math.sin(time*20))+')';ctx.lineWidth=4;ctx.strokeRect(2,2,W-4,H-4);ctx.restore();}
+  if(charging){
+    var cg=ctx.createRadialGradient(W/2,H/2,H*.30,W/2,H/2,H*.74);
+    cg.addColorStop(0,'rgba(255,40,40,0)');cg.addColorStop(1,'rgba(255,40,40,'+(0.10+0.05*Math.sin(time*20))+')');
+    ctx.save();ctx.fillStyle=cg;ctx.fillRect(0,0,W,H);ctx.restore();
+  }
 
   for(var i=0;i<enemies.length;i++) drawEnemy(enemies[i]);
   drawShots();
@@ -445,6 +462,8 @@ window.__bossLaser=function(){if(boss)bossLaser();};
 window.__bgInfo=function(){return {neb:{c:BG1_NEBULA.complete,w:BG1_NEBULA.naturalWidth,src:BG1_NEBULA.src},early:{c:BG1_EARLIEST.complete,w:BG1_EARLIEST.naturalWidth},main:{c:BG_MAIN[0]?BG_MAIN[0].complete:false,w:BG_MAIN[0]?BG_MAIN[0].naturalWidth:0}};};
 window.__mechWarn=function(){if(typeof stageMechWarning==='function'&&state==='play')stageMechWarning();};
 window.__aegis2=function(){return typeof aegisState2!=='undefined'?aegisState2:null;};
+window.__bossInfo=function(){return boss?{x:boss.x,y:boss.y,phase:boss.phase,entering:boss.entering,w:boss.def.w,h:boss.def.h}:null;};
+window.__bossBlast=function(x,y){enemyBombExplode({x:x,y:y,bossBomb:true,blastR:78});};
 window.__bossMech=function(){return {stage:bossMech.stage,phase:bossMech.phase,t:bossMech.t,warn:bossMech.warnT,active:bossMech.activeT,data:bossMech.data,msg:bossMech.msg};};
 window.__stageMech=function(){return {stage:stageMech.stage,phase:stageMech.phase,t:stageMech.t,warn:stageMech.warnT,active:stageMech.activeT,data:stageMech.data,msg:stageMech.msg};};
 window.__bgv=function(){return {ready:bgLoopVideo.readyState,paused:bgLoopVideo.paused,w:bgLoopVideo.videoWidth,t:bgLoopVideo.currentTime,src:bgLoopVideo.currentSrc.slice(-24)};};

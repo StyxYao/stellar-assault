@@ -36,3 +36,9 @@ Move a file back to its original path, rebuild with:
 ```bash
 bash tools/build_pages.sh
 ```
+
+### unused-src
+`boss-director.js` (disabled one-wave Stage-5 director) is retained here for history only.
+
+### docs
+Archived `STAGE5_ATTACK_DIRECTOR.md`; Stage-5 density is back to the original pattern/ultimate mix.

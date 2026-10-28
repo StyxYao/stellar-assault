@@ -1134,3 +1134,16 @@
 - Added animated stage-clear score result with E–S rank, kills, time, no-miss/bomb bonuses.
 - Moved unused menu/audio/source assets to `attic/`; production build cleans `dist` first.
 - Rewrote README as a player-facing guide.
+
+## 1.0.0-rc.1y — Windows input/LAN, Stage5 density, boss visuals
+
+- Added `docs/BOSS_BIG_BULLETS.md` and mouse control documentation.
+
+- Added Electron clipboard IPC and browser fallback for LAN copy.
+- Mouse: left = Aegis charge (Aegis only), right = ship skill.
+- Removed the Stage-5 one-wave director gate; restored dense phase 2/3 attacks.
+- Fit Boss 3 phase 3 art below the HUD; softened danger borders.
+- Added explicit Echo Lock/Collapse telegraph and burst.
+- Reduced Aegis shield collision/visual radius by 30% and added boss-bomb blast interception.
+- Increased Cast line spacing.
+- Reduced phase-video CPU keying and background video filter cost; added fusion/background seam underlays.

@@ -52,6 +52,8 @@ stellar-assault-linux
 |---|---|
 | 移动 | 触屏拖动 / 鼠标拖动 / 方向键 / WASD |
 | 射击 | 自动开火 |
+| 鼠标左键 | AEGIS 蓄力炮（AEGIS 专用） |
+| 鼠标右键 | 当前战机技能：AEGIS Force / PHANTOM 潜行 / VECTOR 炸弹 |
 | 炸弹 | `Z` / `Space` / 屏幕 BOMB 按钮 |
 | 暂停 | `P` / `Esc` / 左上角暂停按钮 |
 | AEGIS 蓄力炮 | `C` / 屏幕 CHG 按钮 |

@@ -225,8 +225,35 @@ function lanMakeOverlay(client) {
     var copy = lanEl('button', 'width:100%;padding:7px;background:#081824;border:1px solid #31536a;color:#b8d9e8;font:10px monospace;cursor:pointer;margin-bottom:10px;', 'COPY CLIENT LINK');
     copy.onclick = function () {
       var link = lanInviteLink(); if (!link) return;
-      try { navigator.clipboard.writeText(link); } catch (e) {}
-      if (lanStatus) lanStatus.textContent = 'LINK COPIED';
+      var done = function (ok) {
+        if (lanStatus) lanStatus.textContent = ok ? 'LINK COPIED' : 'COPY FAILED · SELECT LINK';
+        copy.textContent = ok ? 'COPIED' : 'COPY CLIENT LINK';
+        if (!ok) {
+          try {
+            var range = document.createRange(); range.selectNodeContents(lanLinkEl);
+            var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+          } catch (e) {}
+        }
+      };
+      if (window.desktopBridge && window.desktopBridge.copyText) {
+        window.desktopBridge.copyText(link).then(done).catch(function () { done(false); });
+        return;
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(function () { done(true); }).catch(function () {
+          var ta = document.createElement('textarea'); ta.value = link;
+          ta.style.cssText = 'position:fixed;left:-9999px;top:0;';
+          document.body.appendChild(ta); ta.focus(); ta.select();
+          var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+          document.body.removeChild(ta); done(ok);
+        });
+        return;
+      }
+      var ta = document.createElement('textarea'); ta.value = link;
+      ta.style.cssText = 'position:fixed;left:-9999px;top:0;';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta); done(ok);
     };
     box.appendChild(copy);
     lanSyncBtn = lanEl('button', 'width:100%;padding:7px;background:#081824;border:1px solid #8dffb0;color:#b8d9e8;font:9px monospace;cursor:pointer;margin-bottom:8px;', 'SYNC · STATE SYNC');

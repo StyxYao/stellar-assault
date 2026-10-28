@@ -1047,7 +1047,7 @@ var CAST_LINES=[
  ['SPECIAL THANKS','EVERY PILOT WHO REACHED THE END'],
  ['','']
 ];
-var CAST_LINE_H=84,CAST_TOTAL=CAST_LINES.length*CAST_LINE_H+H*0.9+100;
+var CAST_LINE_H=104,CAST_TOTAL=CAST_LINES.length*CAST_LINE_H+H*0.9+100;
 function wrapCastText(text,maxW,font){
   ctx.font=font;
   var out=[],line='';

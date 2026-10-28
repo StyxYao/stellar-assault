@@ -77,6 +77,11 @@ function updateBossMech(dt){
     if(!d.hit2&&typeof coopEnabled!=='undefined'&&coopEnabled&&player2&&Math.hypot(player2.x-d.x,player2.y-d.y)<46){d.hit2=true;bossMechHitP2();}
   }
   if(bossMech.activeT<=0){
+    if(bossMech.data&&bossMech.data.kind==='echo'){
+      var ed=bossMech.data;
+      try{for(var ei=0;ei<26;ei++){var ea=ei/26*TAU;part(ed.x+Math.cos(ea)*20,ed.y+Math.sin(ea)*20,ei%2?'#9fe8ff':'#ffd27a',2,220);}}catch(e){}
+      try{boom(ed.x,ed.y,1.0);shake=Math.max(shake,14);sfx('bomb_big',0.58);}catch(e){}
+    }
     bossMech.phase='idle';bossMech.t=0;bossMech.next=bossMech.stage===0?12:(bossMech.stage===1?13:(bossMech.stage===2?11:(bossMech.stage===3?12:10)));
     bossMech.data=null;
   }
@@ -131,12 +136,24 @@ function drawBossMech(){
       var rg=ctx.createLinearGradient(gx+band,0,gx+band+30,0);rg.addColorStop(0,'rgba(255,255,255,.7)');rg.addColorStop(1,'rgba(200,160,255,0)');
       ctx.fillStyle=rg;ctx.fillRect(gx+band,0,30,H);
     }
-  }else if(d.kind==='echo'){
+  }else if(d.kind==='echo'&&(bossMech.phase==='warn'||bossMech.phase==='active')){
     var ex=d.x,ey=d.y;
-    ctx.globalAlpha=bossMech.phase==='active'?.65:.3;ctx.strokeStyle='#9fe8ff';ctx.lineWidth=2;
-    ctx.beginPath();ctx.arc(ex,ey,30+Math.sin(time*8)*5,0,TAU);ctx.stroke();
-    ctx.beginPath();ctx.arc(ex,ey,8,0,TAU);ctx.stroke();
-    if(bossMech.phase==='active'){ctx.globalAlpha=.2;ctx.fillStyle='#9fe8ff';ctx.beginPath();ctx.arc(ex,ey,46,0,TAU);ctx.fill();}
+    var active=bossMech.phase==='active';
+    var q=active?Math.max(0,Math.min(1,1-bossMech.activeT/1.6)):0;
+    var rr=active?32+q*24:34+Math.sin(time*7)*5;
+    ctx.globalAlpha=active?.92:.42;ctx.strokeStyle=active?'#ffcf7a':'#9fe8ff';ctx.lineWidth=2.4;
+    ctx.beginPath();ctx.arc(ex,ey,rr,0,TAU);ctx.stroke();
+    ctx.globalAlpha=active?.38:.20;ctx.strokeStyle='#ffffff';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(ex,ey,rr+8,0,TAU);ctx.stroke();
+    ctx.globalAlpha=active?.22:.10;ctx.fillStyle=active?'#ff9a3a':'#9fe8ff';
+    ctx.beginPath();ctx.arc(ex,ey,46,0,TAU);ctx.fill();
+    ctx.globalAlpha=.9;ctx.fillStyle='#fff4d6';ctx.font='700 9px monospace';ctx.textAlign='center';
+    ctx.fillText(active?'ECHO COLLAPSE':'ECHO LOCK',ex,ey-56);
+    if(active) ctx.fillText(Math.max(0,bossMech.activeT).toFixed(1)+'s',ex,ey+62);
+    // lock line back to the boss core
+    ctx.globalAlpha=active?.30:.14;ctx.strokeStyle='#ffcf7a';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(ex,ey);ctx.lineTo(boss.x,boss.y);ctx.stroke();
+    ctx.textAlign='left';
   }
   ctx.restore();ctx.globalAlpha=1;ctx.textAlign='left';
 }
