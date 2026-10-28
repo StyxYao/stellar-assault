@@ -276,7 +276,7 @@ function coopHitP2() {
       // Shared run failure: P2's last life ends the run. No implicit lives=3.
       p.hp = 0; p.lives = 0; p.respawnT = 0;
       state = 'over';
-      if (typeof recordRunEnd === 'function') recordRunEnd(false);
+      if (typeof finishRun === 'function') finishRun(false); else if (typeof recordRunEnd === 'function') recordRunEnd(false);
       try { playBgm('m5'); } catch (e) {}
       return true;
     }

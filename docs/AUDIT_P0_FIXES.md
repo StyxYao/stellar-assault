@@ -84,8 +84,21 @@ P2 lives 2 -> next stage -> lives 2
 P2 last life -> state 'over'
 ```
 
+## P0-06 — final victory / run recording
+
+- Added `finishRun(won)` with a single `runFinalized` guard.
+- `resetRun()` resets the guard; stage transitions do not.
+- Finale, stage-4 clear, warp-out, P1 death and P2 shared failure use it.
+- Cast final page now shows RANK / medal / SCORE and LOCAL TOP 5.
+- Verified three consecutive `__endRun(true)` calls record only one run/win.
+
+Evidence:
+
+```text
+runs 1, wins 1, clears 1, topRuns 1
+```
+
 ## Still open
 
 - P0-05 LAN snapshot BulletML + owner IDs
-- P0-06 final Boss victory record / Top 5
 - P1 input/video/damage/statistics/CI

@@ -1098,6 +1098,19 @@ function drawCast(){
     ctx.fillText('思齐Styx',W/2,H*0.55);
     ctx.fillStyle='#8fb8ca';ctx.font='14px monospace';ctx.fillText('with DeepSeek',W/2,H*0.60);
     ctx.fillStyle='#7f93a8';ctx.font='11px monospace';ctx.fillText('THE END',W/2,H*0.67);
+    if(typeof lastRunResult!=='undefined'&&lastRunResult){
+      var ry=H*0.72;
+      ctx.fillStyle='#ffd27a';ctx.font='700 13px monospace';
+      ctx.fillText('RANK '+lastRunResult.rank+'  ·  '+lastRunResult.medal+'  ·  SCORE '+lastRunResult.score,W/2,ry);
+      var topCast=(typeof SaveStore!=='undefined'&&SaveStore.data&&SaveStore.data.campaign&&SaveStore.data.campaign.topRuns)?SaveStore.data.campaign.topRuns.slice(0,5):[];
+      if(topCast.length){
+        ctx.fillStyle='#7f93a8';ctx.font='10px monospace';ctx.fillText('LOCAL TOP 5',W/2,ry+17);
+        for(var cr=0;cr<topCast.length;cr++){
+          ctx.fillStyle=cr===0?'#ffd27a':'#9db3c8';ctx.font='10px monospace';
+          ctx.fillText((cr+1)+'  '+topCast[cr].medal+'  '+topCast[cr].score,W/2,ry+31+cr*12);
+        }
+      }
+    }
     ctx.globalAlpha=1;
     if(castHoldT>3){ctx.globalAlpha=0.45+0.2*Math.sin(time*2.2);ctx.fillStyle='#9fe8ff';ctx.font='10px monospace';ctx.fillText('TAP TO RETURN',W/2,H-30);ctx.globalAlpha=1;}
   }

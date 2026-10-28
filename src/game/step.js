@@ -41,7 +41,7 @@ function step(dt){
   }
   if(state==='fusion'){fusionT+=dt;if(fusionT>=3.6)spawnBossNow();return;}
   if(state==='bossAwaken'){bossAwakenT-=dt;if(bossAwakenT<=0){state='boss';if(boss)boss.invuln=1.4;setBossPattern(0);} }
-  if(state==='finale'){finaleT+=dt;if(finaleT>=8.35)startCast();return;}
+  if(state==='finale'){finaleT+=dt;if(finaleT>=8.35){finishRun(true);startCast();}return;}
   if(state==='cast'){castT+=dt;castScroll=Math.min(CAST_TOTAL,castScroll+32*dt);if(castScroll>=CAST_TOTAL)castHoldT+=dt;return;}
   if(state==='menu'||state==='win'||state==='over') return;
   if(typeof updateStageMechanic==='function') updateStageMechanic(dt);
@@ -50,7 +50,7 @@ function step(dt){
     warpT-=dt; warpSpeed+=1100*dt; player.y-=warpSpeed*dt; player.x=W/2;
     if(warpT<=0){
       if(stage<STAGES.length-1) startStage(stage+1);
-      else { state='win'; if(typeof recordRunEnd==='function') recordRunEnd(true); }
+      else { state='win'; finishRun(true); }
     }
     return;
   }
@@ -120,7 +120,7 @@ function step(dt){
     stageClearT+=dt;
     if(stageClearT>=3.4){
       if(stage<STAGES.length-1){ state='warpOut'; warpT=1.1; warpSpeed=320; playWarpJet(0.9); }
-      else { if(stage===4){ if(typeof recordRunEnd==='function') recordRunEnd(true); startCast(); } else {state='win'; if(typeof recordRunEnd==='function') recordRunEnd(true); playBgm('m5');} }
+      else { if(stage===4){ finishRun(true); startCast(); } else {state='win'; finishRun(true); playBgm('m5');} }
     }
   }
 
