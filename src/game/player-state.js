@@ -17,7 +17,7 @@ function bomb(){
     eb.hp-=200;
     if(eb.hp<=0){ part(eb.x,eb.y,'#ffb066',10,180); enemyDeath(eb); score+=ET[eb.type].score; maybeDrop(eb); removeEnemy(i); }
   }
-  if(boss){ boss.hp-=200; boss.flash=0.2; }
+  if(boss){ damageBoss(200,{ignoreInvuln:true}); boss.flash=0.2; }
 }
 function hitPlayer(){
   if(player.odT>0) return;
@@ -31,6 +31,7 @@ function hitPlayer(){
     return;
   }
   // VECTOR wingmen are now pure firepower; they no longer absorb hits.
+  if(typeof stageStats==='object'&&stageStats) stageStats.tookDamage=true;
   player.noBlink=false;
   player.hitFlashT=0.22;
   player.hp--;
@@ -47,6 +48,7 @@ function hitPlayer(){
   if(player.hp<=0){
     var atMin=player.specialPower<=1;
     var dX=player.x,dY=player.y;
+    if(typeof stageStats==='object'&&stageStats) stageStats.deaths++;
     player.lives--; player.hp=player.maxHp||3; player.invuln=2.2; shake=18;
     player.specialPower=Math.max(1,player.specialPower-1); player.power=player.specialPower; player.powerXp=0; player.od=0; player.odT=0; player.bombs=3; player.options=Math.max(0,player.options-1); player.wingEntry=player.wingEntry.slice(0,player.options);
     rebuildSfxBus();

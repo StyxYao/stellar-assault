@@ -20,6 +20,10 @@ var SaveStore = {
 };
 
 function cloneSave(obj) { return JSON.parse(JSON.stringify(obj)); }
+function finiteUnit(value, fallback) {
+  var n = Number(value);
+  return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : (fallback == null ? 1 : fallback);
+}
 
 function normalizeSave(raw) {
   var out = cloneSave(DEFAULT_SAVE);
@@ -36,9 +40,9 @@ function normalizeSave(raw) {
     out.campaign.topRuns = Array.isArray(raw.campaign.topRuns) ? raw.campaign.topRuns.slice(0, 5) : [];
   }
   if (raw.settings && typeof raw.settings === 'object') {
-    out.settings.master = Math.max(0, Math.min(1, raw.settings.master == null ? 1 : Number(raw.settings.master)));
-    out.settings.bgm = Math.max(0, Math.min(1, raw.settings.bgm == null ? 1 : Number(raw.settings.bgm)));
-    out.settings.sfx = Math.max(0, Math.min(1, raw.settings.sfx == null ? 1 : Number(raw.settings.sfx)));
+    out.settings.master = finiteUnit(raw.settings.master, 1);
+    out.settings.bgm = finiteUnit(raw.settings.bgm, 1);
+    out.settings.sfx = finiteUnit(raw.settings.sfx, 1);
     out.settings.fullscreen = !!raw.settings.fullscreen;
     out.settings.language = raw.settings.language === 'en' ? 'en' : 'zh';
     out.settings.difficulty = raw.settings.difficulty === 'expert' ? 'expert' : 'normal';
@@ -93,6 +97,7 @@ function initSaveStore() {
         if (!SaveStore.data.updatedAt || file.updatedAt > SaveStore.data.updatedAt) {
           SaveStore.data = file;
           applyGameSettings();
+          if (typeof initSelectedSkins === 'function') initSelectedSkins();
         }
       }).catch(function() {});
     }

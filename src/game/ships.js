@@ -375,7 +375,7 @@ function aegisBeamCharge(px, rawDamage, halfWidth) {
     }
   }
   if (boss && state === 'boss' && boss.y < player.y + 16 && Math.abs(boss.x - px) < halfWidth + boss.def.w * 0.20) {
-    boss.hp -= dmg;
+    damageBoss(dmg);
     boss.hitFlash = 0.24; boss.hitX = px; boss.hitY = Math.max(40, boss.y);
     if (typeof hitSpark === 'function') hitSpark(boss.x, boss.y, false, true);
   }
@@ -389,7 +389,7 @@ function aegisReleaseCharge() {
   // then apply the requested 1.35x charge bonus.
   var chargeTime = Math.max(0.35, aegisState.chargeT);
   var totalDamage = aegisNormalDps() * chargeTime * 1.35 * AEGIS_CHARGE_BASE_DAMAGE * aegisChargeDamageMult() / (player.normalBuff || 1);
-  var px = aegisVisualX(), py = player.y - 26;
+  var px = aegisCoreX(), py = player.y - 26;
   if (prof.kind === 'fan') {
     var perFan = totalDamage / prof.count;
     for (var i = 0; i < prof.count; i++) {
@@ -511,7 +511,7 @@ function aegisLaneHit() {
     }
   }
   if (boss && state === 'boss' && boss.y < player.y + 20 && Math.abs(boss.x - px) < lane + boss.def.w * 0.30) {
-    boss.hp -= AEGIS_FORCE_DAMAGE;
+    damageBoss(AEGIS_FORCE_DAMAGE);
     boss.hitFlash = 0.24; boss.hitX = px; boss.hitY = Math.max(40, boss.y);
     if (typeof hitSpark === 'function') hitSpark(boss.x, boss.y, false, true);
   }
@@ -632,7 +632,7 @@ function aegisForceCollide(dt) {
   }
   if (!aegisState.forceBossHit && boss && state === 'boss' && Math.hypot(boss.x - fx, boss.y - fy) < rad + boss.def.w * 0.28) {
     aegisState.forceBossHit = true;
-    boss.hp -= AEGIS_FORCE_DAMAGE; boss.hitFlash = 0.22; boss.hitX = fx; boss.hitY = fy;
+    damageBoss(AEGIS_FORCE_DAMAGE); boss.hitFlash = 0.22; boss.hitX = fx; boss.hitY = fy;
     hitAny = true;
     try { sfx('b_hit', 0.35); } catch (err) {}
     if (typeof hitSpark === 'function') hitSpark(boss.x, boss.y, false, true);
@@ -644,7 +644,7 @@ function aegisForceCollide(dt) {
 }
 
 function aegisFireNBurst() {
-  var px = aegisVisualX(), py = player.y - 26;
+  var px = aegisCoreX(), py = player.y - 26;
   var count = Math.max(2, aegisState.nBurstCount || 4);
   var dmg = (aegisState.nBurstDamage || 0) / count;
   for (var n = 0; n < count; n++) {

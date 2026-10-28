@@ -142,7 +142,7 @@ function drawHedronRecursiveForm(){
   if(useVid){
     var bs=base*(1+.035*Math.sin(t*1.15));
     ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.98;
-    ctx.translate(cx,cy);ctx.drawImage(hedronLoopVideo,-bs/2,-bs/2,bs,bs);ctx.restore();
+    ctx.translate(cx,cy);ctx.drawImage(videoFrameSource(hedronLoopVideo),-bs/2,-bs/2,bs,bs);ctx.restore();
   }else if(A&&A.complete){
     var bs=base*(1+.085*Math.sin(t*1.15));
     ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.97;

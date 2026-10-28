@@ -193,9 +193,9 @@ function aegisBlockedBeamLen(b) {
   if (typeof player === 'undefined' || player.ship !== 'aegis') return null;
   if (typeof aegisState === 'undefined' || aegisState.force === 'broken') return null;
   var attached = aegisState.force === 'attached';
-  var fx = attached ? aegisVisualX() : aegisState.forceX;
+  var fx = attached ? aegisCoreX() : aegisState.forceX;
   var fy = attached ? player.y : aegisState.forceY;
-  var br = attached ? (typeof aegisShieldRadius==='function'?aegisShieldRadius():30) : aegisForceRadius() + 30;
+  var br = (typeof aegisShieldRadius==='function'?aegisShieldRadius():30);
   var dx = fx - b.x, dy = fy - b.y;
   var proj = dx * Math.cos(b.ang) + dy * Math.sin(b.ang);
   var perp = Math.abs(-dx * Math.sin(b.ang) + dy * Math.cos(b.ang));

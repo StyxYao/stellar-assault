@@ -205,7 +205,7 @@ function phantomFireLaser(c) {
   }
   if (boss && state === 'boss' && boss.y < c.y + 14 && Math.abs(boss.x - c.x) < w / 2 + boss.def.w * 0.20) {
     if (endY <= 0 || boss.y < endY) endY = boss.y;
-    boss.hp -= dmg; boss.hitFlash = 0.18; boss.hitX = c.x; boss.hitY = boss.y; hit = true;
+    damageBoss(dmg); boss.hitFlash = 0.18; boss.hitX = c.x; boss.hitY = boss.y; hit = true;
   }
   phantomState.beams.push({ x: c.x, y: c.y - 16, endY: endY, w: w, level: c.power, t: 0, life: 0.12 });
   if (hit) { try { sfx('p_laser', 0.08); } catch (e) {} }
@@ -217,20 +217,23 @@ function phantomCloneFire(c) {
     extraBullets: player.extraBullets, damageMult: player.damageMult,
     normalBuff: player.normalBuff, odT: player.odT, invuln: player.invuln
   };
-  player.x = c.x; player.y = c.y;
-  player.weapon = c.weapon; player.specialPower = c.power;
-  player.extraBullets = c.extra; player.damageMult = (c.damageMult || 1) * 0.70;
-  player.normalBuff = 1; player.odT = 0;
-  phantomState.cloneFiring = true;
-  if (c.weapon === 'spread') fireSpread();
-  else if (c.weapon === 'missile') launchMissiles();
-  else if (c.weapon === 'laser') phantomFireLaser(c);
-  else fireNormal();
-  phantomState.cloneFiring = false;
-  player.x = save.x; player.y = save.y; player.weapon = save.weapon;
-  player.specialPower = save.specialPower; player.extraBullets = save.extraBullets;
-  player.damageMult = save.damageMult; player.normalBuff = save.normalBuff;
-  player.odT = save.odT; player.invuln = save.invuln;
+  try {
+    player.x = c.x; player.y = c.y;
+    player.weapon = c.weapon; player.specialPower = c.power;
+    player.extraBullets = c.extra; player.damageMult = (c.damageMult || 1) * 0.70;
+    player.normalBuff = 1; player.odT = 0;
+    phantomState.cloneFiring = true;
+    if (c.weapon === 'spread') fireSpread();
+    else if (c.weapon === 'missile') launchMissiles();
+    else if (c.weapon === 'laser') phantomFireLaser(c);
+    else fireNormal();
+  } finally {
+    phantomState.cloneFiring = false;
+    player.x = save.x; player.y = save.y; player.weapon = save.weapon;
+    player.specialPower = save.specialPower; player.extraBullets = save.extraBullets;
+    player.damageMult = save.damageMult; player.normalBuff = save.normalBuff;
+    player.odT = save.odT; player.invuln = save.invuln;
+  }
 }
 
 function phantomFindTarget(c) {

@@ -16,10 +16,6 @@ function onDown(e){
     return;
   }
   primeVideos(); initAudio(); loadSfxExtras();
-  if(videoFxEnabled){try{hedronLoopVideo.play().catch(function(){});}catch(err){}}
-  if(videoFxEnabled){try{phase3LoopVideo.play().catch(function(){});}catch(err){}}
-  if(videoFxEnabled){try{phase2LoopVideo.play().catch(function(){});}catch(err){}}
-  if(videoFxEnabled){try{bgLoopVideo.play().catch(function(){});}catch(err){}}
   try{if(AC&&AC.state==='suspended')AC.resume();}catch(err){}
   if(state==='menu'&&bgmPending){var pk=bgmPending;bgmPending='';playBgm(pk);}
   var p=pt(e);

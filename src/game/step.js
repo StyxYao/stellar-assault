@@ -104,16 +104,17 @@ function step(dt){
     stageT+=dt;
     var waves=STAGES[stage].waves;
     if(enemies.some(function(e){return e.mini;})){
-      // hold the next waves while a mini boss is alive
-      for(var wi=waveIndex;wi<waves.length;wi++) waves[wi].t+=dt;
+      // Hold the next waves while a mini boss is alive. This is run-local:
+      // never mutate the shared stage definition, or the next run inherits it.
+      waveDelay+=dt;
     }else{
-      while(waveIndex<waves.length&&waves[waveIndex].t<=stageT){
+      while(waveIndex<waves.length&&waves[waveIndex].t+waveDelay<=stageT){
         if(stage===4&&enemies.length>=6&&!waves[waveIndex].miniPair) break;
         spawnWave(waves[waveIndex]); waveIndex++;
       }
     }
     if(stageT>nextTransport&&!enemies.some(function(e){return e.transport;} )){ if(rng()<0.55) spawnTransport(); nextTransport=stageT+22+rng()*10; }
-    if(waveIndex>=waves.length&&(enemies.length===0||stageT>waves[waves.length-1].t+8)) startBossWarn();
+    if(waveIndex>=waves.length&&(enemies.length===0||stageT>waves[waves.length-1].t+waveDelay+8)) startBossWarn();
   }else if(state==='bossWarn'){
     if(bannerT<=0) spawnBoss();
   }else if(state==='clear'){

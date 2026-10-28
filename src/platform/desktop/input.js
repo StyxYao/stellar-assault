@@ -62,11 +62,8 @@ function desktopConfirm() {
     return;
   }
   if (state === 'menu' && typeof controlSelectOpen !== 'undefined' && controlSelectOpen) {
-    if (k === 'escape') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); closeControlSelect(); return; }
-    if (k === 'arrowup' || k === 'w') { controlSelectIndex = (controlSelectIndex + 4) % 5; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
-    if (k === 'arrowdown' || k === 's') { controlSelectIndex = (controlSelectIndex + 1) % 5; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
-    if (k >= '1' && k <= '5') { controlSelectIndex = Number(k) - 1; if (typeof menuConfirmSfx === 'function') menuConfirmSfx(); controlSelectChoose(controlSelectIndex); return; }
-    if (k === 'enter' || k === ' ') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) controlSelectChoose(controlSelectIndex); return; }
+    if (typeof menuConfirmSfx === 'function') menuConfirmSfx();
+    controlSelectChoose(controlSelectIndex);
     return;
   }
   if (state === 'menu' && typeof startConfirmOpen !== 'undefined' && startConfirmOpen) {
@@ -104,6 +101,14 @@ function desktopBomb() {
 function desktopKeyDown(e) {
   if (state === 'menu') desktopPrime();
   var k = String(e.key || '').toLowerCase();
+  if (state === 'menu' && typeof controlSelectOpen !== 'undefined' && controlSelectOpen) {
+    if (k === 'escape') { if (typeof menuMoveSfx === 'function') menuMoveSfx(); closeControlSelect(); return; }
+    if (k === 'arrowup' || k === 'w') { controlSelectIndex = (controlSelectIndex + 4) % 5; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
+    if (k === 'arrowdown' || k === 's') { controlSelectIndex = (controlSelectIndex + 1) % 5; if (typeof menuMoveSfx === 'function') menuMoveSfx(); return; }
+    if (k >= '1' && k <= '5') { controlSelectIndex = Number(k) - 1; if (typeof menuConfirmSfx === 'function') menuConfirmSfx(); controlSelectChoose(controlSelectIndex); return; }
+    if (k === 'enter' || k === ' ') { if (e.preventDefault) e.preventDefault(); if (!e.repeat) desktopConfirm(); return; }
+    return;
+  }
   if (typeof settingsOpen !== 'undefined' && settingsOpen) {
     if (k === 'escape' || k === 'q') { closeSettings(); return; }
     if (k === 'arrowup' || k === 'w') { settingsMove(-1); return; }
@@ -181,7 +186,7 @@ function desktopKeyDown(e) {
     if (!e.repeat && (typeof controlModeAllows !== 'function' || controlModeAllows(1, 'keyboard'))) desktopBomb();
     return;
   }
-  if (k === 'escape') {
+  if (k === 'escape' || k === 'p') {
     if (e.preventDefault) e.preventDefault();
     if (!e.repeat) desktopTogglePause();
     return;
@@ -247,20 +252,27 @@ function desktopPoll() {
   desktopPadSeen.left = pad.axes[0] < -0.65;
   desktopPadSeen.right = pad.axes[0] > 0.65;
 
+  if (state === 'menu' && typeof controlSelectOpen !== 'undefined' && controlSelectOpen) {
+    if (desktopPadEdge(pad, 12)) { controlSelectIndex = (controlSelectIndex + 4) % 5; if (typeof menuMoveSfx === 'function') menuMoveSfx(); }
+    if (desktopPadEdge(pad, 13)) { controlSelectIndex = (controlSelectIndex + 1) % 5; if (typeof menuMoveSfx === 'function') menuMoveSfx(); }
+    if (a) desktopConfirm();
+    if (b) closeControlSelect();
+    return;
+  }
   if (state === 'menu' && typeof skinSelectOpen !== 'undefined' && skinSelectOpen) {
     var padSkins = (typeof skinList === 'function') ? skinList(selectedShip) : [];
     if (desktopPadEdge(pad, 12)) skinSelectIndex = (skinSelectIndex + padSkins.length - 1) % padSkins.length;
     if (desktopPadEdge(pad, 13)) skinSelectIndex = (skinSelectIndex + 1) % padSkins.length;
-    if (desktopPadEdge(pad, 0)) desktopConfirm();
-    if (desktopPadEdge(pad, 1)) closeSkinSelect();
+    if (a) desktopConfirm();
+    if (b) closeSkinSelect();
     if (desktopPadEdge(pad, 3)) closeSkinSelect();
     return;
   }
   if (state === 'menu' && typeof shipSelectOpen !== 'undefined' && shipSelectOpen) {
     if (desktopPadEdge(pad, 12)) shipSelectIndex = (shipSelectIndex + 2) % 3;
     if (desktopPadEdge(pad, 13)) shipSelectIndex = (shipSelectIndex + 1) % 3;
-    if (desktopPadEdge(pad, 0)) desktopConfirm();
-    if (desktopPadEdge(pad, 1)) closeShipSelect();
+    if (a) desktopConfirm();
+    if (b) closeShipSelect();
     if (desktopPadEdge(pad, 3)) closeShipSelect();
     return;
   }
@@ -323,6 +335,7 @@ function pauseQuitToMenu(){
   try { if (typeof closeSettings === 'function') closeSettings(); } catch(e){}
   selectedStage = Math.max(0, Math.min(STAGES.length-1, stage||0));
   state = 'menu';
+  if (typeof stopStage5Videos === 'function') { try { stopStage5Videos(); } catch(e){} }
   try { playBgm('m'); } catch(e){}
 }
 

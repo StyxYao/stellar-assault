@@ -332,6 +332,7 @@ function coopHitP2() {
     coopUseSlot(p, function () { absorbed = (typeof aegisAbsorbHit === 'function') && aegisAbsorbHit(); });
     if (absorbed) return true;
   }
+  if (typeof stageStats === 'object' && stageStats) stageStats.tookDamage = true;
   p.noBlink = false;
   p.hitFlashT = 0.22;
   p.hp--;
@@ -410,7 +411,7 @@ function coopLaserDamage(dt) {
   coopLaserFx = { x: p.x, endY: target ? tY : 0, level: p.specialPower, t: 0.12 };
   if (!target) return;
   if (isBoss) {
-    boss.hp -= dmg * 0.7; boss.hitFlash = 0.12; boss.hitX = p.x; boss.hitY = boss.y + 20;
+    damageBoss(dmg * 0.7); boss.hitFlash = 0.12; boss.hitX = p.x; boss.hitY = boss.y + 20;
   } else {
     var et = ET[target.type];
     target.hp -= dmg; target.flash = 0.1;
@@ -470,8 +471,13 @@ function coopUpdate(dt) {
   if (coopKeys.k) dy += 1;
   }
   var pads = navigator.getGamepads ? navigator.getGamepads() : [];
-  if (p2Pad && pads[1]) {
-    var pad = pads[1], ax = pad.axes[0] || 0, ay = pad.axes[1] || 0;
+  var pad = null;
+  if (p2Pad) {
+    if (pads[1]) pad = pads[1];
+    else if (pads[0] && !(typeof controlModeAllows !== 'function' || controlModeAllows(1, 'gamepad'))) pad = pads[0];
+  }
+  if (pad) {
+    var ax = pad.axes[0] || 0, ay = pad.axes[1] || 0;
     var padB = !!(pad.buttons[1] && pad.buttons[1].pressed);
     var padF = !!(pad.buttons[5] && pad.buttons[5].pressed);
     if (padB && !coopPadPrevB) coopSpecial('primary');

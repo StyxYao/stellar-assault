@@ -1,5 +1,15 @@
 // Run/stage/Boss flow transitions.
 var runFinalized = false;
+var waveDelay = 0;
+var stageStats = { tookDamage: false, deaths: 0, startedAt: 0 };
+function damageBoss(amount, source) {
+  if (!boss || boss.hp <= 0) return false;
+  if (boss.invuln > 0 && !(source && source.ignoreInvuln)) return false;
+  boss.hp = Math.max(0, boss.hp - Math.max(0, Number(amount) || 0));
+  if (boss.phase === 0 && boss.hp < boss.max * 0.60 && stage !== 4) bossPhase(1);
+  else if (boss.phase === 1 && boss.hp < boss.max * (stage === 4 ? 0.50 : 0.30)) bossPhase(2);
+  return true;
+}
 function finishRun(won){
   if(runFinalized) return false;
   runFinalized=true;
@@ -81,9 +91,10 @@ function prepareStageContent(s){
   st.__prepared=true;
 }
 function startStage(i){
-  if(i===4&&typeof loadStageVideos==='function'){try{loadStageVideos();}catch(e){}}
+  if(i===4&&typeof prepareStage5Videos==='function'){try{prepareStage5Videos();}catch(e){}}
+  if(i!==4&&typeof stopStage5Videos==='function'){try{stopStage5Videos();}catch(e){}}
   prepareStageContent(i);
-  stage=i; stageT=0; stageClearT=0; stageResult=null; stageStartScore=score; stageStartLives=player.lives; stageKills=0; waveIndex=0; miniDropT=25; nextTransport=24+rng()*10;
+  stage=i; waveDelay=0; stageStats={tookDamage:false,deaths:0,startedAt:time}; if(i===4&&typeof setStage5Phase==='function')setStage5Phase(0); stageT=0; stageClearT=0; stageResult=null; stageStartScore=score; stageStartLives=player.lives; stageKills=0; waveIndex=0; miniDropT=25; nextTransport=24+rng()*10;
   if(typeof stageMechReset==='function') stageMechReset(i);
   player.ship=selectedShip;
   player.skin=selectedSkins[player.ship]||(player.ship==='aegis'?'orbital':'void_lance');
@@ -107,13 +118,13 @@ function startStage(i){
 }
 function beginStageClear(){
   var gained=Math.max(0,score-stageStartScore);
-  var noDeath=player.lives>=stageStartLives;
+  var noDeath=!stageStats.tookDamage;
   var rank=1;
   if(gained>=18000)rank=5;else if(gained>=12000)rank=4;else if(gained>=7000)rank=3;else if(gained>=3000)rank=2;
   if(noDeath&&rank<5)rank++;
   if(player.bombs>=3&&rank<5)rank++;
   var medals=['E','D','C','B','A','S'];
-  stageResult={t:0,gained:gained,rank:rank,medal:medals[rank],noDeath:noDeath,lives:player.lives,bombs:player.bombs,kills:stageKills,time:stageT};
+  stageResult={t:0,gained:gained,rank:rank,medal:medals[rank],noDeath:noDeath,lives:player.lives,bombs:player.bombs,kills:stageKills,time:Math.max(0,time-stageStats.startedAt)};
   stageClearT=0;bannerT=0;state='clear';
 }
 
@@ -132,6 +143,7 @@ function spawnBoss(){
 }
 function startBossFusion(){
   state='fusion';fusionT=0;boss=null;runner=null;
+  if(typeof stopStage5Videos==='function')stopStage5Videos();
   bullets.length=0;ebullets.length=0;orbBullets.length=0;beams.length=0;
   player.invuln=Math.max(player.invuln,1.2);
   playBgm('s5boss');
@@ -151,7 +163,7 @@ function spawnBossNow(){
   if(stage===2) repairAudio();
   if(typeof bossMechReset==='function') bossMechReset(stage);
   if(typeof stage5DirectorReset==='function') stage5DirectorReset();
-  state='boss'; playBgm(['c','s2boss','s3boss','s4boss','s5boss'][stage]||'c'); setBossPattern(0);
+  state='boss'; playBgm(['c','s2boss','s3boss','s4boss','s5boss'][stage]||'c'); if(typeof setStage5Phase==='function')setStage5Phase(0); setBossPattern(0);
 }
 function startBossOmen(){
   state='bossOmen';bossOmenT=0;boss=null;runner=null;
@@ -227,6 +239,7 @@ function startBossFusionCinematic(){
 }
 function finishBossFusionPhase(){
   fusionWaitT=0;state='boss';bossFusionT=0;
+  try{if(typeof fusionVideo!=='undefined'&&fusionVideo)fusionVideo.pause();}catch(e){}
   spawnBossNow();
   boss.phase=1;boss.max=Math.round((boss.totalHp||10080)*.64);boss.hp=boss.max;
   boss.y=H*.44;boss.entering=false;boss.invuln=2.2;
@@ -281,7 +294,7 @@ function bossPhase(p){
     bossDeathBoom(boss,true);
     for(var pe=0;pe<7;pe++) fx.push({x:boss.x+vrand(-90,90),y:boss.y+vrand(-60,60),t:-pe*.035,sc:2.0+pe*.22,seed:vrng()*TAU,kind:'boss',life:2.0});
   }
-  boss.phase=p; boss.invuln=1.6; boss.hitFlash=0; boss.ultT=boss.def.ultRate-2.2; boss.ultCharge=0; boss.spiralT=0; boss.broadT=0; boss.blinkT=0; boss.aimT=0; boss.ringT=0; boss.laserT=0;
+  boss.phase=p; if(typeof setStage5Phase==='function')setStage5Phase(p); boss.invuln=1.6; boss.hitFlash=0; boss.ultT=boss.def.ultRate-2.2; boss.ultCharge=0; boss.spiralT=0; boss.broadT=0; boss.blinkT=0; boss.aimT=0; boss.ringT=0; boss.laserT=0;
   boom(boss.x,boss.y,1.5); shake=Math.max(shake,14);
   phaseFx.push({x:boss.x,y:boss.y,t:0,life:1.35,kind:'phase',phase:p});
   setBanner('PHASE '+(p+1),boss.def.name,1.6);

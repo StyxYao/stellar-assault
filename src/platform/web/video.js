@@ -33,7 +33,7 @@ function videoFrameCache(video){
         video.__frameCache.ready=true;
       }
       video.__frameCache.lastMediaTime=t;
-    }catch(e){}
+    }catch(e){ if(typeof reportError==='function')reportError(e,'video.frameCache'); }
     video.requestVideoFrameCallback(onFrame);
   };
   video.requestVideoFrameCallback(onFrame);
@@ -51,7 +51,51 @@ function primeVideos(){
 function loadStageVideos(){
   if(!videoFxEnabled) return;
   [fusionVideo,bgLoopVideo,phase2LoopVideo,phase3LoopVideo,hedronLoopVideo].forEach(function(v){
-    try{ v.preload='auto'; v.load(); }catch(e){}
+    try{
+      v.preload='auto';
+      if(v.readyState===0) v.load();
+    }catch(e){}
+  });
+}
+
+function videoPlaySafe(v){
+  if(!v) return;
+  try{
+    var p=v.play();
+    if(p&&p.catch)p.catch(function(){});
+  }catch(e){ if(typeof reportError==='function')reportError(e,'video.play'); }
+}
+
+// Stage 5 videos are loaded only when the stage starts. Menu/pointer input must
+// not start every 60fps video in the background.
+function prepareStage5Videos(){
+  if(!videoFxEnabled) return;
+  loadStageVideos();
+  videoPlaySafe(bgLoopVideo);
+  setStage5Phase(0);
+}
+
+function setStage5Phase(phase){
+  if(!videoFxEnabled||typeof stage==='undefined'||stage!==4) return;
+  videoPlaySafe(bgLoopVideo);
+  if(phase===0){
+    videoPlaySafe(hedronLoopVideo);
+    try{ phase2LoopVideo.pause(); }catch(e){}
+    try{ phase3LoopVideo.pause(); }catch(e){}
+  }else if(phase===1){
+    videoPlaySafe(phase2LoopVideo);
+    try{ hedronLoopVideo.pause(); }catch(e){}
+    try{ phase3LoopVideo.pause(); }catch(e){}
+  }else if(phase===2){
+    videoPlaySafe(phase3LoopVideo);
+    try{ hedronLoopVideo.pause(); }catch(e){}
+    try{ phase2LoopVideo.pause(); }catch(e){}
+  }
+}
+
+function stopStage5Videos(){
+  [hedronLoopVideo,phase2LoopVideo,phase3LoopVideo,fusionVideo].forEach(function(v){
+    try{ if(v) v.pause(); }catch(e){}
   });
 }
 
