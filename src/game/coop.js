@@ -76,6 +76,40 @@ World.snapshot = function () {
 
 function worldClone(v) { return (v == null) ? v : JSON.parse(JSON.stringify(v)); }
 
+function worldSerializeEnemies() {
+  return enemies.map(function (e, i) {
+    var raw = worldClone(e);
+    raw.leaderSid = (e.leader && enemies.indexOf(e.leader) >= 0) ? enemies.indexOf(e.leader) : -1;
+    delete raw.leader;
+    return raw;
+  });
+}
+
+function worldSerializeBeams() {
+  return beams.map(function (b) {
+    var raw = worldClone(b);
+    raw.ownerSid = (b.owner && enemies.indexOf(b.owner) >= 0) ? enemies.indexOf(b.owner) : -1;
+    raw.ownerIsBoss = !!b.owner && b.owner === boss;
+    delete raw.owner;
+    return raw;
+  });
+}
+
+function worldSerializeOrbs() {
+  return orbBullets.map(function (b) {
+    var raw = worldClone(b);
+    raw.ownerSid = (b.owner && enemies.indexOf(b.owner) >= 0) ? enemies.indexOf(b.owner) : -1;
+    delete raw.owner;
+    return raw;
+  });
+}
+
+function worldSerializeBullets() {
+  return bullets.map(function (b) {
+    return { x: b.x, y: b.y, rad: b.rad || 4.2 };
+  });
+}
+
 World.snapshotFull = function () {
   var out = {
     v: 1,
@@ -87,9 +121,10 @@ World.snapshotFull = function () {
     player2: worldClone(player2), target2: worldClone(target2),
     aegis: worldClone(aegisState), aegis2: worldClone(aegisState2),
     phantom: worldClone(phantomState), phantom2: worldClone(phantomState2),
-    enemies: worldClone(enemies), shots: worldClone(shots), ebullets: worldClone(ebullets),
+    enemies: worldSerializeEnemies(), shots: worldClone(shots), ebullets: worldClone(ebullets),
     items: worldClone(items), missiles: worldClone(missiles), wingBeams: worldClone(wingBeams),
-    beams: worldClone(beams), orbBullets: worldClone(orbBullets), blastZones: worldClone(blastZones),
+    beams: worldSerializeBeams(), orbBullets: worldSerializeOrbs(), blastZones: worldClone(blastZones),
+    bullets: worldSerializeBullets(),
     parts: worldClone(parts), fx: worldClone(fx), phaseFx: worldClone(phaseFx), odLaserFx: worldClone(odLaserFx),
     bombT: bombT, bombX: bombX, bombY: bombY, shake: shake,
     boss: worldClone(boss), nextTransport: nextTransport, mech: worldClone(typeof stageMech!=='undefined'?stageMech:null), bossMech: worldClone(typeof bossMech!=='undefined'?bossMech:null)
@@ -109,21 +144,54 @@ World.restore = function (s) {
   target2 = worldClone(s.target2) || { x: W / 2 - 70, y: H - 150 };
   aegisState = worldClone(s.aegis); aegisState2 = s.aegis2 ? worldClone(s.aegis2) : null;
   phantomState = worldClone(s.phantom); phantomState2 = s.phantom2 ? worldClone(s.phantom2) : null;
-  enemies = worldClone(s.enemies) || [];
+  boss = s.boss ? worldClone(s.boss) : null;
+  var rawEnemies = s.enemies || [];
+  enemies = rawEnemies.map(function (raw) {
+    var e = worldClone(raw);
+    delete e.leaderSid;
+    e.leader = null;
+    return e;
+  });
+  for (var ei = 0; ei < rawEnemies.length; ei++) {
+    var leaderSid = rawEnemies[ei].leaderSid;
+    if (leaderSid != null && leaderSid >= 0 && enemies[leaderSid]) enemies[ei].leader = enemies[leaderSid];
+  }
   shots = worldClone(s.shots) || [];
   ebullets = worldClone(s.ebullets) || [];
   items = worldClone(s.items) || [];
   missiles = worldClone(s.missiles) || [];
   wingBeams = worldClone(s.wingBeams) || [];
-  beams = worldClone(s.beams) || [];
-  orbBullets = worldClone(s.orbBullets) || [];
+  beams = (s.beams || []).map(function (raw) {
+    var b = worldClone(raw);
+    delete b.ownerSid; delete b.ownerIsBoss;
+    b.owner = null;
+    return b;
+  });
+  for (var bi = 0; bi < (s.beams || []).length; bi++) {
+    var rawBeam = s.beams[bi], beam = beams[bi];
+    if (rawBeam.ownerIsBoss && boss) beam.owner = boss;
+    else if (rawBeam.ownerSid != null && rawBeam.ownerSid >= 0) beam.owner = enemies[rawBeam.ownerSid] || null;
+  }
+  orbBullets = (s.orbBullets || []).map(function (raw) {
+    var ob = worldClone(raw);
+    delete ob.ownerSid;
+    ob.owner = null;
+    return ob;
+  });
+  for (var oi = 0; oi < (s.orbBullets || []).length; oi++) {
+    var rawOrb = s.orbBullets[oi];
+    if (rawOrb.ownerSid != null && rawOrb.ownerSid >= 0) orbBullets[oi].owner = enemies[rawOrb.ownerSid] || null;
+  }
+  bullets = (s.bullets || []).map(function (raw) {
+    var x = raw.x || 0, y = raw.y || 0;
+    return { x: x, y: y, rad: raw.rad || 4.2, dead: false, r: { x: x, y: y, update: function () {} } };
+  });
   blastZones = worldClone(s.blastZones) || [];
   parts = worldClone(s.parts) || [];
   fx = worldClone(s.fx) || [];
   phaseFx = worldClone(s.phaseFx) || [];
   odLaserFx = worldClone(s.odLaserFx) || [];
   bombT = s.bombT || 0; bombX = s.bombX || 0; bombY = s.bombY || 0; shake = s.shake || 0;
-  boss = s.boss ? worldClone(s.boss) : null;
   nextTransport = s.nextTransport || 0;
   if(typeof stageMech!=='undefined'&&s.mech) stageMech=worldClone(s.mech);
   if(typeof bossMech!=='undefined'&&s.bossMech) bossMech=worldClone(s.bossMech);

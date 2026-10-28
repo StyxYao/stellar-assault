@@ -98,7 +98,23 @@ Evidence:
 runs 1, wins 1, clears 1, topRuns 1
 ```
 
+## P0-05 — LAN snapshot completeness
+
+- `World.snapshotFull()` now includes `bullets` (BulletML positions/radius).
+- Enemies, beams and orb bullets are serialized with snapshot-local IDs
+  (`leaderSid`, `ownerSid`, `ownerIsBoss`) instead of live object references.
+- `World.restore()` resolves those IDs back to the newly restored enemies/boss.
+- Client-side BulletML is a passive position object; the Host remains authoritative
+  and supplies new positions at 20 Hz. No runner closures are serialized.
+
+Evidence:
+
+```text
+snapshot bullets 1 -> restore bullets 1
+snapshot/restore returns true
+no page errors
+```
+
 ## Still open
 
-- P0-05 LAN snapshot BulletML + owner IDs
 - P1 input/video/damage/statistics/CI
