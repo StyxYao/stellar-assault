@@ -1151,3 +1151,7 @@
 ## 1.0.0-rc.1z — Cinematic low-shield alarms
 
 - Added five cinematic alarm candidates using the CC0 air-raid siren as a base.
+
+## 1.0.0-rc.2a — Cinematic alarm set 2
+
+- Added vintage air-raid, general-quarters, reactor-evac, braam, distress and meltdown candidates.

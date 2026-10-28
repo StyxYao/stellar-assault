@@ -45,3 +45,8 @@ local audition page. They are intentionally not copied into production.
 
 `attic/warning-filmic/` contains five candidates built from the CC0 air-raid
 siren in `attic/sfx-sel/siren.mp3` (Kinoton, freesound 420661).
+
+## Cinematic alarm set 2
+
+`attic/warning-filmic-2/` extends the CC0 air-raid base with vintage, naval,
+reactor, braam, distress and meltdown variations.
