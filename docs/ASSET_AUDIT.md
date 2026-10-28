@@ -53,5 +53,5 @@ reactor, braam, distress and meltdown variations.
 
 ## Selected low-shield warning
 
-User selected `16 · MELTDOWN`, shortened 40% to 1.20s and pitch-raised naturally (~20%).
+User selected `16 · MELTDOWN`, shortened 40% to 1.20s, pitch-raised naturally (~20%), then shortened another 25% to 0.90s.
 Runtime file: `assets/audio/aegis-low-warning.mp3`. Wired to `playAegisWarning()`.

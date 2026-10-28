@@ -1160,3 +1160,7 @@
 
 - Selected MELTDOWN (16), shortened 40% to 1.2s with natural pitch lift.
 - Replaced the old low-shield alarm with the loaded sample.
+
+## 1.0.0-rc.2c — Shorter low-shield warning
+
+- Low-shield MELTDOWN shortened another 25%: 1.20s → 0.90s.
