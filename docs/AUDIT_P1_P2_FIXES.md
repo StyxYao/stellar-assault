@@ -92,3 +92,12 @@ render smoke PASS
 ```
 
 Raw non-interactive debug helpers require `?debug=1`.
+
+## Stage 5 phase 3 opacity hotfix
+
+- Phase 3 video no longer uses `screen` blending (which washed out the boss and made it look transparent).
+- A one-time luminance alpha mask is generated from the first decoded frame; black background and the central hole become transparent, the body stays opaque.
+- The mask is applied in the RVFC cache once per decoded frame, then drawn with `source-over`.
+- Only a small `blur(1.2px)` edge feather is applied.
+- Removed the stale `phaseGlitchFrames()` call that threw while the phase 3 video was starting.
+- Render smoke now plays the real phase 3 video and verifies the mask is generated.

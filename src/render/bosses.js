@@ -77,7 +77,7 @@ function drawKeyedBossVideo(video,cx,cy,size,hole,rot){
   if(!PHASE_FIRST_CVS[firstKey]){
     var fc=document.createElement('canvas');fc.width=fc.height=384;
     fc.getContext('2d').drawImage(vsrc,(vw-crop)/2,(vh-crop)/2,crop,crop,0,0,384,384);
-    PHASE_FIRST_CVS[firstKey]=fc;PHASE_GLITCH_CVS[firstKey]=phaseGlitchFrames(fc,384);
+    PHASE_FIRST_CVS[firstKey]=fc;
   }
   var fcv=PHASE_FIRST_CVS[firstKey];
   var vt=video.currentTime||0,vd=video.duration||1,seam=.18,fa=0;
@@ -87,10 +87,11 @@ function drawKeyedBossVideo(video,cx,cy,size,hole,rot){
   ctx.beginPath();ctx.arc(0,0,size*.5,0,TAU);ctx.clip();
   // Screen blend makes the video's black background transparent without a
   // per-frame getImageData() pass (the old path stuttered on Windows).
-  ctx.globalCompositeOperation='screen';
-  ctx.globalAlpha=.96;
+  var opaque=video===phase3LoopVideo;
+  ctx.globalCompositeOperation=opaque?'source-over':'screen';
+  ctx.globalAlpha=opaque?1:.96;
   ctx.drawImage(vsrc,(vw-crop)/2,(vh-crop)/2,crop,crop,-size/2,-size/2,size,size);
-  if(fa>0&&fcv){
+  if(!opaque&&fa>0&&fcv){
     ctx.globalAlpha=Math.min(1,fa)*.55;
     ctx.drawImage(fcv,-size/2,-size/2,size,size);
   }

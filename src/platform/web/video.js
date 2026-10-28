@@ -21,7 +21,7 @@ function videoFrameCache(video){
   if(!video||video.__frameCache) return;
   if(typeof video.requestVideoFrameCallback!=='function') return;
   var cv=document.createElement('canvas');cv.width=1;cv.height=1;
-  var cx=cv.getContext('2d',{alpha:false});
+  var cx=cv.getContext('2d',{alpha:video===phase3LoopVideo});
   video.__frameCache={cv:cv,cx:cx,ready:false,lastMediaTime:-1};
   var onFrame=function(now,meta){
     try{
@@ -29,7 +29,17 @@ function videoFrameCache(video){
       var loopBlack=t<0.05&&video.__frameCache.lastMediaTime>(video.duration-0.18);
       if(!loopBlack&&video.videoWidth&&video.videoHeight){
         if(cv.width!==video.videoWidth||cv.height!==video.videoHeight){cv.width=video.videoWidth;cv.height=video.videoHeight;}
+        cx.clearRect(0,0,cv.width,cv.height);
         cx.drawImage(video,0,0,cv.width,cv.height);
+        if(video===phase3LoopVideo&&typeof phase3AlphaMask==='function'){
+          var mask=phase3AlphaMask(video);
+          if(mask){
+            cx.save();
+            cx.globalCompositeOperation='destination-in';
+            cx.drawImage(mask,0,0,cv.width,cv.height);
+            cx.restore();
+          }
+        }
         video.__frameCache.ready=true;
       }
       video.__frameCache.lastMediaTime=t;
@@ -41,6 +51,34 @@ function videoFrameCache(video){
 function videoFrameSource(video){
   var f=video&&video.__frameCache;
   return f&&f.ready&&f.cv.width>1?f.cv:video;
+}
+
+function phase3AlphaMask(video){
+  if(!video) return null;
+  if(video.__phase3Mask) return video.__phase3Mask;
+  if(!video.videoWidth||!video.videoHeight) return null;
+  try{
+    var w=video.videoWidth,h=video.videoHeight;
+    var raw=document.createElement('canvas');raw.width=w;raw.height=h;
+    var rc=raw.getContext('2d',{alpha:false});rc.drawImage(video,0,0,w,h);
+    var src=rc.getImageData(0,0,w,h),d=src.data;
+    var out=document.createElement('canvas');out.width=w;out.height=h;
+    var oc=out.getContext('2d',{alpha:true});var od=oc.createImageData(w,h),o=od.data;
+    for(var i=0;i<d.length;i+=4){
+      var luma=0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2];
+      // Black background/central hole becomes transparent; dark body remains opaque.
+      var a=Math.max(0,Math.min(1,(luma-8)/32));
+      o[i]=255;o[i+1]=255;o[i+2]=255;o[i+3]=Math.round(a*255);
+    }
+    oc.putImageData(od,0,0);
+    var soft=document.createElement('canvas');soft.width=w;soft.height=h;
+    var sc=soft.getContext('2d',{alpha:true});sc.filter='blur(1.2px)';sc.drawImage(out,0,0);sc.filter='none';
+    video.__phase3Mask=soft;
+    return soft;
+  }catch(e){
+    if(typeof reportError==='function')reportError(e,'video.phase3Mask');
+    return null;
+  }
 }
 
 var videosPrimed=false;

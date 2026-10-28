@@ -39,6 +39,22 @@ try {
     const info = await page.evaluate(() => ({ state: window.__g().state, stage: window.__g().stage, phase: window.__g().phase, hp: window.__playerState().hp }));
     if (info.stage !== 4 || info.state === 'menu' || info.hp <= 0) throw new Error('phase render state invalid: ' + JSON.stringify(info));
   }
+  // Exercise the real phase3 video path, including the alpha mask. The earlier
+  // checks intentionally pause videos to cover the static fallback.
+  await page.evaluate(() => {
+    const v = Array.from(document.querySelectorAll('video')).find(x => x.src.includes('phase3-loop'));
+    if (v) v.play();
+    window.__setBossPhase(2);
+  });
+  await page.waitForTimeout(900);
+  const phase3 = await page.evaluate(() => {
+    const v = Array.from(document.querySelectorAll('video')).find(x => x.src.includes('phase3-loop'));
+    return { paused: v ? v.paused : null, mask: v ? !!v.__phase3Mask : null, errors: window.__errorLog ? window.__errorLog() : [] };
+  });
+  if (phase3.paused) throw new Error('phase3 video did not play');
+  if (!phase3.mask) throw new Error('phase3 alpha mask was not generated');
+  if (phase3.errors.length) throw new Error('phase3 reported errors: ' + JSON.stringify(phase3.errors));
+
   const logged = await page.evaluate(() => window.__errorLog ? window.__errorLog() : []);
   if (logged.length) throw new Error('reported errors: ' + JSON.stringify(logged));
   if (errors.length) throw new Error(errors.join('\n'));
