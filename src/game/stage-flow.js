@@ -71,7 +71,7 @@ function prepareStageContent(s){
 function startStage(i){
   if(i===4&&typeof loadStageVideos==='function'){try{loadStageVideos();}catch(e){}}
   prepareStageContent(i);
-  stage=i; stageT=0; waveIndex=0; miniDropT=25; nextTransport=24+rng()*10;
+  stage=i; stageT=0; stageClearT=0; stageResult=null; stageStartScore=score; stageStartLives=player.lives; stageKills=0; waveIndex=0; miniDropT=25; nextTransport=24+rng()*10;
   if(typeof stageMechReset==='function') stageMechReset(i);
   player.ship=selectedShip;
   player.skin=selectedSkins[player.ship]||(player.ship==='aegis'?'orbital':'void_lance');
@@ -90,6 +90,18 @@ function startStage(i){
   stopBgm();bgmPending='';playBgm(STAGES[i].bgm);
   playWarpJet(0.8);
 }
+function beginStageClear(){
+  var gained=Math.max(0,score-stageStartScore);
+  var noDeath=player.lives>=stageStartLives;
+  var rank=1;
+  if(gained>=18000)rank=5;else if(gained>=12000)rank=4;else if(gained>=7000)rank=3;else if(gained>=3000)rank=2;
+  if(noDeath&&rank<5)rank++;
+  if(player.bombs>=3&&rank<5)rank++;
+  var medals=['E','D','C','B','A','S'];
+  stageResult={t:0,gained:gained,rank:rank,medal:medals[rank],noDeath:noDeath,lives:player.lives,bombs:player.bombs,kills:stageKills,time:stageT};
+  stageClearT=0;bannerT=0;state='clear';
+}
+
 function startBossWarn(){
   stopBgm(); playAirRaid(0.55);
   state='bossWarn'; setBanner('WARNING',BOSSES[stage].name,2.8); player.invuln=0;

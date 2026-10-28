@@ -1128,3 +1128,9 @@
 - Phantom casting again replaces the oldest clone when over cap.
 - Clone spawn/vanish now shows light ring + white flash.
 - Clone and cloak opacity set to 70%.
+
+## 1.0.0-rc.1x — Stage results, asset attic, player README
+
+- Added animated stage-clear score result with E–S rank, kills, time, no-miss/bomb bonuses.
+- Moved unused menu/audio/source assets to `attic/`; production build cleans `dist` first.
+- Rewrote README as a player-facing guide.

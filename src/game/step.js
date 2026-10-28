@@ -117,7 +117,8 @@ function step(dt){
   }else if(state==='bossWarn'){
     if(bannerT<=0) spawnBoss();
   }else if(state==='clear'){
-    if(bannerT<=0){
+    stageClearT+=dt;
+    if(stageClearT>=3.4){
       if(stage<STAGES.length-1){ state='warpOut'; warpT=1.1; warpSpeed=320; playWarpJet(0.9); }
       else { if(stage===4){ if(typeof recordRunEnd==='function') recordRunEnd(true); startCast(); } else {state='win'; if(typeof recordRunEnd==='function') recordRunEnd(true); playBgm('m5');} }
     }
@@ -428,7 +429,7 @@ function step(dt){
           var pa=vrand(0,TAU),pv=vrand(80,520);
           part(W/2+Math.cos(pa)*vrand(0,70),H*.44+Math.sin(pa)*vrand(0,50),['#ff5f7a','#c06aff','#ff9a3a','#ffe7a0','#7fe6ff'][pk%5],vrand(2,5),pv);
         }
-      }else{setBanner('STAGE CLEAR',STAGES[stage].name,3.0);state='clear';if(typeof recordStageClear==='function') recordStageClear();}
+      }else{if(typeof recordStageClear==='function') recordStageClear();if(typeof beginStageClear==='function') beginStageClear();}
       boss=null; runner=null;
     }
     if(boss){boss.prevX=boss.x;boss.prevY=boss.y;}

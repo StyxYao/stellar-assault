@@ -40,7 +40,7 @@ Boss/enemy/player art was supplied or generated for this project. No separate li
   - Used as the in-game missile launch sample, trimmed and faded.
 - **Missle Launch** by Kibblesbob, SoundBible #1794, Public Domain.
   - Source: https://soundbible.com/1794-Missle-Launch.html
-  - Reserved in `sfx-sel/` for a future heavy-missile layer; not currently played.
+  - Reserved in `attic/sfx-sel/` for a future heavy-missile layer; not currently played.
 
 ## Impact SFX
 

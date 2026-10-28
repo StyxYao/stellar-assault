@@ -55,4 +55,4 @@ The detailed ship page still exists as a secondary view:
 - Logo/title split:
   - `brand_title` at `H * 0.05`
   - `brand_emblem` at `H * 0.762`
-- Backups: `menu-orbital.webp`, `menu-sanctum.webp`.
+- Archived backups: `attic/legacy-menu/menu-orbital.webp`, `attic/legacy-menu/menu-sanctum.webp`.

@@ -13,7 +13,7 @@ var enemies=[],bullets=[],shots=[],parts=[],stars=[],fx=[],ebullets=[],items=[],
 var lastMissile=0,lastSpecial=0,optionT=0,laserTick=0,laserHitY=0,laserHitT=0,pickupMsg='',pickupT=0;
 var audioReady=false;
 var boss=null,runner=null,bossFusionT=0,bossFusionOn=false,bossOmenT=0,selectedStage=0,bossDeath1T=0,bossAwakenT=0,SIG_BOSS=-1;
-var miniDropT=25,bossPhaseGlitchT=0,fusionHoldT=0,fusionHoldActive=false,fusionFadeT=0,fusionWaitT=0,stageT=0,waveIndex=0,nextTransport=0,banner='',bannerSub='',bannerT=0,castT=0,castScroll=0,castHoldT=0,fusionT=0,finaleT=0;
+var miniDropT=25,bossPhaseGlitchT=0,fusionHoldT=0,fusionHoldActive=false,fusionFadeT=0,fusionWaitT=0,stageT=0,waveIndex=0,stageClearT=0,stageStartScore=0,stageStartLives=3,stageKills=0,stageResult=null,nextTransport=0,banner='',bannerSub='',bannerT=0,castT=0,castScroll=0,castHoldT=0,fusionT=0,finaleT=0;
 var bgCurrent=BG1,bgPrev=null,bgFade=0,stageFlash=0,stageWarp=0,warpT=0,warpSpeed=0,glowWarp=0,bombT=0,bombX=0,bombY=0;
 var bgScroll=0,bgEdgeScroll=0,bgDust=[];var BG_MAIN=[],BG_EDGE=[];
 var BG4=new Image();BG4.src='assets/bg/stage4-main.webp';
@@ -150,6 +150,7 @@ function boom(x,y,sc,kind){
 }
 function enemyDeath(e){
   if(!e) return;
+  if(typeof stageKills!=='undefined'&&(state==='play'||state==='boss'))stageKills++;
   if(e.elite){ boom(e.x,e.y,1.35,'elite'); }
   else boom(e.x,e.y,0.75,'normal');
 }
@@ -384,6 +385,7 @@ function drawScene(){
   drawPickupMsg();
   drawHUD();
   drawBanner();
+  if(typeof drawStageClear==='function') drawStageClear();
   drawEnd();
   ctx.restore();
   ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.filter='none';

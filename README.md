@@ -1,240 +1,215 @@
 # STELLAR ASSAULT
 
-移动端优先的竖屏弹幕射击游戏，Canvas 2D + WebAudio，无运行时框架依赖。
+一款竖屏科幻弹幕射击游戏。
 
-项目最初是 rRootage / BulletML 的个人学习致敬作，现在按可上架产品方向维护：Web 先行，Steam 与微信小游戏作为后续平台目标。
+驾驶三艘定位完全不同的战机，穿过五个关卡，击败五名 Boss，在弹幕、光束和融合攻击中活下来。
 
-## 当前状态
+- **5 个关卡 / 5 名 Boss**
+- **3 艘战机 + 9 种变体**
+- **单人 / 本地双人 / 局域网双人**
+- **触屏、鼠标、键盘均可游玩**
+- **Web 与 Windows / Linux 桌面版**
 
-- 5 个关卡、5 个 Boss
-- 第五关：Hedron 第一阶段 → 四 Boss 融合 → 二/三阶段 → 终局
-- 4 种武器：NORMAL / SPREAD / LASER / MISSILE，Lv1–Lv4
-- 僚机、炸弹、生命/血量、掉落、补给运输机
-- 第五关 6 种独立敌机：独立血量、攻击、子弹素材、阵型
-- 玩家真实判定圈视觉提示
-- 触屏拖动操作，自动开火
-- 模块化基础：40 个模块，`src/legacy/game.js` 为 470 行组合根
-- 本地单人 / 本地双人 / LAN 2P
-- 1.0 范围见 [`docs/ROADMAP_1_0.md`](docs/ROADMAP_1_0.md)；Boss Rush / Tower 移到 1.1
+当前版本：**1.0.0-rc.1**  
+Boss Rush 与 Tower 模式计划在 **1.1** 推出。
 
-Steam 构建和微信小游戏适配尚未实现，接口规划见 [`docs/HANDOFF.md`](docs/HANDOFF.md)。
+---
 
-## 快速开始
+## 开始游戏
 
-### 环境
+### Web
 
-- Python 3
-- Pillow（`requirements.txt`）
-- Node.js 22（仅测试 / 语法检查需要）
-
-```bash
-python3 -m pip install -r requirements.txt
-```
-
-### LAN 启动
-
-```bash
-node tools/lan_server.mjs 8785 8786
-```
-
-或 `tools/start_lan.command` / `tools/start_lan.bat`。Electron 桌面端会自动启动 LAN server。
-
-### 完整 Web 构建（推荐）
-
-```bash
-bash tools/build_pages.sh
-```
-
-输出：
+打开构建后的游戏入口：
 
 ```text
-dist/
-  index.html
-  build.txt
-  assets/
-    bg/
-    audio/
-    fonts/
-    video/
+dist/index.html
 ```
 
-`build_pages.sh` 会：
+或使用当前 Web 部署。首次在 iPhone/iPad 上进入时，先点一下屏幕，浏览器才会允许播放声音。
 
-1. 创建/使用本地虚拟环境
-2. 安装 Pillow
-3. 按 `src/modules.json` 组装模块
-4. 生成单文件基础包
-5. 外置图片资源
-6. 复制背景、音频、字体、视频
-7. 写入 `build.txt`（当前 commit）
-8. 校验关键视频是否存在
+### Windows / Linux
 
-### 单文件版本
-
-```bash
-python3 tools/build_game3.py
-```
-
-输出 `rrootage3.html`，用于本地调试或离线分发。
-
-`rrootage3.html`、`dist/` 均为构建产物，不提交到 Git。
-
-## 目录结构
+桌面构建由 GitHub Actions 生成，包含安装包与便携版：
 
 ```text
-src/
-  core/        固定步长、数学、碰撞
-  content/     敌机、关卡波次、Boss 数据
-  render/      玩家、敌机、子弹、Boss、背景、UI、特效、武器
-  game/        Boss 技能、敌机系统、玩家武器/状态、战斗、关卡流程、step
-  platform/    平台契约 + Web 输入/音频/视频适配
-  legacy/      组合根与兼容层
-  modules.json 模块顺序清单
-
-assets/        运行时资源
-gpt-assets/    源美术
-tools/         构建、优化、校验、快照脚本
-tests/         Node 单元测试
-docs/          架构、迁移、部署、交接文档
+https://github.com/StyxYao/stellar-assault/actions/workflows/desktop-build.yml
 ```
 
-详细设计见 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)。  
-当前交接状态见 [`docs/HANDOFF.md`](docs/HANDOFF.md)。
+选择最新一次成功的 **Desktop Build**，下载：
 
-## 模块化说明
-
-当前是 **Phase 2 文件级模块化**：
-
-- 模块通过 `src/modules.json` 顺序组装进同一个 Web 闭包
-- 还没有切换成 ES Module 运行时
-- 这样可以在不破坏玩法的前提下持续抽取
-- 新逻辑不要继续写进 `src/legacy/game.js`
-
-后续 Phase 3 会把 `World / Projectiles / Ports` 显式注入，去掉对全局 `boss / player / enemies / ebullets` 的依赖。
-
-## 测试与校验
-
-```bash
-python3 tools/check_structure.py
-node tools/validate_content.mjs
-node tests/fixed-step.test.mjs
-node tests/math.test.mjs
-node tests/collision.test.mjs
+```text
+stellar-assault-windows
+stellar-assault-linux
 ```
 
-CI 在 `.github/workflows/ci.yml`，会执行：
+桌面版目前**未签名**，Windows SmartScreen 可能会提示“未知发布者”。这是预期行为，选择“更多信息 → 仍要运行”即可。
 
-- `src/` 下所有 JS 模块语法检查
-- 模块结构与目录边界检查
-- 五关波次和敌机/Boss 内容校验
-- 固定步长、数学、碰撞单元测试
+---
 
 ## 操作
 
-- 按住屏幕拖动：机体跟随手指上方
-- 自动开火
-- 点击 BOMB 按钮：炸弹
-- 双击屏幕：炸弹快捷操作
+| 操作 | 方式 |
+|---|---|
+| 移动 | 触屏拖动 / 鼠标拖动 / 方向键 / WASD |
+| 射击 | 自动开火 |
+| 炸弹 | `Z` / `Space` / 屏幕 BOMB 按钮 |
+| 暂停 | `P` / `Esc` / 左上角暂停按钮 |
+| AEGIS 蓄力炮 | `C` / 屏幕 CHG 按钮 |
+| AEGIS Force | `F` / 屏幕 FORCE 按钮 |
+| PHANTOM 潜行/分身 | `Z` / 屏幕 PHASE 按钮 |
 
-拾取物：
+手机上按住屏幕拖动即可，机体跟随手指上方，不需要点击射击。
 
-- `P`：提升武器等级
-- `A`：切换武器
-- `S / L / M`：切到对应武器
-- `W`：增加/升级僚机
-- `B`：炸弹 +1
-- `1UP`：生命 +1
+---
 
-## 部署
+## 三种战机
 
-### EdgeOne Makers
+### VECTOR — 标准火力
 
-项目包含 `edgeone.json`：
+均衡型战机，靠僚机和炸弹建立火力网。
 
-```json
-{
-  "buildCommand": "bash tools/build_pages.sh",
-  "outputDirectory": "./dist"
-}
-```
+- 升级僚机
+- 清屏炸弹
+- 适合第一次通关
 
-导入 `StyxYao/stellar-assault`，分支 `main`，根目录留空，输出目录 `./dist`。
+### AEGIS — 护盾与 Force
 
-部署后访问：
+以护盾和可分离的 Force 核心为核心。
 
-```text
-https://你的域名/build.txt
-```
+- 护盾可以吸收伤害并清除接触弹
+- Force 挂载时防御，分离后提供额外火力
+- 蓄力炮可以打出更宽、更强的光束
+- 低护盾会触发警报，破盾后需要等待恢复
 
-应与仓库最新 commit 一致。若页面仍是旧版本，先看 EdgeOne 部署记录和构建日志，不要先怀疑 CDN。
+### PHANTOM — 潜行与分身
 
-### Cloudflare Workers
+以隐身、诱饵和分身复制火力为核心。
 
-`wrangler.jsonc` 使用 `src/worker.js` 作为静态资源入口：
+- 潜行期间无敌
+- 分身复制主武器和等级
+- 分身可以吸引敌人火力
+- Quantum：稳定型，2 个分身
+- Raven：4 秒潜行，+150% 潜行伤害，1 个分身
+- Butterfly：4 个分身
+
+---
+
+## 模式
+
+### 单人
+
+标准五关战役。
+
+### 本地双人
+
+同一台设备，两名玩家共用屏幕。
+
+### LAN 双人
+
+一台设备作为 Host，另一台设备通过局域网加入。
+
+- 默认端口：`8785`（HTTP）/ `8786`（WebSocket）
+- 桌面版会自动启动 Host
+- 如果连接失败，检查两台设备是否在同一局域网、防火墙是否放行端口
+
+不支持互联网联机、房间匹配或账号系统。
+
+---
+
+## 拾取物
+
+| 拾取 | 效果 |
+|---|---|
+| `P` | 提升武器等级 |
+| `A` | 切换武器 |
+| `S / L / M` | 直接切到对应武器 |
+| `D / W` | 战机专属升级：僚机 / Force / 分身 |
+| `B` | 补充炸弹或能量 |
+| `1UP` | 生命 +1 |
+
+---
+
+## 关卡与结算
+
+每个关卡结束会显示：
+
+- 本关得分
+- 评级（E–S）
+- 击破数
+- 通关时间
+- 无伤 / 炸弹储备奖励
+
+完整通关后还会显示本次 Run 的总评级、奖章和本地最高分。
+
+---
+
+## 已知限制
+
+- 仅支持单人、本地双人和 LAN 双人，不含世界联机
+- Steam 正式发行仍在准备中
+- Steam Deck 尚未完成实机验证，不能标注为 Verified
+- Windows / Linux 构建未签名
+- 部分旧设备可能无法流畅播放高码率背景视频
+- 1.0 暂不含 Boss Rush / Tower
+
+---
+
+## 常见问题
+
+### 没有声音？
+
+iPhone/iPad 需要先触摸屏幕一次；桌面浏览器检查标签页是否被静音。
+
+### LAN 找不到主机？
+
+确认：
+
+1. 两台设备在同一网络
+2. Host 防火墙允许 `8785` 和 `8786`
+3. 输入的是 Host 的局域网 IP，而不是 `localhost`
+
+### 存档在哪里？
+
+Web 版使用浏览器本地存储；桌面版使用应用数据目录。清除浏览器站点数据会删除存档。
+
+### 为什么 Windows 提示未知发布者？
+
+当前构建没有代码签名证书。
+
+---
+
+## 从源码运行
 
 ```bash
-npx wrangler deploy
+python3 -m pip install -r requirements.txt
+bash tools/build_pages.sh
+node tools/lan_server.mjs 8785 8786
 ```
 
-注意 Cloudflare Workers 静态资源单文件上限为 5MB。当前视频中背景视频和部分长 BGM 需要压缩后才能放入。
-
-### Cloudflare Pages
-
-如果使用 Pages：
-
-- 生产分支：`main`
-- 根目录：留空
-- 构建命令：`bash tools/build_pages.sh`
-- 输出目录：`dist`
-
-### 国内交付
-
-背景、音频、视频等大资源可按 [`docs/ROADMAP.md`](docs/ROADMAP.md) 规划放对象存储或子包，详见 [`docs/EDGEONE.md`](docs/EDGEONE.md)。
-
-## 回滚与迁移记录
-
-每一步重构都有独立 commit、annotated tag、迁移日志和本地快照。
+测试与校验：
 
 ```bash
-cat docs/MIGRATION_LOG.md
+node tests/fixed-step.test.mjs
+node tests/math.test.mjs
+node tests/collision.test.mjs
+node tools/validate_content.mjs
+python3 tools/check_structure.py
 ```
 
-查看某一步：
+开发与架构文档：
 
-```bash
-git show step/phase6j-step
-```
-
-恢复到最终模块化基线：
-
-```bash
-git switch -c recover/modular-foundation checkpoint/modular-foundation
-```
-
-本地快照：
-
-```bash
-bash tools/make_snapshot.sh before-change
-```
-
-生成 `.backups/*.tar.gz` 和完整 Git bundle，`.backups/` 已被 Git 忽略。
-
-## 版本与变更
-
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+- [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
+- [`docs/RELEASE_1_0.md`](docs/RELEASE_1_0.md)
 - [`CHANGELOG.md`](CHANGELOG.md)
-- 当前发布候选：`1.0.0-rc.1`
-- 发布清单：[`docs/RELEASE_1_0.md`](docs/RELEASE_1_0.md)
-- 1.0 范围与门禁：`docs/ROADMAP_1_0.md`
-- 每个抽取步骤的 tag 见 [`docs/MIGRATION_LOG.md`](docs/MIGRATION_LOG.md)
 
-## 平台路线
+---
 
-- **Web**：当前可玩
-- **Steam**：Electron/Tauri + Steamworks，离线资源、成就、云存档、Steam Deck
-- **微信小游戏**：Canvas/音频/输入/存储适配，替换 DOM 视频，处理主包/分包体积
+## 制作
 
-## 许可
+- 设计 / 程序 / 关卡：STELLAR ASSAULT team
+- 引擎：原生 Canvas 2D + WebAudio
+- 桌面壳：Electron
+- 第三方素材与工具：[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)
 
-代码和原创美术默认保留所有权利，除非后续单独添加许可证。
-
-第三方素材、引擎和工具记录在 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)。
+代码与原创美术保留所有权利，除非后续单独添加许可证。

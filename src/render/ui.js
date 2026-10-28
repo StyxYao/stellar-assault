@@ -1130,3 +1130,90 @@ function hardResetCanvas(){
   try{ctx.setTransform(DPR,0,0,DPR,0,0);ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.filter='none';ctx.setLineDash([]);}catch(e){}
 }
 
+
+function drawStageClear() {
+  if (state !== 'clear' || !stageResult) return;
+  var t = stageClearT || 0;
+  var inA = Math.min(1, t / 0.55);
+  var ease = 1 - Math.pow(1 - Math.min(1, t / 0.9), 3);
+  var panel = { x: 28, y: H * 0.17, w: W - 56, h: H * 0.62 };
+  ctx.save();
+  ctx.fillStyle = 'rgba(2,5,13,' + (0.66 * inA) + ')';
+  ctx.fillRect(0, 0, W, H);
+  ctx.globalAlpha = inA;
+  ctx.translate(0, 18 * (1 - inA));
+  // framing
+  ctx.fillStyle = 'rgba(4,14,26,0.94)';
+  ctx.fillRect(panel.x, panel.y, panel.w, panel.h);
+  ctx.strokeStyle = 'rgba(143,233,255,0.55)'; ctx.lineWidth = 1;
+  ctx.strokeRect(panel.x, panel.y, panel.w, panel.h);
+  ctx.strokeStyle = 'rgba(255,211,122,0.55)';
+  ctx.strokeRect(panel.x + 5, panel.y + 5, panel.w - 10, panel.h - 10);
+  // header
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#ffd27a'; ctx.font = '700 9px monospace';
+  ctx.fillText('STAGE ' + (stage + 1) + ' · ' + STAGES[stage].name, W / 2, panel.y + 30);
+  ctx.fillStyle = '#f2fbff'; ctx.font = '900 28px "Arial Black", Arial, sans-serif';
+  ctx.fillText('STAGE CLEAR', W / 2, panel.y + 66);
+  ctx.fillStyle = '#8fb8ca'; ctx.font = '8px monospace';
+  ctx.fillText('COMBAT RECORD', W / 2, panel.y + 82);
+  // rank emblem
+  var rt = Math.max(0, Math.min(1, (t - 0.55) / 0.42));
+  var rscale = rt <= 0 ? 0.2 : (1 + Math.sin(Math.min(1, rt) * Math.PI) * 0.12);
+  var cy = panel.y + 158;
+  ctx.save();
+  ctx.translate(W / 2, cy); ctx.scale(rscale, rscale);
+  var rg = ctx.createRadialGradient(0, 0, 2, 0, 0, 46);
+  rg.addColorStop(0, 'rgba(255,241,190,0.28)'); rg.addColorStop(0.6, 'rgba(143,233,255,0.12)'); rg.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(0, 0, 46, 0, TAU); ctx.fill();
+  ctx.strokeStyle = stageResult.medal === 'S' ? '#ffd27a' : '#8fe9ff'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.arc(0, 0, 36, 0, TAU); ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(0, 0, 42, 0, TAU); ctx.stroke();
+  ctx.fillStyle = '#fff8dd'; ctx.font = '900 44px "Arial Black", Arial, sans-serif';
+  ctx.fillText(stageResult.medal, 0, 14);
+  ctx.restore();
+  ctx.fillStyle = '#8fb8ca'; ctx.font = '8px monospace';
+  ctx.fillText('RANK ' + stageResult.rank + '  ·  ' + (stageResult.noDeath ? 'NO MISS' : 'CLEARED'), W / 2, cy + 54);
+  // score count-up
+  var count = Math.floor(stageResult.gained * ease);
+  ctx.fillStyle = '#9fe8ff'; ctx.font = '10px monospace';
+  ctx.fillText('STAGE SCORE', W / 2, panel.y + 246);
+  ctx.fillStyle = '#ffffff'; ctx.font = '700 28px monospace';
+  ctx.fillText(String(count).padStart(7, '0'), W / 2, panel.y + 276);
+  // bonus rows
+  ctx.font = '9px monospace'; ctx.textAlign = 'left';
+  ctx.fillStyle = '#6f8ca3';
+  ctx.fillText('SHIPS', panel.x + 36, panel.y + 312); ctx.fillText('BOMBS', panel.x + 36, panel.y + 330);
+  ctx.textAlign = 'right'; ctx.fillStyle = '#cfeaff';
+  ctx.fillText('x' + stageResult.lives, panel.x + panel.w - 36, panel.y + 312);
+  ctx.fillText('x' + stageResult.bombs, panel.x + panel.w - 36, panel.y + 330);
+  // stage detail stats
+  ctx.strokeStyle = 'rgba(143,233,255,0.18)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(panel.x + 36, panel.y + 358); ctx.lineTo(panel.x + panel.w - 36, panel.y + 358); ctx.stroke();
+  ctx.font = '9px monospace'; ctx.textAlign = 'left'; ctx.fillStyle = '#6f8ca3';
+  ctx.fillText('KILLS', panel.x + 36, panel.y + 382); ctx.fillText('TIME', panel.x + 36, panel.y + 400);
+  ctx.textAlign = 'right'; ctx.fillStyle = '#cfeaff';
+  ctx.fillText(String(stageResult.kills || 0), panel.x + panel.w - 36, panel.y + 382);
+  ctx.fillText((stageResult.time || 0).toFixed(1) + 's', panel.x + panel.w - 36, panel.y + 400);
+  if (stageResult.noDeath && stageResult.bombs >= 3) {
+    ctx.textAlign = 'center'; ctx.fillStyle = '#ffd27a'; ctx.font = '700 9px monospace';
+    ctx.fillText('PERFECT · NO MISS · BOMB RESERVE', W / 2, panel.y + 432);
+  }
+  // completion progress
+  ctx.textAlign = 'center'; ctx.fillStyle = '#7f9bb0'; ctx.font = '8px monospace';
+  ctx.fillText('NEXT STAGE', W / 2, panel.y + panel.h - 34);
+  ctx.fillStyle = 'rgba(30,50,66,0.9)'; ctx.fillRect(panel.x + 50, panel.y + panel.h - 24, panel.w - 100, 4);
+  ctx.fillStyle = '#ffd27a'; ctx.fillRect(panel.x + 50, panel.y + panel.h - 24, (panel.w - 100) * Math.min(1, t / 3.4), 4);
+  // deterministic gold sparks
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  for (var i = 0; i < 14; i++) {
+    var a = i / 14 * TAU + time * 0.35;
+    var rr = 78 + Math.sin(time * 1.8 + i) * 14;
+    ctx.globalAlpha = 0.20 + 0.20 * Math.sin(time * 3 + i);
+    ctx.fillStyle = i % 2 ? '#ffd27a' : '#8fe9ff';
+    ctx.fillRect(W / 2 + Math.cos(a) * rr, cy + Math.sin(a) * rr * 0.62, 1.5, 1.5);
+  }
+  ctx.restore();
+  ctx.restore(); ctx.globalAlpha = 1; ctx.textAlign = 'left';
+}
