@@ -111,3 +111,10 @@ This is startup + built-in LAN server smoke, not gameplay/signing.
 - Linux: runs the AppImage under Xvfb, waits for the same endpoint
 
 This validates that the packaged app can start and host the built-in LAN server. It does not replace a human playthrough or Steam Deck hardware validation.
+
+
+## Windows signing / antivirus
+
+See `docs/WINDOWS_ANTIVIRUS.md`. The workflow reads `WINDOWS_CSC_LINK` and
+`WINDOWS_CSC_KEY_PASSWORD`; without them the build remains unsigned and may
+be flagged by security software.

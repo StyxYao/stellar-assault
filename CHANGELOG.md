@@ -1164,3 +1164,9 @@
 ## 1.0.0-rc.2c — Shorter low-shield warning
 
 - Low-shield MELTDOWN shortened another 25%: 1.20s → 0.90s.
+
+## 1.0.0-rc.2d — Windows antivirus hardening
+
+- Documented unsigned Electron/NSIS false-positive causes.
+- Removed the NSIS elevate helper, disabled elevation, added Windows metadata/sign targets.
+- Added optional CSC_LINK/CSC_KEY_PASSWORD signing path and signature reporting.

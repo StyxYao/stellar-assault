@@ -52,7 +52,13 @@
         "nsis",
         "zip"
       ],
-      "icon": "build/icon.ico"
+      "icon": "build/icon.ico",
+      "requestedExecutionLevel": "asInvoker",
+      "signAndEditExecutable": true,
+      "signExts": [
+        ".exe"
+      ],
+      "legalTrademarks": "STELLAR ASSAULT"
     },
     "linux": {
       "target": [
@@ -63,8 +69,14 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "perMachine": false
-    }
+      "perMachine": false,
+      "packElevateHelper": false,
+      "allowElevation": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true
+    },
+    "copyright": "Copyright \u00a9 2026 Styx. All rights reserved."
   },
   "author": "Styx"
 }
