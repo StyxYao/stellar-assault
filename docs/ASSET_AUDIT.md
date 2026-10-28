@@ -40,3 +40,8 @@ after confirming source references.
 
 `attic/warning-candidates/` contains five electronic warning candidates and a
 local audition page. They are intentionally not copied into production.
+
+## Cinematic low-shield alarms
+
+`attic/warning-filmic/` contains five candidates built from the CC0 air-raid
+siren in `attic/sfx-sel/siren.mp3` (Kinoton, freesound 420661).

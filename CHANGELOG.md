@@ -1147,3 +1147,7 @@
 - Reduced Aegis shield collision/visual radius by 30% and added boss-bomb blast interception.
 - Increased Cast line spacing.
 - Reduced phase-video CPU keying and background video filter cost; added fusion/background seam underlays.
+
+## 1.0.0-rc.1z — Cinematic low-shield alarms
+
+- Added five cinematic alarm candidates using the CC0 air-raid siren as a base.
