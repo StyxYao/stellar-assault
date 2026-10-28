@@ -400,7 +400,9 @@ function step(dt){
       if(wingmanBlock(b.x,b.y,b.rad)){bullets.splice(i,1);continue;}
       var bdx=b.x-player.x,bdy=b.y-player.y;
       if(circleOverlap(b.x,b.y,b.rad,player.x,player.y,player.r)) hitPlayer();
-      if(typeof coopEnabled!=='undefined'&&coopEnabled&&player2&&circleOverlap(b.x,b.y,b.rad,player2.x,player2.y,player2.r)) coopHitP2();
+      if(typeof coopEnabled!=='undefined'&&coopEnabled&&player2&&circleOverlap(b.x,b.y,b.rad,player2.x,player2.y,player2.r)&&coopHitP2()){
+        b.dead=true; bullets.splice(i,1); continue;
+      }
     }
     if(stage===4&&boss&&boss.phase===0&&boss.hp<=0){ boss.hp=0; startBossPhase1Death(); }
     else if(boss.hp<=0){
@@ -466,6 +468,9 @@ function step(dt){
     if(typeof phantomHitClone==='function' && phantomHitClone(e.x,e.y,e.rad)){ebullets.splice(i,1);continue;}
     var ex=e.x-player.x,ey=e.y-player.y;
     if(circleOverlap(e.x,e.y,e.rad,player.x,player.y,player.r)) hitPlayer();
+    if(typeof coopEnabled!=='undefined'&&coopEnabled&&player2&&circleOverlap(e.x,e.y,e.rad,player2.x,player2.y,player2.r)&&coopHitP2()){
+      ebullets.splice(i,1); continue;
+    }
   }
 }
 

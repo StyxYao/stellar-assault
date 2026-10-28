@@ -246,13 +246,23 @@ function coopSpawn() {
   worldBindPlayers();
 }
 
+function coopPrepareP2ForStage() {
+  if (!player2) return;
+  var p = player2;
+  p.x = W / 2 - 72; p.y = H - 150;
+  p.respawnT = 0; p.invuln = Math.max(p.invuln || 0, 2.0);
+  p.bank = 0; p.noBlink = false;
+  target2.x = p.x; target2.y = p.y;
+  worldBindPlayers();
+}
+
 function coopHitP2() {
   var p = player2;
-  if (!p || p.invuln > 0 || (state !== 'play' && state !== 'boss')) return;
+  if (!p || p.invuln > 0 || p.odT > 0 || (state !== 'play' && state !== 'boss')) return false;
   if (p.ship === 'aegis') {
     var absorbed = false;
     coopUseSlot(p, function () { absorbed = (typeof aegisAbsorbHit === 'function') && aegisAbsorbHit(); });
-    if (absorbed) return;
+    if (absorbed) return true;
   }
   p.noBlink = false;
   p.hitFlashT = 0.22;
@@ -262,21 +272,22 @@ function coopHitP2() {
   try { part(p.x, p.y, '#8fe9ff', 10, 150); } catch (e) {}
   if (p.hp <= 0) {
     p.lives--;
+    if (p.lives <= 0) {
+      // Shared run failure: P2's last life ends the run. No implicit lives=3.
+      p.hp = 0; p.lives = 0; p.respawnT = 0;
+      state = 'over';
+      if (typeof recordRunEnd === 'function') recordRunEnd(false);
+      try { playBgm('m5'); } catch (e) {}
+      return true;
+    }
     p.hp = p.maxHp;
     p.invuln = 2.0;
     p.x = W / 2 - 72; p.y = H - 150;
     target2.x = p.x; target2.y = p.y;
     try { boom(p.x, p.y, 0.8, 'normal'); } catch (e) {}
-    if (p.lives <= 0) {
-      p.lives = 3; p.hp = p.maxHp;
-      p.x = W / 2 - 72; p.y = H - 150;
-      target2.x = p.x; target2.y = p.y;
-      pickupMsg = 'P2 RECOVERED';
-      pickupT = 1.5;
-    }
   }
+  return true;
 }
-
 function coopButtonAt(p) {
   if (!player2) return null;
   if (player2.ship === 'aegis') {

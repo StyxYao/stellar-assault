@@ -201,6 +201,10 @@ function updateBlastZones(dt){
       if(z.boss&&typeof aegisBlockBossBlast==='function'&&aegisBlockBossBlast(z.x,z.y,z.r)){z.hit=true;continue;}
       var dx=player.x-z.x,dy=player.y-z.y;
       if(dx*dx+dy*dy<z.r*z.r){z.hit=true;hitPlayer();}
+      if(typeof coopEnabled!=='undefined'&&coopEnabled&&player2&&!z.hitP2){
+        var p2dx=player2.x-z.x,p2dy=player2.y-z.y;
+        if(p2dx*p2dx+p2dy*p2dy<z.r*z.r&&coopHitP2()) z.hitP2=true;
+      }
     }
     if(z.t>=z.life) blastZones.splice(i,1);
   }

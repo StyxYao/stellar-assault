@@ -224,6 +224,12 @@ function updateBeams(dt){
       var perp=Math.abs(-dx*Math.sin(b.ang)+dy*Math.cos(b.ang));
       var beamLen=(b.blockedLen!=null?b.blockedLen:b.len);
       if(proj>0&&proj<beamLen&&perp<b.w/2+player.r) hitPlayer();
+      if(typeof coopEnabled!=='undefined'&&coopEnabled&&player2){
+        var p2dx=player2.x-b.x,p2dy=player2.y-b.y;
+        var p2proj=p2dx*Math.cos(b.ang)+p2dy*Math.sin(b.ang);
+        var p2perp=Math.abs(-p2dx*Math.sin(b.ang)+p2dy*Math.cos(b.ang));
+        if(p2proj>0&&p2proj<beamLen&&p2perp<b.w/2+player2.r) coopHitP2();
+      }
     }
     if(b.t>b.charge+b.fire+(b.fade||0.15)) beams.splice(i,1);
   }

@@ -61,10 +61,31 @@ bytes=-10     -> 206
 bytes=999999999- -> 416
 ```
 
+## P0-03 / P0-04 — P2 collision and shared failure
+
+Owner decision: **shared run failure** when P2 has no lives left.
+
+- P2 now checks `ebullets`, BulletML, beams and blast zones.
+- P2 OD is damage-immune like P1.
+- P2 hit consumes the contacting ebullet/BulletML.
+- `coopHitP2()` returns a result; direct hit loops consume only on a real hit.
+- P2 lives, HP, bombs, power and variant progression are preserved across stages.
+- New Run still creates a fresh P2.
+- Last P2 life sets `state='over'`, calls `recordRunEnd(false)` and does **not**
+  silently restore `lives=3`.
+- P2 position/invulnerability reset at stage start; run progression does not.
+
+Evidence:
+
+```text
+P2 ebullet at P2 -> HP 2 -> 1, ebullets 1 -> 0
+P2 OD + forced hit -> HP unchanged
+P2 lives 2 -> next stage -> lives 2
+P2 last life -> state 'over'
+```
+
 ## Still open
 
-- P0-03 P2 collision coverage
-- P0-04 P2 lives / continue product rule (owner decision required)
 - P0-05 LAN snapshot BulletML + owner IDs
 - P0-06 final Boss victory record / Top 5
 - P1 input/video/damage/statistics/CI
