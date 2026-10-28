@@ -56,4 +56,5 @@
 - Shield ring is centered on the ship core (`player.x`), not the padded sprite center.
 - Attached ring uses the same radius as collision, so a bullet cannot visually pass through an oversized ring.
 - The ring is drawn above the ship sprite so it remains visible after return.
-- `aegisForceCollide()` now runs while the Force is returning as well as detached; a returning Force clears bullets it passes through.
+- `aegisForceCollide()` runs only on the outbound detached pass; the return pass does not clear bullets.
+- Force lane/collision width is capped to the shield radius, not the larger visual aura.

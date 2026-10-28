@@ -41,3 +41,12 @@
 ## Known prototype limits
 - Clone target selection is aimed at the first clone; enemy aim sites are patched for enemy fire, boss aimed/ring/broadside and boss ultimate origins. Some non-aimed attack patterns still use the player origin but cannot damage a cloaked player.
 - Laser clones use the same width/damage formula as the player laser but draw their own beam column.
+
+
+## Overdrive: OD squadron
+
+- While OD is active, Phantom summons 4 extra OD clones.
+- They do not use the normal clone cap and do not replace existing clones.
+- They are stationary, invincible, and fire the current weapon.
+- They disappear when OD ends.
+- They are separate from the normal clone HP/cap system.

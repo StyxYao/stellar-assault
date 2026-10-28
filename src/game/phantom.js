@@ -12,6 +12,8 @@ var phantomState = {
   dashFromX: 0,
   dashFromY: 0,
   cloneFiring: false,
+  odClones: [],
+  odActive: false,
   bursts: []
 };
 
@@ -35,6 +37,8 @@ function phantomReset() {
   phantomState.clones.length = 0;
   phantomState.beams.length = 0;
   phantomState.bursts.length = 0;
+  phantomState.odClones.length = 0;
+  phantomState.odActive = false;
   phantomState.flashT = 0;
 }
 
@@ -262,15 +266,53 @@ function phantomMoveClone(c, dt) {
   if (Math.abs(dx) > 1) c.x += (dx > 0 ? 1 : -1) * hstep;
   if (Math.abs(dy) > 1) c.y += (dy > 0 ? 1 : -1) * vstep;
 }
+function phantomSpawnOdClones() {
+  phantomState.odClones.length = 0;
+  var offs = [-84, -28, 28, 84];
+  for (var i = 0; i < offs.length; i++) {
+    var x = Math.max(28, Math.min(W - 28, player.x + offs[i]));
+    var y = Math.max(110, Math.min(H - 130, player.y - 38));
+    var c = {
+      x: x, y: y, hp: 999999, maxHp: 999999, invulnT: 0,
+      weapon: player.weapon, power: player.specialPower,
+      extra: player.extraBullets || 0, damageMult: player.damageMult || 1,
+      fireT: 0.10 + i * 0.045, target: null, retargetT: 0,
+      slot: i, age: 0, spawnT: 0.30, life: 999999, od: true,
+      skin: (currentSkinDef() ? currentSkinDef().id : 'quantum')
+    };
+    phantomState.odClones.push(c);
+    phantomBurst(x, y, 'spawn');
+  }
+}
+function phantomClearOdClones() {
+  for (var i = 0; i < phantomState.odClones.length; i++) {
+    var c = phantomState.odClones[i];
+    phantomBurst(c.x, c.y, 'vanish');
+  }
+  phantomState.odClones.length = 0;
+}
+
 function phantomUpdate(dt) {
   if (player.ship !== 'phantom') return;
   if (state !== 'play' && state !== 'boss') return;
+  if (player.odT > 0 && !phantomState.odActive) { phantomState.odActive = true; phantomSpawnOdClones(); }
+  else if (player.odT <= 0 && phantomState.odActive) { phantomState.odActive = false; phantomClearOdClones(); }
   if (phantomState.cloakT > 0) phantomState.cloakT = Math.max(0, phantomState.cloakT - dt);
   if (phantomState.flashT > 0) phantomState.flashT = Math.max(0, phantomState.flashT - dt);
   if (phantomState.dashT > 0) phantomState.dashT = Math.max(0, phantomState.dashT - dt);
   for (var bi = phantomState.bursts.length - 1; bi >= 0; bi--) {
     phantomState.bursts[bi].t += dt;
     if (phantomState.bursts[bi].t >= phantomState.bursts[bi].life) phantomState.bursts.splice(bi, 1);
+  }
+  for (var oi = 0; oi < phantomState.odClones.length; oi++) {
+    var oc = phantomState.odClones[oi];
+    oc.age += dt;
+    if (oc.spawnT > 0) oc.spawnT = Math.max(0, oc.spawnT - dt);
+    oc.fireT -= dt;
+    if (oc.fireT <= 0) {
+      oc.fireT = oc.weapon === 'spread' ? 0.16 : (oc.weapon === 'laser' ? 0.08 : (oc.weapon === 'missile' ? 0.46 : 0.10));
+      phantomCloneFire(oc);
+    }
   }
   for (var i = phantomState.clones.length - 1; i >= 0; i--) {
     var c = phantomState.clones[i];
@@ -305,7 +347,7 @@ function phantomUpdate(dt) {
 function phantomHitClone(x, y, r) {
   for (var i = phantomState.clones.length - 1; i >= 0; i--) {
     var c = phantomState.clones[i];
-    if (c.invulnT > 0) continue;
+    if (c.od || c.invulnT > 0) continue;
     if (Math.hypot(x - c.x, y - c.y) < player.r + (r || 4)) {
       c.hp--;
       c.invulnT = 1.0;
@@ -339,6 +381,26 @@ function drawPhantomClones() {
     ctx.save(); ctx.globalAlpha = 0.28 * (phantomState.dashT / 0.24);
     if (dimg && dimg.complete) ctx.drawImage(dimg, phantomState.dashFromX - 40, phantomState.dashFromY - 40, 80, 80);
     ctx.restore(); ctx.globalAlpha = 1;
+  }
+  for (var oi = 0; oi < phantomState.odClones.length; oi++) {
+    var oc = phantomState.odClones[oi];
+    var oimg = GIMG[currentSkinImage()];
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    var og = ctx.createRadialGradient(oc.x, oc.y, 2, oc.x, oc.y, 40);
+    og.addColorStop(0, 'rgba(255,225,130,0.30)'); og.addColorStop(1, 'rgba(255,180,60,0)');
+    ctx.fillStyle = og; ctx.beginPath(); ctx.arc(oc.x, oc.y, 40, 0, TAU); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 0.78;
+    if (oimg && oimg.complete) ctx.drawImage(oimg, oc.x - 34, oc.y - 34, 68, 68);
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'lighter';
+    ctx.strokeStyle = 'rgba(255,215,120,0.78)'; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.arc(oc.x, oc.y, 28 + Math.sin(time * 9 + oi) * 2, 0, TAU); ctx.stroke();
+    ctx.strokeStyle = 'rgba(143,233,255,0.55)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(oc.x, oc.y, 34, 0, TAU); ctx.stroke();
+    ctx.fillStyle = '#ffe7a0'; ctx.font = '700 8px monospace'; ctx.textAlign = 'center';
+    ctx.fillText('OD', oc.x, oc.y - 38);
+    ctx.restore(); ctx.textAlign = 'left'; ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
   }
   for (var i = 0; i < phantomState.clones.length; i++) {
     var c = phantomState.clones[i];
@@ -414,4 +476,4 @@ function drawPhantomControls() {
   ctx.textAlign = 'left'; ctx.restore(); ctx.globalAlpha = 1;
 }
 
-try { window.__phantomSelect=function(id){ setSelectedShip('phantom', false); setSelectedSkin('phantom', id||'quantum', false); phantomReset(); }; window.__phantom=function(){return {ship:player.ship,bombs:player.bombs,cloakT:phantomState.cloakT,clones:phantomState.clones.map(function(c){return {x:c.x,y:c.y,hp:c.hp,invulnT:c.invulnT,weapon:c.weapon,power:c.power};}),cap:phantomState.cap,cloneHp:phantomState.cloneHp,wCount:phantomState.wCount,cloakDamage:phantomDamageMult()};}; window.__phantomW=function(){phantomCollectW();return window.__phantom();}; } catch(e) {}
+try { window.__phantomSelect=function(id){ setSelectedShip('phantom', false); setSelectedSkin('phantom', id||'quantum', false); phantomReset(); }; window.__phantom=function(){return {ship:player.ship,bombs:player.bombs,cloakT:phantomState.cloakT,clones:phantomState.clones.map(function(c){return {x:c.x,y:c.y,hp:c.hp,invulnT:c.invulnT,weapon:c.weapon,power:c.power};}),cap:phantomState.cap,cloneHp:phantomState.cloneHp,odClones:phantomState.odClones.length,odActive:phantomState.odActive,wCount:phantomState.wCount,cloakDamage:phantomDamageMult()};}; window.__phantomW=function(){phantomCollectW();return window.__phantom();}; } catch(e) {}

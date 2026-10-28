@@ -1200,6 +1200,11 @@
 
 ## 1.0.0-rc.2i — Force return/visual alignment
 
-- Force collision now runs during return.
+- Force return clearing was reverted; Force clears only during the outbound pass.
 - Shield circle centered on ship core; attached visual radius matches collision.
 - Force ring drawn above ship so it remains visible after recall.
+
+## 1.0.0-rc.2j — Phantom OD squadron and Force width
+
+- Added 4 invincible stationary Phantom clones during OD, outside the normal cap.
+- Force outbound lane/collision capped to shield radius; return pass does not clear.

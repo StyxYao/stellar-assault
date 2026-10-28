@@ -201,6 +201,7 @@ function aegisForceRadius() {
   var d = aegisVariant();
   return base * (d && d.radiusMult ? d.radiusMult : 1);
 }
+function aegisForceFieldRadius() { return aegisForceRadius() * 1.25 + 16; }
 function aegisForceColor() {
   return ['#9fe8ff', '#ffd36b', '#c98bff', '#ff8a66'][Math.max(0, Math.min(3, (aegisState.forceLevel || 1) - 1))];
 }
@@ -438,7 +439,7 @@ function aegisReleaseCharge() {
 }
 
 function aegisLaneHit() {
-  var lane = AEGIS_FORCE_LANE_HALF;
+  var lane = Math.min(AEGIS_FORCE_LANE_HALF, aegisShieldRadius());
   var px = aegisState.forceX;
   // Clear enemy bullets in the forward lane.
   if (typeof ebullets !== 'undefined' && ebullets) {
@@ -554,8 +555,8 @@ function aegisShieldBreak() {
 }
 
 function aegisForceCollide(dt) {
-  if (aegisState.force !== 'detached' && aegisState.force !== 'returning') return;
-  var fx = aegisState.forceX, fy = aegisState.forceY, rad = aegisForceRadius() + 30;
+  if (aegisState.force !== 'detached') return;
+  var fx = aegisState.forceX, fy = aegisState.forceY, rad = aegisShieldRadius();
   // The Force clears bullets it physically passes through.
   if (typeof ebullets !== 'undefined' && ebullets) {
     for (var bi = ebullets.length - 1; bi >= 0; bi--) {
@@ -723,7 +724,6 @@ function updateAegis(dt) {
     aegisForceCollide(dt);
     if (aegisState.forceY < -40) aegisState.force = 'returning';
   } else if (aegisState.force === 'returning') {
-    aegisForceCollide(dt);
     var tx = aegisCoreX(), ty = player.y;
     var rdx = tx - aegisState.forceX, rdy = ty - aegisState.forceY;
     var rd = Math.hypot(rdx, rdy);

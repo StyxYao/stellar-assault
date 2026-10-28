@@ -72,7 +72,7 @@ function drawAegisForceUnderlay() {
       ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.78; ctx.fillStyle = tg;
       ctx.fillRect(fx0 - 8, fy0, 16, 110);
     }
-    drawForceField(fx0, fy0, aegisForceRadius() * 1.25 + 16, aegisState.force === 'detached' ? 0.9 : 0.6, 0, aegisForceColor());
+    drawForceField(fx0, fy0, aegisForceFieldRadius(), aegisState.force === 'detached' ? 0.9 : 0.6, 0, aegisForceColor());
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 0.5; ctx.fillStyle = '#ffd36b';
     ctx.beginPath(); ctx.arc(fx0, fy0, 6, 0, TAU); ctx.fill();
