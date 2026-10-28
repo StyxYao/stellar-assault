@@ -682,15 +682,13 @@ function updateAegis(dt) {
     } else if (aegisShieldRatio() > 0.22) {
       aegisState.lowWarnT = 0;
     }
+    var blocked = 0;
     if (ebullets) {
       for (var i = ebullets.length - 1; i >= 0; i--) {
         var b = ebullets[i];
         if (Math.hypot(b.x - aegisState.forceX, b.y - aegisState.forceY) < aegisShieldRadius() + (b.rad || 0)) {
-          ebullets.splice(i, 1);
-          aegisState.shield -= AEGIS_SHIELD_COST;
-          aegisState.lastBlockAt = time;
-          if (typeof part === 'function') part(aegisState.forceX, aegisState.forceY, '#9fe8ff', 2, 80);
-          if (aegisState.shield <= 0) { aegisState.shield = 0; aegisState.force = 'broken'; aegisState.breakT = AEGIS_BREAK_TIME; aegisShieldBreak(); break; }
+          ebullets.splice(i, 1); blocked++;
+          if (typeof part === 'function') part(b.x, b.y, '#9fe8ff', 2, 80);
         }
       }
     }
@@ -700,12 +698,21 @@ function updateAegis(dt) {
         var ox = ob.owner ? ob.owner.x + Math.cos(ob.ang) * ob.r : 0;
         var oy = ob.owner ? ob.owner.y + Math.sin(ob.ang) * ob.r : 0;
         if (Math.hypot(ox - aegisState.forceX, oy - aegisState.forceY) < aegisShieldRadius() + (ob.rad || 0)) {
-          orbBullets.splice(oi, 1);
-          aegisState.shield = Math.max(0, aegisState.shield - AEGIS_SHIELD_COST);
-          aegisState.lastBlockAt = time;
+          orbBullets.splice(oi, 1); blocked++;
           if (typeof part === 'function') part(ox, oy, '#9fe8ff', 2, 80);
-          if (aegisState.shield <= 0) { aegisState.shield = 0; aegisState.force = 'broken'; aegisState.breakT = AEGIS_BREAK_TIME; aegisShieldBreak(); break; }
         }
+      }
+    }
+    if (blocked > 0) {
+      // Clear the whole contacting volley first, then settle shield. Breaking
+      // halfway through the loop used to leave the last bullets of a chain.
+      aegisState.shield = Math.max(0, aegisState.shield - AEGIS_SHIELD_COST * blocked);
+      aegisState.lastBlockAt = time;
+      if (aegisState.shield <= 0) {
+        aegisState.shield = 0;
+        aegisState.force = 'broken';
+        aegisState.breakT = AEGIS_BREAK_TIME;
+        aegisShieldBreak();
       }
     }
   } else if (aegisState.force === 'detached') {

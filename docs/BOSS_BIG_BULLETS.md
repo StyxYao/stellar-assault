@@ -27,6 +27,7 @@ AEGIS handling:
 - `aegisBlockBossBlast()` cancels a boss blast zone if it lands near the player
   or near a detached Force
 - each blocked hit consumes `AEGIS_SHIELD_COST`
+- all projectiles touching in one frame are cleared before breaking, so a burst cannot leave the last bullet behind
 - a detached Force still protects the player position for boss blasts
 
 ## 2. Boss beams

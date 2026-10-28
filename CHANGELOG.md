@@ -1192,3 +1192,8 @@
 - Removed the Windows no-video performance fallback; all Stage-5 animations remain enabled.
 - Added requestVideoFrameCallback frame caching, loop-black guard and Windows GPU flags.
 - AEGIS shield/lane clearing now includes projectile radius, so edge-touching large bullets are removed.
+
+## 1.0.0-rc.2h — Volley shield settlement
+
+- AEGIS clears the whole contacting ebullet/orb volley before deducting shield and breaking.
+- This removes the last residual bullet when a dense chain breaks the shield mid-loop.
