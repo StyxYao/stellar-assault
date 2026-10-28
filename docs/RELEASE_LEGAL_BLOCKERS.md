@@ -2,14 +2,24 @@
 
 The repository notices are provenance notes, not a legal opinion.
 
-Before a public 1.0 release, the project owner must confirm:
+## Confirmed by the project owner (2026-10-28)
 
-1. rRootage / BulletML BSD 3-Clause copyright notice and full license text.
-2. CC BY / Sampling Plus / CC0 source attribution and license compatibility.
-3. Redistribution rights for every BGM track supplied by the owner.
-4. Rights for all generated/supplied boss, enemy, player and UI artwork.
-5. EULA, privacy notice and third-party notices included in the Windows and
-   Linux packages.
-6. Steam store, depot, Cloud, achievements and Overlay legal/technical review.
+- Redistribution rights for the stage/boss BGM tracks supplied by the owner.
+- Redistribution rights for the supplied/generated boss, enemy, player and UI artwork.
 
-Until these are confirmed, do not state that third-party licensing is complete.
+These confirmations are recorded because the owner supplied/commissioned the
+assets. They are not a substitute for a formal legal review.
+
+## Still open before public 1.0
+
+1. Keep the rRootage / BulletML BSD 3-Clause copyright notice and full license
+   text in the distribution (already included in `THIRD_PARTY_NOTICES.md`).
+2. Keep CC BY / Sampling Plus / CC0 source attribution and confirm compatibility
+   for every shipped sample.
+3. Include EULA, privacy notice and third-party notices in the Windows and Linux
+   packages.
+4. Complete Steam store, depot, Cloud, achievements and Overlay legal/technical
+   review.
+
+Do not state that the entire release is legally reviewed until these packaging
+and store items are complete.

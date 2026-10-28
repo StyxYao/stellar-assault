@@ -75,8 +75,9 @@ Base: `audit/p0` / `35e3d73`
 - P2-01: first boundaries documented in `docs/ARCHITECTURE_DEBT.md`; a full
   ProjectileRegistry/PlayerDamageService refactor is intentionally not forced
   into this bug-fix branch.
-- P2-05: legal/redistribution gates documented in `docs/RELEASE_LEGAL_BLOCKERS.md`.
-  BGM/art/rRootage/CC BY rights cannot be completed by code alone.
+- P2-05: owner confirmed BGM and supplied/generated artwork redistribution rights
+  on 2026-10-28. BSD/CC attribution and package/store legal text remain packaging
+  gates; see `docs/RELEASE_LEGAL_BLOCKERS.md`.
 
 ## Verification
 

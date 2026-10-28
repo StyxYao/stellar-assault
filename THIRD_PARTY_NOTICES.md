@@ -58,11 +58,11 @@ CC0 assets do not require attribution, but sources are listed for provenance.
 
 ## BGM
 
-The stage and boss BGM tracks were supplied by the project owner. Their redistribution rights are not established by this repository. Do not reuse them outside this project without permission.
+The stage and boss BGM tracks were supplied by the project owner. The project owner has confirmed redistribution rights for these tracks within this project. No separate license is granted to third parties; do not reuse them outside this project without permission.
 
 ## Artwork
 
-Boss/enemy/player art was supplied or generated for this project. No separate license is granted by this repository.
+Boss/enemy/player art was supplied or generated for this project. The project owner has confirmed redistribution rights for this artwork within this project. No separate license is granted to third parties.
 
 ## Missile SFX
 
