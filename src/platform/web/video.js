@@ -64,11 +64,17 @@ function phase3AlphaMask(video){
     var src=rc.getImageData(0,0,w,h),d=src.data;
     var out=document.createElement('canvas');out.width=w;out.height=h;
     var oc=out.getContext('2d',{alpha:true});var od=oc.createImageData(w,h),o=od.data;
-    for(var i=0;i<d.length;i+=4){
-      var luma=0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2];
-      // Black background/central hole becomes transparent; dark body remains opaque.
-      var a=Math.max(0,Math.min(1,(luma-8)/32));
-      o[i]=255;o[i+1]=255;o[i+2]=255;o[i+3]=Math.round(a*255);
+    // The central black hole must stay opaque black; only the outside black
+    // background and the outer silhouette get alpha=0/feather.
+    var hx=w*0.49,hy=h*0.52,hr=w*0.12;
+    for(var yy=0;yy<h;yy++){
+      for(var xx=0;xx<w;xx++){
+        var i=(yy*w+xx)*4;
+        var luma=0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2];
+        var inHole=((xx-hx)*(xx-hx)+(yy-hy)*(yy-hy))<hr*hr;
+        var a=inHole?1:Math.max(0,Math.min(1,(luma-8)/32));
+        o[i]=255;o[i+1]=255;o[i+2]=255;o[i+3]=Math.round(a*255);
+      }
     }
     oc.putImageData(od,0,0);
     var soft=document.createElement('canvas');soft.width=w;soft.height=h;
