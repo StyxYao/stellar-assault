@@ -297,7 +297,7 @@ function drawBombBtn(){
 function draw(){
   resetCanvasState();
   try{drawScene();}
-  catch(e){console.error('draw error',e);hardResetCanvas();}
+  catch(e){reportError(e,'render.draw');hardResetCanvas();}
 }
 function drawScene(){
   ctx.clearRect(0,0,W,H);
@@ -496,6 +496,13 @@ window.__damage=function(d){for(var i=0;i<enemies.length;i++) enemies[i].hp=Math
 window.__item=function(t,x,y){items.push({x:x,y:y,vy:0,type:t,t:0});};
 window.__max=function(){player.specialPower=4;player.power=4;};
 window.__itemT=function(t,tm,x,y){items.push({x:x||player.x,y:y||player.y-90,vy:0,type:t,t:tm||0});};
+// Mutating debug helpers are only exposed on an explicit ?debug=1 session.
+var debugToolsEnabled = /(?:\?|&)debug=1(?:&|$)/.test(location.search || '');
+if (!debugToolsEnabled) {
+  ['__god','__killBoss','__bossHp','__forceBoss','__clearEnemies','__setScore','__endRun','__stage','__runStage','__simulate','__resetDeterministic','__setBossPhase','__p3','__spawnEB','__spawnBomb','__hit','__bomb','__od','__aegisForce','__phantomSelect','__phantomW','__setP2Ship','__setP2Od','__coopHit','__coopGod','__p2Item','__item','__itemT','__max','__damage','__ult','__drop'].forEach(function (name) {
+    try { delete window[name]; } catch (e) {}
+  });
+}
 if(typeof initSaveStore==='function') initSaveStore();
 var last=performance.now(),fixedStep=new FixedStep(1/60,4);
 function frame(now){
@@ -505,7 +512,7 @@ function frame(now){
     if(!desktopPaused && !(typeof lanSyncClientHold!=='undefined'&&lanSyncClientHold)) fixedStep.advance(dt,function(fixedDt){step(fixedDt);});
     draw();
     if(typeof drawDesktopPause==='function' && !(typeof lanSyncClientHold!=='undefined'&&lanSyncClientHold)) drawDesktopPause();
-  }catch(e){ console.error('frame error',e); }
+  }catch(e){ reportError(e,'render.frame'); }
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);

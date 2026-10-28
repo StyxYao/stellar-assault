@@ -13,22 +13,29 @@ function aegisSkinAccent() {
   if (id === 'temporal') return '#ffe08a';
   return '#ffb347';
 }
-function drawForceField(x, y, size, alpha, spin, color) {
+function drawForceField(x, y, hitRadius, alpha, spin, color) {
+  // `hitRadius` is the real collision radius. The aura may be slightly larger,
+  // but the solid boundary circle always shows the actual hit boundary.
   var lvl = Math.max(1, Math.min(4, aegisState.forceLevel || 1));
   var img = (typeof GIMG !== 'undefined') ? (GIMG['aegis_field' + lvl] || GIMG.aegis_field) : null;
+  var aura = Math.max(18, hitRadius) * 2 * 1.16;
   ctx.save();
   ctx.translate(x, y); ctx.rotate(spin || 0);
   ctx.globalCompositeOperation = 'lighter';
   if (img && img.complete) {
     ctx.globalAlpha = alpha * 0.64;
-    ctx.drawImage(img, -size / 2, -size / 2, size, size);
+    ctx.drawImage(img, -aura / 2, -aura / 2, aura, aura);
   } else {
     ctx.globalAlpha = alpha;
     ctx.strokeStyle = '#ffcf6b'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(0, 0, size * 0.42, 0, TAU); ctx.stroke();
-    ctx.beginPath(); ctx.arc(0, 0, size * 0.30, 0, TAU); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, 0, hitRadius * 0.82, 0, TAU); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, 0, hitRadius * 0.58, 0, TAU); ctx.stroke();
   }
-  if (color) { ctx.globalAlpha = Math.min(1, alpha + 0.15) * 0.64; ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(0, 0, size * 0.42, 0, TAU); ctx.stroke(); }
+  if (color) {
+    ctx.globalAlpha = Math.min(1, alpha + 0.15) * 0.70;
+    ctx.strokeStyle = color; ctx.lineWidth = 1.8;
+    ctx.beginPath(); ctx.arc(0, 0, hitRadius, 0, TAU); ctx.stroke();
+  }
   ctx.restore();
 }
 
@@ -72,7 +79,7 @@ function drawAegisForceUnderlay() {
       ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.78; ctx.fillStyle = tg;
       ctx.fillRect(fx0 - 8, fy0, 16, 110);
     }
-    drawForceField(fx0, fy0, aegisForceFieldRadius(), aegisState.force === 'detached' ? 0.9 : 0.6, 0, aegisForceColor());
+    drawForceField(fx0, fy0, aegisShieldRadius(), aegisState.force === 'detached' ? 0.9 : 0.6, 0, aegisForceColor());
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 0.5; ctx.fillStyle = '#ffd36b';
     ctx.beginPath(); ctx.arc(fx0, fy0, 6, 0, TAU); ctx.fill();
