@@ -49,3 +49,16 @@ Run the release guard before tagging:
 ```bash
 node tools/verify_release.mjs
 ```
+
+## Debug helpers
+
+Mutating browser debug helpers (`__god`, `__runStage`, `__setBossPhase`,
+`__spawnEB`, `__setScore`, `__endRun`, etc.) are exposed only when the page is
+opened with:
+
+```text
+?debug=1
+```
+
+Normal production URLs do not expose these helpers. Diagnostic-only helpers
+such as `__g`, `__world`, `__desktop`, `__errorLog` and `__save` remain.

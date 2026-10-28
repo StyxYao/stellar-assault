@@ -30,7 +30,7 @@
 - Cap does not upgrade.
 - D/W pickup raises clone HP from 3 up to 6; existing clones are updated too.
 - Death resets clone HP to 3.
-- Casting adds clones until cap; if over cap, the oldest clone is removed (with a vanish flash).
+- Casting adds clones until cap; at cap no additional clone is created (hard cap).
 - Cap is fixed; W/D no longer raises cap.
 
 ## Pickups
