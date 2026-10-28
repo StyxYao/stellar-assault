@@ -1179,3 +1179,10 @@
 - Windows desktop uses the no-video-decode Stage-5 performance path.
 - Aegis now intercepts large boss bullets even with a detached Force.
 - Cast special-thanks block has extra spacing and emphasis.
+
+## 1.0.0-rc.2f — Menu, Force cone and desktop video fallback
+
+- Menu no longer preempts clicks; ship/skin selection works by mouse; hover selects.
+- Desktop menu BGM starts automatically.
+- Force launch uses a widening forward cone to clear side yellow chains.
+- Windows desktop uses procedural/static Stage-5 video fallback.
