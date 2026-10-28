@@ -438,6 +438,38 @@ function aegisReleaseCharge() {
   if (aegisState.nBurstLeft <= 0) try { sfx('aegis_cannon', 0.62); } catch (e) {}
 }
 
+function aegisClearBulletMLRadial(x, y, radius) {
+  if (typeof bullets === 'undefined' || !bullets) return 0;
+  var cleared = 0;
+  for (var i = bullets.length - 1; i >= 0; i--) {
+    var b = bullets[i];
+    if (!b) { bullets.splice(i, 1); continue; }
+    if (Math.hypot(b.x - x, b.y - y) < radius + (b.rad || 0)) {
+      b.dead = true;
+      if (typeof part === 'function') part(b.x, b.y, '#9fe8ff', 2, 90);
+      bullets.splice(i, 1);
+      cleared++;
+    }
+  }
+  return cleared;
+}
+
+function aegisClearBulletMLLane(px, lane) {
+  if (typeof bullets === 'undefined' || !bullets) return 0;
+  var cleared = 0;
+  for (var i = bullets.length - 1; i >= 0; i--) {
+    var b = bullets[i];
+    if (!b) { bullets.splice(i, 1); continue; }
+    if (b.y < player.y + 14 && b.y > -30 && Math.abs(b.x - px) < lane + 7 + (b.rad || 0)) {
+      b.dead = true;
+      if (typeof part === 'function') part(b.x, b.y, '#ffd36b', 1, 130);
+      bullets.splice(i, 1);
+      cleared++;
+    }
+  }
+  return cleared;
+}
+
 function aegisLaneHit() {
   var lane = Math.min(AEGIS_FORCE_LANE_HALF, aegisShieldRadius());
   var px = aegisState.forceX;
@@ -451,6 +483,7 @@ function aegisLaneHit() {
       }
     }
   }
+  aegisClearBulletMLLane(px, lane);
   if (typeof orbBullets !== 'undefined' && orbBullets) {
     for (var bo = orbBullets.length - 1; bo >= 0; bo--) {
       var ob = orbBullets[bo];
@@ -557,6 +590,7 @@ function aegisShieldBreak() {
 function aegisForceCollide(dt) {
   if (aegisState.force !== 'detached') return;
   var fx = aegisState.forceX, fy = aegisState.forceY, rad = aegisShieldRadius();
+  aegisClearBulletMLRadial(fx, fy, rad);
   // The Force clears bullets it physically passes through.
   if (typeof ebullets !== 'undefined' && ebullets) {
     for (var bi = ebullets.length - 1; bi >= 0; bi--) {
@@ -687,6 +721,7 @@ function updateAegis(dt) {
       aegisState.lowWarnT = 0;
     }
     var blocked = 0;
+    blocked += aegisClearBulletMLRadial(aegisState.forceX, aegisState.forceY, aegisShieldRadius());
     if (ebullets) {
       for (var i = ebullets.length - 1; i >= 0; i--) {
         var b = ebullets[i];

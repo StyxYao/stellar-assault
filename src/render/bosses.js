@@ -211,7 +211,9 @@ function drawPhase3CollapseForm(){
   }
 
   var imgs=[GIMG.q1,GIMG.q2,GIMG.q3,GIMG.q4];
-  var ringR=[190*scale,164*scale,138*scale,112*scale],ringS=[88*scale,74*scale,60*scale,48*scale];
+  var artScale=phaseBossSize()/430;
+  var ringR=[190,164,138,112].map(function(r){return r*artScale;});
+  var ringS=[88,74,60,48].map(function(s){return s*artScale;});
   // bottom layer: old phase-3 art as a light-only aura; black areas contribute nothing
   var old=GIMG.b5_3;
   if(old&&old.complete){

@@ -127,7 +127,13 @@ function handlePayload(client, payload, opcode) {
 }
 
 function serveStatic(req, res) {
-  let url = decodeURIComponent((req.url || '/').split('?')[0]);
+  let url;
+  try {
+    url = decodeURIComponent((req.url || '/').split('?')[0]);
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+    return res.end('bad request');
+  }
   if (url === '/' || url === '') url = '/index.html';
   const file = path.resolve(ROOT, '.' + url);
   if (!file.startsWith(ROOT + path.sep)) { res.writeHead(403); return res.end('forbidden'); }
@@ -138,11 +144,26 @@ function serveStatic(req, res) {
     if (range) {
       const m = /^bytes=(\d*)-(\d*)$/.exec(range);
       if (m) {
-        const start = m[1] ? Number(m[1]) : 0, end = m[2] ? Number(m[2]) : st.size - 1;
-        if (start <= end && start < st.size) {
-          res.writeHead(206, { 'Content-Type': mime, 'Content-Length': end - start + 1, 'Content-Range': `bytes ${start}-${end}/${st.size}`, 'Accept-Ranges': 'bytes', 'Cache-Control': 'no-cache' });
-          return fs.createReadStream(file, { start, end }).pipe(res);
+        let start, end;
+        if (!m[1]) {
+          const suffix = Number(m[2]);
+          if (!Number.isSafeInteger(suffix) || suffix <= 0) {
+            res.writeHead(416, { 'Content-Range': `bytes */${st.size}` });
+            return res.end();
+          }
+          start = Math.max(0, st.size - suffix);
+          end = st.size - 1;
+        } else {
+          start = Number(m[1]);
+          end = m[2] ? Math.min(Number(m[2]), st.size - 1) : st.size - 1;
         }
+        if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) ||
+            start < 0 || start > end || start >= st.size) {
+          res.writeHead(416, { 'Content-Range': `bytes */${st.size}` });
+          return res.end();
+        }
+        res.writeHead(206, { 'Content-Type': mime, 'Content-Length': end - start + 1, 'Content-Range': `bytes ${start}-${end}/${st.size}`, 'Accept-Ranges': 'bytes', 'Cache-Control': 'no-cache' });
+        return fs.createReadStream(file, { start, end }).pipe(res);
       }
     }
     res.writeHead(200, { 'Content-Type': mime, 'Content-Length': st.size, 'Accept-Ranges': 'bytes', 'Cache-Control': 'no-cache' });

@@ -27,6 +27,7 @@ function hitPlayer(){
     // Remove the contacting projectile so it cannot drain the shield again next frame.
     for(var si=ebullets.length-1;si>=0;si--){var sb=ebullets[si];var sdx=sb.x-player.x,sdy=sb.y-player.y;if(sdx*sdx+sdy*sdy<110*110) ebullets.splice(si,1);}
     for(var so=orbBullets.length-1;so>=0;so--){var ob=orbBullets[so];var odx=ob.x-player.x,ody=ob.y-player.y;if(odx*odx+ody*ody<110*110) orbBullets.splice(so,1);}
+    if(typeof aegisClearBulletMLRadial==='function') aegisClearBulletMLRadial(player.x,player.y,110);
     return;
   }
   // VECTOR wingmen are now pure firepower; they no longer absorb hits.
