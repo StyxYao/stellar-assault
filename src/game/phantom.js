@@ -11,7 +11,8 @@ var phantomState = {
   dashT: 0,
   dashFromX: 0,
   dashFromY: 0,
-  cloneFiring: false
+  cloneFiring: false,
+  bursts: []
 };
 
 function phantomSkinId() { return (selectedSkins && selectedSkins.phantom) || 'quantum'; }
@@ -33,6 +34,7 @@ function phantomReset() {
   phantomState.cap = phantomState.capBase;
   phantomState.clones.length = 0;
   phantomState.beams.length = 0;
+  phantomState.bursts.length = 0;
   phantomState.flashT = 0;
 }
 
@@ -44,7 +46,11 @@ function phantomDamageMult() {
   return 1.5;
 }
 
+function phantomBurst(x,y,kind){
+  phantomState.bursts.push({x:x,y:y,t:0,life:kind==='vanish'?0.34:0.28,kind:kind||'spawn'});
+}
 function phantomSpawnClone(offset) {
+  var skin = currentSkinDef();
   if (phantomState.clones.length >= phantomState.cap) return null;
   var skin = currentSkinDef();
   var hp = phantomState.cloneHp || 3;
@@ -61,10 +67,16 @@ function phantomSpawnClone(offset) {
     retargetT: 0,
     slot: phantomState.clones.length,
     age: 0,
+    spawnT: 0.24,
     life: 25,
     skin: skin ? skin.id : 'quantum'
   };
   phantomState.clones.push(c);
+  phantomBurst(c.x,c.y,'spawn');
+  while (phantomState.clones.length > phantomState.cap) {
+    var old = phantomState.clones.shift();
+    if (old) phantomBurst(old.x, old.y, 'vanish');
+  }
   return c;
 }
 
@@ -256,9 +268,14 @@ function phantomUpdate(dt) {
   if (phantomState.cloakT > 0) phantomState.cloakT = Math.max(0, phantomState.cloakT - dt);
   if (phantomState.flashT > 0) phantomState.flashT = Math.max(0, phantomState.flashT - dt);
   if (phantomState.dashT > 0) phantomState.dashT = Math.max(0, phantomState.dashT - dt);
+  for (var bi = phantomState.bursts.length - 1; bi >= 0; bi--) {
+    phantomState.bursts[bi].t += dt;
+    if (phantomState.bursts[bi].t >= phantomState.bursts[bi].life) phantomState.bursts.splice(bi, 1);
+  }
   for (var i = phantomState.clones.length - 1; i >= 0; i--) {
     var c = phantomState.clones[i];
     c.age += dt;
+    if (c.spawnT > 0) c.spawnT = Math.max(0, c.spawnT - dt);
     if (c.invulnT > 0) c.invulnT = Math.max(0, c.invulnT - dt);
     if (c.hp <= 0 || c.age > c.life) {
       if (c.hp <= 0) {
@@ -268,6 +285,7 @@ function phantomUpdate(dt) {
       } else {
         try { if (typeof part === 'function') for (var p2 = 0; p2 < 8; p2++) part(c.x, c.y, '#c98bff', 1, 90); } catch (e) {}
       }
+      phantomBurst(c.x, c.y, 'vanish');
       phantomState.clones.splice(i, 1);
       continue;
     }
@@ -326,7 +344,7 @@ function drawPhantomClones() {
     var c = phantomState.clones[i];
     var img = GIMG[currentSkinImage()];
     ctx.save();
-    ctx.globalAlpha = 0.52;
+    ctx.globalAlpha = 0.70;
     if (img && img.complete) ctx.drawImage(img, c.x - 34, c.y - 34, 68, 68);
     else {
       ctx.strokeStyle = '#c98bff'; ctx.lineWidth = 2;
@@ -365,6 +383,17 @@ function drawPhantomClones() {
       ctx.globalAlpha = a; ctx.fillStyle = hg; ctx.beginPath();
       ctx.arc(bm.x, bm.endY, gr, 0, TAU); ctx.fill();
     }
+    ctx.restore();
+  }
+  for (var q = 0; q < phantomState.bursts.length; q++) {
+    var b = phantomState.bursts[q], u = b.t / b.life, a = 1 - u;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = a * 0.9;
+    ctx.strokeStyle = b.kind === 'vanish' ? '#d8b4ff' : '#ffffff';
+    ctx.lineWidth = 1.5 + 3 * a;
+    ctx.beginPath(); ctx.arc(b.x, b.y, 10 + 42 * u, 0, TAU); ctx.stroke();
+    ctx.globalAlpha = a * (b.kind === 'spawn' ? 0.38 : 0.22); ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); ctx.arc(b.x, b.y, 7 + 26 * u, 0, TAU); ctx.fill();
     ctx.restore();
   }
   ctx.globalAlpha = 1;

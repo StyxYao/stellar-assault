@@ -30,7 +30,8 @@
 - Cap does not upgrade.
 - D/W pickup raises clone HP from 3 up to 6; existing clones are updated too.
 - Death resets clone HP to 3.
-- Clones are never removed by casting; if at cap, the skill only refreshes cloak/dash and does not replace an existing clone.
+- Casting adds clones until cap; if over cap, the oldest clone is removed (with a vanish flash).
+- Cap is fixed; W/D no longer raises cap.
 
 ## Pickups
 - E: restore one phase charge, max 6, overflow to OD.

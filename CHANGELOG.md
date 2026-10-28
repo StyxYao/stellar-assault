@@ -1122,3 +1122,9 @@
 - W/D now raises clone HP 3→6 and updates existing clones.
 - Raven clone HP back to 3.
 - Menus/tutorials/ship traits updated.
+
+## 1.0.0-rc.1w — Phantom replacement flash and 70% alpha
+
+- Phantom casting again replaces the oldest clone when over cap.
+- Clone spawn/vanish now shows light ring + white flash.
+- Clone and cloak opacity set to 70%.

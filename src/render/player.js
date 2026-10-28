@@ -8,7 +8,7 @@ function drawPlayerEntity(){
   if(player.respawnT>0) drawY=player.y+(H+70-player.y)*(player.respawnT/1.3);
   if(gi&&gi.complete){
     ctx.globalAlpha=(state==='bossWarn'||state==='clear')?1:((player.invuln>0&&!player.noBlink&&Math.floor(player.invuln*14)%2===0)?0.25:1);
-    if(player.ship==='phantom' && typeof phantomState!=='undefined' && phantomState.cloakT>0) ctx.globalAlpha=Math.min(ctx.globalAlpha,0.34);
+    if(player.ship==='phantom' && typeof phantomState!=='undefined' && phantomState.cloakT>0) ctx.globalAlpha=Math.min(ctx.globalAlpha,0.70);
     var psc=1;
     if(state==='warpOut') psc=Math.max(0.18,1-(1-warpT/1.1)*0.82);
     if(state==='warpIn') psc=0.42+0.58*Math.min(1,1-warpT/0.95);
