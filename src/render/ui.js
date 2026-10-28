@@ -795,7 +795,7 @@ function drawEntityArrivalScene(){
   var entranceVid=videoFxEnabled&&hedronLoopVideo&&hedronLoopVideo.readyState>=2&&hedronLoopVideo.videoWidth>0;
   if(entranceVid){
     ctx.save();ctx.globalAlpha=ease;// direct loop, no extra rotation
-    ctx.drawImage(hedronLoopVideo,cx-size/2,cy-size/2,size,size);ctx.restore();
+    ctx.drawImage(videoFrameSource(hedronLoopVideo),cx-size/2,cy-size/2,size,size);ctx.restore();
   }else{
     for(var i=0;i<1;i++){
       var im=frames[i];if(!im||!im.complete) continue;

@@ -12,6 +12,13 @@ const MIN_WIDTH = 480;
 const MIN_HEIGHT = 854;
 
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+if (process.platform === 'win32') {
+  // Keep Chromium's GPU canvas/video path active on Windows. The game draws
+  // cached video frames into a 2D canvas; zero-copy avoids an extra VRAM copy.
+  app.commandLine.appendSwitch('enable-gpu-rasterization');
+  app.commandLine.appendSwitch('enable-zero-copy');
+  app.commandLine.appendSwitch('ignore-gpu-blocklist');
+}
 app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
 
 let win = null;

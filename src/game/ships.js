@@ -441,7 +441,7 @@ function aegisLaneHit() {
   if (typeof ebullets !== 'undefined' && ebullets) {
     for (var bi = ebullets.length - 1; bi >= 0; bi--) {
       var b = ebullets[bi];
-      if (b.y < player.y + 14 && b.y > -30 && Math.abs(b.x - px) < lane + 7) {
+      if (b.y < player.y + 14 && b.y > -30 && Math.abs(b.x - px) < lane + 7 + (b.rad || 0)) {
         if (typeof part === 'function') part(b.x, b.y, '#ffd36b', 1, 130);
         ebullets.splice(bi, 1);
       }
@@ -452,7 +452,7 @@ function aegisLaneHit() {
       var ob = orbBullets[bo];
       var ox = ob.owner ? ob.owner.x + Math.cos(ob.ang) * ob.r : 0;
       var oy = ob.owner ? ob.owner.y + Math.sin(ob.ang) * ob.r : 0;
-      if (oy < player.y + 14 && oy > -30 && Math.abs(ox - px) < lane + 7) {
+      if (oy < player.y + 14 && oy > -30 && Math.abs(ox - px) < lane + 7 + (ob.rad || 0)) {
         if (typeof part === 'function') part(ox, oy, '#ffd36b', 1, 130);
         orbBullets.splice(bo, 1);
       }
@@ -557,7 +557,7 @@ function aegisForceCollide(dt) {
   if (typeof ebullets !== 'undefined' && ebullets) {
     for (var bi = ebullets.length - 1; bi >= 0; bi--) {
       var b = ebullets[bi];
-      if (Math.hypot(b.x - fx, b.y - fy) < rad + 5) {
+      if (Math.hypot(b.x - fx, b.y - fy) < rad + 5 + (b.rad || 0)) {
         if (typeof part === 'function') part(b.x, b.y, aegisForceColor(), 1, 130);
         ebullets.splice(bi, 1);
       }
@@ -685,7 +685,7 @@ function updateAegis(dt) {
     if (ebullets) {
       for (var i = ebullets.length - 1; i >= 0; i--) {
         var b = ebullets[i];
-        if (Math.hypot(b.x - aegisState.forceX, b.y - aegisState.forceY) < aegisShieldRadius()) {
+        if (Math.hypot(b.x - aegisState.forceX, b.y - aegisState.forceY) < aegisShieldRadius() + (b.rad || 0)) {
           ebullets.splice(i, 1);
           aegisState.shield -= AEGIS_SHIELD_COST;
           aegisState.lastBlockAt = time;
@@ -699,7 +699,7 @@ function updateAegis(dt) {
         var ob = orbBullets[oi];
         var ox = ob.owner ? ob.owner.x + Math.cos(ob.ang) * ob.r : 0;
         var oy = ob.owner ? ob.owner.y + Math.sin(ob.ang) * ob.r : 0;
-        if (Math.hypot(ox - aegisState.forceX, oy - aegisState.forceY) < aegisShieldRadius()) {
+        if (Math.hypot(ox - aegisState.forceX, oy - aegisState.forceY) < aegisShieldRadius() + (ob.rad || 0)) {
           orbBullets.splice(oi, 1);
           aegisState.shield = Math.max(0, aegisState.shield - AEGIS_SHIELD_COST);
           aegisState.lastBlockAt = time;

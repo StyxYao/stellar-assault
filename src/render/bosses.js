@@ -72,11 +72,11 @@ function drawFeatherAnnulus(cx,cy,inner,outer,alpha){
   ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,outer,0,TAU);ctx.fill();
 }
 function drawKeyedBossVideo(video,cx,cy,size,hole,rot){
-  var vw=video.videoWidth||720,vh=video.videoHeight||1200,crop=Math.min(vw,vh);
+  var vsrc=videoFrameSource(video), vw=(vsrc.width||vsrc.videoWidth||720), vh=(vsrc.height||vsrc.videoHeight||1200),crop=Math.min(vw,vh);
   var firstKey=video.currentSrc||video.src;
   if(!PHASE_FIRST_CVS[firstKey]){
     var fc=document.createElement('canvas');fc.width=fc.height=384;
-    fc.getContext('2d').drawImage(video,(vw-crop)/2,(vh-crop)/2,crop,crop,0,0,384,384);
+    fc.getContext('2d').drawImage(vsrc,(vw-crop)/2,(vh-crop)/2,crop,crop,0,0,384,384);
     PHASE_FIRST_CVS[firstKey]=fc;PHASE_GLITCH_CVS[firstKey]=phaseGlitchFrames(fc,384);
   }
   var fcv=PHASE_FIRST_CVS[firstKey];
@@ -89,7 +89,7 @@ function drawKeyedBossVideo(video,cx,cy,size,hole,rot){
   // per-frame getImageData() pass (the old path stuttered on Windows).
   ctx.globalCompositeOperation='screen';
   ctx.globalAlpha=.96;
-  ctx.drawImage(video,(vw-crop)/2,(vh-crop)/2,crop,crop,-size/2,-size/2,size,size);
+  ctx.drawImage(vsrc,(vw-crop)/2,(vh-crop)/2,crop,crop,-size/2,-size/2,size,size);
   if(fa>0&&fcv){
     ctx.globalAlpha=Math.min(1,fa)*.55;
     ctx.drawImage(fcv,-size/2,-size/2,size,size);
@@ -123,7 +123,7 @@ function drawPhaseGlitchTransition(cx,cy,size){
 function drawHedronVideoOrImage(cx,cy,size,img,alpha){
   if(hedronLoopVideo&&hedronLoopVideo.readyState>=2&&hedronLoopVideo.videoWidth>0&&!hedronLoopVideo.paused){
     ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=alpha;
-    ctx.drawImage(hedronLoopVideo,cx-size/2,cy-size/2,size,size);ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';return true;
+    ctx.drawImage(videoFrameSource(hedronLoopVideo),cx-size/2,cy-size/2,size,size);ctx.restore();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';return true;
   }
   if(img&&img.complete){
     ctx.save();ctx.globalAlpha=alpha;ctx.translate(cx,cy);ctx.rotate(time*.08);ctx.drawImage(img,-size/2,-size/2,size,size);ctx.restore();ctx.globalAlpha=1;return true;

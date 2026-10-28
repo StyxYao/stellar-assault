@@ -1176,7 +1176,7 @@
 - Desktop BGM starts automatically without a click.
 - Main menu no longer treats arbitrary clicks as Start; ship selection works by mouse.
 - Mouse hover selects modes, ships and skins.
-- Windows desktop uses the no-video-decode Stage-5 performance path.
+- Windows Stage-5 video fallback was later reverted in rc2g; animations remain enabled.
 - Aegis now intercepts large boss bullets even with a detached Force.
 - Cast special-thanks block has extra spacing and emphasis.
 
@@ -1186,3 +1186,9 @@
 - Desktop menu BGM starts automatically.
 - Force lane widening was reverted after user clarification; the remaining yellow-chain case is under investigation.
 - Windows desktop uses procedural/static Stage-5 video fallback.
+
+## 1.0.0-rc.2g — Video cache, restored animations and bullet-radius shield
+
+- Removed the Windows no-video performance fallback; all Stage-5 animations remain enabled.
+- Added requestVideoFrameCallback frame caching, loop-black guard and Windows GPU flags.
+- AEGIS shield/lane clearing now includes projectile radius, so edge-touching large bullets are removed.

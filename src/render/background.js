@@ -188,7 +188,7 @@ function paintFractalBg(main,edge,offsetY){
     // Draw the live frame directly. A canvas filter here was a Windows decode
     // stutter source and is not needed for the already-graded background.
     ctx.save();ctx.globalCompositeOperation='source-over';ctx.globalAlpha=.94;
-    ctx.drawImage(bgLoopVideo,cx-sw/2,cy-sh/2,sw,sh);ctx.restore();ctx.globalAlpha=1;
+    ctx.drawImage(videoFrameSource(bgLoopVideo),cx-sw/2,cy-sh/2,sw,sh);ctx.restore();ctx.globalAlpha=1;
     // cache the first frame once, then cross-fade it across the loop seam
     if(!BG_FIRST_CV&&bgLoopVideo.videoWidth){
       BG_FIRST_CV=document.createElement('canvas');BG_FIRST_CV.width=360;BG_FIRST_CV.height=640;

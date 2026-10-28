@@ -312,7 +312,7 @@ function drawScene(){
       var sh=Math.max(H,W*1280/720),sw=sh*720/1280;
       ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
       ctx.save();ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
-      ctx.drawImage(fusionVideo,(W-sw)/2,(H-sh)/2,sw,sh);ctx.restore();
+      ctx.drawImage(videoFrameSource(fusionVideo),(W-sw)/2,(H-sh)/2,sw,sh);ctx.restore();
       if(!FUSION_FIRST_CV){
         FUSION_FIRST_CV=document.createElement('canvas');FUSION_FIRST_CV.width=360;FUSION_FIRST_CV.height=640;
         try{FUSION_FIRST_CV.getContext('2d').drawImage(fusionVideo,0,0,360,640);}catch(e){}
