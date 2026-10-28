@@ -24,3 +24,11 @@ jobs:
           node tests/fixed-step.test.mjs
           node tests/math.test.mjs
           node tests/collision.test.mjs
+      - name: Build web bundle
+        run: bash tools/build_pages.sh
+      - name: Install browser smoke dependency
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Render / input / fallback smoke
+        run: node tools/render_smoke.mjs

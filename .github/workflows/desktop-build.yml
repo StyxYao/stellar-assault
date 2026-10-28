@@ -27,6 +27,14 @@ jobs:
           node-version: "22"
       - name: Build web bundle
         run: bash tools/build_pages.sh
+      - name: Unit, content and release checks
+        run: |
+          node tests/fixed-step.test.mjs
+          node tests/math.test.mjs
+          node tests/collision.test.mjs
+          node tools/validate_content.mjs
+          "$PYTHON" tools/check_structure.py
+          node tools/verify_release.mjs
       - name: Install desktop dependencies
         working-directory: desktop
         run: npm ci
@@ -91,6 +99,14 @@ jobs:
           node-version: "22"
       - name: Build web bundle
         run: bash tools/build_pages.sh
+      - name: Unit, content and release checks
+        run: |
+          node tests/fixed-step.test.mjs
+          node tests/math.test.mjs
+          node tests/collision.test.mjs
+          node tools/validate_content.mjs
+          "$PYTHON" tools/check_structure.py
+          node tools/verify_release.mjs
       - name: Install desktop dependencies
         working-directory: desktop
         run: npm ci

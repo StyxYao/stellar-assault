@@ -16,14 +16,14 @@ npm run dist:mac
 
 Desktop also starts the dependency-free LAN server on ports 8785/8786 and loads the game from the LAN IP.
 
-M1 scope: window/fullscreen, keyboard/gamepad, pause. Not yet: save, achievements, Steam Cloud, installer.
+M1 scope: window/fullscreen, keyboard/gamepad, pause, local save file. Achievements, Steam Cloud and store integration remain outside this shell.
 
 ## M1 controls
 
 - Move: arrows / WASD / left stick / D-pad
 - Bomb: Z / Space / B / X
 - Confirm: Enter / A
-- Pause: Esc / Start / Select
+- Pause: P / Esc / Start / Select
 - Fullscreen: F11 / Alt+Enter
 
 See `docs/STEAM_M1_ACCEPTANCE.md` for the verified checklist.

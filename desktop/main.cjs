@@ -8,8 +8,8 @@ const { pathToFileURL } = require('node:url');
 
 const DEFAULT_WIDTH = 720;
 const DEFAULT_HEIGHT = 1280;
-const MIN_WIDTH = 480;
-const MIN_HEIGHT = 854;
+const MIN_WIDTH = 360;
+const MIN_HEIGHT = 640;
 
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 if (process.platform === 'win32') {
@@ -82,6 +82,12 @@ function setWindowFullscreen(next) {
   return fullscreenState;
 }
 
+let windowStateTimer = null;
+function scheduleWindowStateWrite() {
+  if (windowStateTimer) clearTimeout(windowStateTimer);
+  windowStateTimer = setTimeout(function () { windowStateTimer = null; writeState(); }, 250);
+}
+
 function createWindow() {
   const saved = readState();
   const bounds = visibleBounds(saved);
@@ -110,8 +116,8 @@ function createWindow() {
   if (lanServer) win.loadURL(`http://${lanHost}:${lanServer.httpPort}/index.html`);
   else win.loadFile(path.join(distRoot, 'index.html'));
   win.once('ready-to-show', () => { win.show(); if (saved.fullscreen) setWindowFullscreen(true); });
-  win.on('resize', writeState);
-  win.on('move', writeState);
+  win.on('resize', scheduleWindowStateWrite);
+  win.on('move', scheduleWindowStateWrite);
   win.on('close', writeState);
   win.on('enter-full-screen', () => { fullscreenState = true; });
   win.on('leave-full-screen', () => { fullscreenState = false; });

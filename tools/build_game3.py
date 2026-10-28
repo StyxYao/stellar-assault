@@ -20,6 +20,8 @@ for k,p in assets.items():
 js+="Object.keys(GIMG_SRC).forEach(function(k){Object.defineProperty(GIMG,k,{configurable:true,enumerable:true,get:function(){if(!GIMG_CACHE[k]){var im=new Image();im.src=GIMG_SRC[k];GIMG_CACHE[k]=im;}return GIMG_CACHE[k];}});});\n"
 a=prefix.index('var GIMG={};'); b=prefix.index('var BG1=')
 prefix=prefix[:a]+js+prefix[b:]
+csp="<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self'; img-src 'self' data: blob:; media-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' ws: wss: http: https:; font-src 'self' data:\">"
+prefix=prefix.replace('<head>','<head>\n'+csp,1)
 prefix=prefix.replace('<title>BOSS RUSH · rRootage Tribute</title>','<title>STELLAR ASSAULT · 5 Stages</title>')
 specs="var specs=null;\ntry{ specs=XMLS.map(function(x){ return bulletml.buildXML(x); }); }catch(e){ console.error(e); }\n"
 manifest=json.load(open('src/modules.json',encoding='utf-8'))
