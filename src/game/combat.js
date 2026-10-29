@@ -18,6 +18,7 @@ function bossLaser(){
   sfx('laser',0.06);
 }
 function laserDamageOD(){
+  if(typeof phantomOdOwnsAttack==='function'&&phantomOdOwnsAttack()) return;
   var w=28+Math.min(player.specialPower,3)*5;
   var base=(2+player.specialPower*2)*powerDamageFactor();
   var mainDmg=base*2.0,firstDmg=base*0.50*2.0,secondDmg=base*0.25*2.0;

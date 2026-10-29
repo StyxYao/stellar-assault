@@ -1017,6 +1017,46 @@ function drawFinaleScene(){
     ctx.shadowBlur=0;ctx.restore();
   }
 }
+function drawFinalResult(){
+  var r=(typeof lastRunResult!=='undefined'&&lastRunResult)?lastRunResult:null;
+  var shown=Math.min(1,Math.max(0,finalResultT/1.15));
+  var earned=Math.round(((r&&r.score)||score||0)*shown);
+  var x=20,y=H*.16,w=W-40,h=H*.68;
+  ctx.save();
+  ctx.textAlign='center';
+  ctx.fillStyle='rgba(3,8,18,0.88)';ctx.fillRect(x,y,w,h);
+  ctx.strokeStyle='rgba(255,211,107,0.55)';ctx.lineWidth=1.4;ctx.strokeRect(x,y,w,h);
+  ctx.fillStyle='#eaf8ff';ctx.font='600 26px Orbitron, Arial, sans-serif';
+  ctx.fillText('TIME RECLAIMED',W/2,y+44);
+  ctx.fillStyle='#ffd27a';ctx.font='700 12px monospace';
+  ctx.fillText('FINAL RESULT',W/2,y+66);
+  ctx.strokeStyle='rgba(255,211,107,0.30)';ctx.beginPath();ctx.moveTo(x+28,y+80);ctx.lineTo(x+w-28,y+80);ctx.stroke();
+  ctx.fillStyle='#ffffff';ctx.font='700 34px monospace';
+  ctx.fillText(String(earned).padStart(7,'0'),W/2,y+130);
+  ctx.fillStyle='#7f93a8';ctx.font='9px monospace';ctx.fillText('SCORE',W/2,y+146);
+  var rank=r?r.rank:0,medal=r?r.medal:'E';
+  ctx.fillStyle='#ffd27a';ctx.font='700 20px monospace';
+  ctx.fillText('RANK '+rank+'  ·  MEDAL '+medal,W/2,y+185);
+  var secs=(typeof stageStats==='object'&&stageStats)?Math.max(0,Math.round((typeof time!=='undefined'?time:0)-stageStats.startedAt)):0;
+  ctx.fillStyle='#d8efff';ctx.font='12px monospace';
+  ctx.fillText('KILLS  '+(typeof stageKills!=='undefined'?stageKills:0)+'     TIME  '+Math.floor(secs/60)+':'+String(secs%60).padStart(2,'0'),W/2,y+218);
+  var clean=!(typeof stageStats==='object'&&stageStats&&stageStats.tookDamage);
+  ctx.fillStyle=clean?'#8dffb0':'#ffb38a';ctx.font='700 11px monospace';
+  ctx.fillText(clean?'NO MISS':'DAMAGE TAKEN',W/2,y+242);
+  var rows=(typeof SaveStore!=='undefined'&&SaveStore.data&&SaveStore.data.campaign&&SaveStore.data.campaign.topRuns)?SaveStore.data.campaign.topRuns.slice(0,5):[];
+  ctx.fillStyle='#7f93a8';ctx.font='9px monospace';ctx.fillText('LOCAL TOP 5',W/2,y+272);
+  for(var i=0;i<rows.length;i++){
+    ctx.fillStyle=i===0?'#ffd27a':'#9db3c8';ctx.font='10px monospace';
+    ctx.fillText((i+1)+'   '+rows[i].medal+'   '+String(rows[i].score||0).padStart(7,'0'),W/2,y+290+i*14);
+  }
+  if(finalResultT>0.8){
+    ctx.globalAlpha=0.55+0.25*Math.sin(time*2.4);
+    ctx.fillStyle='#9fe8ff';ctx.font='10px monospace';
+    ctx.fillText('TAP / ENTER TO CONTINUE',W/2,y+h-18);
+  }
+  ctx.restore();ctx.globalAlpha=1;ctx.textAlign='left';
+}
+
 var CAST_LINES=[
  ['CAST',''],
  ['VOID SOVEREIGN','red echo'],

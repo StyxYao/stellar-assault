@@ -312,7 +312,7 @@ function phantomClearOdClones() {
 function phantomUpdate(dt) {
   if (player.ship !== 'phantom') return;
   if (state !== 'play' && state !== 'boss') return;
-  if (player.odT > 0 && !phantomState.odActive) { phantomState.odActive = true; phantomState.odAnchorY = player.y; phantomSpawnOdClones(); }
+  if (player.odT > 0 && !phantomState.odActive) { phantomState.odActive = true; phantomState.odAnchorY = player.y; if (typeof odLaserFx !== 'undefined') odLaserFx.length = 0; phantomSpawnOdClones(); }
   else if (player.odT <= 0 && phantomState.odActive) { phantomState.odActive = false; phantomClearOdClones(); }
   if (phantomState.cloakT > 0) phantomState.cloakT = Math.max(0, phantomState.cloakT - dt);
   if (phantomState.flashT > 0) phantomState.flashT = Math.max(0, phantomState.flashT - dt);

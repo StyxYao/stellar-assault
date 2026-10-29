@@ -2,6 +2,7 @@
 var runFinalized = false;
 var waveDelay = 0;
 var stageStats = { tookDamage: false, deaths: 0, startedAt: 0 };
+var finalResultT = 0;
 function damageBoss(amount, source) {
   if (!boss || boss.hp <= 0) return false;
   if (boss.invuln > 0 && !(source && source.ignoreInvuln)) return false;
@@ -15,6 +16,12 @@ function finishRun(won){
   runFinalized=true;
   if(typeof recordRunEnd==='function') recordRunEnd(!!won);
   return true;
+}
+function startFinalResult(){
+  finishRun(true);
+  state='finalResult';
+  finalResultT=0;
+  playBgm('m5');
 }
 function startCast(){
   state='cast';castT=0;castScroll=0;castHoldT=0;
@@ -289,11 +296,6 @@ function setBossPattern(idx){
 }
 function bossPhase(p){
   for(var ub=beams.length-1;ub>=0;ub--) if(beams[ub].ult) beams.splice(ub,1);
-  if(stage===4&&p===2&&boss){
-    bossPhaseGlitchT=0.72;
-    bossDeathBoom(boss,true);
-    for(var pe=0;pe<7;pe++) fx.push({x:boss.x+vrand(-90,90),y:boss.y+vrand(-60,60),t:-pe*.035,sc:2.0+pe*.22,seed:vrng()*TAU,kind:'boss',life:2.0});
-  }
   boss.phase=p; if(typeof setStage5Phase==='function')setStage5Phase(p); boss.invuln=1.6; boss.hitFlash=0; boss.ultT=boss.def.ultRate-2.2; boss.ultCharge=0; boss.spiralT=0; boss.broadT=0; boss.blinkT=0; boss.aimT=0; boss.ringT=0; boss.laserT=0;
   boom(boss.x,boss.y,1.5); shake=Math.max(shake,14);
   phaseFx.push({x:boss.x,y:boss.y,t:0,life:1.35,kind:'phase',phase:p});

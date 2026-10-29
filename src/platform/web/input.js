@@ -95,6 +95,7 @@ function onDown(e){
     }
     return;
   }
+  if(state==='finalResult'){ finalResultT=99; startCast(); return; }
   if(state==='bossOmen'){ bossOmenT=6.5; return; }
   if(state==='bossFusion'){
     var fsx=W-104,fsy=64,fsw=92,fsh=30;

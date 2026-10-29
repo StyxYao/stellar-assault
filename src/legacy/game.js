@@ -306,6 +306,7 @@ function drawScene(){
   ctx.save();ctx.translate(sx,sy);
   if(state==='menu'){ drawMenu(); ctx.restore(); return; }
   if(state==='finale'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); drawFinaleScene(); ctx.restore(); return; }
+  if(state==='finalResult'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); ctx.fillStyle='rgba(2,4,14,0.50)';ctx.fillRect(0,0,W,H); drawFinalResult(); ctx.restore(); return; }
   if(state==='cast'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); ctx.fillStyle='rgba(2,4,14,0.45)';ctx.fillRect(0,0,W,H); drawCast(); ctx.restore(); return; }
   if(state==='bossDeath1'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); drawPhase1DeathScene(); ctx.restore(); return; }
   if(state==='bossOmen'){ paintFractalBg(BG_MAIN[4],BG_EDGE[4],0); ctx.fillStyle='rgba(0,0,0,0.84)';ctx.fillRect(0,0,W,H); drawBossOmen(); ctx.restore(); return; }
@@ -473,6 +474,7 @@ window.__bossMech=function(){return {stage:bossMech.stage,phase:bossMech.phase,t
 window.__stageMech=function(){return {stage:stageMech.stage,phase:stageMech.phase,t:stageMech.t,warn:stageMech.warnT,active:stageMech.activeT,data:stageMech.data,msg:stageMech.msg};};
 window.__bgv=function(){return {ready:bgLoopVideo.readyState,paused:bgLoopVideo.paused,w:bgLoopVideo.videoWidth,t:bgLoopVideo.currentTime,src:bgLoopVideo.currentSrc.slice(-24)};};
 window.__cast=function(){startCast();};
+window.__finalResult=function(){startFinalResult();};
 window.__castEnd=function(){castScroll=CAST_TOTAL;castHoldT=2;};
 window.__p3=function(){if(boss)bossPhase(2);};
 window.__setBossPhase=function(p){if(boss){boss.phase=Math.max(0,Math.min(2,p|0));boss.invuln=0;if(typeof stage5DirectorReset==='function')stage5DirectorReset();}};

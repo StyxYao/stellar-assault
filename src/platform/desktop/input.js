@@ -82,6 +82,7 @@ function desktopConfirm() {
     return;
   }
   if (state === 'menu') { desktopMenuStart(); return; }
+  if (state === 'finalResult') { startCast(); return; }
   if (state === 'cast') { state = 'menu'; playBgm('m'); return; }
   if (state === 'win' || state === 'over') { startGame(); return; }
   if (state === 'bossOmen') { bossOmenT = 6.5; return; }
