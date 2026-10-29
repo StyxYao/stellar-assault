@@ -11,3 +11,5 @@ dist/
 .edgeone/
 .env
 .backups/
+
+.cache/
