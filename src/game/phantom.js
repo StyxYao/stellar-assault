@@ -274,17 +274,19 @@ function phantomMoveClone(c, dt) {
 }
 function phantomSpawnOdClones() {
   phantomState.odClones.length = 0;
-  // Five invincible OD decoys span the full playfield from left to right.
-  // They do not fire: only the player body enters the VECTOR OD attack state
-  // while player.odT is active (handled by the normal weapon loop in step.js).
+  // Five invincible OD clones span the full playfield from left to right.
+  // They fire their own random weapon, but never the VECTOR OD patterns:
+  // phantomCloneFire() forces player.odT = 0 for the clone shot only.
+  var weapons = ['normal', 'spread', 'laser', 'missile'];
   for (var i = 0; i < 5; i++) {
     var x = W * (0.10 + i * 0.20);
     var y = Math.max(110, Math.min(H - 130, phantomState.odAnchorY));
     var c = {
       x: x, y: y, hp: 999999, maxHp: 999999, invulnT: 0,
+      weapon: weapons[Math.floor(rng() * weapons.length)],
       power: player.specialPower,
       extra: 0, options: 0, damageMult: player.damageMult || 1,
-      target: null, retargetT: 0,
+      fireT: 0.10 + i * 0.045, target: null, retargetT: 0,
       slot: i, age: 0, spawnT: 0.30, life: 999999, od: true,
       skin: (currentSkinDef() ? currentSkinDef().id : 'quantum')
     };
@@ -316,7 +318,11 @@ function phantomUpdate(dt) {
     var oc = phantomState.odClones[oi];
     oc.age += dt;
     if (oc.spawnT > 0) oc.spawnT = Math.max(0, oc.spawnT - dt);
-    // Deliberately no clone firing: the player body owns OD attacks.
+    oc.fireT -= dt;
+    if (oc.fireT <= 0) {
+      oc.fireT = oc.weapon === 'spread' ? 0.16 : (oc.weapon === 'laser' ? 0.08 : (oc.weapon === 'missile' ? 0.46 : 0.10));
+      phantomCloneFire(oc);
+    }
   }
   for (var i = phantomState.clones.length - 1; i >= 0; i--) {
     var c = phantomState.clones[i];

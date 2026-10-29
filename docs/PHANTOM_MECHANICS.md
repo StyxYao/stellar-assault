@@ -47,7 +47,8 @@
 
 - While OD is active, Phantom summons 4 extra OD clones.
 - They do not use the normal clone cap and do not replace existing clones.
-- They are stationary and invincible decoys; they do not fire.
+- They are stationary and invincible.
+- Each clone fires its own random weapon; `phantomCloneFire()` forces `player.odT = 0` for the clone shot, so clones do not use VECTOR OD patterns.
 - While OD is active, the **player body** uses VECTOR's OD attack patterns.
 - They disappear when OD ends.
 - They are separate from the normal clone HP/cap system.
