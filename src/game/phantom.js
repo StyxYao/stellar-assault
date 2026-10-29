@@ -14,6 +14,7 @@ var phantomState = {
   cloneFiring: false,
   odClones: [],
   odActive: false,
+  odAnchorY: 0,
   bursts: []
 };
 
@@ -39,6 +40,7 @@ function phantomReset() {
   phantomState.bursts.length = 0;
   phantomState.odClones.length = 0;
   phantomState.odActive = false;
+  phantomState.odAnchorY = 0;
   phantomState.flashT = 0;
 }
 
@@ -215,13 +217,14 @@ function phantomCloneFire(c) {
   var save = {
     x: player.x, y: player.y, weapon: player.weapon, specialPower: player.specialPower,
     extraBullets: player.extraBullets, damageMult: player.damageMult,
-    normalBuff: player.normalBuff, odT: player.odT, invuln: player.invuln
+    normalBuff: player.normalBuff, odT: player.odT, invuln: player.invuln, options: player.options
   };
   try {
     player.x = c.x; player.y = c.y;
     player.weapon = c.weapon; player.specialPower = c.power;
     player.extraBullets = c.extra; player.damageMult = (c.damageMult || 1) * 0.70;
     player.normalBuff = 1; player.odT = 0;
+    if (c.od) player.options = 0;
     phantomState.cloneFiring = true;
     if (c.weapon === 'spread') fireSpread();
     else if (c.weapon === 'missile') launchMissiles();
@@ -232,7 +235,7 @@ function phantomCloneFire(c) {
     player.x = save.x; player.y = save.y; player.weapon = save.weapon;
     player.specialPower = save.specialPower; player.extraBullets = save.extraBullets;
     player.damageMult = save.damageMult; player.normalBuff = save.normalBuff;
-    player.odT = save.odT; player.invuln = save.invuln;
+    player.odT = save.odT; player.invuln = save.invuln; player.options = save.options;
   }
 }
 
@@ -272,13 +275,17 @@ function phantomMoveClone(c, dt) {
 function phantomSpawnOdClones() {
   phantomState.odClones.length = 0;
   // Five invincible OD clones span the full playfield from left to right.
+  // Their row is locked to the player's Y at the moment OD began.
+  var weapons = ['normal', 'spread', 'laser', 'missile'];
   for (var i = 0; i < 5; i++) {
     var x = W * (0.10 + i * 0.20);
-    var y = Math.max(110, Math.min(H - 130, player.y - 38));
+    var y = Math.max(110, Math.min(H - 130, phantomState.odAnchorY));
     var c = {
       x: x, y: y, hp: 999999, maxHp: 999999, invulnT: 0,
-      weapon: player.weapon, power: player.specialPower,
-      extra: player.extraBullets || 0, damageMult: player.damageMult || 1,
+      weapon: weapons[Math.floor(rng() * weapons.length)],
+      power: player.specialPower,
+      // OD clones are Phantom clones, not VECTOR wingmen: no extra/options fire.
+      extra: 0, options: 0, damageMult: player.damageMult || 1,
       fireT: 0.10 + i * 0.045, target: null, retargetT: 0,
       slot: i, age: 0, spawnT: 0.30, life: 999999, od: true,
       skin: (currentSkinDef() ? currentSkinDef().id : 'quantum')
@@ -298,7 +305,7 @@ function phantomClearOdClones() {
 function phantomUpdate(dt) {
   if (player.ship !== 'phantom') return;
   if (state !== 'play' && state !== 'boss') return;
-  if (player.odT > 0 && !phantomState.odActive) { phantomState.odActive = true; phantomSpawnOdClones(); }
+  if (player.odT > 0 && !phantomState.odActive) { phantomState.odActive = true; phantomState.odAnchorY = player.y; phantomSpawnOdClones(); }
   else if (player.odT <= 0 && phantomState.odActive) { phantomState.odActive = false; phantomClearOdClones(); }
   if (phantomState.cloakT > 0) phantomState.cloakT = Math.max(0, phantomState.cloakT - dt);
   if (phantomState.flashT > 0) phantomState.flashT = Math.max(0, phantomState.flashT - dt);
@@ -479,4 +486,4 @@ function drawPhantomControls() {
   ctx.textAlign = 'left'; ctx.restore(); ctx.globalAlpha = 1;
 }
 
-try { window.__phantomSelect=function(id){ setSelectedShip('phantom', false); setSelectedSkin('phantom', id||'quantum', false); phantomReset(); }; window.__phantom=function(){return {ship:player.ship,bombs:player.bombs,cloakT:phantomState.cloakT,clones:phantomState.clones.map(function(c){return {x:c.x,y:c.y,hp:c.hp,invulnT:c.invulnT,weapon:c.weapon,power:c.power};}),cap:phantomState.cap,cloneHp:phantomState.cloneHp,odClones:phantomState.odClones.length,odActive:phantomState.odActive,wCount:phantomState.wCount,cloakDamage:phantomDamageMult()};}; window.__phantomW=function(){phantomCollectW();return window.__phantom();}; } catch(e) {}
+try { window.__phantomSelect=function(id){ setSelectedShip('phantom', false); setSelectedSkin('phantom', id||'quantum', false); phantomReset(); }; window.__phantom=function(){return {ship:player.ship,bombs:player.bombs,cloakT:phantomState.cloakT,clones:phantomState.clones.map(function(c){return {x:c.x,y:c.y,hp:c.hp,invulnT:c.invulnT,weapon:c.weapon,power:c.power};}),cap:phantomState.cap,cloneHp:phantomState.cloneHp,odClones:phantomState.odClones.length,odActive:phantomState.odActive,odData:phantomState.odClones.map(function(c){return {weapon:c.weapon,power:c.power,y:Math.round(c.y)};}),odAnchorY:Math.round(phantomState.odAnchorY),wCount:phantomState.wCount,cloakDamage:phantomDamageMult()};}; window.__phantomW=function(){phantomCollectW();return window.__phantom();}; } catch(e) {}
