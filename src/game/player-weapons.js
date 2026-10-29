@@ -11,7 +11,7 @@ function powerDamageFactor(){ return (([1,0.96,0.94,0.60][Math.max(0,Math.min(3,
 function addShot(x,y,vx,vy,dmg,wing,laser,special,max,range){ var f=powerDamageFactor(); shots.push({x:x,y:y,vx:vx,vy:vy,dmg:dmg*f*(wing?0.6615:1),wing:!!wing,laser:!!laser,special:!!special,max:!!max,travel:0,range:range||1200}); }
 function fireNormal(){
   var lv=player.specialPower;
-  if(player.odT>0){
+  if(typeof playerOdPatternActive==='function'?playerOdPatternActive():player.odT>0){
     for(var row=0;row<3;row++){
       for(var i=-2;i<=2;i++) addShot(player.x+i*13,player.y-24-row*9,0,-940,2.4,false,false,true,true);
     }
@@ -31,7 +31,7 @@ function fireNormal(){
   for(var e=0;e<ex;e++) addShot(player.x+(e-(ex-1)/2)*10,player.y-22,0,-900,3);
 }
 function fireSpread(){
-  if(player.odT>0){
+  if(typeof playerOdPatternActive==='function'?playerOdPatternActive():player.odT>0){
     var n=18,sp=760;
     for(var i=0;i<n;i++){
       var a=i/n*TAU+time*0.6;
@@ -52,7 +52,7 @@ function spawnMissile(x,y,wing,dmg,max,vx0,vy0,range){
   missiles.push({x:x,y:y,vx:vx0||0,vy:vy0!==undefined?vy0:52,t:0,ignite:0.2,life:2.8,dmg:dmg||6,wing:!!wing,max:!!max,ignited:false,travel:0,range:range||1000});
 }
 function launchMissiles(){
-  if(player.odT>0){
+  if(typeof playerOdPatternActive==='function'?playerOdPatternActive():player.odT>0){
     var dirs=[[0,-300],[-300,0],[300,0],[0,300]];
     for(var g=0;g<4;g++){
       for(var j=-1;j<=1;j++){

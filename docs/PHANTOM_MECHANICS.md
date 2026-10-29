@@ -49,6 +49,6 @@
 - They do not use the normal clone cap and do not replace existing clones.
 - They are stationary and invincible.
 - Each clone fires its own random weapon; `phantomCloneFire()` forces `player.odT = 0` for the clone shot, so clones do not use VECTOR OD patterns.
-- While OD is active, the **player body** uses VECTOR's OD attack patterns.
+- While Phantom OD is active, the player body suppresses the VECTOR OD pattern and keeps normal weapon fire; the five clones are the OD attack source.
 - They disappear when OD ends.
 - They are separate from the normal clone HP/cap system.

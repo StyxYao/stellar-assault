@@ -86,13 +86,13 @@ function step(dt){
     if(player.ship==='aegis'&&(aegisState.charge==='charging'||player.odT>0||aegisState.normalLockT>0)){
       // AEGIS holds normal fire while charging; the charged shot is the focus.
     }else if(player.weapon==='spread'){
-      if(time-lastSpecial>(player.odT>0?0.080:0.16)){ lastSpecial=time; fireSpread(); sfx('p_spread',0.36); }
+      if(time-lastSpecial>((typeof playerOdPatternActive==='function'?playerOdPatternActive():player.odT>0)?0.080:0.16)){ lastSpecial=time; fireSpread(); sfx('p_spread',0.36); }
     }else if(player.weapon==='laser'){
       laserDamage(dt);
     }else if(player.weapon==='missile'){
       if(time-lastMissile>0.46){ lastMissile=time; launchMissiles(); }
     }else{
-      if(time-lastShot>(player.odT>0?0.033:0.10)){ lastShot=time; fireNormal(); blasterShot(); }
+      if(time-lastShot>((typeof playerOdPatternActive==='function'?playerOdPatternActive():player.odT>0)?0.033:0.10)){ lastShot=time; fireNormal(); blasterShot(); }
     }
   }
   if(typeof coopUpdate==='function') coopUpdate(dt);

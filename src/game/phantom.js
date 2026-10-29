@@ -46,6 +46,13 @@ function phantomReset() {
 
 function phantomOnDeath() { phantomReset(); }
 
+function phantomOdOwnsAttack() {
+  return player.ship === 'phantom' && phantomState.odActive;
+}
+function playerOdPatternActive() {
+  return player.odT > 0 && !phantomOdOwnsAttack();
+}
+
 function phantomDamageMult() {
   if (player.ship !== 'phantom' || phantomState.cloakT <= 0 || phantomState.cloneFiring) return 1;
   if (phantomIsRaven()) return 2.5;
