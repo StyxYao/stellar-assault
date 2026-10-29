@@ -24,6 +24,7 @@ var lanAudioBytes = 0, lanAudioRecv = 0;
 var lanAudioScript = null, lanAudioSink = null;
 var lanClientAC = null, lanNextAudio = 0;
 var lanStartBtn = null, lanCodeInput = null, lanLinkEl = null, lanSlotStatus = null, lanSyncBtn = null;
+var lanHostNotice = null, lanHostNoticeText = null, lanHostNoticeBtn = null, lanHostChoosing = false;
 
 function lanWsUrl() {
   var proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -278,6 +279,7 @@ function lanClose() {
   lanSocket = null; lanRoom = ''; lanRole = ''; lanSlots = [false, false];
   lanReady = [false, false]; lanLoadouts = [null, null]; lanStarted = false; lanStage = 0; lanMyReady = false;
   coopRemote = false; coopRemoteP1 = false;
+  lanHideHostNotice();
   lanStopHostAudio(); lanStopSnapshotTimer();
   if (lanFrameTimer) { clearInterval(lanFrameTimer); lanFrameTimer = null; }
   if (lanInputTimer) { clearInterval(lanInputTimer); lanInputTimer = null; }
@@ -288,6 +290,38 @@ function lanClose() {
 }
 
 function lanSetStatus(t) { if (lanStatus) lanStatus.textContent = t; }
+function lanHideHostNotice() {
+  lanHostChoosing = false;
+  if (lanHostNotice) lanHostNotice.style.display = 'none';
+}
+function lanUpdateHostNotice() {
+  if (!lanHostNotice) return;
+  if (lanHostNoticeText) {
+    lanHostNoticeText.textContent = lanSlots[1]
+      ? (lanReady[1] ? 'P2 READY · START LAN RUN' : 'P2 JOINED · CHOOSE YOUR SHIP')
+      : 'WAITING FOR P2';
+  }
+  if (lanHostNoticeBtn) lanHostNoticeBtn.disabled = !lanSlots[1];
+}
+function lanShowHostChoice() {
+  if (lanHostMode !== 'hostp1' || !lanSlots[1]) return;
+  lanHostChoosing = true;
+  if (lanOverlay) lanOverlay.style.display = 'none';
+  if (typeof openShipSelect === 'function') openShipSelect('p1');
+  if (typeof pickupMsg !== 'undefined') { pickupMsg = 'P2 JOINED · CHOOSE YOUR SHIP'; pickupT = 3.0; }
+  if (!lanHostNotice) {
+    lanHostNotice = lanEl('div', 'position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:10005;display:flex;align-items:center;gap:10px;padding:9px 12px;background:#071624;border:2px solid #ffd36b;box-shadow:0 0 22px rgba(255,211,107,0.45);color:#ffe7b0;font:700 11px monospace;white-space:nowrap;');
+    lanHostNoticeText = lanEl('span', 'color:#ffe7b0;', 'P2 JOINED · CHOOSE YOUR SHIP');
+    lanHostNotice.appendChild(lanHostNoticeText);
+    lanHostNoticeBtn = lanEl('button', 'padding:7px 10px;background:#ffd36b;border:1px solid #fff1b0;color:#1b1204;font:900 10px monospace;cursor:pointer;', 'START LAN RUN');
+    lanHostNoticeBtn.onclick = function () { lanStartHost(); };
+    lanHostNotice.appendChild(lanHostNoticeBtn);
+    document.body.appendChild(lanHostNotice);
+  }
+  lanHostNotice.style.display = 'flex';
+  lanUpdateHostNotice();
+}
+
 function lanUpdateSlots() {
   if (lanSlotStatus) {
     var l0 = lanLoadouts[0] ? lanLoadoutLabel(lanLoadouts[0].ship, lanLoadouts[0].skin) : '—';
@@ -398,8 +432,16 @@ function lanStopSnapshotTimer() {
 }
 
 function lanOpenHost() {
-  lanClientMode = false; lanMakeOverlay(false);
-  if (!lanSocket) lanConnectHost();
+  lanClientMode = false;
+  // A finished LAN run hides the overlay but leaves the old socket/room alive.
+  // Re-entering from the menu must start a fresh lobby, not a hidden stale one.
+  if (lanStarted) lanClose();
+  if (!lanOverlay) lanMakeOverlay(false);
+  else lanOverlay.style.display = 'flex';
+  if (!lanSocket || lanSocket.readyState > 1) {
+    if (lanSocket) { try { lanSocket.close(); } catch (e) {} }
+    lanSocket = null; lanConnectHost();
+  }
 }
 
 function lanConnectHost() {
@@ -421,8 +463,10 @@ function lanConnectHost() {
       } else if (m.type === 'player-joined') {
         lanSlots[m.slot] = true; lanSetStatus('PLAYER JOINED · SLOT ' + (m.slot + 1)); lanUpdateSlots();
         lanBroadcastLobby(); if (lanHostMode === 'room' && lanSlots[0] && lanSlots[1]) lanStartLobbyTimer();
+        if (m.slot === 1 && lanHostMode === 'hostp1') lanShowHostChoice();
       } else if (m.type === 'player-left') {
         lanSlots[m.slot] = false; lanReady[m.slot] = false; if (lanLobbyTimer) { clearInterval(lanLobbyTimer); lanLobbyTimer = null; } lanSetStatus('PLAYER LEFT · SLOT ' + (m.slot + 1)); lanBroadcastLobby(); lanUpdateSlots();
+        if (m.slot === 1 && lanHostMode === 'hostp1') lanUpdateHostNotice();
       } else if (m.type === 'loadout') {
         lanLoadouts[m.slot] = { ship: m.ship, skin: m.skin };
         lanUpdateSlots();
@@ -437,6 +481,7 @@ function lanConnectHost() {
         if (m.slot === 0) { lanStage = Math.max(0, Math.min(4, Number(m.stage) || 0)); selectedStage = lanStage; lanBroadcast({ type: 'stage', stage: lanStage }); lanBroadcastLobby(); }
       } else if (m.type === 'ready') {
         lanReady[m.slot] = !!m.ready; lanBroadcastLobby(); lanUpdateSlots();
+        if (m.slot === 1 && lanHostMode === 'hostp1') lanUpdateHostNotice();
         if (lanHostMode === 'room' && lanReady[0] && lanReady[1] && lanSlots[0] && lanSlots[1]) lanStartRoom(false);
       } else if (m.type === 'input') {
         var inp = m.slot === 0 ? lanRemoteInput1 : lanRemoteInput;
@@ -518,6 +563,7 @@ function lanStopHostAudio() {
 function lanStartHost() {
   if (lanHostMode === 'room') { lanStartRoom(false); return; }
   if (lanStartBtn && lanStartBtn.disabled) return;
+  lanHideHostNotice();
   var l0 = lanLoadouts[0] || { ship: selectedShip, skin: selectedSkins[selectedShip] };
   var l1 = lanLoadouts[1] || { ship: 'vector', skin: 'void_lance' };
   if (lanHostMode === 'room') {

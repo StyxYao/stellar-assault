@@ -334,6 +334,7 @@ function pauseQuitToMenu(){
   try { if (typeof desktopSetPaused === 'function') desktopSetPaused(false); } catch(e){}
   try { if (typeof closeSettings === 'function') closeSettings(); } catch(e){}
   selectedStage = Math.max(0, Math.min(STAGES.length-1, stage||0));
+  if (typeof lanClose === 'function') { try { lanClose(); } catch(e){} }
   state = 'menu';
   if (typeof stopStage5Videos === 'function') { try { stopStage5Videos(); } catch(e){} }
   try { playBgm('m'); } catch(e){}

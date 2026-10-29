@@ -271,9 +271,9 @@ function phantomMoveClone(c, dt) {
 }
 function phantomSpawnOdClones() {
   phantomState.odClones.length = 0;
-  var offs = [-84, -28, 28, 84];
-  for (var i = 0; i < offs.length; i++) {
-    var x = Math.max(28, Math.min(W - 28, player.x + offs[i]));
+  // Five invincible OD clones span the full playfield from left to right.
+  for (var i = 0; i < 5; i++) {
+    var x = W * (0.10 + i * 0.20);
     var y = Math.max(110, Math.min(H - 130, player.y - 38));
     var c = {
       x: x, y: y, hp: 999999, maxHp: 999999, invulnT: 0,
