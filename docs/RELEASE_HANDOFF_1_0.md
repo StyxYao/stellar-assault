@@ -82,8 +82,26 @@ Windows: success
 Linux:   success
 ```
 
+Windows/Linux artifacts：
+
 ```text
-https://github.com/StyxYao/stellar-assault/actions/runs/40862893018
+stellar-assault-windows
+stellar-assault-linux
+```
+
+### 最新 macOS CI run
+
+```text
+run 41069510954
+status: success
+macOS arm64: success
+macOS x64:   success
+Windows:     success
+Linux:       success
+```
+
+```text
+https://github.com/StyxYao/stellar-assault/actions/runs/41069510954
 ```
 
 Artifacts：
@@ -91,9 +109,15 @@ Artifacts：
 ```text
 stellar-assault-windows
 stellar-assault-linux
+stellar-assault-macos-arm64
+stellar-assault-macos-x64
 ```
 
+GitHub artifact 下载需要登录 GitHub。
+
 ### macOS 包
+
+本机 arm64 测试包：
 
 ```text
 desktop/release/STELLAR ASSAULT-1.0.0-rc.1-arm64.dmg
@@ -102,12 +126,19 @@ desktop/release/STELLAR ASSAULT-1.0.0-rc.1-arm64-mac.zip
 
 ```text
 276 MB / 264 MB
-arm64 only
+arm64
 ad-hoc signature
 not notarized
 ```
 
-DMG 校验通过；`spctl` 不会通过，因为未公证。
+GitHub Actions macOS CI（run `41069510954`）已成功产出：
+
+```text
+stellar-assault-macos-arm64
+stellar-assault-macos-x64
+```
+
+两者都包含 DMG + zip，均为 ad-hoc 签名、未公证。
 
 ---
 
