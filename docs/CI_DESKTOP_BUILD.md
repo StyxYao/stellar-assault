@@ -118,3 +118,34 @@ This validates that the packaged app can start and host the built-in LAN server.
 See `docs/WINDOWS_ANTIVIRUS.md`. The workflow reads `WINDOWS_CSC_LINK` and
 `WINDOWS_CSC_KEY_PASSWORD`; without them the build remains unsigned and may
 be flagged by security software.
+
+## macOS jobs
+
+`Desktop Build` also builds macOS on `macos-14` for:
+
+```text
+arm64
+x64
+```
+
+Each matrix job:
+
+```text
+build web
+→ unit/content/structure/release checks
+→ npm ci
+→ electron-builder --mac --<arch>
+→ ad-hoc codesign
+→ recreate DMG + zip
+→ upload artifact
+```
+
+Artifacts:
+
+```text
+stellar-assault-macos-arm64
+stellar-assault-macos-x64
+```
+
+These are ad-hoc signed, not notarized. A public 1.0 release still needs an
+Apple Developer ID certificate and notarization.
