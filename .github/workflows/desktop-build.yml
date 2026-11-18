@@ -32,6 +32,7 @@ jobs:
           node tests/fixed-step.test.mjs
           node tests/math.test.mjs
           node tests/collision.test.mjs
+          node tests/lan-protocol.test.mjs
           node tools/validate_content.mjs
           "$PYTHON" tools/check_structure.py
           node tools/verify_release.mjs
@@ -112,6 +113,7 @@ jobs:
           node tests/fixed-step.test.mjs
           node tests/math.test.mjs
           node tests/collision.test.mjs
+          node tests/lan-protocol.test.mjs
           node tools/validate_content.mjs
           python3 tools/check_structure.py
           node tools/verify_release.mjs
@@ -153,6 +155,7 @@ jobs:
           node tests/fixed-step.test.mjs
           node tests/math.test.mjs
           node tests/collision.test.mjs
+          node tests/lan-protocol.test.mjs
           node tools/validate_content.mjs
           "$PYTHON" tools/check_structure.py
           node tools/verify_release.mjs

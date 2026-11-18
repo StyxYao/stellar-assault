@@ -91,14 +91,14 @@ try {
   }
 
   // P0-A: stage-select runs must not mutate campaign Top5.
-  const beforeTop = await page.evaluate(() => JSON.stringify(window.__save().campaign.topRuns || []));
+  const beforeCampaign = await page.evaluate(() => JSON.stringify(window.__save().campaign));
   await page.evaluate(() => {
     window.__runStage(4);
     window.__setScore(54321);
     window.__endRun(true);
   });
-  const afterTop = await page.evaluate(() => JSON.stringify(window.__save().campaign.topRuns || []));
-  if (beforeTop !== afterTop) throw new Error('stage-select polluted campaign topRuns');
+  const afterCampaign = await page.evaluate(() => JSON.stringify(window.__save().campaign));
+  if (beforeCampaign !== afterCampaign) throw new Error('stage-select polluted campaign save');
 
   // P0-B: mutating helpers must be absent in a normal, non-debug session.
   const prod = await browser.newPage({ viewport: { width: 390, height: 844 } });

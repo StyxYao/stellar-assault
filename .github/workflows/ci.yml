@@ -24,6 +24,7 @@ jobs:
           node tests/fixed-step.test.mjs
           node tests/math.test.mjs
           node tests/collision.test.mjs
+          node tests/lan-protocol.test.mjs
       - name: Build web bundle
         run: bash tools/build_pages.sh
       - name: Install browser smoke dependency
