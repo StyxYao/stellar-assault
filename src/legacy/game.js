@@ -508,7 +508,7 @@ var DEBUG_SAFE = {
 };
 if (!debugToolsEnabled) {
   Object.keys(window).forEach(function (name) {
-    if (/^__[a-z0-9]+$/.test(name) && !DEBUG_SAFE[name]) {
+    if (/^__[a-z][a-zA-Z0-9]*$/.test(name) && !DEBUG_SAFE[name]) {
       try { delete window[name]; } catch (e) {}
     }
   });
