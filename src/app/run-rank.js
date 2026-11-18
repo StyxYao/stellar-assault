@@ -16,10 +16,11 @@ function runRankCompute(won) {
   rank = Math.max(0, Math.min(5, rank));
   return { rank: rank, medal: RUN_MEDALS[rank], score: s, stage: stage, won: !!won };
 }
-function runRankRecord(won) {
+function runRankRecord(won, persist) {
   var r = runRankCompute(won);
   lastRunResult = r;
   try {
+    if (persist === false) return r;
     if (!SaveStore.data) return r;
     var c = SaveStore.data.campaign;
     c.lastRank = r.rank; c.lastMedal = r.medal;

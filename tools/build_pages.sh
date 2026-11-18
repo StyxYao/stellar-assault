@@ -18,7 +18,16 @@ cp assets/branding/logo-emblem.png assets/branding/logo-title.png assets/brandin
 cp assets/audio/*.mp3 dist/assets/audio/
 cp assets/fonts/*.ttf dist/assets/fonts/
 cp assets/video/*.mp4 dist/assets/video/
-git rev-parse --short HEAD > dist/build.txt 2>/dev/null || true
+SOURCE_COMMIT="${SOURCE_COMMIT:-}"
+if [ -z "$SOURCE_COMMIT" ]; then
+  SOURCE_COMMIT="$(git rev-parse HEAD 2>/dev/null || true)"
+fi
+if ! printf '%s' "$SOURCE_COMMIT" | grep -Eq '^[0-9a-fA-F]{7,40}$'; then
+  echo "EDGEONE BUILD MISSING: SOURCE_COMMIT (git checkout or explicit env)" >&2
+  exit 1
+fi
+printf '%s\n' "$SOURCE_COMMIT" > dist/build.txt
+test -s dist/build.txt || { echo "EDGEONE BUILD MISSING: dist/build.txt" >&2; exit 1; }
 for f in dist/index.html dist/assets/video/fusion.mp4 dist/assets/video/phase2-loop.mp4 dist/assets/video/phase3-loop.mp4 dist/assets/video/kaleido-bg.mp4; do
   test -s "$f" || { echo "EDGEONE BUILD MISSING: $f" >&2; exit 1; }
 done

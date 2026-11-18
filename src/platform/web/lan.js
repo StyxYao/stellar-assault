@@ -403,7 +403,7 @@ function lanStartRoom(force) {
   lanBroadcast({ type: 'start' });
   try { initAudio(); loadSfxExtras(); } catch (e) {}
   lanStartHostAudio();
-  startAtStage(lanStage);
+  startAtStage(lanStage,'lan');
   if (lanStateSyncMode) lanStartSnapshotTimer();
   else if (!lanFrameTimer) {
     lanFrameTimer = setInterval(function () {
@@ -588,7 +588,7 @@ function lanStartHost() {
   if (lanOverlay) lanOverlay.style.display = 'none';
   try { initAudio(); loadSfxExtras(); } catch (e) {}
   lanStartHostAudio();
-  startAtStage(selectedStage);
+  startAtStage(selectedStage,'lan');
   if (lanStateSyncMode) lanStartSnapshotTimer();
   else if (!lanFrameTimer) {
     lanFrameTimer = setInterval(function () {

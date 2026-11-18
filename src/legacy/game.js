@@ -498,11 +498,19 @@ window.__damage=function(d){for(var i=0;i<enemies.length;i++) enemies[i].hp=Math
 window.__item=function(t,x,y){items.push({x:x,y:y,vy:0,type:t,t:0});};
 window.__max=function(){player.specialPower=4;player.power=4;};
 window.__itemT=function(t,tm,x,y){items.push({x:x||player.x,y:y||player.y-90,vy:0,type:t,t:tm||0});};
-// Mutating debug helpers are only exposed on an explicit ?debug=1 session.
+// All lowercase __game helpers are debug-only. Keep a small allowlist for
+// diagnostics/UI ports that production actually uses.
 var debugToolsEnabled = /(?:\?|&)debug=1(?:&|$)/.test(location.search || '');
+var DEBUG_SAFE = {
+  __openLanHost: 1, __save: 1, __errorLog: 1, __clearErrorLog: 1,
+  __desktop: 1, __desktopPause: 1, __lanDebug: 1,
+  __audio: 1, __sfxTest: 1, __bgmInfo: 1
+};
 if (!debugToolsEnabled) {
-  ['__god','__killBoss','__bossHp','__forceBoss','__clearEnemies','__setScore','__endRun','__stage','__runStage','__simulate','__resetDeterministic','__setBossPhase','__p3','__spawnEB','__spawnBomb','__hit','__bomb','__od','__aegisForce','__phantomSelect','__phantomW','__setP2Ship','__setP2Od','__coopHit','__coopGod','__p2Item','__item','__itemT','__max','__damage','__ult','__drop'].forEach(function (name) {
-    try { delete window[name]; } catch (e) {}
+  Object.keys(window).forEach(function (name) {
+    if (/^__[a-z0-9]+$/.test(name) && !DEBUG_SAFE[name]) {
+      try { delete window[name]; } catch (e) {}
+    }
   });
 }
 if(typeof initSaveStore==='function') initSaveStore();

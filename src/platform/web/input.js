@@ -58,7 +58,7 @@ function onDown(e){
     }
     if(typeof startConfirmOpen!=='undefined'&&startConfirmOpen){
       var sch=startConfirmAt(p);
-      if(sch==='start'){if(typeof menuConfirmSfx==='function')menuConfirmSfx();closeStartConfirm();startAtStage(selectedStage);}
+      if(sch==='start'){if(typeof menuConfirmSfx==='function')menuConfirmSfx();closeStartConfirm();startAtStage(selectedStage,'stageSelect');}
       else if(sch==='back'||sch==='outside'){if(typeof menuMoveSfx==='function')menuMoveSfx();closeStartConfirm();}
       else if(sch==='p1ctrl'){if(typeof menuMoveSfx==='function')menuMoveSfx();openControlSelect(1);}
       else if(sch==='p2ctrl'){if(typeof menuMoveSfx==='function')menuMoveSfx();openControlSelect(2);}

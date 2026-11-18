@@ -136,6 +136,10 @@ function updateSetting(key, value) {
 
 function recordRunEnd(won) {
   if (!SaveStore.data) return;
+  if (typeof runSource !== 'undefined' && runSource !== 'campaign') {
+    if (typeof runRankRecord === 'function') runRankRecord(!!won, false);
+    return;
+  }
   var c = SaveStore.data.campaign;
   SaveStore.data.stats.runs++;
   if (won) {
@@ -156,6 +160,7 @@ function recordRunEnd(won) {
 
 function recordScoreSnapshot() {
   if (!SaveStore.data) return;
+  if (typeof runSource !== 'undefined' && runSource !== 'campaign') return;
   SaveStore.data.campaign.bestScore = Math.max(SaveStore.data.campaign.bestScore, score || 0);
   var sid = (typeof player !== 'undefined' && player.ship) ? player.ship : 'vector';
   if (!SaveStore.data.ships[sid]) SaveStore.data.ships[sid] = { bestScore: 0 };
@@ -165,6 +170,7 @@ function recordScoreSnapshot() {
 }
 function recordStageClear() {
   if (!SaveStore.data) return;
+  if (typeof runSource !== 'undefined' && runSource !== 'campaign') return;
   SaveStore.data.campaign.unlockedStage = Math.max(SaveStore.data.campaign.unlockedStage, Math.min(4, stage + 1));
   SaveStore.data.campaign.lastStage = stage;
   SaveStore.data.campaign.bestScore = Math.max(SaveStore.data.campaign.bestScore, score || 0);

@@ -1,5 +1,6 @@
 // Run/stage/Boss flow transitions.
 var runFinalized = false;
+var runSource = 'campaign';
 var waveDelay = 0;
 var stageStats = { tookDamage: false, deaths: 0, startedAt: 0 };
 var finalResultT = 0;
@@ -29,8 +30,9 @@ function startCast(){
 }
 function setBanner(txt,sub,t){ banner=txt; bannerSub=sub||''; bannerT=t; }
 
-function resetRun(){
+function resetRun(source){
   runFinalized=false;
+  runSource=source||'campaign';
   score=0; player.lives=3; player.hp=3; player.bombs=3; player.od=0; player.odT=0; player.powerXp=0; player.respawnT=0; player.respawnGift=false; player.noBlink=false; player.power=1; player.weapon='normal'; player.specialPower=1; player.options=0; player.wingPower=1; player.trail=[]; player.wingEntry=[]; items.length=0; missiles.length=0; wingBeams.length=0; beams.length=0; orbBullets.length=0;
   if(typeof aegisState!=='undefined'){ aegisState.forceLevel=1; aegisState.odActive=false; aegisState.odShotT=0; aegisState.postOdT=0; }
   player.normalBuff=1;
@@ -40,12 +42,12 @@ function resetRun(){
   if(typeof coopPadPrevF!=='undefined') coopPadPrevF=false;
 }
 function startGame(){
-  resetRun();
+  resetRun('campaign');
   startStage(0);
 }
-function startAtStage(i){
+function startAtStage(i,source){
   i=Math.max(0,Math.min(STAGES.length-1,i|0));
-  resetRun();
+  resetRun(source||'stageSelect');
   // stage-select loadout: enough power to actually play the final stage
   player.power=Math.min(4,1+i*0.8);
   player.specialPower=Math.min(4,1+i);

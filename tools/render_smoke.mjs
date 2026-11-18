@@ -65,6 +65,33 @@ try {
   await page.waitForTimeout(100);
   const paused = await page.evaluate(() => window.__desktop ? window.__desktop().paused : false);
   if (!paused) throw new Error('P did not pause');
+
+  // P0-A: stage-select runs must not mutate campaign Top5.
+  const beforeTop = await page.evaluate(() => JSON.stringify(window.__save().campaign.topRuns || []));
+  await page.evaluate(() => {
+    window.__runStage(4);
+    window.__setScore(54321);
+    window.__endRun(true);
+  });
+  const afterTop = await page.evaluate(() => JSON.stringify(window.__save().campaign.topRuns || []));
+  if (beforeTop !== afterTop) throw new Error('stage-select polluted campaign topRuns');
+
+  // P0-B: mutating helpers must be absent in a normal, non-debug session.
+  const prod = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  await prod.goto(`http://127.0.0.1:${HTTP_PORT}/index.html`);
+  await prod.waitForTimeout(500);
+  const gate = await prod.evaluate(() => ({
+    finalResult: typeof window.__finalResult,
+    runStage: typeof window.__runStage,
+    boss: typeof window.__boss,
+    setScore: typeof window.__setScore,
+    openLanHost: typeof window.__openLanHost
+  }));
+  await prod.close();
+  if (gate.finalResult !== 'undefined' || gate.runStage !== 'undefined' || gate.boss !== 'undefined' || gate.setScore !== 'undefined') {
+    throw new Error('debug helpers leaked into production: ' + JSON.stringify(gate));
+  }
+  if (gate.openLanHost !== 'function') throw new Error('LAN UI port was incorrectly gated');
   console.log('render smoke: PASS');
 } catch (e) {
   console.error('render smoke: FAIL');

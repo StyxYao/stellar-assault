@@ -12,5 +12,12 @@ if (!version) errors.push('VERSION empty');
 if (desktop.version !== version) errors.push(`desktop version ${desktop.version} != ${version}`);
 if (!readme.includes(version)) errors.push('README does not mention VERSION');
 for (const rel of required) if (!fs.existsSync(path.join(root, rel))) errors.push(`missing ${rel}`);
+const buildPath = path.join(root, 'dist/build.txt');
+if (fs.existsSync(buildPath)) {
+  const commit = fs.readFileSync(buildPath, 'utf8').trim();
+  if (!/^[0-9a-f]{7,40}$/i.test(commit)) errors.push(`dist/build.txt invalid commit: ${JSON.stringify(commit)}`);
+  const expected = process.env.SOURCE_COMMIT && process.env.SOURCE_COMMIT.trim();
+  if (expected && !commit.toLowerCase().startsWith(expected.toLowerCase())) errors.push(`dist/build.txt ${commit} != SOURCE_COMMIT ${expected}`);
+}
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
 console.log(`release guard ok: ${version}`);

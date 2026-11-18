@@ -69,7 +69,7 @@ function desktopConfirm() {
   if (state === 'menu' && typeof startConfirmOpen !== 'undefined' && startConfirmOpen) {
     if (typeof menuConfirmSfx === 'function') menuConfirmSfx();
     closeStartConfirm();
-    startAtStage(selectedStage);
+    startAtStage(selectedStage,'stageSelect');
     return;
   }
   if (state === 'menu' && typeof skinSelectOpen !== 'undefined' && skinSelectOpen) {
