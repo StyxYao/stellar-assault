@@ -90,6 +90,15 @@ try {
     if (sweep[i].stage !== expectedStage) throw new Error('sweep stage mismatch at ' + i + ': ' + JSON.stringify(sweep[i]));
   }
 
+  const finalFlow = await page.evaluate(() => {
+    window.__finalResult();
+    const result = window.__g().state;
+    window.__simulate(460);
+    return { result, after: window.__g().state };
+  });
+  if (finalFlow.result !== 'finalResult') throw new Error('finalResult state missing: ' + JSON.stringify(finalFlow));
+  if (finalFlow.after !== 'cast') throw new Error('finalResult did not advance to cast: ' + JSON.stringify(finalFlow));
+
   // P0-A: stage-select runs must not mutate campaign Top5.
   const beforeCampaign = await page.evaluate(() => JSON.stringify(window.__save().campaign));
   await page.evaluate(() => {
