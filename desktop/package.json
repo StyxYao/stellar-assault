@@ -13,8 +13,8 @@
     "dist:linux": "electron-builder --linux --publish never"
   },
   "devDependencies": {
-    "electron": "38.2.0",
-    "electron-builder": "^26.0.12"
+    "electron": "^38.8.6",
+    "electron-builder": "^26.18.0"
   },
   "build": {
     "appId": "com.styx.stellarassault",
@@ -76,7 +76,7 @@
       "createStartMenuShortcut": true,
       "runAfterFinish": true
     },
-    "copyright": "Copyright \u00a9 2026 Styx. All rights reserved."
+    "copyright": "Copyright © 2026 Styx. All rights reserved."
   },
   "author": "Styx"
 }
