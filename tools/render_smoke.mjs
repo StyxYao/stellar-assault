@@ -66,6 +66,30 @@ try {
   const paused = await page.evaluate(() => window.__desktop ? window.__desktop().paused : false);
   if (!paused) throw new Error('P did not pause');
 
+  // Five-stage flow sweep: start a campaign, force each Boss, let the normal
+  // clear/warp path advance, then load the final stage's fusion/phase flow.
+  const sweep = await page.evaluate(() => {
+    const out = [];
+    window.__startGame();
+    window.__god();
+    for (let s = 0; s < 5; s++) {
+      window.__simulate(120);
+      window.__clearEnemies();
+      window.__boss();
+      window.__simulate(s === 4 ? 260 : 30);
+      window.__bossHp(0);
+      window.__simulate(300);
+      out.push({ ...window.__g(), errors: window.__errorLog ? window.__errorLog().slice() : [] });
+    }
+    return out;
+  });
+  if (sweep.length !== 5) throw new Error('five-stage sweep length ' + sweep.length);
+  for (let i = 0; i < 5; i++) {
+    if (sweep[i].errors && sweep[i].errors.length) throw new Error('sweep stage ' + i + ' errors ' + JSON.stringify(sweep[i].errors));
+    const expectedStage = i < 4 ? i + 1 : 4;
+    if (sweep[i].stage !== expectedStage) throw new Error('sweep stage mismatch at ' + i + ': ' + JSON.stringify(sweep[i]));
+  }
+
   // P0-A: stage-select runs must not mutate campaign Top5.
   const beforeTop = await page.evaluate(() => JSON.stringify(window.__save().campaign.topRuns || []));
   await page.evaluate(() => {

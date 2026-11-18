@@ -421,7 +421,8 @@ window.__orb=function(){return boss&&boss.crossOrb?{x:Math.round(boss.crossOrb.x
 window.__g=function(){return {stageT:+stageT.toFixed(1),waveIndex:waveIndex,waveLen:STAGES[stage]?STAGES[stage].waves.length:0,mini:enemies.some(function(e){return !!e.mini;}),state:state,stage:stage,score:score,enemies:enemies.length,bullets:bullets.length,ebullets:ebullets.length,hp:boss?Math.round(boss.hp):0,inv:boss?+(boss.invuln||0).toFixed(2):0,phase:boss?boss.phase:-1,bx:boss?Math.round(boss.x):0,lt:boss?+(boss.laserT.toFixed(1)):0,ut:boss?+(boss.ultT.toFixed(1)):0,uc:boss?+(boss.ultCharge.toFixed(1)):0,style:boss?boss.def.style:'',power:player.specialPower,items:items.length,shots:shots.length,weapon:player.weapon,options:player.options,lives:player.lives,php:player.hp,bombs:player.bombs};};
 window.__god=function(){player.invuln=99999;player.noBlink=true;};
 window.__stage=function(n){startStage(n);};
-  window.__runStage=function(n){startAtStage(n);};
+  window.__startGame=function(){startGame();};
+window.__runStage=function(n){startAtStage(n);};
   window.__coopHit=function(){if(typeof coopHitP2==='function'){if(player2)player2.invuln=0;coopHitP2();}};
   window.__coopGod=function(){player.invuln=99999;player.noBlink=true;if(player2){player2.invuln=99999;player2.noBlink=true;}};
   window.__p2Item=function(t){if(player2)items.push({x:player2.x,y:player2.y,vy:0,type:t||'P',t:0});};
