@@ -121,7 +121,7 @@ be flagged by security software.
 
 ## macOS jobs
 
-`Desktop Build` also builds macOS on `macos-14` for:
+`Desktop Build` also builds macOS on `macos-15` (arm64) and `macos-15-intel` (x64) for:
 
 ```text
 arm64
